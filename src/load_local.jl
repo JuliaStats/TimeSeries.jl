@@ -16,7 +16,7 @@ time_based_df = read_table(x);
          Date = $(bar)
          end);
 
-time_based_df
+flipud(time_based_df)
 
 end
 

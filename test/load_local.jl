@@ -1,22 +1,13 @@
-function load_local(x)
+require("DataFrames")
+require("Calendar")
+require("UTF16")
+require("../src/load_local.jl")
 
-# load("DataFrames")
-# load("Calendar")
-# using DataFrames
-# using Calendar
-# using UTF16
+using DataFrames
+using Calendar
+using UTF16
 
-time_based_df = read_table(x);
+test_group("Last row is consistent")
 
-# foo = convert(Array{UTF16String}, time_based_df[:,1])
-
- bar = map(x -> parse("yyyy-MM-dd", x), convert(Array{UTF16String}, vector(time_based_df[:,1])))
-
- within!(time_based_df, quote
-         Date = $(bar)
-         end);
-
-time_based_df
-
-end
+df1 =load_local("data/spx.csv")
 
