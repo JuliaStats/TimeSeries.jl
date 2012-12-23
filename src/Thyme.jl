@@ -4,14 +4,26 @@ require("UTF16")
 
 module Thyme
 
-# import DataFrames
-# import Calendar 
-# import UTF16
+using DataFrames
+using Calendar
+using UTF16 
 
-export load_symbol
+import DataFrames
+import Calendar 
+import UTF16
 
-function load_symbol(x)
-  2x
+export read_stock 
+
+function read_stock(x)
+
+stock_df = read_table(x);
+  time_coversion = map(x -> parse("yyyy-MM-dd", x), 
+           convert(Array{UTF16String},  
+                  vector(stock_df[:,1])))
+  within!(stock_df, quote
+         Date = $(time_coversion)
+         end);
+  flipud(stock_df)
 end
 
 function foo()
