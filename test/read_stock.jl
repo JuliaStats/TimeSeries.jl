@@ -6,13 +6,23 @@ using DataFrames
 using Calendar
 using UTF16
 
+macro taste(food)
+ :($food ? 
+ print("\33[32mfresh\033[0m ")  :
+ print("\33[31mrotten\033[0m "))
+end
 
 df = read_stock("spx.csv")
 
-@assert typeof(df[1])           == DataVec{CalendarTime}
-@assert df[nrow(df),7]          == 102.09
-@assert df[507,7]               == 102.09
-##@assert df[nrow(df),1] - df[1,1] == 728 FixedCalendarDuration
+@taste typeof(df[1])           == DataVec{CalendarTime}
+@taste df[nrow(df),7]          == 102.09
+@taste df[507,7]               == 102.09
+@taste df[507,7]               == 102.0
+
+
+
+
+# @taste df[nrow(df),1] - df[1,1] == 728 FixedCalendarDuration
 
 
 
