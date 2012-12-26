@@ -14,11 +14,16 @@ import UTF16
 
 require("Thyme/src/read_stock.jl")
 
-export read_stock, @taste
+export read_stock, @taste, recipe
 
-macro taste(ex)
-  foo = strcat("~/.julia/Thyme/test/", :($ex), ".jl")
-  load(foo)
+const recipe = "read_stock"
+
+macro taste(ex::Symbol)
+  #if :($ex) == :($recipe)
+  #  load(strcat("~/.julia/Thyme/test/". :($recipe), ".jl"))
+  #else 
+    load(strcat("~/.julia/Thyme/test/", :($ex), ".jl"))
+  #end
 end
 
 
