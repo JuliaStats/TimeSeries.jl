@@ -9,8 +9,7 @@ using UTF16
 macro taste(food)
  :($food ? 
  println("\33[32mfresh\033[0m ")  :
- #println("\33[31mrotten\033[0m", $(string(food))))
- println("\33[31mrotten:$(string(food))\033[0m"))
+ println("\33[31mrotten \033[0m", "\33[36mho\033[0m"))
 end
 
 df = read_stock("spx.csv")
