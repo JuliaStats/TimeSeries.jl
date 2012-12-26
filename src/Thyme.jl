@@ -13,8 +13,10 @@ import Calendar
 import UTF16
 
 require("Thyme/src/read_stock.jl")
+require("Thyme/src/equity_curve.jl")
 
-export read_stock, @taste, recipe
+export read_stock, equity_curve,
+       @taste, recipe
 
 const recipe = "read_stock"
 
