@@ -10,10 +10,8 @@ function moving(df::DataFrame, col::ASCIIString, f, n::Int64)
     bar = [nas(DataVector[float(n)], n-1) ; float(foo)]
   end
 
-  new_col = strcat(string(f), "_", string(n))
-
   with(df, quote
-         $new_col  = $mvg($df[$col], $f, $n)
-        end);
+       $mvg($df[$col], $f, $n)
+       end);
 end
 
