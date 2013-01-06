@@ -15,7 +15,6 @@ import UTF16
 require("Thyme/src/read_stock.jl")
 require("Thyme/src/equity_curve.jl")
 require("Thyme/src/moving.jl")
-require("Thyme/src/moving_bang.jl")
 
 export read_stock, equity_curve,
        moving, moving!, 
