@@ -18,3 +18,8 @@ function lag1(x)
 # NA padding here
 end
 
+function lagn(x, n)
+  tmp = ones(length(x))
+  laggard = [tmp[i] = x[i-n]  for i=(n+1):length(x)]
+# NA padding here
+end
