@@ -18,7 +18,7 @@ require("Thyme/src/moving.jl")
 require("Thyme/src/moving_bang.jl")
 
 export read_stock, equity_curve,
-       moving, moving!
+       moving, moving!, 
        @taste, recipe
 
 const recipe = "read_stock"
