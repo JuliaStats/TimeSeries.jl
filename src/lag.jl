@@ -2,7 +2,7 @@
 function lead1(x)
   tmp = ones(length(x)-1)
   leader = [tmp[i] = x[i+1]  for i=1:length(x)-1]
-# NA padding here
+  padded_leader = [nas(DataVector[float(n)], 1) ; float(leader)]
 end
 
 function leadn(x, n)
