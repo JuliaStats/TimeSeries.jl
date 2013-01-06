@@ -15,7 +15,7 @@ function add_sma(df::DataFrame, n::Int64, col::ASCIIString)
     bar
   end
 
-  new_col = strcat("ma.", string(n))
+  new_col = strcat("sma.", string(n))
 
   within!(df, quote
     $new_col  = $sma(vector($df[$col]), $n)
