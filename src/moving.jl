@@ -1,8 +1,8 @@
-# this takes a DataFrame and returns the DataFrame with
-# an additional column whose value is defined a function
+# this takes a DataFrame and returns a DataArray with
+# rolling (window) value defined by a function
 
 
-function add_mvg(df::DataFrame, col::ASCIIString, f, n::Int64)
+function moving(df::DataFrame, col::ASCIIString, f, n::Int64)
 
 
   function mvg(x,f,n)
@@ -12,7 +12,7 @@ function add_mvg(df::DataFrame, col::ASCIIString, f, n::Int64)
 
   new_col = strcat(string(f), "_", string(n))
 
-  within!(df, quote
+  with(df, quote
          $new_col  = $mvg($df[$col], $f, $n)
         end);
 end
