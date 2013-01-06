@@ -6,8 +6,7 @@ function add_sma(df::DataFrame, n::Int64, col::ASCIIString)
 
   function sma(x,n)
     foo = [sum(x[i:i+(n-1)])/n for i=1:length(x)-(n-1)]
-    bar = DataArray([fill(NA, length(n) -1) ; foo])
-    bar
+    bar = [nas(DataVector[float(n)], n-1) ; foo]
   end
 
   new_col = strcat("ma.", string(n))
@@ -15,7 +14,6 @@ function add_sma(df::DataFrame, n::Int64, col::ASCIIString)
   within!(df, quote
     $new_col  = $sma(vector($df[$col]), $n)
         end);
-
   df
 end
 
