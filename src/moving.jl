@@ -7,16 +7,13 @@ function mvg(x,f,n)
 end
 
 function moving(df::DataFrame, col::ASCIIString, f, n::Int64)
-
   with(df, quote
        $mvg($df[$col], $f, $n)
        end);
 end
 
 function moving!(df::DataFrame, col::ASCIIString, f, n::Int64)
-
   new_col = strcat(string(f), "_", string(n))
-
   within!(df, quote
          $new_col  = $mvg($df[$col], $f, $n)
         end);
