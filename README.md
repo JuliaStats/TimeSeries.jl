@@ -15,9 +15,9 @@ So far, there are six functions:
 
 * `lead!` and `lag!` functions.
 * `upto` and `upto!` functions.
-* `ret` and `ret!` functions.
+* `simple_return` and `simple_return!` functions.
+* `log_return` and `log_return!` functions.
 * `ema` function. (exponential moving average)
-* `rsi` and `rsi!` functions.
 
 #### Demonstration
 
