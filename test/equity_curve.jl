@@ -8,12 +8,12 @@ using UTF16
 
 macro smell(food)
  :($food ? 
- print("\33[32mfresh\033[0m ")  :
- print("\33[31mrotten\033[0m "))
+ println("\33[32mfresh\033[0m ")  :
+ println("\33[31mrotten\033[0m "))
 end
 
-df = read_stock("spx.csv")
-ec = equity_curve(df)
+df = read_stock("spx.csv");
+ec = equity_curve(df);
 
 @smell ec[1]    == 1.0
 @smell ec[2]    == 1.0049340441190235

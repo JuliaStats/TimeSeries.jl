@@ -9,11 +9,10 @@ using UTF16
 macro smell(food)
  :($food ? 
  println("\33[32mfresh\033[0m ")  :
-# println("\33[31mrotten \033[0m\33[36m food \033[0m"))
- println(string($food)))
+ println("\33[31mrotten\033[0m "))
 end
 
-df = read_stock("spx.csv")
+df = read_stock("spx.csv");
 
 @smell typeof(df[1])           == DataArray{CalendarTime,1}
 @smell df[nrow(df),7]          == 102.09

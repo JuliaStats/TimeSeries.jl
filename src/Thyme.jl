@@ -19,12 +19,13 @@ require("Thyme/src/lead_lag.jl")
 
 export read_stock, equity_curve,
        moving, moving!, 
-       lead, lag, 
+       lead, lead!, lag, lag!, 
        @taste  
 
 const recipe = "read_stock"
 
 macro taste(ex::Symbol)
+  println("")
   reload(strcat("~/.julia/Thyme/test/", :($ex), ".jl"))
 end
 
