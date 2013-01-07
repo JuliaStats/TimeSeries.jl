@@ -6,12 +6,6 @@ using DataFrames
 using Calendar
 using UTF16
 
-macro smell(food)
- :($food ? 
- println("\33[32mfresh\033[0m ")  :
- println("\33[31mrotten\033[0m "))
-end
-
 df = read_stock("spx.csv");
 
 @smell typeof(df[1])           == DataArray{CalendarTime,1}
@@ -19,8 +13,6 @@ df = read_stock("spx.csv");
 @smell df[507,7]               == 102.09
 @smell df[507,7]               == 102.0
 @smell df[507,7]               == 102.09
-
-
 
 
 # @smell df[nrow(df),1] - df[1,1] == 728 FixedCalendarDuration
