@@ -1,4 +1,5 @@
-Low-level infrastructure code for getting data into a Julian data structure.
+Infrastructure code for getting data into a Julian data structure and
+making basic transformations of that data. 
 
 So far, there are six functions:
 
@@ -15,4 +16,5 @@ So far, there are six functions:
 * `lead!` and `lag!` functions.
 * `upto` and `upto!` functions.
 * `ret` and `ret!` functions.
+* `ema` function. (exponential moving average)
 * `rsi` and `rsi!` functions.
