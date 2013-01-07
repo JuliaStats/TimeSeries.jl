@@ -1,6 +1,6 @@
 Low-level infrastructure code for getting data into a Julian data structure.
 
-So far, there are only four functions inside three files:
+So far, there are six functions:
 
 `read_stock` that converts a csv file into a time series `DataFrame`    
 
@@ -13,3 +13,11 @@ So far, there are only four functions inside three files:
 `lead` that returns a modified `DataArray` with padded `NAs`.
 
 `lag` that returns a modified `DataArray` with padded `NAs`.
+
+
+#### TODO
+
+* `lead!` and `lag!` functions.
+* `upto` and `upto!` functions.
+* `ret` and `ret!` functions.
+* `rsi` and `rsi!` functions.
