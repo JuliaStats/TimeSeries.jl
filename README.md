@@ -10,3 +10,6 @@ So far, there are only four functions inside three files:
 
 `moving!` that returns a modified `DataFrame` with padded `NAs`.
 
+`lead` that returns a modified `DataArray` with padded `NAs`.
+
+`lag` that returns a modified `DataArray` with padded `NAs`.

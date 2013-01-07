@@ -15,9 +15,12 @@ import UTF16
 require("Thyme/src/read_stock.jl")
 require("Thyme/src/equity_curve.jl")
 require("Thyme/src/moving.jl")
+require("Thyme/src/lead_lag.jl")
 
 export read_stock, equity_curve,
        moving, moving!, 
+       lead, #lead!
+       lag,  #lag!
        @taste, recipe
 
 const recipe = "read_stock"
