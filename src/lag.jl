@@ -17,28 +17,14 @@ function leadn(x, n)
 end
 
 
-function lag3(x)
-  laggard = nas(DataVector[1.1], length(x)) 
-  [laggard[i] = x[i-1]  for i=2:length(x)]
-  laggard
-end
-
-function lagn(x, n)
-  laggard = nas(DataVector[n], length(x)) 
-  [laggard[i] = x[i-n]  for i=(n+1):length(x)]
-  laggard
-end
 
 
-
-
-
-function lag_int_float(x, n)
+function lead_array(x::Array, n::Int64)
   if typeof(x) == DataArray{Float64,1}
     laggard = nas(DataVector[1.], length(x)) 
   else
     laggard = nas(DataVector[1], length(x)) 
   end
-  [laggard[i] = x[i-n]  for i=(n+1):length(x)]
+  [laggard[i] = x[i+n]  for i=1:length(x)-n]
   laggard
 end
