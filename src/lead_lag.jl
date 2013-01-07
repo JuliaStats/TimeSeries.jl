@@ -1,3 +1,23 @@
+########## lead ########################
+
+function lead(dv::DataArray, n::Int64)
+  if typeof(dv) == DataArray{Float64,1}
+    leader = nas(DataVector[1.], length(dv)) 
+  else
+    leader = nas(DataVector[1], length(dv)) 
+  end
+  [leader[i] = dv[i+n]  for i=1:length(dv)-n]
+  leader
+end
+
+function lead!(df::DataFrame, col::ASCIIString, n::Int64)
+  new_col = strcat( string(col), "_lead_", string(n))
+  within!(df, quote
+         $new_col  = $lead($df[$col], $n)
+        end);
+end
+
+########## lag #########################
 
 function lag(x::DataArray, n::Int64)
   if typeof(x) == DataArray{Float64,1}
@@ -9,13 +29,9 @@ function lag(x::DataArray, n::Int64)
   laggard
 end
 
-
-function lead(x::DataArray, n::Int64)
-  if typeof(x) == DataArray{Float64,1}
-    leader = nas(DataVector[1.], length(x)) 
-  else
-    leader = nas(DataVector[1], length(x)) 
-  end
-  [leader[i] = x[i+n]  for i=1:length(x)-n]
-  leader
+function lag!(df::DataFrame, col::ASCIIString, n::Int64)
+  new_col = strcat( string(col), "_lag_", string(n))
+  within!(df, quote
+         $new_col  = $lag($df[$col], $n)
+        end);
 end
