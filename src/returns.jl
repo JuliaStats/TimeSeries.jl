@@ -2,10 +2,9 @@
 
 function log_return(dv::DataArray)
   ret = diff(log(dv))
-  padded_ret = [nas(DataVector[1.], 1) ; ret]
+  padded_ret = [0 ; ret]
   padded_ret
 end
-
 
 function log_return!(df::DataFrame, col::ASCIIString)
   new_col = strcat(string(col), "_ret")
