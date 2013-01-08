@@ -1,19 +1,12 @@
-require("DataFrames")
-require("Calendar")
-require("UTF16")
+require("DataFrames", "Calendar", "UTF16")
 
 module Thyme
 
-using DataFrames
-using Calendar
-using UTF16 
+using DataFrames, Calendar, UTF16 
 
-import DataFrames
-import Calendar 
-import UTF16
+import DataFrames, Calendar, UTF16
 
 require("Thyme/src/read_stock.jl")
-require("Thyme/src/equity_curve.jl")
 require("Thyme/src/moving.jl")
 require("Thyme/src/lead_lag.jl")
 require("Thyme/src/returns.jl")

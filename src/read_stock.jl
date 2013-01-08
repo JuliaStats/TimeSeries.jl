@@ -1,11 +1,10 @@
-function read_stock(x)
+function read_stock(csv::ASCIIString)
 
-stock_df = read_table(x);
-  time_coversion = map(x -> parse("yyyy-MM-dd", x), 
-           convert(Array{UTF16String},  
-                  vector(stock_df[:,1])))
-  within!(stock_df, quote
-         Date = $(time_coversion)
-         end);
-  flipud(stock_df)
+df = read_table(csv);
+time_conversion = map(x -> parse("yyyy-MM-dd", x), 
+                     convert(Array{UTF16String}, vector(df[:,1])))
+within!(df, quote
+        Date = $(time_conversion)
+        end);
+flipud(df)
 end
