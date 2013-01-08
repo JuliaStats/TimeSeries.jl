@@ -12,7 +12,7 @@ require("Thyme/src/lead_lag.jl")
 require("Thyme/src/returns.jl")
 require("Thyme/src/saute.jl")
 
-export read_stock, equity_curve,
+export read_stock,
        moving, moving!, 
        lead, lead!, lag, lag!, 
        log_return, log_return!, simple_return, simple_return!, equity, equity!, 
