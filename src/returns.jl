@@ -25,3 +25,16 @@ function simple_return!(df::DataFrame, col::ASCIIString)
          $new_col  = $simple_return($df[$col])
         end);
 end
+
+######## equity curve ########################
+
+function equity(dv::DataArray)
+  equity_curve = [ cumsum(dv) + 1];
+end
+
+function equity!(df::DataFrame, col::ASCIIString)
+  new_col = strcat(string(col), "_equity")
+  within!(df, quote
+         $new_col  = $equity($df[$col])
+        end);
+end
