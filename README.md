@@ -8,8 +8,8 @@ So far, there are handful of functions. The bang `!` version modifies a `DataFra
 * `lead` and `lead!` 
 * `simple_return` and `simple_return!` 
 * `log_return` and `log_return!` 
+* `equity` and `equity!` (currently only works with a `DataArray` of log returns)
 * `read_stock` that converts a csv file into a time series `DataFrame`    
-* `equity_curve` that returns the same-length `DataVector` by padding the first value with 1.0.
  
 
 #### TODO
