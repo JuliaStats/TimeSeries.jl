@@ -15,7 +15,9 @@ require("Thyme/src/saute.jl")
 export read_stock,
        moving, moving!, 
        lead, lead!, lag, lag!, 
-       log_return, log_return!, simple_return, simple_return!, equity, equity!, 
+       log_return, log_return!, 
+       simple_return, simple_return!, 
+       equity, equity!, 
        @taste, @smell 
 
 end 
