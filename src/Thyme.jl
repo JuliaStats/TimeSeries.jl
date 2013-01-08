@@ -6,11 +6,6 @@ using DataFrames, Calendar, UTF16
 
 import DataFrames, Calendar, UTF16
 
-require("Thyme/src/read_stock.jl")
-require("Thyme/src/moving.jl")
-require("Thyme/src/lead_lag.jl")
-require("Thyme/src/returns.jl")
-require("Thyme/src/saute.jl")
 
 export read_stock,
        moving, moving!, 
@@ -19,5 +14,11 @@ export read_stock,
        simple_return, simple_return!, 
        equity, equity!, 
        @taste, @smell 
+
+include(joinpath(julia_pkgdir(), "Thyme", "src", "read_stock.jl"))
+include(joinpath(julia_pkgdir(), "Thyme", "src", "moving.jl"))
+include(joinpath(julia_pkgdir(), "Thyme", "src", "lead_lag.jl"))
+include(joinpath(julia_pkgdir(), "Thyme", "src", "returns.jl"))
+include(joinpath(julia_pkgdir(), "Thyme", "src", "saute.jl"))
 
 end 
