@@ -1,10 +1,6 @@
-require("DataFrames")
-require("Calendar")
-require("UTF16")
+require("DataFrames", "Calendar", "UTF16")
 
-using DataFrames
-using Calendar
-using UTF16
+using DataFrames, Calendar, UTF16
 
 df = read_stock("spx.csv");
 
@@ -15,7 +11,6 @@ df = read_stock("spx.csv");
 @smell df[507,7]               == 102.09
 
 
-# @smell df[nrow(df),1] - df[1,1] == 728 FixedCalendarDuration
 
 
 
