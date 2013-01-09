@@ -29,7 +29,7 @@ end
 ######## equity curve ########################
 
 function equity(dv::DataArray)
-  equity_curve = [cumsum(diff(log(dv))) + 1];
+  equity_curve = [expm1(cumsum(diff(log(dv)))) + 1];
   padded_ec    = [nas(DataVector[1.], 1) ; equity_curve]
 end
 
