@@ -2,7 +2,7 @@ const recipe = "read_stock"
 
 macro taste(ex::Symbol)
   println("")
-  reload(strcat("~/.julia/Thyme/test/", :($ex), ".jl"))
+  reload(strcat(".julia/Thyme/test/", :($ex), ".jl"))
 end
 
 
