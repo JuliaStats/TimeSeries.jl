@@ -13,9 +13,3 @@ df = read_stock("test/data/spx.csv");
 @assert df[507,5]  == 102.09
 @assert df[507,6]  == 14040000
 @assert df[507,7]  == 102.09
-
-
-
-
-
-
