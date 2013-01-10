@@ -9,7 +9,10 @@ my_tests = ["test/returns.jl",
 println("\33[36mRunning tests: \033[0m")
 
 for my_test in my_tests
-    println("\33[35m** \033[0m $(my_test)") 
+    print("\33[35m** \033[0m ")
+    print_with_color("$my_test", :blue) 
+    println("")
+#    println("\33[35m** \033[0m $(my_test)") 
 #    println(" * $(my_test)")
     include(my_test)
 end
