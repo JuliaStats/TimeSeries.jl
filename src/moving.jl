@@ -22,10 +22,12 @@ end
  
 #################### exponential #################################
 
+function sma(x,n)
+  [mean(x[i:i+(n-1)]) for i=1:length(x)-(n-1)]
+end
 
-function ema(dv::DataArray, n:int64)
+function ema(dv::DataArray, n::int64)
   k = 2/(n+1)
-  
   m = sma(x, n) 
 
   if n == 1
