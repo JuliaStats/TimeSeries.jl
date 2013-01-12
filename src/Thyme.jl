@@ -1,14 +1,13 @@
-require("DataFrames", "Calendar", "UTF16")
-
 module Thyme
 
 using DataFrames, Calendar, UTF16 
 
 import DataFrames, Calendar, UTF16
 
-
 export read_stock,
        moving, moving!, 
+       #exp_moving, exp_moving!, 
+       ema, sma, 
        lead, lead!, lag, lag!, 
        log_return, log_return!, 
        simple_return, simple_return!, 

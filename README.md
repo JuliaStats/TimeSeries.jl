@@ -21,7 +21,6 @@ So far, there are handful of functions. The bang `!` version modifies a `DataFra
 
 
 ````julia
-
 julia> using Thyme
 
 julia> spx = read_stock("spx.csv");

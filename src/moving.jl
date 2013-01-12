@@ -1,3 +1,4 @@
+# moving is a simple moving window that weights all elements equally
 # moving returns only the padded result
 # moving! modifies the DataFrame in place
 
@@ -18,3 +19,23 @@ function moving!(df::DataFrame, col::ASCIIString, f::Function, n::Int64)
          $new_col  = $mvg($df[$col], $f, $n)
         end);
 end
+ 
+#################### exponential #################################
+
+function sma(x,n)
+  [mean(x[i:i+(n-1)]) for i=1:length(x)-(n-1)]
+end
+
+function ema(dv::DataArray, n::Int64)
+  k = 2/(n+1)
+  m = sma(dv, n) 
+
+  if n == 1
+    [dv[i] = dv[i] for i=1:length(dv)]
+  else
+    dv[n] = m[1] 
+    [dv[i] = dv[i]*k + dv[i-1]*(1-k) for i=(n+1):length(dv)]
+  end
+  dv[n:length(dv)]
+end
+
