@@ -19,10 +19,8 @@ So far, there are handful of functions. The bang `!` version modifies a `DataFra
 
 #### Demonstration
 
-note: `Thyme` is not yet available in the Julia package management system
 
 ````julia
-julia> require("Thyme.jl")
 
 julia> using Thyme
 
