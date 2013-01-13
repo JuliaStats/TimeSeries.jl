@@ -16,7 +16,7 @@ export read_stock,
        equity, equity!, 
        upto, upto!, 
 #      @taste, @smell,
-       @testl,
+       @testit
 
 include(joinpath(julia_pkgdir(), "Thyme", "src", "read_stock.jl"))
 include(joinpath(julia_pkgdir(), "Thyme", "src", "moving.jl"))

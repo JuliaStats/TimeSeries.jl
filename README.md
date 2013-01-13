@@ -4,18 +4,15 @@ making basic transformations of that data.
 So far, there are handful of functions. The bang `!` version modifies a `DataFrame` with a new column. 
 
 * `moving` and `moving!` 
+* `upto` and `upto!` 
 * `lag` and `lag!` 
 * `lead` and `lead!` 
 * `simple_return` and `simple_return!` 
 * `log_return` and `log_return!` 
 * `equity` and `equity!` (works on prices) 
 * `read_stock` that converts a csv file into a time series `DataFrame`    
+* `ema`  (exponential moving average)
  
-
-#### TODO
-
-* `upto` and `upto!` functions.
-* `ema` function. (exponential moving average)
 
 #### Demonstration
 
