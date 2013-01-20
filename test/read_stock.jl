@@ -1,6 +1,6 @@
 df = read_stock("test/data/spx.csv");
 
-# @assert typeof(df[1])           == DataArray{CalendarTime,1}
+@assert isa(df[:,1], DataArray{CalendarTime,1}) == true
 @assert df[1,2]    == 92.06
 @assert df[1,3]    == 93.54
 @assert df[1,4]    == 91.79
