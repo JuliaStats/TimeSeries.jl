@@ -1,6 +1,10 @@
 ########## lead ########################
 
-function lead(dv::DataArray, n::Int64)
+function lead{T<:Union(Real, String)}(v::Array{T, 1}, n::Integer)
+  [v[i] = v[i+n]  for i=1:length(v)-n]
+end
+
+function lead{T<:Union(Real, String)}(dv::DataArray{T, 1}, n::Integer)
   if typeof(dv) == DataArray{Float64,1}
     leader = nas(DataVector[1.], length(dv)) 
   else
@@ -10,7 +14,7 @@ function lead(dv::DataArray, n::Int64)
   leader
 end
 
-function lead!(df::DataFrame, col::ASCIIString, n::Int64)
+function lead!(df::DataFrame, col::ASCIIString, n::Integer)
   new_col = strcat( string(col), "_lead_", string(n))
   within!(df, quote
          $new_col  = $lead($df[$col], $n)
