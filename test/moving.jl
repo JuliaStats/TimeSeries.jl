@@ -1,12 +1,12 @@
-df = read_stock("test/data/spx.csv");
+df = read_stock(Pkg.dir("Thyme", "test", "data", "spx.csv"))
 
-moving!(df, "Close", mean, 50);
-moving!(df, "Close", mean, 200);
-moving!(df, "Close", var, 50);
-moving!(df, "Close", skewness, 50);
-moving!(df, "Close", kurtosis, 50);
-moving!(df, "Close", min, 50);
-moving!(df, "Close", max, 50);
+moving!(df, "Close", mean, 50)
+moving!(df, "Close", mean, 200)
+moving!(df, "Close", var, 50)
+moving!(df, "Close", skewness, 50)
+moving!(df, "Close", kurtosis, 50)
+moving!(df, "Close", min, 50)
+moving!(df, "Close", max, 50)
 
 @assert df[507,8]   == 95.8616             # 95.8616    in R's zoo::rollapply and mean
 @assert df[507,9]   == 98.84799999999997   # 98.8480    in R's zoo::rollapply and mean

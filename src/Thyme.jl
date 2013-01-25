@@ -16,14 +16,14 @@ export read_stock,
        equity, equity!, 
        upto, upto!, 
 #      @taste, @smell,
-       @testit
+       @testthyme
 
-include(joinpath(julia_pkgdir(), "Thyme", "src", "read_stock.jl"))
-include(joinpath(julia_pkgdir(), "Thyme", "src", "moving.jl"))
-include(joinpath(julia_pkgdir(), "Thyme", "src", "lead_lag.jl"))
-include(joinpath(julia_pkgdir(), "Thyme", "src", "returns.jl"))
-include(joinpath(julia_pkgdir(), "Thyme", "src", "upto.jl"))
-include(joinpath(julia_pkgdir(), "Thyme", "src", "testit.jl"))
-#include(joinpath(julia_pkgdir(), "Thyme", "src", "saute.jl"))
+include("read_stock.jl")
+include("moving.jl")
+include("lead_lag.jl")
+include("returns.jl")
+include("upto.jl")
+include("testthyme.jl")
+#include("saute.jl")
 
 end 

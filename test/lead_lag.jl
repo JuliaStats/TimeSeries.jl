@@ -1,4 +1,4 @@
-df = read_stock("test/data/spx.csv");
+df = read_stock(Pkg.dir("Thyme", "test", "data", "spx.csv"))
 
 lead!(df, "Close", 1);
 lead!(df, "Close", 3);

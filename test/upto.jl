@@ -1,4 +1,4 @@
-df = read_stock("test/data/spx.csv");
+df = read_stock(Pkg.dir("Thyme", "test", "data", "spx.csv"))
 
 upto!(df, "Close", mean);
 upto!(df, "Close", var);
