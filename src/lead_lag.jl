@@ -22,6 +22,7 @@ function lead!(df::DataFrame, col::ASCIIString, n::Integer)
 end
 
 lead(dv) = lead(dv, 1)
+lead!(df, col) = lead!(df, col, 1)
 
 ########## lag #########################
 
@@ -47,3 +48,4 @@ function lag!(df::DataFrame, col::ASCIIString, n::Int64)
 end
 
 lag(dv) = lag(dv, 1)
+lag!(df, col) = lag!(df, col, 1)

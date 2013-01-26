@@ -1,17 +1,29 @@
 ######## Array ############################
 
-v      = rand(100)
-vead   = lead(v, 1)
-w      = rand(100)
-wag    = lag(w, 1)
+v      = [1,2,3,4,5]
+vlead  = lead(v)
+vlag   = lag(v)
 
-@assert v[2] == vead[1]
-@assert 99 == length(vead)
+@assert [2,3,4,5] == vlead 
+@assert [1,2,3,4] == vlag 
 
-@assert w[1] == wag[1]
-@assert 99 == length(wag)
+@assert 4 == length(vlead)
+@assert 4 == length(vlag)
 
 ######## DataArray ######################
+
+dv = DataArray([1,2,3,4,5]) 
+
+dvlead  = lead(dv ,2)
+dvlag   = lag(dv ,2)
+
+#@assert [3,4,5,NA,NA] == dvlead 
+#@assert [NA,NA,1,2,3] == dvlag 
+
+@assert 5 == length(dvlead)
+@assert 5 == length(dvlag)
+
+######## DataFrame ######################
 
 df = read_stock(Pkg.dir("Thyme", "test", "data", "spx.csv"))
 
