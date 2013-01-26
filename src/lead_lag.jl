@@ -1,15 +1,6 @@
 ########## lead ########################
 
-function leads(v,n)
-  w = v[n+1:end]
-end
-
-function lags(v,n)
-  w = v[1:length(v)-n]
-end
-
 function lead{T<:Union(Real, String)}(v::Array{T, 1}, n::Integer)
-  #lead_v = [v[i] = v[i+n]  for i=1:length(v)-n]
   w = v[n+1:end]
 end
 
@@ -30,12 +21,11 @@ function lead!(df::DataFrame, col::ASCIIString, n::Integer)
         end);
 end
 
-#function lead{T<:Union(Real, String)}(dv::DataArray{T, 1}, 1) = function lead{T<:Union(Real, String)}(dv::DataArray{T, 1}, n::Integer)
+lead(dv) = lead(dv, 1)
 
 ########## lag #########################
 
 function lag{T<:Union(Real, String)}(v::Array{T, 1}, n::Integer)
-  #[v[1] = v[i-n]  for i=(n+1):length(v)]
   w = v[1:length(v)-n]
 end
 
@@ -55,3 +45,5 @@ function lag!(df::DataFrame, col::ASCIIString, n::Int64)
          $new_col  = $lag($df[$col], $n)
         end);
 end
+
+lag(dv) = lag(dv, 1)
