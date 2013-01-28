@@ -1,10 +1,8 @@
-# moving is a simple moving window that weights all elements equally
-# moving returns only the padded result
-# moving! modifies the DataFrame in place
+# moving is a simple moving window that weighs all elements equally
 
 function mvg(x::DataArray,f::Function,n::Int64)
   foo = [f(x[i:i+(n-1)]) for i=1:length(x)-(n-1)]
-  bar = [nas(DataVector[float(n)], n-1) ; float(foo)]
+  bar = [NApad(n-1) ; foo]
 end
 
 function moving(df::DataFrame, col::ASCIIString, f::Function, n::Int64)

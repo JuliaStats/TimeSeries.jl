@@ -16,7 +16,12 @@ export read_stock,
        equity, equity!, 
        upto, upto!, 
 #      @taste, @smell,
-       @testthyme
+       @testthyme, 
+       NApad
+
+function NApad(n::Integer)
+  fill(NA, n)
+end
 
 include("read_stock.jl")
 include("moving.jl")

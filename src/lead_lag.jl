@@ -12,6 +12,7 @@ function lead{T<:Union(Real, String)}(dv::DataArray{T, 1}, n::Integer)
   end
   [leader[i] = dv[i+n]  for i=1:length(dv)-n]
   leader
+#  [ dv[n+1:end]; NApad(n)]
 end
 
 function lead!(df::DataFrame, col::ASCIIString, n::Integer)
