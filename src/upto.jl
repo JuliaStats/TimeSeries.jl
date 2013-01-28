@@ -1,6 +1,6 @@
 
 function tothis(x::DataArray,f::Function)
-  foo = [f(x[1:i]) for i=1:length(x)]
+  [f(x[1:i]) for i=1:length(x)]
 end
 
 function upto(df::DataFrame, col::ASCIIString, f::Function)

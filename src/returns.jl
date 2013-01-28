@@ -2,8 +2,7 @@
 
 function log_return(dv::DataArray)
   ret = diff(log(dv))
-  padded_ret = [0 ; ret]
-  padded_ret
+  [0 ; ret]
 end
 
 function log_return!(df::DataFrame, col::ASCIIString)
@@ -16,7 +15,7 @@ end
 ######## simple ##############################
 
 function simple_return(dv::DataArray)
-  padded_RET = expm1(log_return(dv)) 
+  expm1(log_return(dv)) 
 end
 
 function simple_return!(df::DataFrame, col::ASCIIString)

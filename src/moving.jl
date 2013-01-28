@@ -1,8 +1,16 @@
 # moving is a simple moving window that weighs all elements equally
 
-function mvg(x::DataArray,f::Function,n::Integer)
-  padNA([f(x[i:i+(n-1)]) for i=1:length(x)-(n-1)], n, 0)
+#function mvg(x::DataArray,f::Function,n::Integer)
+#  padNA([f(x[i:i+(n-1)]) for i=1:length(x)-(n-1)], n, 0)
+#end
+
+function mvg(x::DataArray,f::Function,n::Int64)
+  foo = [f(x[i:i+(n-1)]) for i=1:length(x)-(n-1)]
+  bar = [NApad(n-1) ; foo]
 end
+
+
+
 
 function moving(df::DataFrame, col::ASCIIString, f::Function, n::Integer)
   with(df, quote
