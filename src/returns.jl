@@ -29,8 +29,7 @@ end
 ######## equity curve ########################
 
 function equity(dv::DataArray)
-  equity_curve = [expm1(cumsum(diff(log(dv)))) + 1];
-  padded_ec    = [NApad(1) ; equity_curve]
+  padNA([expm1(cumsum(diff(log(dv)))) + 1], 1, 0)
 end
 
 function equity!(df::DataFrame, col::ASCIIString)
