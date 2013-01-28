@@ -1,18 +1,11 @@
 ########## lead ########################
 
-function lead{T<:Union(Real, String)}(v::Array{T, 1}, n::Integer)
-  w = v[n+1:end]
+function lead{T<:Union(Real, String)}(v::Array{T}, n::Integer)
+  v[n+1:end]
 end
 
-function lead{T<:Union(Real, String)}(dv::DataArray{T, 1}, n::Integer)
-  if typeof(dv) == DataArray{Float64,1}
-    leader = nas(DataVector[1.], length(dv)) 
-  else
-    leader = nas(DataVector[1], length(dv)) 
-  end
-  [leader[i] = dv[i+n]  for i=1:length(dv)-n]
-  leader
-#  [ dv[n+1:end]; NApad(n)]
+function lead{T<:Union(Real, String)}(dv::DataArray{T}, n::Integer)
+  padNA(dv[n+1:end], 0, n)
 end
 
 function lead!(df::DataFrame, col::ASCIIString, n::Integer)
@@ -27,18 +20,12 @@ lead!(df, col) = lead!(df, col, 1)
 
 ########## lag #########################
 
-function lag{T<:Union(Real, String)}(v::Array{T, 1}, n::Integer)
-  w = v[1:length(v)-n]
+function lag{T<:Union(Real, String)}(v::Array{T}, n::Integer)
+  v[1:length(v)-n]
 end
 
-function lag{T<:Union(Real, String)}(dv::DataArray{T, 1}, n::Integer)
-  if typeof(dv) == DataArray{Float64,1}
-    laggard = nas(DataVector[1.], length(dv)) 
-  else
-    laggard = nas(DataVector[1], length(dv)) 
-  end
-  [laggard[i] = dv[i-n]  for i=(n+1):length(dv)]
-  laggard
+function lag{T<:Union(Real, String)}(dv::DataArray{T}, n::Integer)
+  padNA( dv[1:length(dv)-n], n, 0)
 end
 
 function lag!(df::DataFrame, col::ASCIIString, n::Int64)
