@@ -1,32 +1,45 @@
-# moving is a simple moving window that weighs all elements equally
+######################## working #########
 
-###       function moving{T<:Real}(dv::DataArray{T}, f::Function, n::Integer)
-###         convert(DataArray{T}, padNA([f(dv[i:i+(n-1)] for i=1:length(dv)-(n-1)]), n-1, 0))
-###       end
-
-function moving(dv::DataArray, f::Function, n::Integer)
-  padNA(f([dv[i:i+(n-1)] for i=1:length(dv)-(n-1)]), n-1, 0)
-  #padNA((f(dv[i:i+(n-1)]) for i=1:length(dv)-(n-1)]), n-1, 0)
-end
-
-# function moving_sim(dv::DataArray, n::Integer)
-#   padNA(mean([dv[i:i+(n-1)] for i=1:length(dv)-(n-1)]), n-1, 0)
-# end
-
-# function moving_sim(dv::DataArray, n::Integer)
-#   padNA(mean([dv[i:i+(n-1)] for i=1:length(dv)-(n-1)]), n-1, 0)
-# end
+####### Array version
 
 function moving{T<:Real}(v::Array{T}, f::Function, n::Integer)
   convert(Array{T}, [f(v[i:i+(n-1)]) for i=1:length(v)-(n-1)])
 end
 
-function moving!(df::DataFrame, col::String, f::Function, n::Integer)
+######### DataArray version
+
+function moving(df::DataFrame, col::String, f::Function, n::Int64)
+  with(df, quote
+       $mvg($df[$col], $f, $n)
+       end)
+end
+
+############ DataFrames bang version 
+
+function mvg(x::DataArray,f::Function,n::Int64)
+  foo = [f(x[i:i+(n-1)]) for i=1:length(x)-(n-1)]
+  bar = [nas(DataVector[float(n)], n-1) ; float(foo)]
+end
+
+function moving!(df::DataFrame, col::String, f::Function, n::Int64)
   new_col = strcat(string(f), "_", string(n))
   within!(df, quote
-           $new_col  = $moving($df[$col], $f, $n)
-           end)
+          $new_col  = $mvg($df[$col], $f, $n)
+          end)
 end
+
+################## not working refactor attempts ###########
+
+######### function moving(dv::DataArray, f::Function, n::Integer)
+#########   padNA(f([dv[i:i+(n-1)] for i=1:length(dv)-(n-1)]), n-1, 0)
+######### end
+
+### function moving!(df::DataFrame, col::String, f::Function, n::Integer)
+###   new_col = strcat(string(f), "_", string(n))
+###   within!(df, quote
+###            $new_col  = $moving($df[$col], $f, $n)
+###            end)
+### end
  
 #################### exponential #################################
 
