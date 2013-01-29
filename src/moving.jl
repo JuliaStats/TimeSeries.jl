@@ -8,22 +8,12 @@ function moving(v::Array, f::Function, n::Integer)
   [f(v[i:i+(n-1)]) for i=1:length(v)-(n-1)]
 end
 
-function mvg(x::DataArray,f::Function,n::Integer)
-  padNA(DataArray([f(x[i:i+(n-1)]) for i=1:length(x)-(n-1)]), n-1, 0)
-end
-
-function moving!(df::DataFrame, col::ASCIIString, f::Function, n::Integer)
+function moving!(df::DataFrame, col::String, f::Function, n::Integer)
   new_col = strcat(string(f), "_", string(n))
   within!(df, quote
-           $new_col  = $mvg($df[$col], $f, $n)
+           $new_col  = $moving($df[$col], $f, $n)
            end)
 end
-#          function moving!(df::DataFrame, col::String, f::Function, n::Integer)
-#            new_col = strcat(string(f), "_", string(n))
-#            within!(df, quote
-#                   $new_col  = $mvg($df[$col], $f, $n)
-#                  end);
-#          end
  
 #################### exponential #################################
 
