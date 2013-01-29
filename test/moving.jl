@@ -1,3 +1,52 @@
+######## Array ############################
+
+vi      = [1,2,3,4,5]
+vf      = [1.,2,3,4,5]
+
+vi_move   = moving(vi, sum, 2)
+vf_move   = moving(vf, 3)
+
+vi_move   = lag(vi)
+vf_move   = lag(vf, 2)
+
+@assert [2,3,4,5]      == vi_move 
+@assert [3.0,4.0,5.0]  == vf_move
+
+@assert [1,2,3,4]       == vi_move
+@assert [1.0, 2.0, 3.0] == vf_move
+
+
+@assert 4 == length(vi_move)
+@assert 3 == length(vf_move)
+
+######## DataArray ######################
+
+dvi = DataArray([1,2,3,4,5]) 
+dvf = DataArray([1.,2,3,4,5]) 
+dvb = DataArray([true, true, true, true, false]) 
+dvs = DataArray(["a", "b", "c", "d", "e"]) 
+
+dvi_lead  = lead(dv)
+dvf_lead  = lead(dv,2)
+dvb_lead  = lead(dv,3)
+dvs_lead  = lead(dv,4)
+
+dvi_lag = lag(dv)
+dvf_lag = lag(dv,2)
+dvb_lag = lag(dv,3)
+dvs_lag = lag(dv,4)
+
+@assert 5 == length(dvi_lead)
+@assert 5 == length(dvf_lead)
+@assert 5 == length(dvb_lead)
+@assert 5 == length(dvs_lead)
+
+@assert 5 == length(dvi_lag)
+@assert 5 == length(dvf_lag)
+@assert 5 == length(dvb_lag)
+@assert 5 == length(dvs_lag)
+
+######## DataFrame ######################
 df = read_stock(Pkg.dir("Thyme", "test", "data", "spx.csv"))
 
 moving!(df, "Close", mean, 50)
