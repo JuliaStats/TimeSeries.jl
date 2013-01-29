@@ -17,7 +17,8 @@ export read_stock,
        upto, upto!, 
 #      @taste, @smell,
        @testthyme,
-       mvg
+       mvg, 
+       NApad
 
 function NApad(n::Integer)
   fill(NA, n)

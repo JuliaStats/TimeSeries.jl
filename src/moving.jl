@@ -4,9 +4,18 @@
 ###         convert(DataArray{T}, padNA([f(dv[i:i+(n-1)] for i=1:length(dv)-(n-1)]), n-1, 0))
 ###       end
 
-function moving{T<:Real}(dv::DataArray{T}, f::Function, n::Integer)
-  padNA(DataArray([f(dv[i:i+(n-1)]) for i=1:length(dv)-(n-1)]), n-1, 0)
+function moving(dv::DataArray, f::Function, n::Integer)
+  padNA(f([dv[i:i+(n-1)] for i=1:length(dv)-(n-1)]), n-1, 0)
+  #padNA((f(dv[i:i+(n-1)]) for i=1:length(dv)-(n-1)]), n-1, 0)
 end
+
+# function moving_sim(dv::DataArray, n::Integer)
+#   padNA(mean([dv[i:i+(n-1)] for i=1:length(dv)-(n-1)]), n-1, 0)
+# end
+
+# function moving_sim(dv::DataArray, n::Integer)
+#   padNA(mean([dv[i:i+(n-1)] for i=1:length(dv)-(n-1)]), n-1, 0)
+# end
 
 function moving{T<:Real}(v::Array{T}, f::Function, n::Integer)
   convert(Array{T}, [f(v[i:i+(n-1)]) for i=1:length(v)-(n-1)])
