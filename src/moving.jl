@@ -1,29 +1,29 @@
 # moving is a simple moving window that weighs all elements equally
 
-function mvg(x::DataArray,f::Function,n::Integer)
-  padNA(DataArray([f(x[i:i+(n-1)]) for i=1:length(x)-(n-1)]), n-1, 0)
+function moving(dv::DataArray,f::Function,n::Integer)
+  padNA(DataArray([f(dv[i:i+(n-1)]) for i=1:length(dv)-(n-1)]), n-1, 0)
 end
 
-#function mvg(x::DataArray,f::Function,n::Int64)
-#  foo = [f(x[i:i+(n-1)]) for i=1:length(x)-(n-1)]
-#  bar = [NApad(n-1) ; foo]
-#end
+function moving(v::Array, f::Function, n::Integer)
+  [f(v[i:i+(n-1)]) for i=1:length(v)-(n-1)]
+end
 
-
-
-
-function moving(df::DataFrame, col::ASCIIString, f::Function, n::Integer)
-  with(df, quote
-       $mvg($df[$col], $f, $n)
-       end);
+function mvg(x::DataArray,f::Function,n::Integer)
+  padNA(DataArray([f(x[i:i+(n-1)]) for i=1:length(x)-(n-1)]), n-1, 0)
 end
 
 function moving!(df::DataFrame, col::ASCIIString, f::Function, n::Integer)
   new_col = strcat(string(f), "_", string(n))
   within!(df, quote
-         $new_col  = $mvg($df[$col], $f, $n)
-        end);
+           $new_col  = $mvg($df[$col], $f, $n)
+           end)
 end
+#          function moving!(df::DataFrame, col::String, f::Function, n::Integer)
+#            new_col = strcat(string(f), "_", string(n))
+#            within!(df, quote
+#                   $new_col  = $mvg($df[$col], $f, $n)
+#                  end);
+#          end
  
 #################### exponential #################################
 
