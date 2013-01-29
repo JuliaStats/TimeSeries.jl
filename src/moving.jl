@@ -5,7 +5,8 @@
 ###       end
 
 function moving(dv::DataArray, f::Function, n::Integer)
-  padNA(f([dv[i:i+(n-1)] for i=1:length(dv)-(n-1)]), n-1, 0)
+  padNA(DataArray([f(dv[i:i+(n-1)]) for i=1:length(dv)-(n-1)]), n-1, 0)
+
   #padNA((f(dv[i:i+(n-1)]) for i=1:length(dv)-(n-1)]), n-1, 0)
 end
 
@@ -24,7 +25,7 @@ end
 function moving!(df::DataFrame, col::String, f::Function, n::Integer)
   new_col = strcat(string(f), "_", string(n))
   within!(df, quote
-           $new_col  = $moving($df[$col], $f, $n)
+           $new_col  = 1 #$moving($df[$col], $f, $n)
            end)
 end
  
