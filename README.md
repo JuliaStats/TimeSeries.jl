@@ -1,4 +1,4 @@
-A toolkit of Julia functions for comman time series transformations including:
+A toolkit of Julia functions for common time series transformations including:
 lagging data, calculating moving values, calculating returns (both simple and log), 
 and downloading financial time series from Yahoo.
  
@@ -38,6 +38,7 @@ If you're interested in running the test suite, you can call the `@testthyme` ma
 
 ````julia
 julia> @testthyme
+
 Running tests: 
 **   test/returns.jl
 **   test/lag.jl
