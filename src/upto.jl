@@ -1,18 +1,18 @@
 
-function tothis(x::DataArray,f::Function)
-  [f(x[1:i]) for i=1:length(x)]
+function tothis(dv::DataArray, f::Function)
+  [f(dv[1:i]) for i=1:length(dv)]
 end
 
-function upto(df::DataFrame, col::ASCIIString, f::Function)
+function upto(df::DataFrame, col::String, f::Function)
   with(df, quote
        $tothis($df[$col], $f)
-       end);
+       end)
 end
 
-function upto!(df::DataFrame, col::ASCIIString, f::Function)
-  newcol = strcat(string(f), "_upto")
+function upto!(df::DataFrame, col::String, f::Function)
+  new_col = strcat(string(f), "_upto")
   within!(df, quote
-         $newcol  = $tothis($df[$col], $f)
-        end);
+         $new_col  = $tothis($df[$col], $f)
+         end)
 end
  
