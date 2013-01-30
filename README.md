@@ -1,47 +1,47 @@
-Infrastructure code for getting data into a Julian data structure and
-making basic transformations of that data. 
-
-So far, there are handful of functions. The bang `!` version modifies a `DataFrame` with a new column. 
-
-* `moving` 
-* `upto` 
-* `lag` and `lead` 
-* `simple_return`, `log_return`, `equity` 
-* `read_stock` that converts a csv file into a time series `DataFrame`    
+A toolkit of Julia functions for comman time series transformations including:
+lagging data, calculating moving values, calculating returns (both simple and log), 
+and downloading financial time series from Yahoo.
  
-
 #### Demonstration
-
 
 ````julia
 julia> using Thyme
 
-julia> spx = read_stock("spx.csv");
+julia> AAPL = read_yahoo("AAPL");
 
-julia> head(spx, 3)
-3x7 DataFrame:
-              Date  Open  High   Low Close   Volume Adj Close
-[1,]    1970-01-02 92.06 93.54 91.79  93.0  8050000      93.0
-[2,]    1970-01-05  93.0 94.25 92.53 93.46 11490000     93.46
-[3,]    1970-01-06 93.46 93.81 92.13 92.82 11460000     92.82
+julia> tail(AAPL, 3)
+3x10 DataFrame:
+              Date   Open   High    Low  Close      Vol    Adj    Adj_RET Adj_equity skewness_30
+[1,]    2013-01-25 451.69 456.23  435.0 439.88 43143800 439.88 -0.0235738    146.627    -1.68528
+[2,]    2013-01-28 437.83 453.21 435.86 449.83 28054200 449.83  0.0226198    149.943    -1.50955
+[3,]    2013-01-29  458.5  460.2 452.12 458.27 20374400 458.27  0.0187626    152.757    -1.27737
 ````
-And to add a simple moving average ... 
+
+Include simple returns, an equity curve and a moving skewness over 30 periods.
 
 ````julia
-julia> moving!(spx, "Adj Close", mean, 2);
+julia> simple_return!(AAPL, "Adj");
 
-julia> head(spx)
-6x8 DataFrame:
-              Date  Open  High   Low Close   Volume Adj Close mean_2
-[1,]    1970-01-02 92.06 93.54 91.79  93.0  8050000      93.0     NA
-[2,]    1970-01-05  93.0 94.25 92.53 93.46 11490000     93.46  93.23
-[3,]    1970-01-06 93.46 93.81 92.13 92.82 11460000     92.82  93.14
-[4,]    1970-01-07 92.82 93.38 91.93 92.63 10010000     92.63 92.725
-[5,]    1970-01-08 92.63 93.47 91.99 92.68 10670000     92.68 92.655
-[6,]    1970-01-09 92.68 93.25 91.82  92.4  9380000      92.4  92.54
+julia> equity!(AAPL, "Adj");
 
+julia> moving!(AAPL, "Adj", skewness, 30);
+
+julia> tail(AAPL, 3)
+3x10 DataFrame:
+              Date   Open   High    Low  Close      Vol    Adj    Adj_RET Adj_equity skewness_30
+[1,]    2013-01-25 451.69 456.23  435.0 439.88 43143800 439.88 -0.0235738    146.627    -1.68528
+[2,]    2013-01-28 437.83 453.21 435.86 449.83 28054200 449.83  0.0226198    149.943    -1.50955
+[3,]    2013-01-29  458.5  460.2 452.12 458.27 20374400 458.27  0.0187626    152.757    -1.27737
 ````
 
-#### TODO
+If you're interested in running the test suite, you can call the `@testthyme` macro inside a Julia session.
 
-* finish up multiple dispatch for `Array` and `DataArray`
+````julia
+julia> @testthyme
+Running tests: 
+**   test/returns.jl
+**   test/lag.jl
+**   test/moving.jl
+**   test/upto.jl
+**   test/read.jl
+````
