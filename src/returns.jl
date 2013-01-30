@@ -9,7 +9,7 @@ function log_return!(df::DataFrame, col::String)
   new_col = strcat(string(col), "_ret")
   within!(df, quote
          $new_col  = $log_return($df[$col])
-        end);
+        end)
 end
 
 ######## simple ##############################
@@ -22,7 +22,7 @@ function simple_return!(df::DataFrame, col::String)
   new_col = strcat(string(col), "_RET")
   within!(df, quote
          $new_col  = $simple_return($df[$col])
-        end);
+        end)
 end
 
 ######## equity curve ########################
@@ -35,5 +35,5 @@ function equity!(df::DataFrame, col::String)
   new_col = strcat(string(col), "_equity")
   within!(df, quote
           $new_col  = $equity($df[$col])
-          end);
+          end)
 end
