@@ -5,7 +5,7 @@ function log_return(dv::DataArray)
   [0 ; ret]
 end
 
-function log_return!(df::DataFrame, col::ASCIIString)
+function log_return!(df::DataFrame, col::String)
   new_col = strcat(string(col), "_ret")
   within!(df, quote
          $new_col  = $log_return($df[$col])
@@ -18,7 +18,7 @@ function simple_return(dv::DataArray)
   expm1(log_return(dv)) 
 end
 
-function simple_return!(df::DataFrame, col::ASCIIString)
+function simple_return!(df::DataFrame, col::String)
   new_col = strcat(string(col), "_RET")
   within!(df, quote
          $new_col  = $simple_return($df[$col])
@@ -31,7 +31,7 @@ function equity(dv::DataArray)
   padNA([expm1(cumsum(diff(log(dv)))) + 1], 1, 0)
 end
 
-function equity!(df::DataFrame, col::ASCIIString)
+function equity!(df::DataFrame, col::String)
   new_col = strcat(string(col), "_equity")
   within!(df, quote
           $new_col  = $equity($df[$col])
