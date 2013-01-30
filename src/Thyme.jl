@@ -26,7 +26,7 @@ end
 
 include("read_stock.jl")
 include("moving.jl")
-include("lead_lag.jl")
+include("lag.jl")
 include("returns.jl")
 include("upto.jl")
 include("testthyme.jl")

@@ -21,11 +21,19 @@ lead!(df, col) = lead!(df, col, 1)
 ########## lag #########################
 
 function lag(v::Array, n::Integer)
-  v[1:length(v)-n]
+  if n < 0
+    lead(v, abs(n))
+  else
+    v[1:length(v)-n]
+  end
 end
 
 function lag(dv::DataArray, n::Integer)
-  padNA( dv[1:length(dv)-n], n, 0)
+  if n < 0
+    lead(dv, abs(n))
+  else
+    padNA( dv[1:length(dv)-n], n, 0)
+  end
 end
 
 function lag!(df::DataFrame, col::String, n::Integer)

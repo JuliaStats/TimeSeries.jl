@@ -3,7 +3,7 @@ require("test.jl")
 using Thyme
 
 my_tests = ["test/returns.jl",
-            "test/lead_lag.jl",
+            "test/lag.jl",
             "test/moving.jl",
             "test/upto.jl",
             "test/read_stock.jl"]

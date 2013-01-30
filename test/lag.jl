@@ -36,6 +36,8 @@ vs_lag   = lag(vs, 4)
 @assert 2 == length(vb_lag)
 @assert 1 == length(vs_lag)
 
+@assert lag(vi, -1) == lead(vi)
+
 ######## DataArray ######################
 
 dvi = DataArray([1,2,3,4,5]) 
@@ -62,6 +64,8 @@ dvs_lag = lag(dvs,4)
 @assert 5 == length(dvf_lag)
 @assert 5 == length(dvb_lag)
 @assert 5 == length(dvs_lag)
+
+@assert (lag(dvi, -1) .== lead(dvi))[1] == true
 
 ######## DataFrame ######################
 
