@@ -1,9 +1,16 @@
 ####### Array dispatch
 
-function moving{T<:Real}(v::Array{T}, f::Function, n::Integer)
-  convert(Array{T}, [f(v[i:i+(n-1)]) for i=1:length(v)-(n-1)])
+function moving(v::Array, f::Function, n::Integer)
+  res = ones(length(v)-(n-1))
+  for i=1:length(v)-(n-1)
+    res[i] =  f(v[i:i+(n-1)]) 
+  end
+  res
 end
 
+# function moving{T<:Real}(v::Array{T}, f::Function, n::Integer)
+#   convert(Array{T}, [f(v[i:i+(n-1)]) for i=1:length(v)-(n-1)])
+# end
 ######### DataArray dispatch  
 
 function moving(dv::DataArray, f::Function, n::Integer)
