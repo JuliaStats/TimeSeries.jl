@@ -1,18 +1,18 @@
 ########## lead ########################
 
-function lead{T<:Union(Real, String)}(v::Array{T}, n::Integer)
+function lead(v::Array, n::Integer)
   v[n+1:end]
 end
 
-function lead{T<:Union(Real, String)}(dv::DataArray{T}, n::Integer)
+function lead(dv::DataArray, n::Integer)
   padNA(dv[n+1:end], 0, n)
 end
 
-function lead!(df::DataFrame, col::ASCIIString, n::Integer)
+function lead!(df::DataFrame, col::String, n::Integer)
   new_col = strcat( string(col), "_lead_", string(n))
   within!(df, quote
          $new_col  = $lead($df[$col], $n)
-        end);
+        end)
 end
 
 lead(dv) = lead(dv, 1)
@@ -20,19 +20,19 @@ lead!(df, col) = lead!(df, col, 1)
 
 ########## lag #########################
 
-function lag{T<:Union(Real, String)}(v::Array{T}, n::Integer)
+function lag(v::Array, n::Integer)
   v[1:length(v)-n]
 end
 
-function lag{T<:Union(Real, String)}(dv::DataArray{T}, n::Integer)
+function lag(dv::DataArray, n::Integer)
   padNA( dv[1:length(dv)-n], n, 0)
 end
 
-function lag!(df::DataFrame, col::ASCIIString, n::Int64)
+function lag!(df::DataFrame, col::String, n::Integer)
   new_col = strcat( string(col), "_lag_", string(n))
   within!(df, quote
          $new_col  = $lag($df[$col], $n)
-        end);
+         end)
 end
 
 lag(dv) = lag(dv, 1)
