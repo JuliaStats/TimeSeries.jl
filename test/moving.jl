@@ -47,7 +47,7 @@ vf      = [1.,2,3,4,5]
 # @assert 5 == length(dvs_lag)
 
 ######## DataFrame ######################
-df = read_stock(Pkg.dir("Thyme", "test", "data", "spx.csv"))
+df = read_yahoo(Pkg.dir("Thyme", "test", "data"), "spx.csv")
 
 moving!(df, "Close", mean, 50)
 moving!(df, "Close", mean, 200)

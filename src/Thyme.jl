@@ -4,7 +4,7 @@ module Thyme
 
 using DataFrames, Calendar, UTF16 
 
-export read_stock,
+export read_yahoo,
        moving, 
        moving!, 
        lag,  
@@ -21,7 +21,7 @@ export read_stock,
        upto!, 
        @testthyme
 
-include("read_stock.jl")
+include("read.jl")
 include("moving.jl")
 include("lag.jl")
 include("returns.jl")
