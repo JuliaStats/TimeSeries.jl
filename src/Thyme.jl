@@ -6,19 +6,24 @@ using DataFrames, Calendar, UTF16
 
 export read_yahoo,
        moving, 
-       moving!, 
        lag,  
-       lag!, 
        lead,
-       lead!, 
        log_return, 
-       log_return!, 
        simple_return, 
-       simple_return!, 
        equity, 
-       equity!, 
        upto, 
-       upto!, 
+       indexyear,
+       indexmon,
+       indexday,
+       indexdow,
+# mutate DataFrame versions
+       moving!,
+       lag!,
+       lead!,
+       log_return!,
+       simple_return!,
+       equity!,
+       upto!,
 ## aliases
        yip, 
        lip, 
@@ -33,6 +38,7 @@ include("moving.jl")
 include("lag.jl")
 include("returns.jl")
 include("upto.jl")
+include("indexdate.jl")
 include("testthyme.jl")
 
 end 
