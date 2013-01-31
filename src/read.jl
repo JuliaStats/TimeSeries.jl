@@ -9,8 +9,10 @@ within!(df, quote
 flipud(df)
 end
 
-function read_yahoo(stock::String)
-  ydata = readlines(`curl -s "http://ichart.finance.yahoo.com/table.csv?s=$stock"`);
+function read_yahoo(stock::String, fm::Int, fd::Int, fy::Int, tm::Int, td::Int, ty::Int)
+  fm-=1
+  tm-=1
+  ydata = readlines(`curl -s "http://ichart.finance.yahoo.com/table.csv?s=$stock&a=$fm&b=$fd&c=$fy&d=$tm&e=$td&f=$ty"`)
   numstring = ydata[2:end]
   sa  = split(numstring[1], ',')'
   for i in 2:length(numstring) 
@@ -29,6 +31,13 @@ function read_yahoo(stock::String)
   flipud(df)
 end
 
+read_yahoo(stock::String) = read_yahoo(stock::String,  month(now()), day(now()), year(now())-3, month(now()),  day(now()), year(now()))
+
+
+
+
+# alias
+
 yip = read_yahoo
 
 
@@ -39,16 +48,4 @@ yip = read_yahoo
 
 
 
-########### function downloadPrices(stock::String)
-########### 
-###########   foo = readlines(`curl -s "http://ichart.finance.yahoo.com/table.csv?s=$stock"`);
-###########   
-###########   bar = foo[2:end]
-###########   baz  = split(bar[1], ',')'
-###########     
-###########     for i in 2:length(bar) 
-###########         baz  = [baz ; split(bar[i], ',')']
-###########     end
-###########   baz
-########### end
 
