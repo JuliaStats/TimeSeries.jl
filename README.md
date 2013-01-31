@@ -1,6 +1,6 @@
 A toolkit of Julia functions for common time series transformations including:
 lagging data, calculating moving values, calculating returns (both simple and log), 
-and downloading financial time series from Yahoo.
+sorting by day-of-week and downloading financial time series from Yahoo.
  
 #### Demonstration
 
@@ -50,5 +50,6 @@ Running tests:
 **   test/lag.jl
 **   test/moving.jl
 **   test/upto.jl
+**   test/indexdate.jl
 **   test/read.jl
 ````

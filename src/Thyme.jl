@@ -13,7 +13,7 @@ export read_yahoo,
        equity, 
        upto, 
        indexyear,
-       indexmon,
+       indexmonth,
        indexday,
        indexdow,
 # mutate DataFrame versions

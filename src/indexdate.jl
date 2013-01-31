@@ -1,51 +1,52 @@
-function indexyear(df::DataFrame, year::Int)
-  yindex = zeros(nrow(df))
-  [yindex[i] = year(df[i,1]) for i=1:nrow(df)]
+function indexyear(df::DataFrame, t::Int)
+  tindex = zeros(nrow(df))
+  [tindex[i] = year(df[i,1]) for i=1:nrow(df)]
 
   within!(df, quote
-    yindex = $yindex
+    tindex = $tindex
     end)
 
-  temp = df[:(yindex .== $year), :]
+  temp = df[:(tindex .== $t), :]
 # super expensive hack
   res  = temp[:,1:length(temp)-1]
 end
 
-function indexmon(df::DataFrame, month::Int)
-  mindex = zeros(nrow(df))
-  [mindex[i] = month(df[i,1]) for i=1:nrow(df)]
+function indexmonth(df::DataFrame, t::Int)
+  tindex = zeros(nrow(df))
+  [tindex[i] = month(df[i,1]) for i=1:nrow(df)]
 
   within!(df, quote
-    mindex = $mindex
+    tindex = $tindex
     end)
 
-  temp = df[:(mindex .== $month), :]
+  temp = df[:(tindex .== $t), :]
 # super expensive hack
   res  = temp[:,1:length(temp)-1]
 end
 
-function indexday(df::DataFrame, day::Int)
-  dindex = zeros(nrow(df))
-  [dindex[i] = day(df[i,1]) for i=1:nrow(df)]
+function indexday(df::DataFrame, t::Int)
+  tindex = zeros(nrow(df))
+  [tindex[i] = day(df[i,1]) for i=1:nrow(df)]
 
   within!(df, quote
-    dindex = $dindex
+    tindex = $tindex
     end)
 
-  temp = df[:(dindex .== $day), :]
+  temp = df[:(tindex .== $t), :]
 # super expensive hack
   res  = temp[:,1:length(temp)-1]
 end
 
-function indexdow(df::DataFrame, dow::Int)
-  dwindex = zeros(nrow(df))
-  [dwindex[i] = dayofweek(df[i,1]) for i=1:nrow(df)]
+function indexdow(df::DataFrame, t::Int)
+  tindex = zeros(nrow(df))
+  [tindex[i] = dayofweek(df[i,1]) for i=1:nrow(df)]
 
   within!(df, quote
-    dwindex = $dwindex
+    tindex = $tindex
     end)
 
-  temp = df[:(dwindex .== $dow), :]
+  temp = df[:(tindex .== $t), :]
 # super expensive hack
   res  = temp[:,1:length(temp)-1]
 end
+
