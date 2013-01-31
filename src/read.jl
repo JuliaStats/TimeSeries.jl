@@ -29,7 +29,7 @@ function read_yahoo(stock::String)
   flipud(df)
 end
 
-
+yip = read_yahoo
 
 
 

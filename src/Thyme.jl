@@ -19,6 +19,13 @@ export read_yahoo,
        equity!, 
        upto, 
        upto!, 
+## aliases
+       yip, 
+       lip, 
+       lips, 
+       sip, 
+       sips, 
+## testsuite macro
        @testthyme
 
 include("read.jl")

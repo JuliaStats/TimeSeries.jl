@@ -12,6 +12,9 @@ function log_return!(df::DataFrame, col::String)
         end)
 end
 
+lip  = log_return
+lips = log_return! 
+
 ######## simple ##############################
 
 function simple_return(dv::DataArray)
@@ -25,6 +28,8 @@ function simple_return!(df::DataFrame, col::String)
         end)
 end
 
+sip  = simple_return
+sips = simple_return!
 ######## equity curve ########################
 
 function equity(dv::DataArray)
