@@ -40,10 +40,10 @@ julia> tail(AAPL)
 
 ````
 
-If you're interested in running the test suite, you can call the `@testthyme` macro inside a Julia session.
+If you're interested in running the test suite, you can call the `@thyme` macro inside a Julia session.
 
 ````julia
-julia> @testthyme
+julia> @thyme
 
 Running tests: 
 **   test/returns.jl

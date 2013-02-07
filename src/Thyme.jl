@@ -36,7 +36,7 @@ export read_yahoo,
        sip, 
        sips, 
 ## testsuite macro
-       @testthyme
+       @thyme
 
 include("read.jl")
 include("moving.jl")
