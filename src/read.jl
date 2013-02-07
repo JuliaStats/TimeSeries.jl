@@ -1,6 +1,6 @@
 function read_yahoo(dir::String, filename::String)
 
-csv = strcat(dir, "/", filename)
+csv = string(dir, "/", filename)
 df  = read_table(csv)
 
 time_conversion = map(x -> parse("yyyy-MM-dd", x), 

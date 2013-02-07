@@ -6,7 +6,7 @@ function log_return(dv::DataArray)
 end
 
 function log_return!(df::DataFrame, col::String)
-  new_col = strcat(string(col), "_ret")
+  new_col = string(string(col), "_ret")
   within!(df, quote
          $new_col  = $log_return($df[$col])
         end)
@@ -22,7 +22,7 @@ function simple_return(dv::DataArray)
 end
 
 function simple_return!(df::DataFrame, col::String)
-  new_col = strcat(string(col), "_RET")
+  new_col = string(string(col), "_RET")
   within!(df, quote
          $new_col  = $simple_return($df[$col])
         end)
@@ -37,7 +37,7 @@ function equity(dv::DataArray)
 end
 
 function equity!(df::DataFrame, col::String)
-  new_col = strcat(string(col), "_equity")
+  new_col = string(string(col), "_equity")
   within!(df, quote
           $new_col  = $equity($df[$col])
           end)

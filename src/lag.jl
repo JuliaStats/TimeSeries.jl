@@ -9,7 +9,7 @@ function lead(dv::DataArray, n::Integer)
 end
 
 function lead!(df::DataFrame, col::String, n::Integer)
-  new_col = strcat( string(col), "_lead_", string(n))
+  new_col = string( string(col), "_lead_", string(n))
   within!(df, quote
          $new_col  = $lead($df[$col], $n)
         end)
@@ -37,7 +37,7 @@ function lag(dv::DataArray, n::Integer)
 end
 
 function lag!(df::DataFrame, col::String, n::Integer)
-  new_col = strcat( string(col), "_lag_", string(n))
+  new_col = string( string(col), "_lag_", string(n))
   within!(df, quote
          $new_col  = $lag($df[$col], $n)
          end)

@@ -21,7 +21,7 @@ end
 ############ DataFrames bang dispatch
 
 function moving!(df::DataFrame, col::String, f::Function, n::Integer)
-  new_col = strcat(string(f), "_", string(n))
+  new_col = string(string(f), "_", string(n))
   within!(df, quote
           $new_col = $moving($df[$col], $f, $n)
           end)
