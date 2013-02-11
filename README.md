@@ -5,7 +5,7 @@ sorting by day-of-week and downloading financial time series from Yahoo.
 #### Demonstration
 
 ````julia
-julia> using Thyme
+julia> using TimeSeries
 
 julia> AAPL = read_yahoo("AAPL"); #defaults to the last three years daily
 
