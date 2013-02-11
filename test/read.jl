@@ -1,4 +1,4 @@
-df = read_yahoo(Pkg.dir("Thyme", "test", "data"), "spx.csv")
+df = read_yahoo(Pkg.dir("TimeSeries", "test", "data"), "spx.csv")
 
 @assert isa(df[:,1], DataArray{CalendarTime,1}) == true
 @assert df[1,2]    == 92.06

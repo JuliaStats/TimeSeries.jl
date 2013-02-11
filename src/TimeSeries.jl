@@ -1,6 +1,6 @@
 using DataFrames, Calendar, UTF16 
 
-module Thyme
+module TimeSeries
 
 using DataFrames, Calendar, UTF16 
 
@@ -36,7 +36,7 @@ export read_yahoo,
        sip, 
        sips, 
 ## testsuite macro
-       @thyme
+       @timeseries
 
 include("read.jl")
 include("moving.jl")
@@ -44,6 +44,6 @@ include("lag.jl")
 include("returns.jl")
 include("upto.jl")
 include("indexdate.jl")
-include("testthyme.jl")
+include("testtimeseries.jl")
 
 end 

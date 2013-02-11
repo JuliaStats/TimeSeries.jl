@@ -1,6 +1,6 @@
 require("test.jl")
 
-using Thyme
+using TimeSeries
 
 my_tests = ["test/returns.jl",
             "test/lag.jl",

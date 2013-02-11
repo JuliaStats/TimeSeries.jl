@@ -1,4 +1,4 @@
-df = read_yahoo(Pkg.dir("Thyme", "test", "data"), "spx.csv")
+df = read_yahoo(Pkg.dir("TimeSeries", "test", "data"), "spx.csv")
 
 sr = simple_return(df["Close"])
 lr = log_return(df["Close"])
