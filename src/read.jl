@@ -15,7 +15,7 @@ end
 function read_yahoo(stock::String, fm::Int, fd::Int, fy::Int, tm::Int, td::Int, ty::Int, period::String)
 
 # take care of yahoo's 0 indexing for month
-  fm-=1
+  fm-=2
   tm-=1
 
   ydata = readlines(`curl -s "http://ichart.finance.yahoo.com/table.csv?s=$stock&a=$fm&b=$fd&c=$fy&d=$tm&e=$td&f=$ty&g=$period"`)
@@ -47,13 +47,3 @@ read_yahoo(stock::String) = read_yahoo(stock::String, month(now()), day(now()), 
 # alias
 
 yip = read_yahoo
-
-
-
-
-
-
-
-
-
-

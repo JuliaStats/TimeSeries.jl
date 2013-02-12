@@ -1,44 +1,47 @@
-A toolkit of Julia functions for common time series transformations including:
-lagging data, calculating moving values, calculating returns (both simple and log), 
-sorting by day-of-week and downloading financial time series from Yahoo.
- 
+TimeSeries is a WiP whose API is in flux. The goal is to make functions more generic
+than they currently are, and to allow the functions to dispatch on `Arrays` as well as `DataFrames`.
+
+Current plan is to pull out the `read.jl` file completely into its own package, likely
+to be named `TradeInstrument`. It's used in the demonstration for now and will remain in 
+this package for the time being.
+
 #### Demonstration
 
 ````julia
 julia> using TimeSeries
 
-julia> AAPL = read_yahoo("AAPL"); #defaults to the last three years daily
-
-julia> # AAPL = yip("AAPL") #alias that does the same thing with less typing
+julia> AAPL = yip("AAPL");
 
 julia> head(AAPL, 3)
 3x7 DataFrame:
               Date   Open   High    Low  Close      Vol    Adj
-[1,]    2010-02-01 192.37  196.0  191.3 194.73 26781300 193.02
-[2,]    2010-02-02 195.91 196.32 193.38 195.86 24940800 194.14
-[3,]    2010-02-03 195.17  200.2 194.42 199.23 21976000 197.48
+[1,]    2010-01-12 209.19 209.77 206.42 207.72 21230700  204.7
+[2,]    2010-01-13 207.87 210.93  204.1 210.65 21639000 207.59
+[3,]    2010-01-14 210.11 210.46 209.02 209.43 15460500 206.38
 ````
 
-Include simple returns, an equity curve and a moving skewness over 30 periods.
+When dealing with time series data, it is often useful to lag or lead data. This
+is done with the `lag` and `lead` functions. The `lag` function allows negative
+integers, in which case it simply calls the `lead` function.
+
 
 ````julia
-julia> simple_return!(AAPL, "Adj"); #try sips for an alias to simple_return!
-
-julia> equity!(AAPL, "Adj");
-
-julia> moving!(AAPL, "Adj", skewness, 30);
-
-julia> tail(AAPL)
-6x10 DataFrame:
-              Date   Open   High    Low  Close      Vol    Adj     Adj_RET Adj_equity skewness_30
-[1,]    2013-01-23 508.81 514.99 504.77 514.01 30768200 514.01   0.0183054    2.66299   -0.134034
-[2,]    2013-01-24  460.0 465.73 450.25  450.5 52173300  450.5   -0.123558    2.33396    -1.39201
-[3,]    2013-01-25 451.69 456.23  435.0 439.88 43143800 439.88  -0.0235738    2.27893    -1.68528
-[4,]    2013-01-28 437.83 453.21 435.86 449.83 28054200 449.83   0.0226198    2.33048    -1.50955
-[5,]    2013-01-29  458.5  460.2 452.12 458.27 20374400 458.27   0.0187626    2.37421    -1.27737
-[6,]    2013-01-30  457.0  462.6  454.5 456.83 14887300 456.83 -0.00314225    2.36675    -1.09446
+julia> head(lag!(AAPL,"Close"), 3)
+3x8 DataFrame:
+              Date   Open   High    Low  Close      Vol    Adj Close_lag_1
+[1,]    2010-01-12 209.19 209.77 206.42 207.72 21230700  204.7          NA
+[2,]    2010-01-13 207.87 210.93  204.1 210.65 21639000 207.59      207.72
+[3,]    2010-01-14 210.11 210.46 209.02 209.43 15460500 206.38      210.65
 
 ````
+Other important functions include the `moving` function, which calculates data within
+a rolling window of consecutive rows of data, `upto`, which calculates all the data from
+the beginning to the current row, and two `returns` functions that calculate the percent
+change in a value between rows (simple and logarithmic are available).
+
+The `indexdate.jl` file includes functions that aggregate a DataFrame whose first row is a `Calendar`
+type and does so along a specified time period. `indexmonth` for example will aggregate rows whose month
+value is whatever is specified in the function call. 
 
 If you're interested in running the test suite, you can call the `@timeseries` macro inside a Julia session.
 
