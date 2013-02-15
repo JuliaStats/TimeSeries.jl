@@ -1,4 +1,4 @@
-df = read_yahoo(Pkg.dir("TimeSeries", "test", "data"), "spx.csv")
+df = read_csv_for_testing(Pkg.dir("TimeSeries", "test", "data"), "spx.csv")
 
 df_year  = indexyear(df,1970)
 df_month = indexmonth(df,4)

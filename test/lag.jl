@@ -69,7 +69,7 @@ dvs_lag = lag(dvs,4)
 
 ######## DataFrame ######################
 
-df = read_yahoo(Pkg.dir("TimeSeries", "test", "data"), "spx.csv")
+df = read_csv_for_testing(Pkg.dir("TimeSeries", "test", "data"), "spx.csv")
 
 lead!(df, "Close", 1)
 lead!(df, "Close", 3)

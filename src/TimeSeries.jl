@@ -4,8 +4,7 @@ module TimeSeries
 
 using DataFrames, Calendar, UTF16 
 
-export read_yahoo,
-       moving, 
+export moving, 
        lag,  
        lead,
        log_return, 
@@ -30,15 +29,14 @@ export read_yahoo,
        equity!,
        upto!,
 ## aliases
-       yip, 
        lip, 
        lips, 
        sip, 
        sips, 
-## testsuite macro
-       @timeseries
+## testing
+       @timeseries,
+       read_csv_for_testing
 
-include("read.jl")
 include("moving.jl")
 include("lag.jl")
 include("returns.jl")

@@ -1,16 +1,13 @@
-TimeSeries is a WiP whose API is in flux. The goal is to make functions more generic
-than they currently are, and to allow the functions to dispatch on `Arrays` as well as `DataFrames`.
-
-Current plan is to pull out the `read.jl` file completely into its own package, likely
-to be named `TradeInstrument`. It's used in the demonstration for now and will remain in 
-this package for the time being.
+For the demonstration, we'll be importing data from Yahoo with the `TradingInstrument` package.
 
 #### Demonstration
 
 ````julia
+julia> using TradingInstrument
+
 julia> using TimeSeries
 
-julia> AAPL = yip("AAPL");
+julia> AAPL = yahoo("AAPL");
 
 julia> head(AAPL, 3)
 3x7 DataFrame:
@@ -23,7 +20,6 @@ julia> head(AAPL, 3)
 When dealing with time series data, it is often useful to lag or lead data. This
 is done with the `lag` and `lead` functions. The `lag` function allows negative
 integers, in which case it simply calls the `lead` function.
-
 
 ````julia
 julia> head(lag!(AAPL,"Close"), 3)
@@ -54,5 +50,6 @@ Running tests:
 **   test/moving.jl
 **   test/upto.jl
 **   test/indexdate.jl
-**   test/read.jl
 ````
+NOTE: the `read_yahoo` function has been moved to the `TradingInstrument` package, but a version of it is still in this package 
+for testing purposes.
