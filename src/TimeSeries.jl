@@ -4,7 +4,16 @@ module TimeSeries
 
 using DataFrames, Calendar, UTF16 
 
-export moving, 
+type Series
+
+  values::DataFrame
+  index::IndexedVector{CalendarTime}
+
+end
+
+
+export Series,
+       moving, 
        lag,  
        lead,
        log_return, 
