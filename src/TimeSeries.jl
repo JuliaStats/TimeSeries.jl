@@ -4,14 +4,6 @@ module TimeSeries
 
 using DataFrames, Calendar, UTF16 
 
-type Series
-
-  values::DataFrame
-  index::IndexedVector{CalendarTime}
-
-end
-
-
 export Series,
        moving, 
        lag,  
@@ -46,6 +38,7 @@ export Series,
        @timeseries,
        read_csv_for_testing
 
+include("time_series.jl")
 include("moving.jl")
 include("lag.jl")
 include("returns.jl")
