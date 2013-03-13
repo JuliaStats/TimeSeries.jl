@@ -1,11 +1,10 @@
-using Calendar, UTF16 
+using DataFrames, Calendar, UTF16 
 
 module TimeSeries
 
-using Calendar, UTF16 
+using DataFrames, Calendar, UTF16 
 
-export TimeArray,
-       moving, 
+export moving, 
        lag,  
        lead,
        log_return, 
@@ -38,7 +37,6 @@ export TimeArray,
        @timeseries,
        read_csv_for_testing
 
-include("timearray.jl")
 include("moving.jl")
 include("lag.jl")
 include("returns.jl")
