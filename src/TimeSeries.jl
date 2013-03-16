@@ -38,7 +38,9 @@ export TimeArray,
        @timeseries,
        read_csv_for_testing
 
+include("timestamp.jl")
 include("timearray.jl")
+include("timeframe.jl")
 include("moving.jl")
 include("lag.jl")
 include("returns.jl")
