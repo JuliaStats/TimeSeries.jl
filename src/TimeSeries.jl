@@ -1,10 +1,12 @@
-using Calendar, UTF16 
+using Calendar, UTF16, DataFrames 
 
 module TimeSeries
 
-using Calendar, UTF16 
+using Calendar, UTF16, DataFrames 
 
-export TimeArray,
+export TimeStamp,
+       TimeArray,
+       TimeFrame,
        moving, 
        lag,  
        lead,
