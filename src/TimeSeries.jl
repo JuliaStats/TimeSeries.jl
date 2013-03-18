@@ -37,12 +37,21 @@ export TimeStamp,
        sip, 
        sips, 
 ## testing
+       head,
+       tail, 
+       mean,
+       std, 
+       min, 
+       max, 
+
+## testing
        @timeseries,
        read_csv_for_testing
 
 include("timestamp.jl")
 include("timearray.jl")
 include("timeframe.jl")
+include("time_methods.jl")
 include("moving.jl")
 include("lag.jl")
 include("returns.jl")

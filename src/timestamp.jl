@@ -39,15 +39,14 @@ end
 ###################### simple maths methods #################################
 
 # elapsed time for GSPC.csv file is 0.017835577 (first run)
-function mean(x::Array{TimeStamp}) 
-  r = length(x)
-  s = 0 
-  for v in x
-    s += v.value
-  end
-  s/r
-end
-
+#function mean(x::Array{TimeStamp}) 
+#  r = length(x)
+#  s = 0 
+#  for v in x
+#    s += v.value
+#  end
+#  s/r
+#end
 
 # elapsed time for GSPC.csv file is 0.142614052 (first run)
 #mean(x::Array{TimeStamp}) = mean([v.value for v in x])
