@@ -14,7 +14,7 @@ type TimeArray <: AbstractTimeArray
 end
 
 # empty TimeArray
-TimeArray() = TimeArray({}, {})
+TimeArray() = TimeArray(TimeStamp[])
 
 
 
