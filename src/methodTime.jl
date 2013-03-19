@@ -32,6 +32,7 @@ max(x::Array{TimeStamp}) = max([v.value for v in x])
 
 
 ##################### rows that have value specified ################
+maxx(x::Array{TimeStamp}) = x[max([v.value for v in x]) .== [v.value for v in x]]
 
 function maxrows(x::Array{TimeStamp})
   m = max([v.value for v in x])
