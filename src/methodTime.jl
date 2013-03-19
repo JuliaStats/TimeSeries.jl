@@ -29,3 +29,58 @@ max(x::Array{TimeStamp}) = max([v.value for v in x])
 
 # elapsed time for GSPC.csv file is 0.142614052 (first run)
 #mean(x::Array{TimeStamp}) = mean([v.value for v in x])
+
+
+##################### rows that have value specified ################
+
+function maxrows(x::Array{TimeStamp})
+  m = max([v.val for v in x])
+  p = Int[]
+  for i in 1:length(x)
+    if x[i].val == m
+      push!(p, i)
+    end
+  end
+  x[p]
+end
+
+function minrows(x::Array{TimeStamp})
+  m = min([v.val for v in x])
+  p = Int[]
+  for i in 1:length(x)
+    if x[i].val == m
+      push!(p, i)
+    end
+  end
+  x[p]
+end
+
+function gtrows(x::Array{TimeStamp}, n::Union(Int, Float64))
+  p = Int[]
+  for i in 1:length(x)
+    if x[i].val > n
+      push!(p, i)
+    end
+  end
+  x[p]
+end
+
+function ltrows(x::Array{TimeStamp}, n::Union(Int, Float64))
+  p = Int[]
+  for i in 1:length(x)
+    if x[i].val < n
+      push!(p, i)
+    end
+  end
+  x[p]
+end
+
+function etrows(x::Array{TimeStamp}, n::Union(Int, Float64))
+  p = Int[]
+  for i in 1:length(x)
+    if x[i].val == n
+      push!(p, i)
+    end
+  end
+  x[p]
+end
