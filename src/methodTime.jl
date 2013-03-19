@@ -35,6 +35,7 @@ max(x::Array{TimeStamp}) = max([v.value for v in x])
 
 function maxrows(x::Array{TimeStamp})
   m = max([v.value for v in x])
+  #m = max(x) # no noticable speed impact either way
   p = Int[]
   for i in 1:length(x)
     if x[i].value == m
