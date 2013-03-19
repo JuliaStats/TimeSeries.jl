@@ -121,7 +121,7 @@ end
 function dowrows(x::Array{TimeStamp}, t::Int)
   p = Int[]
   for i in 1:length(x)
-    if dow(x[i].timestamp) == t
+    if dayofweek(x[i].timestamp) == t
       push!(p, i)
     end
   end
@@ -169,7 +169,7 @@ end
 function doyrows(x::Array{TimeStamp}, t::Int)
   p = Int[]
   for i in 1:length(x)
-    if doy(x[i].timestamp) == t
+    if dayofyear(x[i].timestamp) == t
       push!(p, i)
     end
   end

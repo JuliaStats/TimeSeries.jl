@@ -18,7 +18,7 @@ function show(io::IO, t::CalendarTime)
 end
 
 function show(io::IO, ts::TimeStamp) 
-  print(io, ts.timestamp, "  \u10FB  ", ts.value)
+  print(io, ts.timestamp, "  |  ", ts.value)
 end
 
 # function repl_show(io::IO, ts::TimeStamp) 
