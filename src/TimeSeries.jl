@@ -36,14 +36,14 @@ export TimeStamp,
        lips, 
        sip, 
        sips, 
-## testing
+## methods
        head,
        tail, 
        mean,
        std, 
        min, 
        max, 
-
+       df_to_ts, 
 ## testing
        @timeseries,
        read_csv_for_testing
@@ -51,7 +51,8 @@ export TimeStamp,
 include("timestamp.jl")
 include("timearray.jl")
 include("timeframe.jl")
-include("time_methods.jl")
+include("methodTime.jl")
+#include("showTime.jl")
 include("moving.jl")
 include("lag.jl")
 include("returns.jl")

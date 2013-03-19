@@ -44,4 +44,13 @@ TimeArray() = TimeArray(TimeStamp[])
 #     var = push!(var, val)
 #   end
 
+function df_to_ts(x::DataFrame)
+  d  = x[:,1:2]
+  ts = [TimeStamp(parse("yyyy-MM-dd", d[1,1]), d[1,2])]
+  for i in 2:length(d)
+    val = TimeStamp(parse("yyyy-MM-dd", d[i,1]), d[i,2])
+    ts  = push!(ts, val)
+  end
+  ts
+end
 
