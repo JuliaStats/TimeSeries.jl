@@ -176,3 +176,15 @@ function doyrows(x::Array{TimeStamp}, t::Int)
   end
   x[p]
 end
+
+### other methods of experimental nature ######################
+
+function convert_to_typed_array(ts::Array{TimeStamp})
+  typs = typeof(ts[1].value)
+  if typs == Float64 || typs == Float32
+    float([v.value for v in ts])
+  elseif typs == Int64 || typs == Int32
+    int([v.value for v in ts])
+  end
+end
+

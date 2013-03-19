@@ -59,6 +59,8 @@ export TimeStamp,
        weekrows,
        doyrows,
        df_to_ts, 
+# other experimental methods
+       convert_to_typed_array,
 ## testing
        @timeseries,
        read_csv_for_testing
