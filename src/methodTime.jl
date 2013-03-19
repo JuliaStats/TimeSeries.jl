@@ -34,10 +34,10 @@ max(x::Array{TimeStamp}) = max([v.value for v in x])
 ##################### rows that have value specified ################
 
 function maxrows(x::Array{TimeStamp})
-  m = max([v.val for v in x])
+  m = max([v.value for v in x])
   p = Int[]
   for i in 1:length(x)
-    if x[i].val == m
+    if x[i].value == m
       push!(p, i)
     end
   end
@@ -45,10 +45,10 @@ function maxrows(x::Array{TimeStamp})
 end
 
 function minrows(x::Array{TimeStamp})
-  m = min([v.val for v in x])
+  m = min([v.value for v in x])
   p = Int[]
   for i in 1:length(x)
-    if x[i].val == m
+    if x[i].value == m
       push!(p, i)
     end
   end
@@ -58,7 +58,7 @@ end
 function gtrows(x::Array{TimeStamp}, n::Union(Int, Float64))
   p = Int[]
   for i in 1:length(x)
-    if x[i].val > n
+    if x[i].value > n
       push!(p, i)
     end
   end
@@ -68,7 +68,7 @@ end
 function ltrows(x::Array{TimeStamp}, n::Union(Int, Float64))
   p = Int[]
   for i in 1:length(x)
-    if x[i].val < n
+    if x[i].value < n
       push!(p, i)
     end
   end
@@ -78,7 +78,98 @@ end
 function etrows(x::Array{TimeStamp}, n::Union(Int, Float64))
   p = Int[]
   for i in 1:length(x)
-    if x[i].val == n
+    if x[i].value == n
+      push!(p, i)
+    end
+  end
+  x[p]
+end
+
+######## duplicative time indexing ###################
+######## needs refactor to an @eval loop ############
+
+function yearrows(x::Array{TimeStamp}, t::Int)
+  p = Int[]
+  for i in 1:length(x)
+    if year(x[i].timestamp) == t
+      push!(p, i)
+    end
+  end
+  x[p]
+end
+
+function monthrows(x::Array{TimeStamp}, t::Int)
+  p = Int[]
+  for i in 1:length(x)
+    if month(x[i].timestamp) == t
+      push!(p, i)
+    end
+  end
+  x[p]
+end
+
+function dayrows(x::Array{TimeStamp}, t::Int)
+  p = Int[]
+  for i in 1:length(x)
+    if day(x[i].timestamp) == t
+      push!(p, i)
+    end
+  end
+  x[p]
+end
+
+function dowrows(x::Array{TimeStamp}, t::Int)
+  p = Int[]
+  for i in 1:length(x)
+    if dow(x[i].timestamp) == t
+      push!(p, i)
+    end
+  end
+  x[p]
+end
+
+####### second batch of functions
+
+function hourrows(x::Array{TimeStamp}, t::Int)
+  p = Int[]
+  for i in 1:length(x)
+    if hour(x[i].timestamp) == t
+      push!(p, i)
+    end
+  end
+  x[p]
+end
+function minuterows(x::Array{TimeStamp}, t::Int)
+  p = Int[]
+  for i in 1:length(x)
+    if minute(x[i].timestamp) == t
+      push!(p, i)
+    end
+  end
+  x[p]
+end
+function secondrows(x::Array{TimeStamp}, t::Int)
+  p = Int[]
+  for i in 1:length(x)
+    if second(x[i].timestamp) == t
+      push!(p, i)
+    end
+  end
+  x[p]
+end
+function weekrows(x::Array{TimeStamp}, t::Int)
+  p = Int[]
+  for i in 1:length(x)
+    if week(x[i].timestamp) == t
+      push!(p, i)
+    end
+  end
+  x[p]
+end
+function doyrows(x::Array{TimeStamp}, t::Int)
+  p = Int[]
+  for i in 1:length(x)
+    if doy(x[i].timestamp) == t
       push!(p, i)
     end
   end
