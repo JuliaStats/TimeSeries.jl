@@ -1,3 +1,22 @@
+`TimeSeries` is stable for Julia release-0.1, but there are dependencies on `DataFrames` and `Calendar` so
+make sure (if you're manually managing your packages) that you use release-0.1 compatible versions of those packages.
+
+If you're interested in work on the `TimeStamp` type, check out the timestamp branch. This branch seeks to
+implement Julia's new `immutable` type and does so by creating an Array of immutables. Preliminary indications 
+show a speed improvement over `DataFrames`. 
+
+Versioning is planned to mirror Julia initially. I'll get around to versioning this commit as 0.1, The timestamp
+branch will be merged with master and dubbed version 0.2 later. This is a major change to this package. It will seek to
+remove dependencies on the `DataFrames` package, which by the way is an awesome package, and will instead rely on 
+using `Array{TimeStamp}` as the primary data structure. 
+
+Dispatch on `DataFrames` is not expected to be removed, and might very well be improved. Likewise, dispatch on 
+`Array{Number}` is likely to remain as well. 
+
+Any feed back in the Issues tab is appreciated!
+
+And now back to the regular README ... 
+
 For the demonstration, we'll be importing data from Yahoo with the `TradingInstrument` package.
 
 #### Demonstration
