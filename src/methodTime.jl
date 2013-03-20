@@ -3,11 +3,11 @@ import Base.std
 import Stats.skewness
 import Stats.kurtosis
 
-head(x::Array{TimeStamp}, n::Int) = x[1:n]
-head(x::Array{TimeStamp}) = head(x::Array{TimeStamp}, 6)
+heads(x::Array{TimeStamp}, n::Int) = x[1:n]
+heads(x::Array{TimeStamp}) = heads(x::Array{TimeStamp}, 6)
 
-tail(x::Array{TimeStamp}, n::Int) = x[length(x)-n:end]
-tail(x::Array{TimeStamp}) = tail(x::Array{TimeStamp}, 6)
+tails(x::Array{TimeStamp}, n::Int) = x[length(x)-n:end]
+tails(x::Array{TimeStamp}) = tails(x::Array{TimeStamp}, 6)
 
 mean(x::Array{TimeStamp}) = mean([v.value for v in x])
 std(x::Array{TimeStamp}) = std([v.value for v in x])

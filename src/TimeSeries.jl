@@ -37,8 +37,8 @@ export TimeStamp,
        sip, 
        sips, 
 ## methods for immutable Array
-       head,
-       tail, 
+       heads,
+       tails, 
        mean,
        std, 
        skewness, 
@@ -63,9 +63,15 @@ export TimeStamp,
        weekrows,
        doyrows,
        df_to_ts, 
+# create new Array{TimeStamp} by operating on two 
+       diff,
+       add,
+       subtract,
+       spread,
 # other experimental methods
        convert_to_typed_array,
-       ctta,
+       ctta, # alias for convert_to_typed_array
+       TimeStampArray,  #constructor of Array{TimeStamp} from DataFrame
        timetrial,
 ## testing
        @timeseries,
@@ -83,4 +89,4 @@ include("upto.jl")
 include("indexdate.jl")
 include("testtimeseries.jl")
 
-end 
+end  #of module
