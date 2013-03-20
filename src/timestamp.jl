@@ -7,7 +7,7 @@ abstract AbstractTimeStamp
 
 immutable TimeStamp <: AbstractTimeStamp
   timestamp::CalendarTime
-  value::Any
+  value::Float64
 end
 
 ###################### show methods #################################

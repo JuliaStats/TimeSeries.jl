@@ -1,6 +1,7 @@
 import Base.mean
 import Base.std
-import Stats
+import Stats.skewness
+import Stats.kurtosis
 
 head(x::Array{TimeStamp}, n::Int) = x[1:n]
 head(x::Array{TimeStamp}) = head(x::Array{TimeStamp}, 6)
@@ -10,11 +11,15 @@ tail(x::Array{TimeStamp}) = tail(x::Array{TimeStamp}, 6)
 
 mean(x::Array{TimeStamp}) = mean([v.value for v in x])
 std(x::Array{TimeStamp}) = std([v.value for v in x])
-#skewness(x::Array{TimeStamp}) = skewness([v.value for v in x])
-#kurtosis(x::Array{TimeStamp}) = kurtosis([v.value for v in x])
+skewness(x::Array{TimeStamp}) = skewness([v.value for v in x])
+kurtosis(x::Array{TimeStamp}) = kurtosis([v.value for v in x])
 
 min(x::Array{TimeStamp}) = min([v.value for v in x])
 max(x::Array{TimeStamp}) = max([v.value for v in x])
+function maxfast(x::Array{TimeStamp}) 
+  c = ctta(x)
+ max(c)
+end
 
 ###################### initial maths methods #################################
 
@@ -189,3 +194,4 @@ function convert_to_typed_array(ts::Array{TimeStamp})
   end
 end
 
+ctta(ts::Array{TimeStamp}) = convert_to_typed_array(ts::Array{TimeStamp})
