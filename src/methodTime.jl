@@ -11,7 +11,8 @@ tails(x::Array{TimeStamp}, n::Int) = x[length(x)-n+1:end]
 tails(x::Array{TimeStamp}) = tails(x::Array{TimeStamp}, 6)
 last(x::Array{TimeStamp}) = tails(x::Array{TimeStamp}, 1)
 
-mean(x::Array{TimeStamp}) = mean([v.value for v in x])
+#mean(x::Array{TimeStamp}) = mean([v.value for v in x])
+mean(x::Array{TimeStamp}) = mean(v(x))
 std(x::Array{TimeStamp}) = std([v.value for v in x])
 skewness(x::Array{TimeStamp}) = skewness([v.value for v in x])
 kurtosis(x::Array{TimeStamp}) = kurtosis([v.value for v in x])

@@ -78,6 +78,8 @@ export TimeStamp,
        TimeStampArray,  #constructor of Array{TimeStamp} from DataFrame
        imfred,
        v,    #shortcut notation for v.value in v for x
+       t,    #shortcut notation for t.timestamp in t for x
+       p,    #shortcut notation for passing in CalendarTime 
        timetrial,
 ## testing
        @timeseries,
