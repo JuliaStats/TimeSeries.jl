@@ -1,8 +1,9 @@
-importall Base
-# import Base.show
-# import Base.repl_show
-# import Base.diff
-# import Base.add
+# importall Base #this is sneaky and ruins Calendar
+
+import Base.show
+import Base.repl_show
+import Base.diff
+import Base.add
 
 #################### TimeStamp #########################################
 
@@ -54,46 +55,46 @@ TimeStampArray(d::DataFrame, v::Int) = TimeStampArray(d::DataFrame, 1, v::Int)
 ##################### Need @eval loop here, desperately! ###############################
 
 function diff(a::Array{TimeStamp}, b::Array{TimeStamp})
-  diffTS = TimeStamp[]
+  newts = TimeStamp[]
   for i in 1:length(a)
     for j in 1:length(b)
       if a[i].timestamp == b[j].timestamp
-      push!(diffTS, TimeStamp(a[i].timestamp, a[i].value - b[j].value))
+      push!(newts, TimeStamp(a[i].timestamp, a[i].value - b[j].value))
       end
     end
   end
-  diffTS
+  newts
 end
 function add(a::Array{TimeStamp}, b::Array{TimeStamp})
-  addTS = TimeStamp[]
+  newts = TimeStamp[]
   for i in 1:length(a)
     for j in 1:length(b)
       if a[i].timestamp == b[j].timestamp
-      push!(addTS, TimeStamp(a[i].timestamp, a[i].value + b[j].value))
+      push!(newts, TimeStamp(a[i].timestamp, a[i].value + b[j].value))
       end
     end
   end
-  addTS
+  newts
 end
 function subtract(a::Array{TimeStamp}, b::Array{TimeStamp})
-  subtractTS = TimeStamp[]
+  newts = TimeStamp[]
   for i in 1:length(a)
     for j in 1:length(b)
       if a[i].timestamp == b[j].timestamp
-      push!(subtractTS, TimeStamp(a[i].timestamp, a[i].value - b[j].value))
+      push!(newts, TimeStamp(a[i].timestamp, a[i].value - b[j].value))
       end
     end
   end
-  subtractTS
+  newts
 end
 function spread(a::Array{TimeStamp}, b::Array{TimeStamp})
-  spreadTS = TimeStamp[]
+  newts = TimeStamp[]
   for i in 1:length(a)
     for j in 1:length(b)
       if a[i].timestamp == b[j].timestamp
-      push!(spreadTS, TimeStamp(a[i].timestamp, abs(a[i].value - b[j].value)))
+      push!(newts, TimeStamp(a[i].timestamp, abs(a[i].value - b[j].value)))
       end
     end
   end
-  spreadTS
+  newts
 end

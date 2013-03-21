@@ -1,8 +1,6 @@
-using Calendar, UTF16, DataFrames 
-
 module TimeSeries
 
-using Calendar, UTF16, DataFrames 
+using  DataFrames, Calendar
 
 export TimeStamp,
        TimeArray,
@@ -65,23 +63,30 @@ export TimeStamp,
        df_to_ts, 
 # create new Array{TimeStamp} by operating on two 
        diff,
-       add,
+       sum,
        subtract,
        spread,
+# deal with NaN as if they were NAs
+       removeNaN,
+       removeNaN_sum,
+       doremoveNaN_sum,
 # other experimental methods
        convert_to_typed_array,
        ctta, # alias for convert_to_typed_array
        TimeStampArray,  #constructor of Array{TimeStamp} from DataFrame
+       imfred,
        timetrial,
 ## testing
        @timeseries,
        read_csv_for_testing
 
+include("reader.jl")
 include("timestamp.jl")
 include("timearray.jl")
 include("timeframe.jl")
 include("methodTime.jl")
-#include("showTime.jl")
+include("nan.jl")
+# include("showTime.jl")
 include("moving.jl")
 include("lag.jl")
 include("returns.jl")
