@@ -9,9 +9,9 @@ import Base.add
 
 abstract AbstractTimeStamp
 
-immutable TimeStamp <: AbstractTimeStamp
+immutable TimeStamp{T} <: AbstractTimeStamp
   timestamp::CalendarTime # possible improvements with Int64
-  value::Float64
+  value::T
 end
 
 ###################### show methods #################################
