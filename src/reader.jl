@@ -10,7 +10,8 @@ function imfred(econdata::String)
   pre_values = map(x -> x[:][2], vals)  # take only the second column of values 
  
   # account for missing values
-  vals = map(x -> x == "" || x == ".\r\n" ? (x = 0) : (x = float(x)), pre_values) #TODO clean this mess up
+  vals = map(x -> x == "" || x == ".\r\n" ? (x = NaN) : (x = float(x)), pre_values) #TODO clean this mess up
+#  vals = map(x -> x == "" ? (x = NaN) : (x = float(x)), pre_values) #TODO clean this mess up
  
   #construct the Array{TimeStamp}
    ts = [TimeStamp(Calendar.parse("yyyy-MM-dd", timestamps[1]), float(vals[1]))]

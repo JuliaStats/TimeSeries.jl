@@ -37,6 +37,8 @@ export TimeStamp,
 ## methods for immutable Array
        heads,
        tails, 
+       first, 
+       last, 
        mean,
        std, 
        skewness, 
@@ -75,6 +77,7 @@ export TimeStamp,
        ctta, # alias for convert_to_typed_array
        TimeStampArray,  #constructor of Array{TimeStamp} from DataFrame
        imfred,
+       v,    #shortcut notation for v.value in v for x
        timetrial,
 ## testing
        @timeseries,
@@ -85,6 +88,7 @@ include("timestamp.jl")
 include("timearray.jl")
 include("timeframe.jl")
 include("methodTime.jl")
+include("operators.jl")
 include("nan.jl")
 # include("showTime.jl")
 include("moving.jl")

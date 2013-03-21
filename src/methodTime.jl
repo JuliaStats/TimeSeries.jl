@@ -5,9 +5,11 @@ import Stats.kurtosis
 
 heads(x::Array{TimeStamp}, n::Int) = x[1:n]
 heads(x::Array{TimeStamp}) = heads(x::Array{TimeStamp}, 6)
+first(x::Array{TimeStamp}) = heads(x::Array{TimeStamp}, 1)
 
-tails(x::Array{TimeStamp}, n::Int) = x[length(x)-n:end]
+tails(x::Array{TimeStamp}, n::Int) = x[length(x)-n+1:end]
 tails(x::Array{TimeStamp}) = tails(x::Array{TimeStamp}, 6)
+last(x::Array{TimeStamp}) = tails(x::Array{TimeStamp}, 1)
 
 mean(x::Array{TimeStamp}) = mean([v.value for v in x])
 std(x::Array{TimeStamp}) = std([v.value for v in x])
