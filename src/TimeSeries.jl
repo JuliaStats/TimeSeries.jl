@@ -2,11 +2,13 @@ module TimeSeries
 
 using  DataFrames, Calendar
 
+# types
 export TimeStamp,
        TimeArray,
        TimeFrame,
        OHLC,
        OHLCVA,
+# methods for DataFrame
        moving, 
        lag,  
        lead,
