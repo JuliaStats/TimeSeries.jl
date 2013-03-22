@@ -5,6 +5,8 @@ using  DataFrames, Calendar
 export TimeStamp,
        TimeArray,
        TimeFrame,
+       OHLC,
+       OHLCVA,
        moving, 
        lag,  
        lead,
@@ -76,7 +78,8 @@ export TimeStamp,
        convert_to_typed_array,
        ctta, # alias for convert_to_typed_array
        TimeStampArray,  #constructor of Array{TimeStamp} from DataFrame
-       imfred,
+       ifred,
+       iyahoo,
        v,    #shortcut notation for v.value in v for x
        t,    #shortcut notation for t.timestamp in t for x
        p,    #shortcut notation for passing in CalendarTime 
@@ -85,12 +88,12 @@ export TimeStamp,
        @timeseries,
        read_csv_for_testing
 
-include("reader.jl")
 include("timestamp.jl")
 include("timearray.jl")
 include("timeframe.jl")
 include("methodTime.jl")
 include("operators.jl")
+include("tradinginstrument.jl")
 include("nan.jl")
 # include("showTime.jl")
 include("moving.jl")
