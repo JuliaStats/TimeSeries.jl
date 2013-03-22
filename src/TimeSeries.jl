@@ -81,6 +81,12 @@ export TimeStamp,
        ifred,
        iyahoo,
        v,    #shortcut notation for v.value in v for x
+       vopen,
+       vhigh,
+       vlow,
+       vclose,
+       vvolume,
+       vadj,
        t,    #shortcut notation for t.timestamp in t for x
        p,    #shortcut notation for passing in CalendarTime 
        timetrial,
@@ -95,7 +101,7 @@ include("methodTime.jl")
 include("operators.jl")
 include("tradinginstrument.jl")
 include("nan.jl")
-# include("showTime.jl")
+include("showTime.jl")
 include("moving.jl")
 include("lag.jl")
 include("returns.jl")
