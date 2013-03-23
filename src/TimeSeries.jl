@@ -2,14 +2,7 @@ module TimeSeries
 
 using  DataFrames, Calendar
 
-# types
-export TimeStamp,
-       TimeArray,
-       TimeFrame,
-       OHLC,
-       OHLCVA,
-# methods for DataFrame
-       moving, 
+export moving, 
        lag,  
        lead,
        log_return, 
@@ -38,7 +31,14 @@ export TimeStamp,
        lips, 
        sip, 
        sips, 
-## methods for immutable Array
+
+############## START OF EXPERIMENTAL TIMESTAMP TYPE ######################
+############## START OF EXPERIMENTAL TIMESTAMP TYPE ######################
+############## START OF EXPERIMENTAL TIMESTAMP TYPE ######################
+
+       TimeStamp,
+       OHLC,
+       OHLCVA,
        head,
        tail, 
        first, 
@@ -56,7 +56,6 @@ export TimeStamp,
        gtrows, 
        ltrows, 
        etrows, 
-## index immutable Array by time
        yearrows,
        monthrows,
        dayrows,
@@ -98,18 +97,30 @@ export TimeStamp,
        t,    #shortcut notation for t.timestamp in t for x
        p,    #shortcut notation for passing in CalendarTime 
        timetrial,
+
+############## END OF EXPERIMENTAL TIMESTAMP TYPE ######################
+############## END OF EXPERIMENTAL TIMESTAMP TYPE ######################
+############## END OF EXPERIMENTAL TIMESTAMP TYPE ######################
+
 ## testing
        @timeseries,
        read_csv_for_testing
 
-include("timestamp.jl")
-include("timearray.jl")
-include("timeframe.jl")
-include("methodTime.jl")
-include("operators.jl")
-include("tradinginstrument.jl")
-include("nan.jl")
-include("showTime.jl")
+################## START TIMESTAMP FILES #####################
+################## START TIMESTAMP FILES #####################
+################## START TIMESTAMP FILES #####################
+
+include("TimeStamp/timestamp.jl")
+include("TimeStamp/method.jl")
+include("TimeStamp/operators.jl")
+include("TimeStamp/tradinginstrument.jl")
+include("TimeStamp/nan.jl")
+include("TimeStamp/show.jl")
+
+################## END TIMESTAMP FILES #####################
+################## END TIMESTAMP FILES #####################
+################## END TIMESTAMP FILES #####################
+
 include("moving.jl")
 include("lag.jl")
 include("returns.jl")
