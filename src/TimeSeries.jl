@@ -89,6 +89,12 @@ export TimeStamp,
        vclose,
        vvolume,
        vadj,
+       Op,
+       Hi,
+       Lo,
+       Cl,
+       Vo,
+       Ad,
        t,    #shortcut notation for t.timestamp in t for x
        p,    #shortcut notation for passing in CalendarTime 
        timetrial,

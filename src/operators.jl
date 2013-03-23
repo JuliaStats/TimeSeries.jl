@@ -14,6 +14,15 @@ vclose(x) = [v.value.Close for v in x]
 vvolume(x) = [v.value.Volume for v in x]
 vadj(x) = [v.value.Adj for v in x]
 
+# alias trick 
+
+const Op = vopen
+const Hi = vhigh
+const Lo = vlow
+const Cl = vclose
+const Vo = vvolume
+const Ad = vadj
+
 v(x) = [v.value for v in x]
 t(x) = [t.timestamp for t in x]
 

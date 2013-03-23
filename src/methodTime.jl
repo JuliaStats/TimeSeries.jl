@@ -95,10 +95,25 @@ function etrows(x::Array{TimeStamp}, n::Union(Int, Float64))
   x[p]
 end
 
+##################### rows that have value specified for multi-element value field ################
+
+
+
+function yearrows(x::Array{timestamp}, t::int)
+  p = int[]
+  for i in 1:length(x)
+    if year(x[i].timestamp) == t
+      push!(p, i)
+    end
+  end
+  x[p]
+end
+
+
 ######## duplicative time indexing ###################
 ######## needs refactor to an @eval loop ############
 
-function yearrows(x::Array{TimeStamp}, t::Int)
+function yearrows(x::Array{timestamp}, t::int)
   p = Int[]
   for i in 1:length(x)
     if year(x[i].timestamp) == t
