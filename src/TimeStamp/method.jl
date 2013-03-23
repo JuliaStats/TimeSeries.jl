@@ -4,12 +4,12 @@ import Stats.skewness
 import Stats.kurtosis
 
 head{T}(x::Array{TimeStamp{T},1}, n::Int) = x[1:n]
-head{T}(x::Array{TimeStamp{T},1}) = head{T}(x::Array{TimeStamp{T},1}, 6)
-first{T}(x::Array{TimeStamp{T},1}) = head{T}(x::Array{TimeStamp{T},1}, 1)
+head{T}(x::Array{TimeStamp{T},1}) = head(x, 6)
+first{T}(x::Array{TimeStamp{T},1}) = head(x, 1)
 
 tail{T}(x::Array{TimeStamp{T},1}, n::Int) = x[length(x)-n+1:end]
-tail{T}(x::Array{TimeStamp{T},1}) = tail{T}(x::Array{TimeStamp{T},1}, 6)
-last{T}(x::Array{TimeStamp{T},1}) = tail{T}(x::Array{TimeStamp{T},1}, 1)
+tail{T}(x::Array{TimeStamp{T},1}) = tail(x, 6)
+last{T}(x::Array{TimeStamp{T},1}) = tail(x, 1)
 
 #mean(x::Array{TimeStamp{T},1}) = mean([v.value for v in x])
 #mean{T}(x::Array{TimeStamp{T},1}) = mean(v(x))
