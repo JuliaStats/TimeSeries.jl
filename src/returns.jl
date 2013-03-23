@@ -5,6 +5,11 @@ function log_return(dv::DataArray)
   [0 ; ret]
 end
 
+function log_return(fa::Array{Float64, 1})
+  ret = diff(log(fa))
+  [0 ; ret]
+end
+
 function log_return!(df::DataFrame, col::String)
   new_col = string(string(col), "_ret")
   within!(df, quote
@@ -21,6 +26,11 @@ function simple_return(dv::DataArray)
   expm1(log_return(dv)) 
 end
 
+function simple_return(fa::Array{Float64, 1}))
+  expm1(log_return(fa)) 
+end
+
+
 function simple_return!(df::DataFrame, col::String)
   new_col = string(string(col), "_RET")
   within!(df, quote
@@ -30,6 +40,7 @@ end
 
 sip  = simple_return
 sips = simple_return!
+
 ######## equity curve ########################
 
 function equity(dv::DataArray)
