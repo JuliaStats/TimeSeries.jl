@@ -26,7 +26,7 @@ function simple_return(dv::DataArray)
   expm1(log_return(dv)) 
 end
 
-function simple_return(fa::Array{Float64, 1}))
+function simple_return(fa::Array{Float64, 1})
   expm1(log_return(fa)) 
 end
 
