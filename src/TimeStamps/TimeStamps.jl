@@ -1,4 +1,6 @@
-# importall Base #this is sneaky and ruins Calendar
+module TimeStamps
+
+using Calendar
 
 import Base.diff
 import Base.add
@@ -14,17 +16,17 @@ end
 
 
 ##################### Constructor for Array{TimeStamp} ##############################
-
-function TimeStampArray(d::DataFrame, t::Int, v::Int)
- ts = [TimeStamp(d[1,t], d[1,v])]
- for i in 2:nrow(d)
-  val = TimeStamp(d[i,t], d[i,v])
-  ts = push!(ts, val)
- end
- ts
-end
-TimeStampArray(d::DataFrame, v::Int) = TimeStampArray(d::DataFrame, 1, v::Int)  
-
+# 
+# function TimeStampArray(d::DataFrame, t::Int, v::Int)
+#  ts = [TimeStamp(d[1,t], d[1,v])]
+#  for i in 2:nrow(d)
+#   val = TimeStamp(d[i,t], d[i,v])
+#   ts = push!(ts, val)
+#  end
+#  ts
+# end
+# TimeStampArray(d::DataFrame, v::Int) = TimeStampArray(d::DataFrame, 1, v::Int)  
+# 
 ##################### Compare two Arrays on timestamp key ###############################
 ##################### Need @eval loop here, desperately! ###############################
 
@@ -72,3 +74,18 @@ function spread(a::Array{TimeStamp}, b::Array{TimeStamp})
   end
   newts
 end
+
+
+
+include("method.jl")
+include("operators.jl")
+include("tradinginstrument.jl")
+include("nan.jl")
+include("show.jl")
+
+
+
+
+
+
+end #module

@@ -1,19 +1,19 @@
 function removeNaN(x::Array)
-  newa = typeof(x[1])[]
+  newa = Float64[]
   for i in 1:length(x)
-    if x[i] <= max(x)
+    if ~isnan(x[i])
       push!(newa, x[i])
     end
   end
   newa
 end
 
-for(nam, func) = ((:nanmax, :max), (:nanmin, :min), (:nansum, :sum),
-                   (:nanmean, :mean), (:nanmedian, :median), (:nanvar, :var),
-                   (:nanstd, :std), (:nanskewness, :skewness), (:nankurtosis, :kurtosis))
+for(nam, func) = ((:nansum, :sum), (:nanmean, :mean), (:nanmedian, :median), 
+                  (:nanvar, :var), (:nanstd, :std), 
+                  (:nanskewness, :skewness), (:nankurtosis, :kurtosis))
   @eval begin
     function ($nam)(x::Array)
-      newa = typeof(x[1])[]
+      newa = Float64[]
       for i in 1:length(x)
       if ~isnan(x[i])
         push!(newa, x[i])
