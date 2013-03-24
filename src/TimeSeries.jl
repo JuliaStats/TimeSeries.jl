@@ -67,12 +67,13 @@ export moving,
 # deal with NaN as if they were NAs
        nanmax,
        nanmin,
+       nansum,
        nanmean,
+       nanmedian,
        nanvar,
        nanstd,
        nanskewness,
        nankurtosis,
-       nanmedian,
        removeNaN,
        removeNaN_sum,
        doremoveNaN_sum,
@@ -130,3 +131,4 @@ include("indexdate.jl")
 include("testtimeseries.jl")
 
 end  #of module
+

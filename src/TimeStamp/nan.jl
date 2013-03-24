@@ -18,6 +18,15 @@ function nanmin(x::Array)
   end
   min(newa)
 end
+function nansum(x::Array)
+  newa = typeof(x[1])[]
+  for i in 1:length(x)
+    if x[i] < Inf
+      push!(newa, x[i])
+    end
+  end
+  sum(newa)
+end
 function nanmean(x::Array)
   newa = typeof(x[1])[]
   for i in 1:length(x)
