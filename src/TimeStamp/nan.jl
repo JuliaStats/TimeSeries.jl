@@ -1,86 +1,101 @@
 # nan ignoring methods
 
-function nanmax(x::Array)
-  newa = typeof(x[1])[]
-  for i in 1:length(x)
-    if x[i] < Inf
-      push!(newa, x[i])
+for(nam, func) = ((:nanmax, :max), (:nanmin, :min), (:nansum, :sum),
+                   (:nanmean, :mean), (:nanmedian, :median), (:nanvar, :var),
+                   (:nanstd, :std), (:nanskewness, :skewness), (:nankurtosis, :kurtosis))
+  @eval begin
+    function ($nam)(x::Array)
+      newa = typeof(x[1])[]
+      for i in 1:length(x)
+        if x[i] < Inf
+        push!(newa, x[i])
+      end
+    end
+    ($func)(newa)
     end
   end
-  max(newa)
 end
-function nanmin(x::Array)
-  newa = typeof(x[1])[]
-  for i in 1:length(x)
-    if x[i] < Inf
-      push!(newa, x[i])
-    end
-  end
-  min(newa)
-end
-function nansum(x::Array)
-  newa = typeof(x[1])[]
-  for i in 1:length(x)
-    if x[i] < Inf
-      push!(newa, x[i])
-    end
-  end
-  sum(newa)
-end
-function nanmean(x::Array)
-  newa = typeof(x[1])[]
-  for i in 1:length(x)
-    if x[i] < Inf
-      push!(newa, x[i])
-    end
-  end
-  mean(newa)
-end
-function nanmean(x::Array)
-  newa = typeof(x[1])[]
-  for i in 1:length(x)
-    if x[i] < Inf
-      push!(newa, x[i])
-    end
-  end
-  var(newa)
-end
-function nanstd(x::Array)
-  newa = typeof(x[1])[]
-  for i in 1:length(x)
-    if x[i] < Inf
-      push!(newa, x[i])
-    end
-  end
-  std(newa)
-end
-function nanmedian(x::Array)
-  newa = typeof(x[1])[]
-  for i in 1:length(x)
-    if x[i] < Inf
-      push!(newa, x[i])
-    end
-  end
-  median(newa)
-end
-function nanskewness(x::Array)
-  newa = typeof(x[1])[]
-  for i in 1:length(x)
-    if x[i] < Inf
-      push!(newa, x[i])
-    end
-  end
-  skewness(newa)
-end
-function nankurtosis(x::Array)
-  newa = typeof(x[1])[]
-  for i in 1:length(x)
-    if x[i] < Inf
-      push!(newa, x[i])
-    end
-  end
-  kurtosis(newa)
-end
+# function nanmax(x::Array)
+#   newa = typeof(x[1])[]
+#   for i in 1:length(x)
+#     if x[i] < Inf
+#       push!(newa, x[i])
+#     end
+#   end
+#   max(newa)
+# end
+# function nanmin(x::Array)
+#   newa = typeof(x[1])[]
+#   for i in 1:length(x)
+#     if x[i] < Inf
+#       push!(newa, x[i])
+#     end
+#   end
+#   min(newa)
+# end
+# function nansum(x::Array)
+#   newa = typeof(x[1])[]
+#   for i in 1:length(x)
+#     if x[i] < Inf
+#       push!(newa, x[i])
+#     end
+#   end
+#   sum(newa)
+# end
+# function nanmean(x::Array)
+#   newa = typeof(x[1])[]
+#   for i in 1:length(x)
+#     if x[i] < Inf
+#       push!(newa, x[i])
+#     end
+#   end
+#   mean(newa)
+# end
+# function nanmean(x::Array)
+#   newa = typeof(x[1])[]
+#   for i in 1:length(x)
+#     if x[i] < Inf
+#       push!(newa, x[i])
+#     end
+#   end
+#   var(newa)
+# end
+# function nanstd(x::Array)
+#   newa = typeof(x[1])[]
+#   for i in 1:length(x)
+#     if x[i] < Inf
+#       push!(newa, x[i])
+#     end
+#   end
+#   std(newa)
+# end
+# function nanmedian(x::Array)
+#   newa = typeof(x[1])[]
+#   for i in 1:length(x)
+#     if x[i] < Inf
+#       push!(newa, x[i])
+#     end
+#   end
+#   median(newa)
+# end
+# function nanskewness(x::Array)
+#   newa = typeof(x[1])[]
+#   for i in 1:length(x)
+#     if x[i] < Inf
+#       push!(newa, x[i])
+#     end
+#   end
+#   skewness(newa)
+# end
+# function nankurtosis(x::Array)
+#   newa = typeof(x[1])[]
+#   for i in 1:length(x)
+#     if x[i] < Inf
+#       push!(newa, x[i])
+#     end
+#   end
+#   kurtosis(newa)
+# end
 
 
 #######################################
