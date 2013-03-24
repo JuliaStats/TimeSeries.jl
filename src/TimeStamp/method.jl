@@ -18,58 +18,88 @@ last{T}(x::Array{TimeStamp{T},1}) = tail(x, 1)
 
 #maxx(x::Array{TimeStamp{T},1}) = x[max([v.value for v in x]) .== [v.value for v in x]]
 
-function maxrows{T}(x::Array{TimeStamp{T},1})
-  m = max([v.value for v in x])
-  #m = max(x) # no noticable speed impact either way
-  p = Int[]
-  for i in 1:length(x)
-    if x[i].value == m
-      push!(p, i)
+
+for(nam, func) = ((:maxrows, :max), (:minrows, :min))
+  @eval begin
+    function ($nam){T}(x::Array{TimeStamp{T}, 1})
+      m = ($func)([v.value for v in x])
+      p = Int[]
+      for i in 1:length(x)
+        if x[i].value == m
+        push!(p, i)
+      end
+    end
+    x[p]
     end
   end
-  x[p]
 end
 
-function minrows{T}(x::Array{TimeStamp{T},1})
-  m = min([v.value for v in x])
-  p = Int[]
-  for i in 1:length(x)
-    if x[i].value == m
-      push!(p, i)
+# function maxrows{T}(x::Array{TimeStamp{T},1})
+#   m = max([v.value for v in x])
+#   #m = max(x) # no noticable speed impact either way
+#   p = Int[]
+#   for i in 1:length(x)
+#     if x[i].value == m
+#       push!(p, i)
+#     end
+#   end
+#   x[p]
+# end
+# 
+# function minrows{T}(x::Array{TimeStamp{T},1})
+#   m = min([v.value for v in x])
+#   p = Int[]
+#   for i in 1:length(x)
+#     if x[i].value == m
+#       push!(p, i)
+#     end
+#   end
+#   x[p]
+# end
+
+for(nam, func) = ((:gtrows, :>), (:ltrows, :<), (:etrows, :(==)))
+  @eval begin
+    function ($nam){T}(x::Array{TimeStamp{T},1}, n::Union(Int, Float64))
+      p = Int[]
+      for i in 1:length(x)
+        if x[i].value ($func) n
+        push!(p, i)
+        end
+      end
+    x[p]
     end
   end
-  x[p]
 end
 
-function gtrows{T}(x::Array{TimeStamp{T},1}, n::Union(Int, Float64))
-  p = Int[]
-  for i in 1:length(x)
-    if x[i].value > n
-      push!(p, i)
-    end
-  end
-  x[p]
-end
-
-function ltrows{T}(x::Array{TimeStamp{T},1}, n::Union(Int, Float64))
-  p = Int[]
-  for i in 1:length(x)
-    if x[i].value < n
-      push!(p, i)
-    end
-  end
-  x[p]
-end
-
-function etrows{T}(x::Array{TimeStamp{T},1}, n::Union(Int, Float64))
-  p = Int[]
-  for i in 1:length(x)
-    if x[i].value == n
-      push!(p, i)
-    end
-  end
-  x[p]
-end
+# function gtrows{T}(x::Array{TimeStamp{T},1}, n::Union(Int, Float64))
+#   p = Int[]
+#   for i in 1:length(x)
+#     if x[i].value > n
+#       push!(p, i)
+#     end
+#   end
+#   x[p]
+# end
+# 
+# function ltrows{T}(x::Array{TimeStamp{T},1}, n::Union(Int, Float64))
+#   p = Int[]
+#   for i in 1:length(x)
+#     if x[i].value < n
+#       push!(p, i)
+#     end
+#   end
+#   x[p]
+# end
+# 
+# function etrows{T}(x::Array{TimeStamp{T},1}, n::Union(Int, Float64))
+#   p = Int[]
+#   for i in 1:length(x)
+#     if x[i].value == n
+#       push!(p, i)
+#     end
+#   end
+#   x[p]
+# end
 
 ##################### rows that have value specified for multi-element value field ################
 
