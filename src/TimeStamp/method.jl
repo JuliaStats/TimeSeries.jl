@@ -11,35 +11,11 @@ tail{T}(x::Array{TimeStamp{T},1}, n::Int) = x[length(x)-n+1:end]
 tail{T}(x::Array{TimeStamp{T},1}) = tail(x, 6)
 last{T}(x::Array{TimeStamp{T},1}) = tail(x, 1)
 
-#mean(x::Array{TimeStamp{T},1}) = mean([v.value for v in x])
-#mean{T}(x::Array{TimeStamp{T},1}) = mean(v(x))
-# std(x::Array{TimeStamp{T},1}) = std([v.value for v in x])
-# skewness(x::Array{TimeStamp{T},1}) = skewness([v.value for v in x])
-# kurtosis(x::Array{TimeStamp{T},1}) = kurtosis([v.value for v in x])
-# 
-# min(x::Array{TimeStamp{T},1}) = min([v.value for v in x])
-# max(x::Array{TimeStamp{T},1}) = max([v.value for v in x])
-# function maxfast(x::Array{TimeStamp{T},1}) 
-#   c = ctta(x)
-#  max(c)
-# end
-
-###################### initial maths methods #################################
-
-# elapsed time for GSPC.csv file is 0.017835577 (first run)
-#function mean(x::Array{TimeStamp{T},1}) 
-#  s = 0 
-#  for v in x
-#    s += v.value
-#  end
-#  s/length(x)
-#end
-
-# elapsed time for GSPC.csv file is 0.142614052 (first run)
-#mean(x::Array{TimeStamp{T},1}) = mean([v.value for v in x])
-
+# removed all single value return methods
+# unnecessary since Array methods suffice
 
 ##################### rows that have value specified ################
+
 #maxx(x::Array{TimeStamp{T},1}) = x[max([v.value for v in x]) .== [v.value for v in x]]
 
 function maxrows{T}(x::Array{TimeStamp{T},1})
@@ -192,15 +168,3 @@ end
 #   x[p]
 # end
 # 
-# ### other methods of experimental nature ######################
-# 
-# function convert_to_typed_array(ts::Array{TimeStamp{T},1})
-#   typs = typeof(ts[1].value)
-#   if typs == Float64 || typs == Float32
-#     float([v.value for v in ts])
-#   elseif typs == Int64 || typs == Int32
-#     int([v.value for v in ts])
-#   end
-# end
-# 
-# ctta(ts::Array{TimeStamp{T},1}) = convert_to_typed_array(ts::Array{TimeStamp{T},1})
