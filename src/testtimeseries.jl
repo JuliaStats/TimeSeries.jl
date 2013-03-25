@@ -7,10 +7,16 @@ end
 function read_csv_for_testing(dir::String, filename::String)
 csv = string(dir, "/", filename)
 df  = read_table(csv)
-time_conversion = map(x -> parse("yyyy-MM-dd", x), 
-                     convert(Array{UTF16String}, vector(df[:,1])))
+
+(n, kapadoolittle) = size(df)
+calarray = CalendarTime[]
+
+for i in 1:n
+  push!(calarray, Calendar.parse("yyyy-MM-dd", df[i,1]))
+end
+
 within!(df, quote
-        Date = $(time_conversion)
+        Date = $(calarray)
         end)
 flipud(df)
 end
