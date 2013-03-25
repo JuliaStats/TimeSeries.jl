@@ -1,9 +1,10 @@
 module TimeStamps
 
 using Calendar
+using Stats
 
-import Base.show
-import Base.mean, Base.diff, Base.add, Base.std, Stats.skewness, Stats.kurtosis
+
+import Base.show, Base.mean, Base.diff, Base.add, Base.std
 
 abstract AbstractTimeStamp
 
@@ -94,6 +95,7 @@ export TimeStamp,
        Ad,
        t,    #shortcut notation for t.timestamp in t for x
        p,    #shortcut notation for passing in CalendarTime 
+       log_return, 
        timetrial
 
 head{T}(x::Array{TimeStamp{T},1}, n::Int) = x[1:n]
@@ -516,5 +518,20 @@ end
 # end
 ###########################################################
 ############ end NaN methods ##################################
+
+################ log_return for TimeStamp OHLCVA #############
+
+function log_return(ts::Array{TimeStamp{OHLCVA}, 1})
+  res = TimeStamp[]
+  push!(res, TimeStamp(ts[1].timestamp, 0.))
+  for i in 2:length(ts)
+    p0 = ts[i-1]
+    p  = ts[i]
+    stamp = p.timestamp
+    ret   =  log(p.value.Close) - log(p0.value.Close)
+    push!(res, TimeStamp(stamp, ret))
+  end
+  res
+end
 
 end #module
