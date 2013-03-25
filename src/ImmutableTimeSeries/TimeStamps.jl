@@ -3,7 +3,7 @@ module TimeStamps
 using Calendar
 using Stats
 
-import Base.show, Base.mean, Base.diff, Base.add
+import Base.show, Base.mean
 
 abstract AbstractTimeStamp
 
@@ -17,8 +17,8 @@ export TimeStamp,
        val, stamp, p,
        maxrows, minrows, gtrows, ltrows, etrows, 
        byyear, bymonth, byday, byhour, byminute, bysecond, byweek, bydayofweek, bydayofyear,
-       sums, diffs, divs, mults,
-       removeNaN, nanmax, nanmin, nansum, nanmean, nanmedian, nanvar, nanstd, nanskewness, nankurtosis, 
+       sums, diffs, divs, mults, spread,
+       removeNaN, nansum, nanmean, nanmedian, nanvar, nanstd, nanskewness, nankurtosis, 
        timetrial,
 # temporarily exporting tradinginstrument-bound types and methods
        TimeStampArray,  #constructor of Array{TimeStamp} from DataFrame
@@ -91,7 +91,6 @@ for(nam, f) = ((:byyear, :year),
                (:byweek, :week),
                (:bydayofweek, :dayofweek), 
                (:bydayofyear, :dayofyear))
-
   @eval begin
     function ($nam){T<:TimeStamp}(x::Array{T}, t::Int)
       p = Int[]
@@ -127,50 +126,18 @@ for (nam, op) = ((:sums, :+),
     end #function
   end #eval
 end #loop
-function diff(a::Array{TimeStamp}, b::Array{TimeStamp})
-  newts = TimeStamp[]
-  for i in 1:length(a)
-    for j in 1:length(b)
-      if a[i].timestamp == b[j].timestamp
-      push!(newts, TimeStamp(a[i].timestamp, a[i].value - b[j].value))
-      end
+
+function spread{T<:TimeStamp}(a::Array{T}, b::Array{T})
+newts = TimeStamp[]
+for i in 1:length(a)
+  for j in 1:length(b)
+    if a[i].timestamp == b[j].timestamp
+    push!(newts, TimeStamp(a[i].timestamp, abs(a[i].value - b[j].value)))
     end
   end
-  newts
 end
-function add(a::Array{TimeStamp}, b::Array{TimeStamp})
-  newts = TimeStamp[]
-  for i in 1:length(a)
-    for j in 1:length(b)
-      if a[i].timestamp == b[j].timestamp
-      push!(newts, TimeStamp(a[i].timestamp, a[i].value + b[j].value))
-      end
-    end
-  end
-  newts
-end
-function subtract(a::Array{TimeStamp}, b::Array{TimeStamp})
-  newts = TimeStamp[]
-  for i in 1:length(a)
-    for j in 1:length(b)
-      if a[i].timestamp == b[j].timestamp
-      push!(newts, TimeStamp(a[i].timestamp, a[i].value - b[j].value))
-      end
-    end
-  end
-  newts
-end
-function spread(a::Array{TimeStamp}, b::Array{TimeStamp})
-  newts = TimeStamp[]
-  for i in 1:length(a)
-    for j in 1:length(b)
-      if a[i].timestamp == b[j].timestamp
-      push!(newts, TimeStamp(a[i].timestamp, abs(a[i].value - b[j].value)))
-      end
-    end
-  end
-  newts
-end
+newts
+end 
 
 #################################
 ###### show #####################
