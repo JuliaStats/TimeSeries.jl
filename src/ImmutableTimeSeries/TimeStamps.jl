@@ -69,7 +69,7 @@ for(nam, func) = ((:gtrows, :>), (:ltrows, :<), (:etrows, :(==)))
     function ($nam){T<:TimeStamp}(x::Array{T}, n::Union(Int, Float64))
       p = Int[]
       for i in 1:length(x)
-        if x[i].value($func)n
+        if ($func)(x[i].value, n)
         push!(p, i)
         end
       end
