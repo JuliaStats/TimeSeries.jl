@@ -4,7 +4,7 @@ a = TimeStamp[]
 b = TimeStamp[]
 
 for i in 1:10
-  newa = TimeStamp(p("2012-12-12")+days(i), i)
+  newa = TimeStamp(p("2012-12-29")+days(i), i)
   push!(a, newa)
 end
 
@@ -36,6 +36,26 @@ a_last  = last(a)
 ###################################################################
 ###### by date ####################################################
 ###################################################################
+
+day_a       = stamp(byday(a,1))
+month_a     = stamp(bymonth(a,1))
+year_a      = stamp(byyear(a,2013))
+week_a      = stamp(byweek(a,2))
+dayofweek_a = stamp(bydayofweek(a,1))
+dayofyear_a = stamp(bydayofyear(a,7))
+# hour_a    = stamp(byhour(a,1))
+# minute_a  = stamp(byminute(a,1))
+# second_a  = stamp(bysecond(a,1))
+
+@assert [p("2013-01-01")]    == day_a
+@assert p("2013-01-02")    == month_a[2]
+@assert p("2013-01-03")    == year_a[3]
+@assert p("2013-01-06")    == week_a[1]
+@assert p("2013-01-06")    == dayofweek_a[2]
+@assert p("2013-01-07")    == dayofyear_a[1]
+# @assert [p("2013-01-01")]  == hour_a
+# @assert [p("2013-01-01")]  == minute_a
+# @assert [p("2013-01-01")]  == second_a
 
 ###################################################################
 ###### 2-Array ops ################################################
