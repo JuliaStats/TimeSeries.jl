@@ -3,7 +3,7 @@ module TimeStamps
 using Calendar
 using Stats
 
-import Base.show, Base.mean, Base.diff, Base.add, Base.std
+import Base.show, Base.mean, Base.diff, Base.add
 
 abstract AbstractTimeStamp
 
@@ -12,17 +12,19 @@ immutable TimeStamp{T} <: AbstractTimeStamp
   value::T
 end
  
-export TimeStamp, OHLC, OHLCVA,
+export TimeStamp, 
        head, tail, first, last, 
        val, stamp, p,
        maxrows, minrows, gtrows, ltrows, etrows, 
        byyear, bymonth, byday, byhour, byminute, bysecond, byweek, bydayofweek, bydayofyear,
-       diff, sum, subtract, spread,
-       nanmax, nanmin, nansum, nanmean, nanmedian, nanvar, nanstd, nanskewness, nankurtosis, removeNaN, removeNaN_sum, doremoveNaN_sum,
+       sums, diffs, divs, mults,
+       removeNaN, nanmax, nanmin, nansum, nanmean, nanmedian, nanvar, nanstd, nanskewness, nankurtosis, 
        timetrial,
+# temporarily exporting tradinginstrument-bound types and methods
        TimeStampArray,  #constructor of Array{TimeStamp} from DataFrame
+       OHLC, OHLCVA,
        ifred, iyahoo,
-       vopen, vhigh, vlow, vclose, vvolume, vadj, Op, Hi, Lo, Cl, Vo, Ad,
+       Op, Hi, Lo, Cl, Vo, Ad,
        log_return 
 
 #################################
@@ -79,6 +81,7 @@ end
 #################################
 ###### Time period ##############
 #################################
+
 for(nam, f) = ((:byyear, :year), 
                (:bymonth, :month), 
                (:byday, :day),
@@ -106,6 +109,24 @@ end
 ###### 2-Array operation ########
 #################################
 
+for (nam, op) = ((:sums, :+),
+                 (:diffs, :-),
+                 (:divs, :/),
+                 (:mults, :*))
+  @eval begin
+    function ($nam){T<:TimeStamp}(a::Array{T}, b::Array{T})
+    newts = TimeStamp[]
+    for i in 1:length(a)
+      for j in 1:length(b)
+        if a[i].timestamp == b[j].timestamp
+        push!(newts, TimeStamp(a[i].timestamp, ($op)(a[i].value, b[j].value)))
+        end
+      end
+    end
+    newts
+    end #function
+  end #eval
+end #loop
 function diff(a::Array{TimeStamp}, b::Array{TimeStamp})
   newts = TimeStamp[]
   for i in 1:length(a)
@@ -168,17 +189,8 @@ end
 ###### Comprehensions ###########
 #################################
 
-# function v(x::Array{TimeStamp}, s::String) 
-#   nest = string("v.value.", s)
-#   arr  = [nest for v in x]
-# end
-
 val(x) = [v.value for v in x]
 stamp(x) = [t.timestamp for t in x]
-
-
-### shortcut for passing in date via a string for indexing
-
 p(x::String) = Calendar.parse("yyyy-MM-dd", x)
 
 #################################
@@ -218,7 +230,6 @@ end
 #   end
 # end
 
-
 #################################
 ###### include ##################
 #################################
@@ -226,4 +237,3 @@ end
 include("tradinginstrument.jl")
 
 end #module
-
