@@ -90,12 +90,11 @@ last{T<:TimeStamp}(x::Array{T}) = tail(x, 1)
 
 #maxx(x::Array{TimeStamp{T},1}) = x[max([v.value for v in x]) .== [v.value for v in x]]
 
-
 for(nam, func) = ((:maxrows, :max), (:minrows, :min))
   @eval begin
-    function ($nam){T}(x::Array{TimeStamp{T}, 1})
+    function ($nam){T<:TimeStamp}(x::Array{T})
       m = ($func)([v.value for v in x])
-      p = Int[]
+      p = int[]
       for i in 1:length(x)
         if x[i].value == m
         push!(p, i)
@@ -106,35 +105,13 @@ for(nam, func) = ((:maxrows, :max), (:minrows, :min))
   end
 end
 
-# function maxrows{T}(x::Array{TimeStamp{T},1})
-#   m = max([v.value for v in x])
-#   #m = max(x) # no noticable speed impact either way
-#   p = Int[]
-#   for i in 1:length(x)
-#     if x[i].value == m
-#       push!(p, i)
-#     end
-#   end
-#   x[p]
-# end
-# 
-# function minrows{T}(x::Array{TimeStamp{T},1})
-#   m = min([v.value for v in x])
-#   p = Int[]
-#   for i in 1:length(x)
-#     if x[i].value == m
-#       push!(p, i)
-#     end
-#   end
-#   x[p]
-# end
 
 for(nam, func) = ((:gtrows, :>), (:ltrows, :<), (:etrows, :(==)))
   @eval begin
-    function ($nam){T}(x::Array{TimeStamp{T},1}, n::Union(Int, Float64))
+    function ($nam){T<:TimeStamp}(x::Array{T}, n::Union(Int, Float64))
       p = Int[]
       for i in 1:length(x)
-        if x[i].value ($func) n
+        if x[i].value($func)n
         push!(p, i)
         end
       end
@@ -143,133 +120,31 @@ for(nam, func) = ((:gtrows, :>), (:ltrows, :<), (:etrows, :(==)))
   end
 end
 
-# function gtrows{T}(x::Array{TimeStamp{T},1}, n::Union(Int, Float64))
-#   p = Int[]
-#   for i in 1:length(x)
-#     if x[i].value > n
-#       push!(p, i)
-#     end
-#   end
-#   x[p]
-# end
-# 
-# function ltrows{T}(x::Array{TimeStamp{T},1}, n::Union(Int, Float64))
-#   p = Int[]
-#   for i in 1:length(x)
-#     if x[i].value < n
-#       push!(p, i)
-#     end
-#   end
-#   x[p]
-# end
-# 
-# function etrows{T}(x::Array{TimeStamp{T},1}, n::Union(Int, Float64))
-#   p = Int[]
-#   for i in 1:length(x)
-#     if x[i].value == n
-#       push!(p, i)
-#     end
-#   end
-#   x[p]
-# end
+  
+for(nam, f) = ((:yearrows, :year), (:monthrows, :month), (:dayrows, :doy),
+               (:dowrows, :dayofweek), (:doyrows, :dayofyear),
+               (:hourrows, :hour), (:minuterows, :minute),
+               (:secondrows, :second), (:weekrows, :week))
+  @eval begin
+    function ($nam){T<:TimeStamp}(x::Array{T}, t::Int)
+      p = Int[]
+      for i in 1:length(x)
+      if ($f)(x[i].timestamp) == t
+       push!(p, i)
+      end
+      end
+      x[p]
+    end
+  end
+end
 
-##################### rows that have value specified for multi-element value field ################
-
-
-
-
-
-######## duplicative time indexing ###################
-######## needs refactor to an @eval loop ############
-
-# function yearrows(x::Array{timestamp}, t::int)
-#   p = Int[]
-#   for i in 1:length(x)
-#     if year(x[i].timestamp) == t
-#       push!(p, i)
-#     end
-#   end
-#   x[p]
-# end
-# 
-# function monthrows(x::Array{TimeStamp{T},1}, t::Int)
-#   p = Int[]
-#   for i in 1:length(x)
-#     if month(x[i].timestamp) == t
-#       push!(p, i)
-#     end
-#   end
-#   x[p]
-# end
-# 
-# function dayrows(x::Array{TimeStamp{T},1}, t::Int)
-#   p = Int[]
-#   for i in 1:length(x)
-#     if day(x[i].timestamp) == t
-#       push!(p, i)
-#     end
-#   end
-#   x[p]
-# end
 # 
 # function dowrows(x::Array{TimeStamp{T},1}, t::Int)
-#   p = Int[]
-#   for i in 1:length(x)
-#     if dayofweek(x[i].timestamp) == t
-#       push!(p, i)
-#     end
-#   end
-#   x[p]
-# end
-# 
-# ####### second batch of functions
-# 
 # function hourrows(x::Array{TimeStamp{T},1}, t::Int)
-#   p = Int[]
-#   for i in 1:length(x)
-#     if hour(x[i].timestamp) == t
-#       push!(p, i)
-#     end
-#   end
-#   x[p]
-# end
 # function minuterows(x::Array{TimeStamp{T},1}, t::Int)
-#   p = Int[]
-#   for i in 1:length(x)
-#     if minute(x[i].timestamp) == t
-#       push!(p, i)
-#     end
-#   end
-#   x[p]
-# end
 # function secondrows(x::Array{TimeStamp{T},1}, t::Int)
-#   p = Int[]
-#   for i in 1:length(x)
-#     if second(x[i].timestamp) == t
-#       push!(p, i)
-#     end
-#   end
-#   x[p]
-# end
 # function weekrows(x::Array{TimeStamp{T},1}, t::Int)
-#   p = Int[]
-#   for i in 1:length(x)
-#     if week(x[i].timestamp) == t
-#       push!(p, i)
-#     end
-#   end
-#   x[p]
-# end
 # function doyrows(x::Array{TimeStamp{T},1}, t::Int)
-#   p = Int[]
-#   for i in 1:length(x)
-#     if dayofyear(x[i].timestamp) == t
-#       push!(p, i)
-#     end
-#   end
-#   x[p]
-# end
-# 
 
 ##################### Compare two Arrays on timestamp key ###############################
 ##################### Need @eval loop here, desperately! ###############################
