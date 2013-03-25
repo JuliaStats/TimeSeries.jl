@@ -9,7 +9,7 @@ for i in 1:10
 end
 
 for i in 1:10
-  newa = TimeStamp(p("2012-12-12")+days(i), i+.5)
+  newa = TimeStamp(p("2012-12-29")+days(i), i+.5)
   push!(b, newa)
 end
 
@@ -60,6 +60,18 @@ dayofyear_a = stamp(bydayofyear(a,7))
 ###################################################################
 ###### 2-Array ops ################################################
 ###################################################################
+
+sumsab = sums(a,b)
+diffsab = diffs(a,b)
+divsab  = divs(a,b)
+multsab = mults(a,b)
+
+@assert 2.5  == val(sumsab)[1]
+@assert -0.5 == val(diffsab)[1]
+@assert 0.8  == val(divsab)[2]
+@assert 105  == val(multsab)[10]
+
+
 
 ###################################################################
 ###### NaN ########################################################
