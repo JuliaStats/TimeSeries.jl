@@ -26,15 +26,15 @@ export TimeStamp,
        gtrows, 
        ltrows, 
        etrows, 
-       yearrows,
-       monthrows,
-       dayrows,
-       dowrows,
-       hourrows,
-       minuterows,
-       secondrows,
-       weekrows,
-       doyrows,
+       byyear,
+       bymonth,
+       byday,
+       byhour,
+       byminute,
+       bysecond,
+       byweek,
+       bydayofweek,
+       bydayofyear,
 # create new Array{TimeStamp} by operating on two 
        diff,
        sum,
@@ -121,10 +121,16 @@ for(nam, func) = ((:gtrows, :>), (:ltrows, :<), (:etrows, :(==)))
 end
 
   
-for(nam, f) = ((:yearrows, :year), (:monthrows, :month), (:dayrows, :doy),
-               (:dowrows, :dayofweek), (:doyrows, :dayofyear),
-               (:hourrows, :hour), (:minuterows, :minute),
-               (:secondrows, :second), (:weekrows, :week))
+for(nam, f) = ((:byyear, :year), 
+               (:bymonth, :month), 
+               (:byday, :day),
+               (:byhour, :hour), 
+               (:byminute, :minute),
+               (:bysecond, :second), 
+               (:byweek, :week),
+               (:bydayofweek, :dayofweek), 
+               (:bydayofyear, :dayofyear))
+
   @eval begin
     function ($nam){T<:TimeStamp}(x::Array{T}, t::Int)
       p = Int[]
@@ -137,14 +143,6 @@ for(nam, f) = ((:yearrows, :year), (:monthrows, :month), (:dayrows, :doy),
     end
   end
 end
-
-# 
-# function dowrows(x::Array{TimeStamp{T},1}, t::Int)
-# function hourrows(x::Array{TimeStamp{T},1}, t::Int)
-# function minuterows(x::Array{TimeStamp{T},1}, t::Int)
-# function secondrows(x::Array{TimeStamp{T},1}, t::Int)
-# function weekrows(x::Array{TimeStamp{T},1}, t::Int)
-# function doyrows(x::Array{TimeStamp{T},1}, t::Int)
 
 ##################### Compare two Arrays on timestamp key ###############################
 ##################### Need @eval loop here, desperately! ###############################
