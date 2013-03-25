@@ -18,6 +18,10 @@ immutable OHLCVA <: AbstractImmutablePriceData
   Adj::Float64
 end
 
+#################################
+###### show #####################
+#################################
+
 function show(io::IO, oh::OHLCVA)
   print(io, oh.Open, "  ", 
             oh.High, "  ", 
@@ -27,9 +31,11 @@ function show(io::IO, oh::OHLCVA)
             oh.Adj, "  ") 
 end
 
-################ log_return for TimeStamp OHLCVA #############
+#################################
+###### return ###################
+#################################
 
-function log_return(ts::Array{TimeStamp{OHLCVA}, 1})
+function log_return{T<:TimeStamp}(ts::Array{T})
   res = TimeStamp[]
   push!(res, TimeStamp(ts[1].timestamp, 0.))
   for i in 2:length(ts)
@@ -42,24 +48,22 @@ function log_return(ts::Array{TimeStamp{OHLCVA}, 1})
   res
 end
 
-# gah, I'm too lazy to figure out the generalized version
+#################################
+###### TimeStamp field get ######
+#################################
 
-vopen(x) = [v.value.Open for v in x]
-vhigh(x) = [v.value.High for v in x]
-vlow(x) = [v.value.Low for v in x]
-vclose(x) = [v.value.Close for v in x]
-vvolume(x) = [v.value.Volume for v in x]
-vadj(x) = [v.value.Adj for v in x]
+# gah, I'm too lazy to figure out the generalized loop version
 
-# alias trick 
+Op(x) = [v.value.Open for v in x]
+Hi(x) = [v.value.High for v in x]
+Lo(x) = [v.value.Low for v in x]
+Cl(x) = [v.value.Close for v in x]
+Vo(x) = [v.value.Volume for v in x]
+Ad(x) = [v.value.Adj for v in x]
 
-const Op = vopen
-const Hi = vhigh
-const Lo = vlow
-const Cl = vclose
-const Vo = vvolume
-const Ad = vadj
-
+#################################
+###### readers ##################
+#################################
 
 function iyahoo(stock::String, fm::Int, fd::Int, fy::Int, tm::Int, td::Int, ty::Int, period::String)
 
@@ -132,5 +136,3 @@ function ifred(econdata::String)
    end
    ts
 end
-
-###########################################################

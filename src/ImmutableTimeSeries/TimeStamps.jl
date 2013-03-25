@@ -12,68 +12,26 @@ immutable TimeStamp{T} <: AbstractTimeStamp
   value::T
 end
  
-export TimeStamp,
-       OHLC,
-       OHLCVA,
-       head,
-       tail, 
-       first, 
-       last, 
-# use Array methods when single value desired
-# use row-styled methods when the return of the entire object preferred
-       maxrows, 
-       minrows, 
-       gtrows, 
-       ltrows, 
-       etrows, 
-       byyear,
-       bymonth,
-       byday,
-       byhour,
-       byminute,
-       bysecond,
-       byweek,
-       bydayofweek,
-       bydayofyear,
-# create new Array{TimeStamp} by operating on two 
-       diff,
-       sum,
-       subtract,
-       spread,
-# deal with NaN as if they were NAs
-       nanmax,
-       nanmin,
-       nansum,
-       nanmean,
-       nanmedian,
-       nanvar,
-       nanstd,
-       nanskewness,
-       nankurtosis,
-       removeNaN,
-       removeNaN_sum,
-       doremoveNaN_sum,
-# other experimental methods
+export TimeStamp, OHLC, OHLCVA,
+       head, tail, first, last, 
+       val, stamp, p,
+       maxrows, minrows, gtrows, ltrows, etrows, 
+       byyear, bymonth, byday, byhour, byminute, bysecond, byweek, bydayofweek, bydayofyear,
+       diff, sum, subtract, spread,
+       nanmax, nanmin, nansum, nanmean, nanmedian, nanvar, nanstd, nanskewness, nankurtosis, removeNaN, removeNaN_sum, doremoveNaN_sum,
+       timetrial,
        TimeStampArray,  #constructor of Array{TimeStamp} from DataFrame
-       ifred,
-       iyahoo,
-       val,    #shortcut notation for v.value in v for x
-       vopen,
-       vhigh,
-       vlow,
-       vclose,
-       vvolume,
-       vadj,
-       Op,
-       Hi,
-       Lo,
-       Cl,
-       Vo,
-       Ad,
-       stamp,    #shortcut notation for t.timestamp in t for x
-       p,    #shortcut notation for passing in CalendarTime 
-       log_return, 
-       timetrial
+       ifred, iyahoo,
+       vopen, vhigh, vlow, vclose, vvolume, vadj, Op, Hi, Lo, Cl, Vo, Ad,
+       log_return 
+
+#################################
+###### Start methods ############
+#################################
+
+#################################
+###### head, tail ###############
+#################################
 
 head{T<:TimeStamp}(x::Array{T}, n::Int) = x[1:n]
 head{T<:TimeStamp}(x::Array{T}) = head(x, 6)
@@ -82,11 +40,10 @@ first{T<:TimeStamp}(x::Array{T}) = head(x, 1)
 tail{T<:TimeStamp}(x::Array{T}, n::Int) = x[length(x)-n+1:end]
 tail{T<:TimeStamp}(x::Array{T}) = tail(x, 6)
 last{T<:TimeStamp}(x::Array{T}) = tail(x, 1)
-
-# removed all single value return methods
-# unnecessary since Array methods suffice
-
-##################### rows that have value specified ################
+ 
+#################################
+###### Subset by operator #######
+#################################
 
 #maxx(x::Array{TimeStamp{T},1}) = x[max([v.value for v in x]) .== [v.value for v in x]]
 
@@ -105,7 +62,6 @@ for(nam, func) = ((:maxrows, :max), (:minrows, :min))
   end
 end
 
-
 for(nam, func) = ((:gtrows, :>), (:ltrows, :<), (:etrows, :(==)))
   @eval begin
     function ($nam){T<:TimeStamp}(x::Array{T}, n::Union(Int, Float64))
@@ -119,8 +75,10 @@ for(nam, func) = ((:gtrows, :>), (:ltrows, :<), (:etrows, :(==)))
     end
   end
 end
-
   
+#################################
+###### Time period ##############
+#################################
 for(nam, f) = ((:byyear, :year), 
                (:bymonth, :month), 
                (:byday, :day),
@@ -144,8 +102,9 @@ for(nam, f) = ((:byyear, :year),
   end
 end
 
-##################### Compare two Arrays on timestamp key ###############################
-##################### Need @eval loop here, desperately! ###############################
+#################################
+###### 2-Array operation ########
+#################################
 
 function diff(a::Array{TimeStamp}, b::Array{TimeStamp})
   newts = TimeStamp[]
@@ -192,7 +151,9 @@ function spread(a::Array{TimeStamp}, b::Array{TimeStamp})
   newts
 end
 
-##################### SHOW ##########################
+#################################
+###### show #####################
+#################################
 
 function show(io::IO, t::CalendarTime)
   s = format("yyyy-MM-dd", t)
@@ -203,18 +164,9 @@ function show(io::IO, ts::TimeStamp)
   print(io, ts.timestamp, "  |  ", ts.value)
 end
 
-
-# function repl_show(io::IO, ts::TimeStamp) 
-#   println(io, [ts.timestamp ts.value])
-# end
-# 
-# function repl_show(io::IO, ts::Array{TimeStamp}) 
-#   println(io, ts)
-# end
-
-####################### END SHOW #######################
-
-### shortcut to extracting out the fields from Array{TimeStamp}
+#################################
+###### Comprehensions ###########
+#################################
 
 # function v(x::Array{TimeStamp}, s::String) 
 #   nest = string("v.value.", s)
@@ -228,7 +180,10 @@ stamp(x) = [t.timestamp for t in x]
 ### shortcut for passing in date via a string for indexing
 
 p(x::String) = Calendar.parse("yyyy-MM-dd", x)
-############ NaN methods ##################################
+
+#################################
+###### NaN ######################
+#################################
 
 function removeNaN(x::Array)
   newa = Float64[]
@@ -262,9 +217,11 @@ end
 #     isnan(x) ? 0 : x  
 #   end
 # end
-###########################################################
-############ end NaN methods ##################################
 
+
+#################################
+###### include ##################
+#################################
 
 include("tradinginstrument.jl")
 
