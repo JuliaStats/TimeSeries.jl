@@ -1,20 +1,32 @@
-`TimeSeries` is stable for Julia release-0.1, but there are dependencies on `DataFrames` and `Calendar` so
-make sure (if you're manually managing your packages) that you use release-0.1 compatible versions of those packages.
+#### API CHANGE ANNOUNCEMENT 
 
-If you're interested in work on the `TimeStamp` type, check out the timestamp branch. This branch seeks to
-implement Julia's new `immutable` type and does so by creating an Array of immutables. Preliminary indications 
-show a speed improvement over `DataFrames`. 
+The `timestamp` branch has been merged. I know there has been alot of excitement about this (at least at my house), and now
+it's time to give it a run. 
 
-Versioning is planned to mirror Julia initially. I'll get around to versioning this commit as 0.1, The timestamp
-branch will be merged with master and dubbed version 0.2 later. This is a major change to this package. It will seek to
-remove dependencies on the `DataFrames` package, which by the way is an awesome package, and will instead rely on 
-using `Array{TimeStamp}` as the primary data structure. 
+If you have been using `TimeSeries` and you follow the demonstrations below, nothing should have changed. And if you are feeling
+adventurous, you have the option to start using the `TimeStamp` immutable type. You should realize that the API is a little bit awkward
+at present because I've decided to hold off making both the `DataFrames` and `TimeStamp` versions nested modules. This was done to ease
+the transition. The default module is the mutable version and the immutable version requires some extra incantations.
 
-Dispatch on `DataFrames` is not expected to be removed, and might very well be improved. Likewise, dispatch on 
-`Array{Number}` is likely to remain as well. 
+````julia
 
-Any feed back in the Issues tab is appreciated!
+julia> using TimeSeries.TimeStamps
+````
 
+It's likely of interest to observe that it matters the order in which you invoke `using`, with respect to `TimeSeries` and `TimeSeries.TimeStamps`.
+Whichever gets called first gets dibbs on methods with the same name. Currently, there is only the `log_return` method that conflicts. If you loaded 
+`TimeSeries` first and the invoked the above code, you'll be given a message about the conflict. To access the `TimeStamps` version you simply prepend it
+with the module name.
+````julia
+
+julia> using TimeSeries.TimeStamps
+Warning: using TimeStamps.log_return in module Main conflicts with an existing identifier.
+
+julia> TimeStamps.log_return
+# methods for generic function log_return
+log_return{T<:TimeStamp{T}}(ts::Array{T<:TimeStamp{T},N}) at /Users/Administrator/.julia/TimeSeries/src/ImmutableTimeSeries/tradinginstrument.jl:39
+
+````
 And now back to the regular README ... 
 
 For the demonstration, we'll be importing data from Yahoo with the `TradingInstrument` package.
