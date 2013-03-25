@@ -4,9 +4,8 @@ macro timeseries()
 end
 
 
-function read_csv_for_testing(dir::String, filename::String)
-csv = string(dir, "/", filename)
-df  = read_table(csv)
+function read_csv_for_testing(filename::String)
+df  = read_table(filename)
 
 (n, kapadoolittle) = size(df)
 calarray = CalendarTime[]
@@ -18,7 +17,8 @@ end
 within!(df, quote
         Date = $(calarray)
         end)
-flipud(df)
+flipud!(df)
+df
 end
 
 ########### time trial wrapper #####################################

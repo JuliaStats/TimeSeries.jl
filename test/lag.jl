@@ -71,7 +71,8 @@ dvb_lag = lag(dvb,3)
 # 
 # ######## DataFrame ######################
 
-df = read_csv_for_testing(Pkg.dir("TimeSeries", "test", "data"), "spx.csv")
+
+df = read_csv_for_testing(Pkg.dir("TimeSeries/test/data/spx.csv"))
 
 lead!(df, "Close", 1)
 lead!(df, "Close", 3)
