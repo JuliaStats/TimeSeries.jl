@@ -1,34 +1,3 @@
-#### API CHANGE ANNOUNCEMENT 
-
-The `timestamp` branch has been merged. I know there has been alot of excitement about this (at least at my house), and now
-it's time to give it a run. 
-
-If you have been using `TimeSeries` and you follow the demonstrations below, nothing should have changed. And if you are feeling
-adventurous, you have the option to start using the `TimeStamp` immutable type. You should realize that the API is a little bit awkward
-at present because I've decided to hold off making both the `DataFrames` and `TimeStamp` versions nested modules. This was done to ease
-the transition. The default module is the mutable version and the immutable version requires some extra incantations.
-
-````julia
-
-julia> using TimeSeries.TimeStamps
-````
-
-It's likely of interest to observe that it matters the order in which you invoke `using`, with respect to `TimeSeries` and `TimeSeries.TimeStamps`.
-Whichever gets called first gets dibbs on methods with the same name. Currently, there is only the `log_return` method that conflicts. If you loaded 
-`TimeSeries` first and the invoked the above code, you'll be given a message about the conflict. To access the `TimeStamps` version you simply prepend it
-with the module name.
-````julia
-
-julia> using TimeSeries.TimeStamps
-Warning: using TimeStamps.log_return in module Main conflicts with an existing identifier.
-
-julia> TimeStamps.log_return
-# methods for generic function log_return
-log_return{T<:TimeStamp{T}}(ts::Array{T<:TimeStamp{T},N}) at /Users/Administrator/.julia/TimeSeries/src/ImmutableTimeSeries/tradinginstrument.jl:39
-
-````
-And now back to the regular README ... 
-
 For the demonstration, we'll be importing data from Yahoo with the `TradingInstrument` package.
 
 #### Demonstration
@@ -82,5 +51,3 @@ Running tests:
 **   test/upto.jl
 **   test/indexdate.jl
 ````
-NOTE: the `read_yahoo` function has been moved to the `TradingInstrument` package, but a version of it is still in this package 
-for testing purposes.
