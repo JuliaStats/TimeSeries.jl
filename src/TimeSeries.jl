@@ -4,7 +4,8 @@ module TimeSeries
 
 using  DataFrames, Calendar
 
-export moving, 
+export read_time, 
+       moving,  
        lag,  
        lead,
        log_return, 
@@ -39,6 +40,7 @@ export moving,
 
 ################## include files #####################
 
+include("io.jl")
 include("moving.jl")
 include("lag.jl")
 include("returns.jl")
