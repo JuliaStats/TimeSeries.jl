@@ -35,8 +35,7 @@ export read_time,
        sip, 
        sips, 
 ## testing
-       @timeseries,
-       read_csv_for_testing
+       @timeseries
 
 ################## include files #####################
 
