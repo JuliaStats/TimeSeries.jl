@@ -5,7 +5,7 @@ end
 
 
 function read_csv_for_testing(filename::String)
-df  = read_table(filename)
+df  = readtable(filename)
 
 (n, kapadoolittle) = size(df)
 calarray = CalendarTime[]

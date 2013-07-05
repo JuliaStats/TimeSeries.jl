@@ -1,5 +1,5 @@
 function read_time(filename::String, fmt::String)
-  cdf        = read_table(filename)
+  cdf        = readtable(filename)
   cnames     = colnames(cdf)
   time_array = CalendarTime[]
 
