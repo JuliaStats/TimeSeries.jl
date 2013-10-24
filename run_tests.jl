@@ -1,5 +1,4 @@
-require("test.jl")
-
+using Base.Test
 using TimeSeries
 
 my_tests = ["test/returns.jl",
