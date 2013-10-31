@@ -1,8 +1,8 @@
-using  DataFrames, Calendar
+using  DataFrames, Datetime
 
 module TimeSeries
 
-using  DataFrames, Calendar
+using  DataFrames, Datetime
 
 export read_time, 
        moving,  

@@ -1,6 +1,5 @@
 using Base.Test
 using TimeSeries
-using Stats
 
 let
 
