@@ -44,7 +44,6 @@ include("moving.jl")
 include("lag.jl")
 include("returns.jl")
 include("upto.jl")
-include("indexdate.jl")
 include("bydate.jl")
 include("testtimeseries.jl")
 
