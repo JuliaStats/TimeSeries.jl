@@ -12,15 +12,15 @@ export read_time,
        simple_return, 
        equity, 
        upto, 
-       indexyear,
-       indexmonth,
-       indexday,
-       indexdow,
-       indexhour,
-       indexminute,
-       indexsecond,
-       indexweek,
-       indexdoy,
+       byyear,
+       bymonth,
+       byday,
+       bydow,
+       byhour,
+       byminute,
+       bysecond,
+       byweek,
+       bydoy,
 # mutate DataFrame versions
        moving!,
        lag!,
@@ -45,6 +45,7 @@ include("lag.jl")
 include("returns.jl")
 include("upto.jl")
 include("indexdate.jl")
+include("bydate.jl")
 include("testtimeseries.jl")
 
 end  #of module

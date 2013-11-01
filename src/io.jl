@@ -9,12 +9,12 @@ function read_time(filename::String)
     Nothing
   end
 
-# create IndedxedVector
-  for col in colnames(df)
-    ismatch(r"(?i)date", col)?
-    df[col] =  IndexedVector(df[col]):
-    Nothing
-  end
+#### # create IndedxedVector
+####   for col in colnames(df)
+####     ismatch(r"(?i)date", col)?
+####     df[col] =  IndexedVector(df[col]):
+####     Nothing
+####   end
 
 # enforce descending order
   for col in colnames(df)
