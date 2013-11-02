@@ -54,5 +54,10 @@ end
 #################     Nothing
 #################   end
 
+# create IndexedVector and  enforce descending order using first valid Datetime column
+  enforcer     = col_that_pass[1]
+  df[enforcer] = IndexedVector(df[enforcer]):
+  df[1, enforcer] > df[2, enforcer]? flipud!(df): df
+
   return df
 end

@@ -3,7 +3,7 @@ using TimeSeries
 
 let
 
-  df = read_time(Pkg.dir("TimeSeries/test/data/spx.csv"))
+  df = readtime(Pkg.dir("TimeSeries/test/data/spx.csv"))
   
   upto!(df, "Close", mean);
   upto!(df, "Close", var);

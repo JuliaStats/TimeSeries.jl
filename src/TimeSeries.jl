@@ -4,7 +4,7 @@ module TimeSeries
 
 using  DataFrames, Datetime
 
-export read_time, 
+export readtime, 
        moving,  
        lag,  
        lead,

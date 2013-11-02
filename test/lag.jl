@@ -74,7 +74,7 @@ let
   # 
 ######## DataFrame ######################
   
-  df = read_time(Pkg.dir("TimeSeries/test/data/spx.csv"))
+  df = readtime(Pkg.dir("TimeSeries/test/data/spx.csv"))
   
   lead!(df, "Close", 1)
   lead!(df, "Close", 3)

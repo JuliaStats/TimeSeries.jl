@@ -2,7 +2,7 @@ using Base.Test
 using TimeSeries
 
 let
-  df = read_time(Pkg.dir("TimeSeries/test/data/spx.csv"))
+  df = readtime(Pkg.dir("TimeSeries/test/data/spx.csv"))
   
   sr = simple_return(df["Close"])
   lr = log_return(df["Close"])

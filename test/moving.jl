@@ -52,7 +52,7 @@ let
   # @assert 5 == length(dvs_lag)
   
 ######## DataFrame ######################
-  df = read_time(Pkg.dir("TimeSeries/test/data/spx.csv"))
+  df = readtime(Pkg.dir("TimeSeries/test/data/spx.csv"))
   
   moving!(df, "Close", mean, 50)
   moving!(df, "Close", mean, 200)
