@@ -1,11 +1,12 @@
 using Base.Test
 using TimeSeries
 
-my_tests = ["test/returns.jl",
+my_tests = ["test/bydate.jl",
+            "test/io.jl",
             "test/lag.jl",
             "test/moving.jl",
-            "test/upto.jl",
-            "test/bydate.jl"]
+            "test/returns.jl",
+            "test/upto.jl"]
 
 print_with_color(:cyan, "Running tests: ") 
 println("")
