@@ -47,4 +47,12 @@ include("upto.jl")
 include("bydate.jl")
 include("testtimeseries.jl")
 
+################## deprecations #######################
+
+Base.@deprecate read_time readtime
+Base.@deprecate indexyear byyear
+Base.@deprecate indexmonth bymonth
+Base.@deprecate indexday byday
+Base.@deprecate indexdow bydow
+
 end  #of module
