@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/JuliaStats/TimeSeries.jl.png)](https://travis-ci.org/JuliaStats/TimeSeries.jl)
+
 #### Installation
 
 ````julia
