@@ -51,8 +51,6 @@ value is whatever is specified in the function call.
 
 If you're interested in running the test suite, you can call the `@timeseries` macro inside a Julia session.
 
-There are also plans to enable the Travis-CI service in the near future.
-
 ````julia
 julia> @timeseries
 
