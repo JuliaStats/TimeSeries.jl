@@ -1,8 +1,8 @@
-using  DataFrames, Datetime
+using  DataFrames, DataArrays, Datetime
 
 module TimeSeries
 
-using  DataFrames, Datetime
+using  DataFrames, DataArrays, Datetime
 
 export readtime, 
        moving,  
