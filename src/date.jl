@@ -40,5 +40,6 @@ end
 
 function only(df::DataFrame, f::Function)
   foo = df[1,1]:f:df[nrow(df),1] 
-  return [foo]
+  bar = DataFrame(Date = [foo])
+  return join(bar, df)
 end
