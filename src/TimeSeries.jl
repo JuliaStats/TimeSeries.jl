@@ -21,6 +21,10 @@ export readtime,
        bysecond,
        byweek,
        bydoy,
+       from,
+       to,
+       between,
+       only,
        gtrows,
        ltrows,
        gterows,
@@ -50,6 +54,7 @@ include("lag.jl")
 include("returns.jl")
 include("upto.jl")
 include("bydate.jl")
+include("date.jl")
 include("testtimeseries.jl")
 
 ################## deprecations #######################
