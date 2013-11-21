@@ -43,3 +43,42 @@ function only(df::DataFrame, f::Function)
   bar = DataFrame(Date = [foo])
   return join(bar, df)
 end
+
+
+function OHLC(df::DataFrame)
+  w =  [week(df[i, "Date"]) for i = 1:nrow(df)]   # needs regex to get other names for Date
+  z = Int[] 
+  j = 1
+  for i=1:nrow(df) - 1 # create unique week ID array
+    if w[i] < w[i+1]
+      push!(z, j)
+      j = j+1
+    else
+      push!(z,j)
+    end         
+  end
+
+  # account for last row
+  w[nrow(df)]  ==  w[nrow(df)-1] ? # is the last row the same week as 2nd to last row?
+  push!(z, z[size(z)[1]]) :  
+  push!(z, z[size(z)[1]] + 1)  
+
+  within!(df, quote w = $z end) # attach unique week ID to each weekday
+
+  newdf = df[1,["Date", "Open", "High", "Low", "Close"]] # init new df
+
+  for i = 1:z[size(z)[1]]  # iterate over week ID groupings
+    temp = select(:(w .== $i), df)
+    nextrow = DataFrame(Date  = temp[nrow(temp), "Date"],
+                        Open  = temp[1, "Open"], 
+                        High  = maximum(temp["High"]), 
+                        Low   = minimum(temp["Low"]), 
+                        Close = temp[nrow(temp), "Close"])
+    newdf = rbind(newdf, nextrow) 
+  end
+  return newdf
+end
+
+function toweekly()
+  println("Generalized version of OHLC that takes varargs")
+end

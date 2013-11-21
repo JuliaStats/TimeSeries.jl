@@ -5,6 +5,7 @@ module TimeSeries
 using  DataFrames, DataArrays, Datetime
 
 export readtime, 
+       readtime1, 
        moving,  
        lag,  
        lead,
@@ -25,6 +26,8 @@ export readtime,
        to,
        between,
        only,
+       toweekly,
+       OHLC,
        gtrows,
        ltrows,
        gterows,
