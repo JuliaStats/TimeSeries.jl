@@ -76,7 +76,7 @@ function OHLC(df::DataFrame)
                         Close = temp[nrow(temp), "Close"])
     newdf = rbind(newdf, nextrow) 
   end
-  return newdf
+  return newdf[2:end, :] # remove init values
 end
 
 function toweekly()
