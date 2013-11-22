@@ -47,7 +47,6 @@ function toperiod(df::DataFrame, args::(String, Function)...; period=week)
 
   w =  [period(df[i, "Date"]) for i = 1:nrow(df)]   # needs regex to get other names for Date
   z = Int[] ; j = 1
-  #for i=1:nrow(df) - 1 # create unique week ID array
   for i=1:nrow(df) - 1 # create unique period ID array
     if w[i] < w[i+1]
       push!(z, j)
@@ -62,11 +61,11 @@ function toperiod(df::DataFrame, args::(String, Function)...; period=week)
   push!(z, z[size(z)[1]]) :  
   push!(z, z[size(z)[1]] + 1)  
 
-  df["pd"] = z # attach unique period ID to each weekday
+  df["pd"] = z # attach unique period ID to each row
 
   newdf    = DataFrame()
 
-  for i = 1:z[size(z)[1]]  # iterate over week ID groupings
+  for i = 1:z[size(z)[1]]  # iterate over period ID groupings
     temp = select(:(pd .== $i), df)
     nextrow = DataFrame()
     for (k,v) in args
