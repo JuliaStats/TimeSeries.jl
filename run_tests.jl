@@ -1,7 +1,7 @@
 using Base.Test
 using TimeSeries
 
-my_tests = ["test/bydate.jl",
+my_tests = ["test/date.jl",
             "test/io.jl",
             "test/lag.jl",
             "test/moving.jl",

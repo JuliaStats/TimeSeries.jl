@@ -50,7 +50,6 @@ include("moving.jl")
 include("lag.jl")
 include("returns.jl")
 include("upto.jl")
-include("bydate.jl")
 include("date.jl")
 include("testtimeseries.jl")
 
