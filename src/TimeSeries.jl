@@ -26,7 +26,6 @@ export readtime,
        to,
        between,
        only,
-       #toweekly,
        toperiod,
 # mutate DataFrame versions
        moving!,

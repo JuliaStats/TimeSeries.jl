@@ -43,10 +43,8 @@ function only(df::DataFrame, f::Function)
   return join(bar, df)
 end
 
-#function toweekly(df::DataFrame, args::(String, Function)...)
-function toperiod(df::DataFrame, period=week, args::(String, Function)...)
+function toperiod(df::DataFrame, args::(String, Function)...; period=week)
 
-#  w =  [week(df[i, "Date"]) for i = 1:nrow(df)]   # needs regex to get other names for Date
   w =  [period(df[i, "Date"]) for i = 1:nrow(df)]   # needs regex to get other names for Date
   z = Int[] ; j = 1
   #for i=1:nrow(df) - 1 # create unique week ID array
@@ -60,12 +58,10 @@ function toperiod(df::DataFrame, period=week, args::(String, Function)...)
   end
 
   # account for last row
-  #w[nrow(df)]  ==  w[nrow(df)-1] ? # is the last row the same week as 2nd to last row?
   w[nrow(df)]  ==  w[nrow(df)-1] ? # is the last row the same period as 2nd to last row?
   push!(z, z[size(z)[1]]) :  
   push!(z, z[size(z)[1]] + 1)  
 
-  #df["wk"] = z # attach unique week ID to each weekday
   df["pd"] = z # attach unique period ID to each weekday
 
   newdf    = DataFrame()
