@@ -26,7 +26,7 @@ export readtime,
        to,
        between,
        only,
-       toperiod,
+       collapse,
 # mutate DataFrame versions
        moving!,
        lag!,

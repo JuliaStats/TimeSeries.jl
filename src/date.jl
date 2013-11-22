@@ -43,7 +43,7 @@ function only(df::DataFrame, f::Function)
   return join(bar, df)
 end
 
-function toperiod(df::DataFrame, args::(String, Function)...; period=week)
+function collapse(df::DataFrame, args::(String, Function)...; period=week)
 
   w =  [period(df[i, "Date"]) for i = 1:nrow(df)]   # needs regex to get other names for Date
   z = Int[] ; j = 1
@@ -58,14 +58,14 @@ function toperiod(df::DataFrame, args::(String, Function)...; period=week)
 
   # account for last row
   w[nrow(df)]  ==  w[nrow(df)-1] ? # is the last row the same period as 2nd to last row?
-  push!(z, z[size(z)[1]]) :  
-  push!(z, z[size(z)[1]] + 1)  
+  push!(z, z[length(z)]) :  
+  push!(z, z[length(z)] + 1)  
 
   df["pd"] = z # attach unique period ID to each row
 
   newdf    = DataFrame()
 
-  for i = 1:z[size(z)[1]]  # iterate over period ID groupings
+  for i = 1:z[length(z)]  # iterate over period ID groupings
     temp = select(:(pd .== $i), df)
     nextrow = DataFrame()
     for (k,v) in args
