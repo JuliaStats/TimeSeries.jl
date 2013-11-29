@@ -62,3 +62,9 @@ Running tests:
 **   test/returns.jl
 **   test/upto.jl
 ````
+
+#### Documentation
+
+Online documentation, including an API reference, is planned.
+
+See the [online documentation](http://juliastats.github.io/TimeSeries.jl/) 

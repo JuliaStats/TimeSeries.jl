@@ -5,7 +5,8 @@ function lead(v::Array, n::Integer)
 end
 
 function lead(dv::DataArray, n::Integer)
-  padNA(dv[n+1:end], 0, n)
+  #padNA(dv[n+1:end], 0, n)
+  pad(dv[n+1:end], 0, n, NA)
 end
 
 function lead!(df::DataFrame, col::String, n::Integer)
@@ -32,7 +33,8 @@ function lag(dv::DataArray, n::Integer)
   if n < 0
     lead(dv, abs(n))
   else
-    padNA( dv[1:length(dv)-n], n, 0)
+    #padNA( dv[1:length(dv)-n], n, 0)
+    pad( dv[1:length(dv)-n], n, 0, NA)
   end
 end
 

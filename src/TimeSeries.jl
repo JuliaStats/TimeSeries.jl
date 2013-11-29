@@ -39,17 +39,20 @@ export readtime,
        lips, 
        sip, 
        sips, 
+## utilis
+      pad,
 ## testing
        @timeseries
 
 ################## include files #####################
 
+include("bydate.jl")
 include("io.jl")
 include("moving.jl")
 include("lag.jl")
 include("returns.jl")
 include("upto.jl")
-include("bydate.jl")
+include("utils.jl")
 include("testtimeseries.jl")
 
 ################## deprecations #######################

@@ -6,7 +6,8 @@ my_tests = ["test/bydate.jl",
             "test/lag.jl",
             "test/moving.jl",
             "test/returns.jl",
-            "test/upto.jl"]
+            "test/upto.jl",
+            "test/utils.jl"]
 
 print_with_color(:cyan, "Running tests: ") 
 println("")

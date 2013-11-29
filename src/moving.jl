@@ -15,7 +15,8 @@ function moving(dv::DataArray, f::Function, n::Integer)
   for i=1:length(dv)-(n-1)
     res[i] =  f(dv[i:i+(n-1)]) 
   end
-  padNA(DataArray(res), n-1, 0)
+ # padNA(DataArray(res), n-1, 0)
+  pad(DataArray(res), n-1, 0, NA)
 end
 
 ############ DataFrames bang dispatch

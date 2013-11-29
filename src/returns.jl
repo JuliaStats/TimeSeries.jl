@@ -42,7 +42,8 @@ sips = simple_return!
 ######## equity curve ########################
 
 function equity(dv::DataArray)
-  padNA([expm1(cumsum(diff(log(dv)))) + 1], 1, 0)
+  #padNA([expm1(cumsum(diff(log(dv)))) + 1], 1, 0)
+  pad([expm1(cumsum(diff(log(dv)))) + 1], 1, 0, NA)
 end
 
 function equity!(df::DataFrame, col::String)
