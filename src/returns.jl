@@ -43,7 +43,7 @@ sips = simple_return!
 
 function equity(dv::DataArray)
   #padNA([expm1(cumsum(diff(log(dv)))) + 1], 1, 0)
-  pad([expm1(cumsum(diff(log(dv)))) + 1], 1, 0, NA)
+  pad([expm1(cumsum(diff(log(dv)))) + 1], 1, 0, 1.0)
 end
 
 function equity!(df::DataFrame, col::String)
