@@ -69,10 +69,9 @@ function collapse(df::DataFrame, args::(String, Function)...; period=week)
     temp = select(:(pd .== $i), df) # SubDataFrame object
     nextrow = DataFrame()
     for (k,v) in args
-      #nextrow[string(k)] = v(temp[string(k)])
       nextrow[k] = v(temp[k]) # shouldnt refactor while its broke but this is cleaner
     end
-    newdf = rbind(newdf, nextrow)  # this is the broken part
+    newdf = rbind(newdf, nextrow)  
   end
   newdf
 end

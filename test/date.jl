@@ -15,8 +15,8 @@ let
   df_from1  = from(df,1971,1,4) # includes row in series
   df_from2  = from(df,1971,1,1)
   df_btween = between(df,1970,1,5,1970,1,11) # to a date not in the df so last should be Jan 9th
-#  df_week   = collapse(df)
-#  df_month  = collapse(df, period = "month")
+  df_wkly   = collapse(df, ("Date", maximum), ("Open", first), ("High", maximum), ("Low", minimum), ("Close", last))
+  df_mthly  = collapse(df, ("Date", maximum), ("Open", first), ("High", maximum), ("Low", minimum), ("Close", last), period=month)
 
   @assert 1970                == year(df_year[1,1]) 
   @assert 4                   == month(df_month[1,1]) 
@@ -25,9 +25,18 @@ let
   @assert 2                   == dayofyear(df_dow[1,1]) 
   @assert date(1970, 12, 31)  == tail(df_to1, 1)[1,"Date"]
   @assert date(1970, 12, 31)  == tail(df_to2, 1)[1,"Date"]
-  @assert date(1971, 1, 4)    == head(df_from, 1)[1,"Date"]
+  @assert date(1971, 1, 4)    == head(df_from1, 1)[1,"Date"]
+  @assert date(1971, 1, 4)    == head(df_from2, 1)[1,"Date"]
   @assert date(1970, 1, 5)    == head(df_btween, 1)[1,"Date"]
   @assert date(1970, 1, 9)    == tail(df_btween, 1)[1,"Date"]
   @assert 5                   == nrow(df_btween)
+  @assert 93.00               == df_wkly[2, "Open"]
+  @assert 94.25               == df_wkly[2, "High"]
+  @assert 91.82               == df_wkly[2, "Low"]
+  @assert 92.40               == df_wkly[2, "Close"]
+  @assert 92.06               == df_mthly[1, "Open"]
+  @assert 94.25               == df_mthly[1, "High"]
+  @assert 84.42               == df_mthly[1, "Low"]
+  @assert 85.02               == df_mthly[1, "Close"]
 
 end
