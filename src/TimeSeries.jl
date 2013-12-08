@@ -5,6 +5,7 @@ module TimeSeries
 using  DataFrames, DataArrays, Datetime
 
 export readtime, 
+       readtime1, 
        moving,  
        lag,  
        lead,
@@ -21,11 +22,11 @@ export readtime,
        bysecond,
        byweek,
        bydoy,
-       gtrows,
-       ltrows,
-       gterows,
-       lterows,
-       eqrows,
+       from,
+       to,
+       between,
+       only,
+       collapse,
 # mutate DataFrame versions
        moving!,
        lag!,
@@ -46,13 +47,13 @@ export readtime,
 
 ################## include files #####################
 
-include("bydate.jl")
 include("io.jl")
 include("moving.jl")
 include("lag.jl")
 include("returns.jl")
 include("upto.jl")
 include("utils.jl")
+include("date.jl")
 include("testtimeseries.jl")
 
 ################## deprecations #######################
