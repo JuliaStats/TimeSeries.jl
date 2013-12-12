@@ -21,7 +21,7 @@ for(nam, func) = ((:from, :>=),
   @eval begin
    function ($nam)(df::DataFrame, y::Int, m::Int, d::Int)
       p = Int[]
-      for i in 1:nrow(df)
+      for i in 1:size(df, 1)
         if ($func)(df[i, "Date"], date(y, m, d))
         push!(p, i)
         end
@@ -38,16 +38,16 @@ function between(df::DataFrame, fy::Int, fm::Int, fd::Int,
 end
 
 function only(df::DataFrame, f::Function)
-  foo = df[1,1]:f:df[nrow(df),1] 
+  foo = df[1,1]:f:df[size(df, 1),1] 
   bar = DataFrame(Date = [foo])
   return join(bar, df)
 end
 
 function collapse(df::DataFrame, args::(String, Function)...; period=week)
 
-  w =  [period(df[i, "Date"]) for i = 1:nrow(df)]   # needs regex to get other names for Date
+  w =  [period(df[i, "Date"]) for i = 1:size(df, 1)]   # needs regex to get other names for Date
   z = Int[] ; j = 1
-  for i=1:nrow(df) - 1 # create unique period ID array
+  for i=1:size(df, 1) - 1 # create unique period ID array
     if w[i] < w[i+1]
       push!(z, j)
       j = j+1
@@ -57,7 +57,7 @@ function collapse(df::DataFrame, args::(String, Function)...; period=week)
   end
 
   # account for last row
-  w[nrow(df)]  ==  w[nrow(df)-1] ? # is the last row the same period as 2nd to last row?
+  w[size(df, 1)]  ==  w[size(df, 1)-1] ? # is the last row the same period as 2nd to last row?
   push!(z, z[length(z)]) :  
   push!(z, z[length(z)] + 1)  
 

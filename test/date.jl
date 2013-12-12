@@ -29,7 +29,7 @@ let
   @assert date(1971, 1, 4)    == head(df_from2, 1)[1,"Date"]
   @assert date(1970, 1, 5)    == head(df_btween, 1)[1,"Date"]
   @assert date(1970, 1, 9)    == tail(df_btween, 1)[1,"Date"]
-  @assert 5                   == nrow(df_btween)
+  @assert 5                   == size(df_btween, 1)
   @assert 93.00               == df_wkly[2, "Open"]
   @assert 94.25               == df_wkly[2, "High"]
   @assert 91.82               == df_wkly[2, "Low"]
