@@ -15,5 +15,4 @@ script:
     - julia -e 'Pkg.add("DataFrames"); Pkg.add("DataArrays"); Pkg.add("Datetime");'
     - mkdir -p ~/.julia/TimeSeries
     - cp -R ./* ~/.julia/TimeSeries/
-    #- julia ./test/runtests.jl
-    - julia ./run_tests.jl
+    - julia ./test/runtests.jl
