@@ -54,7 +54,7 @@ include("returns.jl")
 include("upto.jl")
 include("utils.jl")
 include("date.jl")
-include("test/testmacro.jl")
+include("../test/testmacro.jl")
 
 ################## deprecations #######################
 
