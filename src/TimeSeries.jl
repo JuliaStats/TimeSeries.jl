@@ -4,38 +4,14 @@ module TimeSeries
 
 using  DataFrames, DataArrays, Datetime
 
-export readtime, 
-       readtime1, 
-       moving,  
-       lag,  
-       lead,
-       log_return, 
-       simple_return, 
-       upto, 
-       byyear,
-       bymonth,
-       byday,
-       bydow,
-       byhour,
-       byminute,
-       bysecond,
-       byweek,
-       bydoy,
-       from,
-       to,
-       between,
-       only,
-       collapse,
-# mutate DataFrame versions
-       moving!,
-       lag!,
-       lead!,
-       log_return!,
-       simple_return!,
-       upto!,
-## utilis
+export readtime, readtime1, 
+       moving, moving!,
+       lag, lead, lag!, lead!,
+       percentchange, percentchange!,
+       upto, upto!,
+       byyear, bymonth, byday, bydow, byhour, byminute, bysecond, byweek, bydoy,
+       from, to, between, only, collapse,
        pad,
-## testing
        @timeseries
 
 ################## include files #####################
@@ -56,9 +32,9 @@ Base.@deprecate indexyear byyear
 Base.@deprecate indexmonth bymonth
 Base.@deprecate indexday byday
 Base.@deprecate indexdow bydow
-Base.@deprecate sip simple_return
-Base.@deprecate sips simple_return!
-Base.@deprecate lip log_return 
-Base.@deprecate lips log_return!
+Base.@deprecate simple_return percentchange
+Base.@deprecate log_return percentchange
+Base.@deprecate simple_return! percentchange!
+Base.@deprecate log_return! percentchange!
 
 end  #of module
