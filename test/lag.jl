@@ -1,48 +1,12 @@
+module TestLag
+
 using Base.Test
+using DataArrays
+using DataFrames
 using TimeSeries
 
-let
+  df = readtime(Pkg.dir("TimeSeries/test/data/spx.csv"))
 
-##### Array ############################
-
-  vi      = [1,2,3,4,5]
-  vf      = [1.,2,3,4,5]
-  vb      = [true, true, false, false, false]
-  vs      = ["a", "b", "c", "d", "e"]
-  
-  vi_lead   = lead(vi)
-  vf_lead   = lead(vf, 2)
-  vb_lead   = lead(vb, 3)
-  vs_lead   = lead(vs, 4)
-  
-  vi_lag   = lag(vi)
-  vf_lag   = lag(vf, 2)
-  vb_lag   = lag(vb, 3)
-  vs_lag   = lag(vs, 4)
-  
-  @assert [2,3,4,5]      == vi_lead 
-  @assert [3.0,4.0,5.0]  == vf_lead
-  @assert [false, false] == vb_lead
-  @assert ["e"]          == vs_lead
-  
-  @assert [1,2,3,4]       == vi_lag
-  @assert [1.0, 2.0, 3.0] == vf_lag
-  @assert [true, true]    == vb_lag
-  @assert ["a"]           == vs_lag
-  
-  
-  @assert 4 == length(vi_lead)
-  @assert 3 == length(vf_lead)
-  @assert 2 == length(vb_lead)
-  @assert 1 == length(vs_lead)
-  
-  @assert 4 == length(vi_lag)
-  @assert 3 == length(vf_lag)
-  @assert 2 == length(vb_lag)
-  @assert 1 == length(vs_lag)
-  
-  @assert lag(vi, -1) == lead(vi)
-  
 ######## DataArray ######################
   
   dvi = DataArray([1,2,3,4,5]) 
@@ -74,8 +38,6 @@ let
   # 
 ######## DataFrame ######################
   
-  df = readtime(Pkg.dir("TimeSeries/test/data/spx.csv"))
-  
   lead!(df, "Close", 1)
   lead!(df, "Close", 3)
   lead!(df, "Close", 506)
@@ -90,4 +52,3 @@ let
   @assert df[507,12]   == 101.95
   @assert df[507,13]   == 93.0
 end
-  

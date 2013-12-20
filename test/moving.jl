@@ -1,28 +1,10 @@
+module TestMoving
+
 using Base.Test
 using TimeSeries
+using Stats
 
-let
-
-######## Array ############################
-
-  vi      = [1,2,3,4,5]
-  vf      = [1.,2,3,4,5]
-  
-  #   vi_move   = moving(vi, sum, 2)
-  #   vf_move   = moving(vf, sum, 3)
-  #   
-  #   vi_move   = lag(vi)
-  #   vf_move   = lag(vf, 2)
-  #   
-  #   @assert [2,3,4,5]      == vi_move 
-  #   @assert [3.0,4.0,5.0]  == vf_move
-  #   
-  #   @assert [1,2,3,4]       == vi_move
-  #   @assert [1.0, 2.0, 3.0] == vf_move
-  #   
-  #   
-  #   @assert 4 == length(vi_move)
-  #   @assert 3 == length(vf_move)
+  df = readtime(Pkg.dir("TimeSeries/test/data/spx.csv"))
   
 ######## DataArray ######################
   
@@ -52,7 +34,6 @@ let
   # @assert 5 == length(dvs_lag)
   
 ######## DataFrame ######################
-  df = readtime(Pkg.dir("TimeSeries/test/data/spx.csv"))
   
   moving!(df, "Close", mean, 50)
   moving!(df, "Close", mean, 200)

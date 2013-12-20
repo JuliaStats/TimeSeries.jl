@@ -1,8 +1,9 @@
+module TestUtils
+
 using Base.Test
-#using DataArrays
+using DataArrays
 using TimeSeries
 
-let
   # pad test
 	dvNA    = DataArray([1, 2, 3, 4])
 	dvInt   = DataArray([1, 2, 3, 4])
