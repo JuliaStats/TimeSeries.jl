@@ -11,7 +11,6 @@ export readtime,
        lead,
        log_return, 
        simple_return, 
-       equity, 
        upto, 
        byyear,
        bymonth,
@@ -33,7 +32,6 @@ export readtime,
        lead!,
        log_return!,
        simple_return!,
-       equity!,
        upto!,
 ## utilis
        pad,
@@ -45,7 +43,7 @@ export readtime,
 include("io.jl")
 include("moving.jl")
 include("lag.jl")
-include("returns.jl")
+include("percentchange.jl")
 include("upto.jl")
 include("utils.jl")
 include("date.jl")

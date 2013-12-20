@@ -5,7 +5,7 @@ my_tests = ["date.jl",
             "io.jl",
             "lag.jl",
             "moving.jl",
-            "returns.jl",
+            "percentchange.jl",
             "upto.jl",
             "utils.jl"]
 
