@@ -1,7 +1,7 @@
+module TestUpTo
+
 using Base.Test
 using TimeSeries
-
-let
 
   df = readtime(Pkg.dir("TimeSeries/test/data/spx.csv"))
   

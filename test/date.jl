@@ -1,7 +1,10 @@
+module TestDate
+
 using Base.Test
 using TimeSeries
+using Datetime
+using DataArrays
 
-let
 
   df = readtime(Pkg.dir("TimeSeries/test/data/spx.csv"))
   

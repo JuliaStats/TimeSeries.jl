@@ -1,7 +1,8 @@
+module TestIO
+
 using Base.Test
 using TimeSeries
-
-let
+using Datetime
   
   df = readtime(Pkg.dir("TimeSeries/test/data/readtimetest.csv"))
   
@@ -13,6 +14,7 @@ let
  # IndexedVector 
  # TODO need correct assertion
 #  @assert typeof(df[:,1])  == IndexedVector{Date{C<:Calendar},DataArray{Date{C<:Calendar},1}}
+#  @assert df[:,1] <: IndexedVector{Date{C<:Calendar},DataArray{Date{C<:Calendar},1}}
  # descending order 
   @assert df[1,1]   <  df[2,1]
 end

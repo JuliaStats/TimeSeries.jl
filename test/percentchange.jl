@@ -1,7 +1,8 @@
+module TestPercentChange
+
 using Base.Test
 using TimeSeries
 
-let
   df = readtime(Pkg.dir("TimeSeries/test/data/spx.csv"))
   
   sr = simple_return(df["Close"])
