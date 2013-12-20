@@ -35,13 +35,8 @@ export readtime,
        simple_return!,
        equity!,
        upto!,
-## aliases
-       lip, 
-       lips, 
-       sip, 
-       sips, 
 ## utilis
-      pad,
+       pad,
 ## testing
        @timeseries
 
@@ -63,5 +58,9 @@ Base.@deprecate indexyear byyear
 Base.@deprecate indexmonth bymonth
 Base.@deprecate indexday byday
 Base.@deprecate indexdow bydow
+Base.@deprecate sip simple_return
+Base.@deprecate sips simple_return!
+Base.@deprecate lip log_return 
+Base.@deprecate lips log_return!
 
 end  #of module

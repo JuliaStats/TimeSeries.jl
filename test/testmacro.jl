@@ -1,6 +1,6 @@
 macro timeseries()
   println("")
-  reload(Pkg.dir("TimeSeries", "run_tests.jl"))
+  reload(Pkg.dir("TimeSeries/test/runtests.jl"))
 end
 
 ########### time trial wrapper #####################################
