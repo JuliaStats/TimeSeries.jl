@@ -1,11 +1,6 @@
 ########## lead ########################
 
-function lead(v::Array, n::Integer)
-  v[n+1:end]
-end
-
 function lead(dv::DataArray, n::Integer)
-  #padNA(dv[n+1:end], 0, n)
   pad(dv[n+1:end], 0, n, NA)
 end
 
@@ -20,14 +15,6 @@ lead(dv) = lead(dv, 1)
 lead!(df, col) = lead!(df, col, 1)
 
 ########## lag #########################
-
-function lag(v::Array, n::Integer)
-  if n < 0
-    lead(v, abs(n))
-  else
-    v[1:length(v)-n]
-  end
-end
 
 function lag(dv::DataArray, n::Integer)
   if n < 0

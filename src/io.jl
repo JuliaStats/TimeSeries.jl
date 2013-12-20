@@ -34,6 +34,7 @@ end
 
   return df
 end
+
 function readtime1(filename::String)
 
   df  = readtable(filename, nastrings=[".", "", "NA"])
