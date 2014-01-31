@@ -6,6 +6,10 @@ using Series, Datetime
 
 export TimeArray
 
-include("timearrays.jl")
+#################################
+###### include ##################
+#################################
+
+include("timearray.jl")
 
 end
