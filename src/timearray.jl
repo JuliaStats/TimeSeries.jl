@@ -3,7 +3,13 @@ type TimeArray{T,N}
   values::Array{T,N}
   colnames::Array{String,1}
 end
- 
+
+# from single values
+function TimeArray{T,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{String,1})
+  TimeArray([d], v, c)
+end
+
+# combining arrays of SeriesPairs
 function TimeArray{T}(args::Array{SeriesPair{Date{ISOCalendar}, T},1}...)
   
   # create array of index values from args
@@ -66,12 +72,18 @@ function Base.show(io::IO, ta::TimeArray)
     print(io, "   ", ta.colnames[p])
   end
   println("")
-  for i in 1:4
-    print(io, ta.timestamp[i], "  ", ta.values[i,:])
-  end
-  println("...")
-  for j in length(ta.timestamp)-4:length(ta.timestamp)
-    print(io, ta.timestamp[j], "  ", ta.values[j,:])
+  if length(ta) > 7
+    for i in 1:4
+      print(io, ta.timestamp[i], "  ", ta.values[i,:])
+    end
+    println("...")
+    for j in length(ta)-4:length(ta)
+      print(io, ta.timestamp[j], "  ", ta.values[j,:])
+    end
+  else
+    for k in 1:length(ta)
+      print(io, ta.timestamp[k], "  ", ta.values[k,:])
+    end
   end
 end
 
@@ -79,21 +91,26 @@ end
 ###### getindex #################
 #################################
 
-#getindex{T,N}(ta::TimeArray{T,N}, n::Int64)
-# getindex(ta::TimeArray, n::Int64)
-#   [ta.timestamp[n] ta.values[n]] 
-# end
-# 
+# single row
+function Base.getindex{T,N}(ta::TimeArray{T,N}, n::Int)
+  TimeArray(ta.timestamp[n], ta.values[n, 1:end], ta.colnames)
+end
 
-## function getindex{T <: Date{ISOCalendar}, V}(sa::Array{SeriesPair{T, V}, 1}, mydate::Date{ISOCalendar})
-##   for i in 1:size(sa,1)
-##     if mydate == sa[i].timestamp 
-##       return sa[i] 
-##     else 
-##       nothing
-##     end
-##   end
-## end
+# range of rows
+function Base.getindex{T,N}(ta::TimeArray{T,N}, r::Range1{Int})
+  TimeArray(ta.timestamp[r], ta.values[r, 1:end], ta.colnames)
+end
+
+# single date
+function Base.getindex{T,N}(ta::TimeArray{T,N}, d::Date{ISOCalendar})
+   for i in 1:length(ta)
+     if [d] == ta[i].timestamp 
+       return ta[i] 
+     else 
+       nothing
+     end
+   end
+ end
  
 #################################
 ###### +, -, *, / ###############
