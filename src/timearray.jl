@@ -98,7 +98,12 @@ end
 
 # range of rows
 function Base.getindex{T,N}(ta::TimeArray{T,N}, r::Range1{Int})
-  TimeArray(ta.timestamp[r], ta.values[r, 1:end], ta.colnames)
+  TimeArray(ta.timestamp[r], ta.values[r,:], ta.colnames)
+end
+
+# array of rows
+function Base.getindex{T,N}(ta::TimeArray{T,N}, a::Array{Int})
+  TimeArray(ta.timestamp[a], ta.values[a,:], ta.colnames)
 end
 
 # single date
@@ -112,6 +117,23 @@ function Base.getindex{T,N}(ta::TimeArray{T,N}, d::Date{ISOCalendar})
    end
  end
  
+# range of dates
+function Base.getindex{T,N}(ta::TimeArray{T,N}, dates::Array{Date{ISOCalendar},1})
+  counter = Int[]
+  for i in 1:length(ta)
+    for j in 1:size(dates,1)
+      if ta[i].timestamp == [dates[j]]
+        push!(counter, i)
+      end
+    end
+  end
+  ta[counter]
+ end
+
+function Base.getindex{T,N}(ta::TimeArray{T,N}, r::DateRange{ISOCalendar}) 
+  ta[[r]]
+end
+
 #################################
 ###### +, -, *, / ###############
 #################################
