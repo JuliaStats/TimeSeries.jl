@@ -68,7 +68,8 @@ end
  
 function Base.show(io::IO, ta::TimeArray)
   # variables 
-  nrow, ncol = size(ta.values)
+  nrow       = size(ta.values, 1)
+  ncol       = size(ta.values, 2)
   spacetime  = strwidth(string(ta.timestamp[1]))
 
   # summary line
@@ -120,6 +121,18 @@ end
 function Base.getindex{T,N}(ta::TimeArray{T,N}, a::Array{Int})
   TimeArray(ta.timestamp[a], ta.values[a,:], ta.colnames)
 end
+
+# single column by name 
+function Base.getindex{T,N}(ta::TimeArray{T,N}, s::ASCIIString)
+  n = findfirst(ta.colnames, s)
+  TimeArray(ta.timestamp, ta.values[:, n], String[s])
+end
+
+# array of columns by name
+# function Base.getindex{T,N}(ta::TimeArray{T,N}, sa::Array{String, 1})
+#   ns = match(ta.colnames, sa)
+#   TimeArray(ta.timestamp, ta.values[:,ns], sa)
+# end
 
 # single date
 function Base.getindex{T,N}(ta::TimeArray{T,N}, d::Date{ISOCalendar})

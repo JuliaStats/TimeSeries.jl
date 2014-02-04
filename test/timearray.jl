@@ -1,6 +1,7 @@
 using MarketData
 
-ohlc = TimeArray(op, hi, lo, cl)
+ohlc          = TimeArray(op, hi, lo, cl)
+ohlc.colnames = ["Open", "High", "Low", "Close"]
 
 facts("Base methods") do
   
@@ -17,5 +18,10 @@ facts("Base methods") do
   context("getindex on range of Int and DateTime") do
     @fact ohlc[1:2].timestamp                        => [firstday, secondday]
     @fact ohlc[firstday:days(1):secondday].timestamp => [firstday, secondday]
+  end
+
+  context("getindex on single column name") do
+    @fact size(ohlc["Open"].values, 2)                            => 1
+    @fact size(ohlc["Open"][firstday:days(1):tenthday].values, 1) => 10
   end
 end
