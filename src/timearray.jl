@@ -129,10 +129,10 @@ function Base.getindex{T,N}(ta::TimeArray{T,N}, s::ASCIIString)
 end
 
 # array of columns by name
-# function Base.getindex{T,N}(ta::TimeArray{T,N}, sa::Array{String, 1})
-#   ns = match(ta.colnames, sa)
-#   TimeArray(ta.timestamp, ta.values[:,ns], sa)
-# end
+function Base.getindex{T,N}(ta::TimeArray{T,N}, args::ASCIIString...)
+  ns = [findfirst(ta.colnames, a) for a in args]
+  TimeArray(ta.timestamp, ta.values[:,ns], String[a for a in args])
+end
 
 # single date
 function Base.getindex{T,N}(ta::TimeArray{T,N}, d::Date{ISOCalendar})

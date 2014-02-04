@@ -24,4 +24,9 @@ facts("Base methods") do
     @fact size(ohlc["Open"].values, 2)                            => 1
     @fact size(ohlc["Open"][firstday:days(1):tenthday].values, 1) => 10
   end
+
+  context("getindex on multiple column name") do
+    @fact ohlc["Open", "Close"].values[1] => 105.76
+    @fact ohlc["Open", "Close"].values[2] => 105.22
+  end
 end
