@@ -1,7 +1,10 @@
 using MarketData
 
-ohlc          = TimeArray(op, hi, lo, cl)
-ohlc.colnames = ["Open", "High", "Low", "Close"]
+ohlc             = TimeArray(op, hi, lo, cl)
+ohlc.colnames[1] = "Open"
+ohlc.colnames[2] = "High"
+ohlc.colnames[3] = "Low"
+ohlc.colnames[4] = "Close"
 
 facts("Base methods") do
   

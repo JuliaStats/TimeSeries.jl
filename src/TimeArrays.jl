@@ -4,12 +4,14 @@ module TimeArrays
 
 using Series, Datetime
 
-export TimeArray
+export TimeArray, 
+       readtimearray
 
 #################################
 ###### include ##################
 #################################
 
 include("timearray.jl")
+include("io.jl")
 
 end

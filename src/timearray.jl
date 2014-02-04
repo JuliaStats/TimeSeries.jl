@@ -1,4 +1,4 @@
-type TimeArray{T,N}
+immutable TimeArray{T,N}
   timestamp::Array{Date{ISOCalendar},1}
   values::Array{T,N}
   colnames::Array{ASCIIString,1}
