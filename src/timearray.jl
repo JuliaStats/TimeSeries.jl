@@ -162,6 +162,10 @@ function Base.getindex{T,N}(ta::TimeArray{T,N}, r::DateRange{ISOCalendar})
   ta[[r]]
 end
 
+# day of week
+# Base.getindex{T,N}(ta::TimeArray{T,N}, d::DAYOFWEEK) = ta[dayofweek(ta.timestamp) .== d]
+
+
 #################################
 ###### +, -, *, / ###############
 #################################
