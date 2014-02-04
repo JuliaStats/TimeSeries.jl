@@ -1,11 +1,11 @@
 type TimeArray{T,N}
   timestamp::Array{Date{ISOCalendar},1}
   values::Array{T,N}
-  colnames::Array{String,1}
+  colnames::Array{ASCIIString,1}
 end
 
 # from single values
-function TimeArray{T,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{String,1})
+function TimeArray{T,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{ASCIIString,1})
   TimeArray([d], v, c)
 end
 
@@ -34,7 +34,7 @@ function TimeArray{T}(args::Array{SeriesPair{Date{ISOCalendar}, T},1}...)
     end
   
   # finally get an array of the names
-  nams = String[arg[1].name for arg in args]
+  nams = ASCIIString[arg[1].name for arg in args]
 
   TimeArray(key, arr, nams)
 end
@@ -125,13 +125,13 @@ end
 # single column by name 
 function Base.getindex{T,N}(ta::TimeArray{T,N}, s::ASCIIString)
   n = findfirst(ta.colnames, s)
-  TimeArray(ta.timestamp, ta.values[:, n], String[s])
+  TimeArray(ta.timestamp, ta.values[:, n], ASCIIString[s])
 end
 
 # array of columns by name
 function Base.getindex{T,N}(ta::TimeArray{T,N}, args::ASCIIString...)
   ns = [findfirst(ta.colnames, a) for a in args]
-  TimeArray(ta.timestamp, ta.values[:,ns], String[a for a in args])
+  TimeArray(ta.timestamp, ta.values[:,ns], ASCIIString[a for a in args])
 end
 
 # single date
