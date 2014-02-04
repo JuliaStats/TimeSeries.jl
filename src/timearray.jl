@@ -67,22 +67,37 @@ end
 #################################
  
 function Base.show(io::IO, ta::TimeArray)
-  println("summary of dimensions, etc")
-  for p in 1:length(ta.colnames)
-    print(io, "   ", ta.colnames[p])
+  # variables 
+  nrow, ncol = size(ta.values)
+  spacetime  = strwidth(string(ta.timestamp[1]))
+
+  # summary line
+  print(@sprintf "%dx%d %s %s to %s" nrow ncol typeof(ta.values) string(ta.timestamp[1]) string(ta.timestamp[nrow]))
+  println("")
+  println("")
+
+  # row label line
+  firstcolwidth = strwidth(ta.colnames[1])
+  print(io, ^(" ", spacetime+3), ta.colnames[1], ^(" ", 11-firstcolwidth))
+  for p in 2:length(ta.colnames)
+    nextcolwidth = strwidth(ta.colnames[p])
+    print(io, ta.colnames[p], ^(" ", 8-nextcolwidth))
   end
   println("")
-  if length(ta) > 7
+
+  # timestamp and values line
+  if nrow > 7
     for i in 1:4
-      print(io, ta.timestamp[i], "  ", ta.values[i,:])
+      print(io, ta.timestamp[i], " | ", ta.values[i,:])
     end
     println("...")
-    for j in length(ta)-4:length(ta)
-      print(io, ta.timestamp[j], "  ", ta.values[j,:])
+    for j in nrow-4:nrow
+      print(io, ta.timestamp[j], " | ", ta.values[j,:])
     end
   else
-    for k in 1:length(ta)
-      print(io, ta.timestamp[k], "  ", ta.values[k,:])
+    for k in 1:nrow
+      vals = split(string(ta.values[k,:]))'
+      print(io, ta.timestamp[k], " | ", vals)
     end
   end
 end
