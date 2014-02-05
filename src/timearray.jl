@@ -1,73 +1,30 @@
-immutable TimeArray{T,N}
+# for some very odd reason I need this in the TimeArray.jl file
 
-   timestamp::Vector{Date{ISOCalendar}}
-   values::Array{T,N}
-   colnames::Vector{ASCIIString}
-
-
-  function TimeArray(timestamp::Vector{Date{ISOCalendar}}, values::Array{T,N}, colnames::Vector{ASCIIString})
-    nrow, ncol = size(values, 1), size(values, 2)
-    nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
-    ncol != size(colnames,1) ? error("column names must match width of array"):
-    timestamp != unique(timestamp) ? error("there are duplicate dates"):
-    ~(flipud(timestamp) == sort(timestamp) || timestamp == sort(timestamp)) ? error("dates are mangled"):
-    flipud(timestamp) == sort(timestamp) ? 
-    new(flipud(timestamp), flipud(values), colnames):
-    new(timestamp, values, colnames)
-  end
-end
-
-TimeArray{T,N}(d::Vector{Date{ISOCalendar}}, v::Array{T,N}, c::Vector{ASCIIString}) = TimeArray{T,N}(d,v,c)
-
-# from single values
-function TimeArray{T,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{ASCIIString,1})
-  TimeArray([d], v, c)
-end
-
-# combining arrays of SeriesPairs
-function TimeArray{T}(args::Array{SeriesPair{Date{ISOCalendar}, T},1}...)
-  
-  # create array of index values from args
-  allkey = Date{ISOCalendar}[]
-  for arg in args
-    for ar in arg
-      push!(allkey, ar.index)
-    end
-  end
-
-  # and sort without duplicates
-  key = sortandremoveduplicates1(allkey)
-
-  # match each arg in args with key 
-  arr = fill(NaN, length(key), length(args))
-    for i in 1:length(args)
-      for j = 1:length(args[i])
-        t = args[i][j].index .== key
-        k = findfirst(t)
-        arr[k,i] = args[i][j].value 
-      end
-    end
-  
-  # finally get an array of the names
-  nams = ASCIIString[arg[1].name for arg in args]
-
-  TimeArray(key, arr, nams)
-end
-
-###############################
-sortandremoveduplicates #######
-###############################
-
-function sortandremoveduplicates1(x::Array)
-  sx = sort(x)
-  res = [sx[1]]
-  for i = 2:length(sx)
-    if sx[i] > sx[i-1]
-    push!(res, sx[i])
-    end
-  end
-  res
-end
+#  immutable TimeArray{T,N}
+#  
+#     timestamp::Vector{Date{ISOCalendar}}
+#     values::Array{T,N}
+#     colnames::Vector{ASCIIString}
+#  
+#  
+#    function TimeArray(timestamp::Vector{Date{ISOCalendar}}, values::Array{T,N}, colnames::Vector{ASCIIString})
+#      nrow, ncol = size(values, 1), size(values, 2)
+#      nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
+#      ncol != size(colnames,1) ? error("column names must match width of array"):
+#      timestamp != unique(timestamp) ? error("there are duplicate dates"):
+#      ~(flipud(timestamp) == sort(timestamp) || timestamp == sort(timestamp)) ? error("dates are mangled"):
+#      flipud(timestamp) == sort(timestamp) ? 
+#      new(flipud(timestamp), flipud(values), colnames):
+#      new(timestamp, values, colnames)
+#    end
+#  end
+#  
+#  TimeArray{T,N}(d::Vector{Date{ISOCalendar}}, v::Array{T,N}, c::Vector{ASCIIString}) = TimeArray{T,N}(d,v,c)
+#  
+#  # from single values
+#  function TimeArray{T,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{ASCIIString,1})
+#    TimeArray([d], v, c)
+#  end
 
 #################################
 ###### length ###################
@@ -104,13 +61,11 @@ function Base.show(io::IO, ta::TimeArray)
   # timestamp and values line
   if nrow > 7
     for i in 1:4
-      #print(io, ta.timestamp[i], " | ", ta.values[i,:])
       println(io, ta.timestamp[i], " | ", join([@sprintf("%.2f", t) for t in ta.values[i,:]], "  "))
 
     end
     println("...")
     for j in nrow-4:nrow
-      #print(io, ta.timestamp[j], " | ", ta.values[j,:])
       println(io, ta.timestamp[j], " | ", join([@sprintf("%.2f", t) for t in ta.values[j,:]], " "))
     end
   else
@@ -189,31 +144,3 @@ end
 # Base.getindex{T,N}(ta::TimeArray{T,N}, d::DAYOFWEEK) = ta[dayofweek(ta.timestamp) .== d]
 
 
-#################################
-###### +, -, *, / ###############
-#################################
- 
-## # operations between two SeriesPairs
-## for op in [:+, :-, :*, :/, :>, :<, :>=, :<=,
-##            :.+, :.-, :.*, :./, :.>, :.<, :.>=, :.<=]
-## 
-##   @eval begin
-##     function ($op){T,V}(sp1::SeriesPair{T,V}, sp2::SeriesPair{T,V})
-##       matches = false 
-##       if sp1.timestamp == sp2.timestamp
-##          matches = true
-##          res = SeriesPair(sp1.timestamp, ($op)(sp1.value, sp2.value))
-##       end
-##       matches == true? res: nothing  # nothing is indignity enough rather than an error
-##     end
-##   end
-## end
- 
-## # operations between SeriesPair and Int,Float64
-## for op in [:+, :-, :*, :/, :.+, :.-, :.*, :./]
-##   @eval begin
-##     function ($op){T,V}(sp::SeriesPair{T,V}, var::Union(Int,Float64))
-##       SeriesPair(sp.timestamp, ($op)(sp.value, var))
-##     end
-##   end
-## end
