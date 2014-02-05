@@ -88,27 +88,30 @@ function Base.show(io::IO, ta::TimeArray)
   spacetime  = strwidth(string(ta.timestamp[1]))
 
   # summary line
-  print(@sprintf "%dx%d %s %s to %s" nrow ncol typeof(ta.values) string(ta.timestamp[1]) string(ta.timestamp[nrow]))
+  print(@sprintf "%dx%d %s %s to %s" nrow ncol typeof(ta) string(ta.timestamp[1]) string(ta.timestamp[nrow]))
   println("")
   println("")
 
   # row label line
   firstcolwidth = strwidth(ta.colnames[1])
-  print(io, ^(" ", spacetime+3), ta.colnames[1], ^(" ", 11-firstcolwidth))
+  print(io, ^(" ", spacetime+3), ta.colnames[1], ^(" ", maxcolwidth(ta.values[:,1]) + 1 -firstcolwidth))
   for p in 2:length(ta.colnames)
     nextcolwidth = strwidth(ta.colnames[p])
-    print(io, ta.colnames[p], ^(" ", 8-nextcolwidth))
+    print(io, ta.colnames[p], ^(" ", maxcolwidth(ta.values[:,p]) + 1 - nextcolwidth))
   end
   println("")
 
   # timestamp and values line
   if nrow > 7
     for i in 1:4
-      print(io, ta.timestamp[i], " | ", ta.values[i,:])
+      #print(io, ta.timestamp[i], " | ", ta.values[i,:])
+      println(io, ta.timestamp[i], " | ", join([@sprintf("%.2f", t) for t in ta.values[i,:]], "  "))
+
     end
     println("...")
     for j in nrow-4:nrow
-      print(io, ta.timestamp[j], " | ", ta.values[j,:])
+      #print(io, ta.timestamp[j], " | ", ta.values[j,:])
+      println(io, ta.timestamp[j], " | ", join([@sprintf("%.2f", t) for t in ta.values[j,:]], " "))
     end
   else
     for k in 1:nrow
@@ -116,6 +119,11 @@ function Base.show(io::IO, ta::TimeArray)
       print(io, ta.timestamp[k], " | ", vals)
     end
   end
+end
+
+function maxcolwidth(x)
+  val = maximum(x)
+  strwidth(@sprintf "%.2f" val)
 end
 
 #################################
