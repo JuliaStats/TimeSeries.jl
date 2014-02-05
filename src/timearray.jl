@@ -1,8 +1,19 @@
 immutable TimeArray{T,N}
-  timestamp::Array{Date{ISOCalendar},1}
-  values::Array{T,N}
-  colnames::Array{ASCIIString,1}
+
+   timestamp::Vector{Date{ISOCalendar}}
+   values::Array{T,N}
+   colnames::Vector{ASCIIString}
+
+
+  function TimeArray(timestamp::Vector{Date{ISOCalendar}}, values::Array{T,N}, colnames::Vector{ASCIIString})
+    nrow, ncol = size(values, 1), size(values, 2)
+    nrow !== size(timestamp, 1) ? error("values must match length of timestamp"):
+    ncol !== size(colnames,1) ? error("column names must match width of array"):
+    new(timestamp, values, colnames)
+  end
 end
+
+TimeArray{T,N}(d::Vector{Date{ISOCalendar}}, v::Array{T,N}, c::Vector{ASCIIString}) = TimeArray{T,N}(d,v,c)
 
 # from single values
 function TimeArray{T,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{ASCIIString,1})
@@ -21,7 +32,7 @@ function TimeArray{T}(args::Array{SeriesPair{Date{ISOCalendar}, T},1}...)
   end
 
   # and sort without duplicates
-  key = sortandremoveduplicates(allkey)
+  key = sortandremoveduplicates1(allkey)
 
   # match each arg in args with key 
   arr = fill(NaN, length(key), length(args))
@@ -39,11 +50,11 @@ function TimeArray{T}(args::Array{SeriesPair{Date{ISOCalendar}, T},1}...)
   TimeArray(key, arr, nams)
 end
 
-#################################
-# sortandremoveduplicates #######
-#################################
+###############################
+sortandremoveduplicates #######
+###############################
 
-function sortandremoveduplicates(x::Array)
+function sortandremoveduplicates1(x::Array)
   sx = sort(x)
   res = [sx[1]]
   for i = 2:length(sx)
