@@ -7,8 +7,12 @@ immutable TimeArray{T,N}
 
   function TimeArray(timestamp::Vector{Date{ISOCalendar}}, values::Array{T,N}, colnames::Vector{ASCIIString})
     nrow, ncol = size(values, 1), size(values, 2)
-    nrow !== size(timestamp, 1) ? error("values must match length of timestamp"):
-    ncol !== size(colnames,1) ? error("column names must match width of array"):
+    nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
+    ncol != size(colnames,1) ? error("column names must match width of array"):
+    timestamp != unique(timestamp) ? error("there are duplicate dates"):
+    ~(flipud(timestamp) == sort(timestamp) || timestamp == sort(timestamp)) ? error("dates are mangled"):
+    flipud(timestamp) == sort(timestamp) ? 
+    new(flipud(timestamp), flipud(values), colnames):
     new(timestamp, values, colnames)
   end
 end

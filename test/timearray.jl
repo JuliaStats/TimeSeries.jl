@@ -6,7 +6,26 @@ ohlc.colnames[2] = "High"
 ohlc.colnames[3] = "Low"
 ohlc.colnames[4] = "Close"
 
-facts("Base methods") do
+facts("type constructors enforce invariants") do
+
+  context("unequal length between values and timestamp fails") do
+      @fact_throws TimeArray(index(cl), value(cl)[2:end], ["Close"])
+  end
+
+  context("unequal length between colnames and array width fails") do
+    @fact_throws TimeArray(index(cl), value(cl), ["Close", "Open"])
+  end
+
+  context("duplicate timestamp values fails") do
+    @fact_throws TimeArray(push!(index(cl), index(cl)[505]), push!(value(cl), value(cl)[1]), ["Close"])
+  end
+
+  context("mangled order of timestamp values fails") do
+    @fact_throws TimeArray(push!(index(cl), date(1981,12,25)), push!(value(cl), value(cl)[1]), ["Close"])
+  end
+end
+  
+facts("getindex methods") do
   
   context("getindex on single Int and DateTime") do
     @fact ohlc[1].timestamp        => [firstday]
