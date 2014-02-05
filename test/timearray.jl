@@ -23,6 +23,11 @@ facts("type constructors enforce invariants") do
   context("mangled order of timestamp values fails") do
     @fact_throws TimeArray(push!(index(cl), date(1981,12,25)), push!(value(cl), value(cl)[1]), ["Close"])
   end
+
+  context("flipping occurs when needed") do
+    @fact TimeArray(flipud(index(cl)), flipud(value(cl)),  ["Close"]).timestamp[1] => firstday
+    @fact TimeArray(flipud(index(cl)), flipud(value(cl)),  ["Close"]).values[1]    => 105.22
+  end
 end
   
 facts("getindex methods") do
