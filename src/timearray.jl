@@ -1,3 +1,5 @@
+abstract AbstractTimeArray
+
 immutable TimeArray{T,N} <: AbstractTimeArray
 
    timestamp::Vector{Date{ISOCalendar}}
