@@ -12,8 +12,9 @@ export TimeArray,
 ###### include ##################
 #################################
 
-include("io.jl")
 include("timearray.jl")
+include("io.jl")
+include("operators.jl") # intentionally called after type definition include in timearray.jl
 include("timestamp.jl")
 include("transformations.jl")
 include("utilities.jl")
