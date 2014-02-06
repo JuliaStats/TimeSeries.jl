@@ -12,12 +12,12 @@ export TimeArray,
 ###### include ##################
 #################################
 
-# include("io.jl")
+include("io.jl")
 # include("operators.jl")
 # include("timearray.jl")
-# include("timestamp.jl")
-# include("transformations.jl")
-# include("utilities.jl")
+include("timestamp.jl")
+include("transformations.jl")
+include("utilities.jl")
 
 #################################
 ###### NEED TO MOVE FROM HERE ###
@@ -165,21 +165,6 @@ end
 
 # day of week
 # Base.getindex{T,N}(ta::TimeArray{T,N}, d::DAYOFWEEK) = ta[dayofweek(ta.timestamp) .== d]
-
-#################################
-###### reader ###################
-#################################
-
-function readtimearray(fname::String)
-  blob    = readcsv(fname)
-  tstamps = Date{ISOCalendar}[date(i) for i in blob[2:end, 1]]
-  vals    = float(blob[2:end, 2:end])
-  cnames  = ASCIIString[]
-  for b in blob[1, 2:end]
-    push!(cnames, b)
-  end
-  TimeArray(tstamps, vals, cnames)
-end
 
 #################################
 ###### +, -, *, / ###############
