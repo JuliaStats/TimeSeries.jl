@@ -23,7 +23,8 @@ end
 #################################
 
 function percentchange{T,N}(ta::TimeArray{T,N}; method="simple") 
-  logreturn = log(ta.values)[2:end] .- log(lag(ta).values)
+  #logreturn = log(ta.values)[2:end] .- log(lag(ta).values)
+  logreturn = T[ta.values[t] for t in 1:length(ta)] |> log |> diff
 
   if method == "simple" 
     TimeArray(ta.timestamp[2:end], expm1(logreturn), ta.colnames) 
@@ -37,8 +38,14 @@ end
 ###### moving ###################
 #################################
 
-function moving{T,N}(ta::TimeArray{T,N}, f::Function, n::Int) 
-  
+function moving{T,N}(ta::TimeArray{T,N}, f::Function, window::Int) 
+    tstamps = ta.timestamp[window:end]
+#    nanarray = fill(NaN, window-1) # design choice here
+    vals = T[]
+    for i=1:length(ta)-(window-1)
+      push!(vals, f([ta.values[t] for t in 1:length(ta)][i:i+(window-1)])) 
+    end
+    TimeArray(tstamps, vals, ta.colnames)
 end
 
 #################################
@@ -46,4 +53,9 @@ end
 #################################
 
 function upto{T,N}(ta::TimeArray{T,N}, f::Function) 
+    vals = T[]
+      for i=1:length(ta)
+        push!(vals, f(ta.values[1:i])) 
+      end
+    TimeArray(ta.timestamp, vals, ta.colnames)
 end

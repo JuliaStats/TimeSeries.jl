@@ -30,12 +30,12 @@ facts("transformations") do
   end
 
   context("moving supplies correct window length") do
-#       @fact moving(cl, mean, 10).values[1]    => roughly(sum(cl.values[1:10])/10)
-#       @fact moving(cl, mean, 10).timestamp[1] => tenthday
+      @fact moving(cl, mean, 10).values[1]    => roughly(sum(cl.values[1:10])/10)
+      @fact moving(cl, mean, 10).timestamp[1] => tenthday
   end
  
   context("upto method accumulates") do
-#       @fact upto(cl, sum, 10).values[1]    => roughly(sum(cl.values[1:10]))
-#       @fact upto(cl, sum, 10).timestamp[1] => tenthday
+      @fact upto(cl, sum).values[10]    => roughly(sum(cl.values[1:10]))
+      @fact upto(cl, sum).timestamp[10] => tenthday
   end
 end

@@ -12,8 +12,8 @@ export TimeArray,
        # >, <, >=, <=, ==                       # should not be supported
        # timestamp, values, colnames,           # extracts TimeArray elements as single object of its type 
        lag, lead,                               # returns a TimeVector
-       percentchange                            # returns a TimeVector, kwargs simple, log 
-       # moving, upto,                          # returns a TimeVector 
+       percentchange,                           # returns a TimeVector, kwargs simple, log 
+       moving, upto                             # returns a TimeVector 
        # fastmoving,                            # experimental mapping algorithm
        # byyear, bymonth, byday, bydow, bydoy,  # convenience methods
        # from, to, collapse                     # subsetting and squishing
