@@ -1,3 +1,7 @@
+#################################
+###### readtimearray ############
+#################################
+
 function readtimearray(fname::String)
   blob    = readcsv(fname)
   tstamps = Date{ISOCalendar}[date(i) for i in blob[2:end, 1]]
