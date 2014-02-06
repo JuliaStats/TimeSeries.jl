@@ -12,7 +12,7 @@ before_install:
     - git config --global user.email "travis@example.net"
 script:
     - julia -e 'versioninfo(); Pkg.init();'
-    - julia -e 'Pkg.add("DataFrames"); Pkg.add("DataArrays"); Pkg.add("Datetime");'
+    - julia -e 'Pkg.add("Datetime"); Pkg.add("FactCheck"); Pkg.clone("git://github.com/JuliaQuant/MarketData.jl.git");'
     - mkdir -p ~/.julia/TimeSeries
     - cp -R ./* ~/.julia/TimeSeries/
-    - julia ./test/runtests.jl
+    - julia ./test/travis.jl
