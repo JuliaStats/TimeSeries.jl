@@ -42,7 +42,7 @@ function Base.show(io::IO, ta::TimeArray)
   # variables 
   nrow       = size(ta.values, 1)
   ncol       = size(ta.values, 2)
-  spacetime  = strwidth(string(ta.timestamp[1]))
+  spacetime  = strwidth(string(ta.timestamp[1])) + 3
 
   # summary line
   print(@sprintf "%dx%d %s %s to %s" nrow ncol typeof(ta) string(ta.timestamp[1]) string(ta.timestamp[nrow]))
@@ -51,10 +51,14 @@ function Base.show(io::IO, ta::TimeArray)
 
   # row label line
   firstcolwidth = strwidth(ta.colnames[1])
-  print(io, ^(" ", spacetime+3), ta.colnames[1], ^(" ", maxcolwidth(ta.values[:,1]) + 1 -firstcolwidth))
+
+  firstcolwidth > maxcolwidth(ta.values[:,1]) ?
+  print(io, ^(" ", spacetime-1), ta.colnames[1], ^(" ", maxcolwidth(ta.values[:,1]) + 2 -firstcolwidth)) :
+  print(io, ^(" ", spacetime), ta.colnames[1], ^(" ", maxcolwidth(ta.values[:,1]) + 2 -firstcolwidth))
+
   for p in 2:length(ta.colnames)
     nextcolwidth = strwidth(ta.colnames[p])
-    print(io, ta.colnames[p], ^(" ", maxcolwidth(ta.values[:,p]) + 1 - nextcolwidth))
+    print(io, ta.colnames[p], ^(" ", maxcolwidth(ta.values[:,p]) + 2 - nextcolwidth))
   end
   println("")
 
@@ -140,5 +144,3 @@ end
 
 # day of week
 # Base.getindex{T,N}(ta::TimeArray{T,N}, d::DAYOFWEEK) = ta[dayofweek(ta.timestamp) .== d]
-
-

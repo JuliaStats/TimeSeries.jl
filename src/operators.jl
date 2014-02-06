@@ -1,14 +1,10 @@
 #################################
 ###### +, -, *, / ###############
 #################################
- 
-# element-wise operations between two columns
-#for op in [:.+, :.-, :.*, :./, :.>, :.<, :.>=, :.<=, :.==] # return Bools for comparison operators?
+
 for op in [:.+, :.-, :.*, :./]
   @eval begin
-    #function ($op){T}(ta1::TimeArray{T,1}, ta2::TimeArray{T,1})
-    function ($op){T}(ta1::TimeArray{T}, ta2::TimeArray{T})
-    #function ($op){T}(ta1, ta2)
+    function ($op){T,N}(ta1::TimeArray{T,N}, ta2::TimeArray{T,N})
       cname  = [ta1.colnames[1][1:2] *  string($op) *  ta2.colnames[1][1:2]]
       tstamp = Date{ISOCalendar}[]
       vals   = T[]
@@ -25,12 +21,12 @@ for op in [:.+, :.-, :.*, :./]
   end # eval
 end # loop
 
-#         
-# # operations between a column and Int,Float64
-# for op in [:+, :-, :*, :/, :.+, :.-, :.*, :./]
-#   @eval begin
-#     function ($op){T,V}(sp::SeriesPair{T,V}, var::Union(Int,Float64))
-#       SeriesPair(sp.timestamp, ($op)(sp.value, var))
-#     end
-#   end
-# end
+# element-wise operations between a column and Int,Float64
+for op in [:.+, :.-, :.*, :./]
+  @eval begin
+    function ($op){T,N}(ta::TimeArray{T,N}, var::Union(Int,Float64))
+      vals = ($op)([t for t in ta.values], var)
+      TimeArray(ta.timestamp, vals, ta.colnames)
+    end # function
+  end # eval
+end # loop
