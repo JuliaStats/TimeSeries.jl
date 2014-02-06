@@ -6,7 +6,9 @@
 #for op in [:.+, :.-, :.*, :./, :.>, :.<, :.>=, :.<=, :.==] # return Bools for comparison operators?
 for op in [:.+, :.-, :.*, :./]
   @eval begin
-    function ($op){T}(ta1::TimeArray{T,1}, ta2::TimeArray{T,1})
+    #function ($op){T}(ta1::TimeArray{T,1}, ta2::TimeArray{T,1})
+    function ($op){T}(ta1::TimeArray{T}, ta2::TimeArray{T})
+    #function ($op){T}(ta1, ta2)
       cname  = [ta1.colnames[1][1:2] *  string($op) *  ta2.colnames[1][1:2]]
       tstamp = Date{ISOCalendar}[]
       vals   = T[]

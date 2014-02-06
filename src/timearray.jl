@@ -1,30 +1,30 @@
 # for some very odd reason I need this in the TimeArray.jl file
 
-#  immutable TimeArray{T,N}
-#  
-#     timestamp::Vector{Date{ISOCalendar}}
-#     values::Array{T,N}
-#     colnames::Vector{ASCIIString}
-#  
-#  
-#    function TimeArray(timestamp::Vector{Date{ISOCalendar}}, values::Array{T,N}, colnames::Vector{ASCIIString})
-#      nrow, ncol = size(values, 1), size(values, 2)
-#      nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
-#      ncol != size(colnames,1) ? error("column names must match width of array"):
-#      timestamp != unique(timestamp) ? error("there are duplicate dates"):
-#      ~(flipud(timestamp) == sort(timestamp) || timestamp == sort(timestamp)) ? error("dates are mangled"):
-#      flipud(timestamp) == sort(timestamp) ? 
-#      new(flipud(timestamp), flipud(values), colnames):
-#      new(timestamp, values, colnames)
-#    end
-#  end
-#  
-#  TimeArray{T,N}(d::Vector{Date{ISOCalendar}}, v::Array{T,N}, c::Vector{ASCIIString}) = TimeArray{T,N}(d,v,c)
-#  
-#  # from single values
-#  function TimeArray{T,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{ASCIIString,1})
-#    TimeArray([d], v, c)
-#  end
+immutable TimeArray{T,N}
+
+   timestamp::Vector{Date{ISOCalendar}}
+   values::Array{T,N}
+   colnames::Vector{ASCIIString}
+
+
+  function TimeArray(timestamp::Vector{Date{ISOCalendar}}, values::Array{T,N}, colnames::Vector{ASCIIString})
+    nrow, ncol = size(values, 1), size(values, 2)
+    nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
+    ncol != size(colnames,1) ? error("column names must match width of array"):
+    timestamp != unique(timestamp) ? error("there are duplicate dates"):
+    ~(flipud(timestamp) == sort(timestamp) || timestamp == sort(timestamp)) ? error("dates are mangled"):
+    flipud(timestamp) == sort(timestamp) ? 
+    new(flipud(timestamp), flipud(values), colnames):
+    new(timestamp, values, colnames)
+  end
+end
+
+TimeArray{T,N}(d::Vector{Date{ISOCalendar}}, v::Array{T,N}, c::Vector{ASCIIString}) = TimeArray{T,N}(d,v,c)
+
+# from single values
+function TimeArray{T,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{ASCIIString,1})
+  TimeArray([d], v, c)
+end
 
 #################################
 ###### length ###################
@@ -62,23 +62,21 @@ function Base.show(io::IO, ta::TimeArray)
   if nrow > 7
     for i in 1:4
       println(io, ta.timestamp[i], " | ", join([@sprintf("%.2f", t) for t in ta.values[i,:]], "  "))
-
     end
     println("...")
     for j in nrow-4:nrow
-      println(io, ta.timestamp[j], " | ", join([@sprintf("%.2f", t) for t in ta.values[j,:]], " "))
+      println(io, ta.timestamp[j], " | ", join([@sprintf("%.2f", t) for t in ta.values[j,:]], "  "))
     end
   else
     for k in 1:nrow
-      vals = split(string(ta.values[k,:]))'
-      print(io, ta.timestamp[k], " | ", vals)
+      println(io, ta.timestamp[k], " | ", join([@sprintf("%.2f", t) for t in ta.values[k,:]], "  "))
     end
   end
 end
 
 function maxcolwidth(x)
   val = maximum(x)
-  strwidth(@sprintf "%.2f" val)
+  strwidth(@sprintf("%.2f", val))
 end
 
 #################################

@@ -1,32 +1,28 @@
-using MarketData
-
-ohlc             = TimeArray(op, hi, lo, cl)
-ohlc.colnames[1] = "Open"
-ohlc.colnames[2] = "High"
-ohlc.colnames[3] = "Low"
-ohlc.colnames[4] = "Close"
+ohlc = readtimearray(Pkg.dir("TimeArrays/test/data/spx.csv"))
+op   = ohlc["Open"]
+cl   = ohlc["Close"]
 
 facts("type constructors enforce invariants") do
 
   context("unequal length between values and timestamp fails") do
-      @fact_throws TimeArray(index(cl), value(cl)[2:end], ["Close"])
+      @fact_throws TimeArray(cl.timestamp, cl.values[2:end], ["Close"])
   end
 
   context("unequal length between colnames and array width fails") do
-    @fact_throws TimeArray(index(cl), value(cl), ["Close", "Open"])
+    @fact_throws TimeArray(cl.timestamp, cl.values, ["Close", "Open"])
   end
 
   context("duplicate timestamp values fails") do
-    @fact_throws TimeArray(push!(index(cl), index(cl)[505]), push!(value(cl), value(cl)[1]), ["Close"])
+    @fact_throws TimeArray(push!(cl.timestamp, cl.timestamp[505]), push!(cl.values, cl.values[1]), ["Close"])
   end
 
   context("mangled order of timestamp values fails") do
-    @fact_throws TimeArray(push!(index(cl), date(1981,12,25)), push!(value(cl), value(cl)[1]), ["Close"])
+    @fact_throws TimeArray(push!(cl.timestamp, date(1981,12,25)), push!(cl.values, cl.values[1]), ["Close"])
   end
 
   context("flipping occurs when needed") do
-    @fact TimeArray(flipud(index(cl)), flipud(value(cl)),  ["Close"]).timestamp[1] => firstday
-    @fact TimeArray(flipud(index(cl)), flipud(value(cl)),  ["Close"]).values[1]    => 105.22
+    @fact TimeArray(flipud(cl.timestamp), flipud(cl.values),  ["Close"]).timestamp[1] => firstday
+    @fact TimeArray(flipud(cl.timestamp), flipud(cl.values),  ["Close"]).values[1]    => 105.22
   end
 end
   
