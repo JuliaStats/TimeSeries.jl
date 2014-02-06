@@ -1,3 +1,7 @@
+#################################
+###### type definition ##########
+#################################
+
 abstract AbstractTimeArray
 
 immutable TimeArray{T,N} <: AbstractTimeArray
