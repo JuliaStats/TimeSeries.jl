@@ -1,13 +1,9 @@
-TimeArrays.jl
+TimeSeries.jl
 ============
 
-temporary repo to explore combining Arrays of SeriesPair into multicolumn type with similar behavior
-
-API in progress (check back often)
-=
 
 ```
-julia> using TimeArrays, MarketData
+julia> using TimeSeries, MarketData
 
 julia> ohlc
 505x6 TimeArray{Float64,2} 1980-01-03 to 1981-12-31
