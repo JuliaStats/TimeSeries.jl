@@ -1,6 +1,4 @@
-ohlc = readtimearray(Pkg.dir("TimeArrays/test/data/spx.csv"))
-op   = ohlc["Open"]
-cl   = ohlc["Close"]
+using MarketData
 
 facts("type constructors enforce invariants") do
 
@@ -13,11 +11,11 @@ facts("type constructors enforce invariants") do
   end
 
   context("duplicate timestamp values fails") do
-    @fact_throws TimeArray(push!(cl.timestamp, cl.timestamp[505]), push!(cl.values, cl.values[1]), ["Close"])
+    @fact_throws TimeArray(dupestamp, push!(cl.values, cl.values[1]), ["Close"])
   end
 
   context("mangled order of timestamp values fails") do
-    @fact_throws TimeArray(push!(cl.timestamp, date(1981,12,25)), push!(cl.values, cl.values[1]), ["Close"])
+    @fact_throws TimeArray(mangstamp,  push!(cl.values, cl.values[1]), ["Close"])
   end
 
   context("flipping occurs when needed") do
