@@ -1,6 +1,4 @@
-# for some very odd reason I need this in the TimeArray.jl file
-
-immutable TimeArray{T,N}
+immutable TimeArray{T,N} <: AbstractTimeArray
 
    timestamp::Vector{Date{ISOCalendar}}
    values::Array{T,N}
