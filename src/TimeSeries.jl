@@ -1,8 +1,8 @@
-using Datetime
+using Datetime, ArrayViews
 
 module TimeSeries
 
-using Datetime
+using Datetime, ArrayViews
 
 export TimeArray, 
        readtimearray,
