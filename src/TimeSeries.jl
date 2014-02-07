@@ -1,8 +1,8 @@
-using Datetime
+using Datetime, ArrayViews
 
 module TimeSeries
 
-using Datetime
+using Datetime, ArrayViews
 
 export TimeArray, 
        readtimearray,
@@ -10,7 +10,9 @@ export TimeArray,
        # byyear, bymonth, byday, bydow, bydoy,  # convenience methods
        # from, to, collapse,                    # subsetting and squishing
        lag, lead, percentchange, upto, moving,                                  
-       head, tail, timestamp, values, colnames             
+       lag1, lead1, percentchange1, upto1, moving1, # ArrayViews implementations                                 
+       head, tail, timestamp, values, colnames 
+       # timeit                                 # timing method
 
 #################################
 ###### include ##################
