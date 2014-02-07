@@ -6,28 +6,28 @@ abstract AbstractTimeArray
 
 immutable TimeArray{T,N} <: AbstractTimeArray
 
-   timestamp::Vector{Date{ISOCalendar}}
-   values::Array{T,N}
-   colnames::Vector{ASCIIString}
+    timestamp::Vector{Date{ISOCalendar}}
+    values::Array{T,N}
+    colnames::Vector{ASCIIString}
 
 
-  function TimeArray(timestamp::Vector{Date{ISOCalendar}}, values::Array{T,N}, colnames::Vector{ASCIIString})
-    nrow, ncol = size(values, 1), size(values, 2)
-    nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
-    ncol != size(colnames,1) ? error("column names must match width of array"):
-    timestamp != unique(timestamp) ? error("there are duplicate dates"):
-    ~(flipud(timestamp) == sort(timestamp) || timestamp == sort(timestamp)) ? error("dates are mangled"):
-    flipud(timestamp) == sort(timestamp) ? 
-    new(flipud(timestamp), flipud(values), colnames):
-    new(timestamp, values, colnames)
-  end
+    function TimeArray(timestamp::Vector{Date{ISOCalendar}}, values::Array{T,N}, colnames::Vector{ASCIIString})
+        nrow, ncol = size(values, 1), size(values, 2)
+        nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
+        ncol != size(colnames,1) ? error("column names must match width of array"):
+        timestamp != unique(timestamp) ? error("there are duplicate dates"):
+        ~(flipud(timestamp) == sort(timestamp) || timestamp == sort(timestamp)) ? error("dates are mangled"):
+        flipud(timestamp) == sort(timestamp) ? 
+        new(flipud(timestamp), flipud(values), colnames):
+        new(timestamp, values, colnames)
+    end
 end
 
 TimeArray{T,N}(d::Vector{Date{ISOCalendar}}, v::Array{T,N}, c::Vector{ASCIIString}) = TimeArray{T,N}(d,v,c)
 
 # from single values
 function TimeArray{T,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{ASCIIString,1})
-  TimeArray([d], v, c)
+    TimeArray([d], v, c)
 end
 
 #################################
@@ -35,7 +35,7 @@ end
 #################################
 
 function Base.length(ta::TimeArray)
-  length(ta.timestamp)
+    length(ta.timestamp)
 end
 
 #################################
@@ -83,8 +83,8 @@ function Base.show(io::IO, ta::TimeArray)
 end
 
 function maxcolwidth(x)
-  val = maximum(x)
-  strwidth(@sprintf("%.2f", val))
+    val = maximum(x)
+    strwidth(@sprintf("%.2f", val))
 end
 
 #################################
@@ -93,29 +93,44 @@ end
 
 # single row
 function Base.getindex{T,N}(ta::TimeArray{T,N}, n::Int)
-  TimeArray(ta.timestamp[n], ta.values[n, 1:end], ta.colnames)
+    TimeArray(ta.timestamp[n], ta.values[n,:], ta.colnames)
+end
+
+# single row 1d
+function Base.getindex{T}(ta::TimeArray{T,1}, n::Int)
+    TimeArray(ta.timestamp[n], ta.values[[n]], ta.colnames)
 end
 
 # range of rows
 function Base.getindex{T,N}(ta::TimeArray{T,N}, r::Range1{Int})
-  TimeArray(ta.timestamp[r], ta.values[r,:], ta.colnames)
+    TimeArray(ta.timestamp[r], ta.values[r,:], ta.colnames)
+end
+
+# range of 1d rows
+function Base.getindex{T}(ta::TimeArray{T,1}, r::Range1{Int})
+    TimeArray(ta.timestamp[r], ta.values[r], ta.colnames)
 end
 
 # array of rows
 function Base.getindex{T,N}(ta::TimeArray{T,N}, a::Array{Int})
-  TimeArray(ta.timestamp[a], ta.values[a,:], ta.colnames)
+    TimeArray(ta.timestamp[a], ta.values[a,:], ta.colnames)
+end
+
+# array of 1d rows
+function Base.getindex{T}(ta::TimeArray{T,1}, a::Array{Int})
+    TimeArray(ta.timestamp[a], ta.values[a], ta.colnames)
 end
 
 # single column by name 
 function Base.getindex{T,N}(ta::TimeArray{T,N}, s::ASCIIString)
-  n = findfirst(ta.colnames, s)
-  TimeArray(ta.timestamp, ta.values[:, n], ASCIIString[s])
+    n = findfirst(ta.colnames, s)
+    TimeArray(ta.timestamp, ta.values[:, n], ASCIIString[s])
 end
 
 # array of columns by name
 function Base.getindex{T,N}(ta::TimeArray{T,N}, args::ASCIIString...)
-  ns = [findfirst(ta.colnames, a) for a in args]
-  TimeArray(ta.timestamp, ta.values[:,ns], ASCIIString[a for a in args])
+    ns = [findfirst(ta.colnames, a) for a in args]
+    TimeArray(ta.timestamp, ta.values[:,ns], ASCIIString[a for a in args])
 end
 
 # single date
@@ -140,10 +155,10 @@ function Base.getindex{T,N}(ta::TimeArray{T,N}, dates::Array{Date{ISOCalendar},1
     end
   end
   ta[counter]
- end
+end
 
 function Base.getindex{T,N}(ta::TimeArray{T,N}, r::DateRange{ISOCalendar}) 
-  ta[[r]]
+    ta[[r]]
 end
 
 # day of week
