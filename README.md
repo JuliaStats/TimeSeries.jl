@@ -1,8 +1,32 @@
 TimeSeries.jl
 ============
+[![Build Status](https://travis-ci.org/JuliaStats/TimeSeries.jl.png)](https://travis-ci.org/JuliaStats/TimeSeries.jl)
 
+the time being. A new time-based array type is planned, along with methods found in the current package implementation.
 
-```
+#### Installation
+
+````julia
+julia> Pkg.add("TimeSeries")
+````
+Additionally, the unregistered MarketData package includes some `const` objects that include TimeArray objects. These
+objects are historical price time series and are used in testing and benchmarking mostly. You may find it useful to 
+clone the package and take TimeSeries functionality through some paces with these objects. 
+
+````julia
+julia> Pkg.clone("git://github.com/JuliaQuant/MarketData.jl.git")
+````
+
+Alternately, you can create some dummy data with this code block.
+
+````julia
+d = [date(1980,1,1):date(2015,1,1)];
+t = TimeArray(d,rand(length(d)),["test"])
+````
+
+#### Quick tour of current API
+
+``julia
 julia> using TimeSeries, MarketData
 
 julia> ohlc
