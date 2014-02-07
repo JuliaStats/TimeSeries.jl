@@ -28,3 +28,16 @@ end
  
 head{T,N}(ta::TimeArray{T,N}) = head(ta, 1)
 tail{T,N}(ta::TimeArray{T,N}) = tail(ta, 2)
+
+#################################
+###### timing method ############
+#################################
+ 
+# function timeit(f::Function, v::Any, n::Int)
+#     p = zeros(n)
+#       for i in 1:n
+#         p[i] = @elapsed f(v)
+#       end
+#     mean(p[2:end]) # toss out the first execution from the average
+# end
+

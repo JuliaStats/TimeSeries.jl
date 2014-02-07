@@ -38,9 +38,8 @@ end
 ###### moving ###################
 #################################
 
-# function moving{T,N}(ta::TimeArray{T,N}, f::Function, window::Int) 
+# function original_moving{T,N}(ta::TimeArray{T,N}, f::Function, window::Int) 
 #     tstamps = ta.timestamp[window:end]
-# #    nanarray = fill(NaN, window-1) # design choice here
 #     vals = T[]
 #     for i=1:length(ta)-(window-1)
 #       push!(vals, f([ta.values[t] for t in 1:length(ta)][i:i+(window-1)])) 
@@ -50,12 +49,21 @@ end
 
 function moving{T,N}(ta::TimeArray{T,N}, f::Function, window::Int) 
     tstamps = ta.timestamp[window:end]
-#    nanarray = fill(NaN, window-1) # design choice here
     vals = zeros(length(ta) - (window-1))
     for i=1:length(vals)
       vals[i] = f(values(ta)[i:i+(window-1)])
     end
     TimeArray(tstamps, vals, ta.colnames)
+end
+
+function moving1{T,N}(ta::TimeArray{T,N}, f::Function, window::Int) 
+    len  = length(ta)
+    vals = zeros(len)
+    for i=1:len
+      vals[i] = f(view(ta.values,i:i+(window-1)))
+      #vals[i] = f(view(ta.values,1:i))
+    end
+    TimeArray(ta.timestamp, vals, ta.colnames)
 end
 
 #################################
@@ -67,5 +75,14 @@ function upto{T,N}(ta::TimeArray{T,N}, f::Function)
       for i=1:length(ta)
         push!(vals, f(ta.values[1:i])) 
       end
+    TimeArray(ta.timestamp, vals, ta.colnames)
+end
+
+function upto1{T,N}(ta::TimeArray{T,N}, f::Function) 
+    len  = length(ta)
+    vals = zeros(len)
+    for i=1:len
+      vals[i] = f(view(ta.values,1:i))
+    end
     TimeArray(ta.timestamp, vals, ta.colnames)
 end
