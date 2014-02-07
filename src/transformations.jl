@@ -38,12 +38,22 @@ end
 ###### moving ###################
 #################################
 
+# function moving{T,N}(ta::TimeArray{T,N}, f::Function, window::Int) 
+#     tstamps = ta.timestamp[window:end]
+# #    nanarray = fill(NaN, window-1) # design choice here
+#     vals = T[]
+#     for i=1:length(ta)-(window-1)
+#       push!(vals, f([ta.values[t] for t in 1:length(ta)][i:i+(window-1)])) 
+#     end
+#     TimeArray(tstamps, vals, ta.colnames)
+# end
+
 function moving{T,N}(ta::TimeArray{T,N}, f::Function, window::Int) 
     tstamps = ta.timestamp[window:end]
 #    nanarray = fill(NaN, window-1) # design choice here
-    vals = T[]
-    for i=1:length(ta)-(window-1)
-      push!(vals, f([ta.values[t] for t in 1:length(ta)][i:i+(window-1)])) 
+    vals = zeros(length(ta) - (window-1))
+    for i=1:length(vals)
+      vals[i] = f(values(ta)[i:i+(window-1)])
     end
     TimeArray(tstamps, vals, ta.colnames)
 end

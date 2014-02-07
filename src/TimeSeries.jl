@@ -13,7 +13,8 @@ export TimeArray,
        timestamp, values, colnames,             # extracts TimeArray elements as single object of its type 
        lag, lead,                               # returns a TimeVector
        percentchange,                           # returns a TimeVector, kwargs simple, log 
-       moving, upto,                            # returns a TimeVector 
+       upto,                                    # returns a TimeVector 
+       moving,                                  # @karbarcca algorithm 
        # fastmoving,                            # experimental mapping algorithm
        # byyear, bymonth, byday, bydow, bydoy,  # convenience methods
        # from, to, collapse                     # subsetting and squishing
