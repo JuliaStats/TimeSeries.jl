@@ -1,6 +1,6 @@
 using Datetime
 
-module TimeArrays
+module TimeSeries
 
 using Datetime
 
