@@ -50,4 +50,9 @@ facts("getindex methods") do
     @fact ohlc["Open", "Close"].values[1] => 105.76
     @fact ohlc["Open", "Close"].values[2] => 105.22
   end
+
+  context("getindex on 1d returns 1d object") do
+    @fact isa(cl[1], TimeArray{Float64,1})   => true
+    @fact isa(cl[1:2], TimeArray{Float64,1}) => true
+  end
 end
