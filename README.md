@@ -2,8 +2,6 @@ TimeSeries.jl
 ============
 [![Build Status](https://travis-ci.org/JuliaStats/TimeSeries.jl.png)](https://travis-ci.org/JuliaStats/TimeSeries.jl)
 
-the time being. A new time-based array type is planned, along with methods found in the current package implementation.
-
 #### Installation
 
 ````julia
