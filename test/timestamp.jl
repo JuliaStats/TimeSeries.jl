@@ -15,9 +15,9 @@ facts("timestamp operations") do
   end
 
   context("bydate methods correctly subset") do
-      @fact byyear(cl,1981).timestamp[1] => secondday
+      @fact byyear(cl,1981).timestamp[1] => date(1981,1,2)
       @fact bymonth(cl,2).timestamp[1]   => date(1980,2,1)
-      @fact byweek(cl,1).timestamp[1]    => seconddsay 
+      @fact byday(cl,4).timestamp[1]     => secondday 
       @fact bydow(cl,5).timestamp[1]     => secondday
       @fact bydoy(cl,4).timestamp[1]     => secondday
   end

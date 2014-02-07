@@ -2,13 +2,18 @@
 # bydate ########################
 #################################
 
-for (byfun,calfun) = ((:byyear,:year), (:bymonth,:month), (:byday,:day), (:bydow,:dayofweek), (:bydoy,:dayofyear))
+for (byfun,datefun) = ((:byyear,:year), (:bymonth,:month), (:byday,:day), (:bydow,:dayofweek), (:bydoy,:dayofyear))
                       # (:byhour,:hour), (:byminute,:minute), (:bysecond,:second)
   @eval begin
     # get array of ints that correspon to dates and call getindex on that
     function ($byfun){T,N}(ta::TimeArray{T,N}, t::Int) 
-      boolarray = [[$calfun(d.timestamp) for d in 1:length(ta.timestamp)] .== t]
-      rownums = 
+      boolarray = [[$datefun(ta.timestamp[d]) for d in 1:length(ta.timestamp)] .== t]
+      rownums = Int[] 
+      for i in 1:length(boolarray)
+          if boolarray[i]
+              push!(rownums, i)
+          end
+      end
       ta[rownums]
     end # function
   end # eval

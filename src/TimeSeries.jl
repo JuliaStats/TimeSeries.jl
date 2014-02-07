@@ -7,7 +7,7 @@ using Datetime
 export TimeArray, 
        readtimearray,
        .+, .-, .*, ./, # .>, .<, .>=, .<=, .==  # element-wise comparison on date should return BitArray 
-       # byyear, bymonth, byday, bydow, bydoy,  # convenience methods
+       byyear, bymonth, byday, bydow, bydoy,  
        from, to,  collapse,                    
        lag, lead, percentchange, upto, moving,                                  
        head, tail, timestamp, values, colnames             
