@@ -61,7 +61,7 @@ function moving1{T,N}(ta::TimeArray{T,N}, f::Function, window::Int)
     vals = zeros(len)
     for i=1:len
       vals[i] = f(view(ta.values,i:i+(window-1)))
-      #vals[i] = f(view(ta.values,1:i))
+       #vals[i] = f(view(ta.values,1:i))
     end
     TimeArray(ta.timestamp, vals, ta.colnames)
 end
