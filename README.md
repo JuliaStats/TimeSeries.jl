@@ -24,7 +24,7 @@ t = TimeArray(d,rand(length(d)),["test"])
 
 #### Quick tour of current API
 
-``julia
+````julia
 julia> using TimeSeries, MarketData
 
 julia> ohlc
@@ -85,4 +85,4 @@ julia> op[1:3] .- cl[2:4]
 1980-01-04 | -1.30
 1980-01-07 | -0.29
 
-```
+````
