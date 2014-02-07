@@ -6,22 +6,11 @@ using Datetime
 
 export TimeArray, 
        readtimearray,
-       .+, .-, .*, ./, 
-       # .>, .<, .>=, .<=, .==                  # element-wise comparison on date should return BitArray 
-       # +, -, *, /                             # possible semantic is concat operations? non consistent with Julian arrays
-       # >, <, >=, <=, ==                       # should not be supported
-       timestamp, values, colnames,             # extracts TimeArray elements as single object of its type 
-       lag, lead,                               # returns a TimeVector
-       percentchange,                           # returns a TimeVector, kwargs simple, log 
-       upto,                                    # returns a TimeVector 
-       moving,                                  # @karbarcca algorithm 
-       # fastmoving,                            # experimental mapping algorithm
+       .+, .-, .*, ./, # .>, .<, .>=, .<=, .==  # element-wise comparison on date should return BitArray 
        # byyear, bymonth, byday, bydow, bydoy,  # convenience methods
-       # from, to, collapse                     # subsetting and squishing
-       head, tail                               # R or Haskell semantics? leaning towards Haskell 
-       # istrue, when                           # seriespair holdovers, not sure if still useful
-
-
+       # from, to, collapse,                    # subsetting and squishing
+       lag, lead, percentchange, upto, moving,                                  
+       head, tail, timestamp, values, colnames             
 
 #################################
 ###### include ##################
