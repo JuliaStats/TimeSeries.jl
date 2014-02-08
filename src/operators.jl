@@ -23,7 +23,7 @@ for op in [:.+, :.-, :.*, :./]
 end # loop
 
 # element-wise comparison operations between two columns
-for op in [:.>, :.<, :.==, :.>=, :<=]
+for op in [:.>, :.<, :.==, :.>=, :.<=]
   @eval begin
     function ($op){T,N}(ta1::TimeArray{T,N}, ta2::TimeArray{T,N})
       cname  = [ta1.colnames[1][1:2] *  string($op) *  ta2.colnames[1][1:2]]
@@ -53,24 +53,16 @@ for op in [:.+, :.-, :.*, :./]
 end # loop
 
 # element-wise comparison operations between a column and Int,Float64
-for op in [:.>, :.<, :.==, :.>=, :<=]
+for op in [:.>, :.<, :.==, :.>=, :.<=]
   @eval begin
     function ($op){T,N}(ta::TimeArray{T,N}, var::Union(Int,Float64))
-      bitvals  = ($op)([t for t in ta.values], var)
-      boolvals = chittychittybangbang(bitvals)
-      TimeArray(ta.timestamp, boolvals, ta.colnames)
+      cname  = [ta.colnames[1][1:2] *  string($op) *  string(var)]
+      tstamp = Date{ISOCalendar}[]
+      vals   = Bool[]
+      for i in 1:length(ta)
+        push!(vals, ($op)(ta.values[i], var))
+      end
+      TimeArray(ta.timestamp, vals, cname)
     end # function
   end # eval
 end # loop
-
-#################################
-###### hacked conversion ########
-#################################
-
-function chittychittybangbang(bitarray::BitArray)
-    boolarray = Bool[]
-    for i in 1:length(bitarray)
-        push!(boolarray, bitarray[i])
-    end
-    boolarray
-end
