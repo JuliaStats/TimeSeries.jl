@@ -17,10 +17,19 @@ facts("base element-wise operators on TimeArray values") do
   end
 
   context("correct operation between two TimeVectors values returns bool for comparisons") do
-  
+    @fact (cl .> op).values[1]  => false
+    @fact (cl .< op).values[1]  => true
+    @fact (cl .<= op).values[1] => true
+    @fact (cl .>= op).values[1] => false
+    @fact (cl .== op).values[1] => false
   end
 
   context("correct operation between TimeVectors values and Int/Float64 returns bool for comparison") do
+    @fact (cl .> 105.22).values[1]  => false
+    @fact (cl .< 105.22).values[1]  => false
+    @fact (cl .>= 105.22).values[1] => true
+    @fact (cl .<= 105.22).values[1] => true
+    @fact (cl .== 105.22).values[1] => true
  
   end
 end
