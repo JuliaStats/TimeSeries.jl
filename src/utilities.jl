@@ -30,9 +30,25 @@ head{T,N}(ta::TimeArray{T,N}) = head(ta, 1)
 tail{T,N}(ta::TimeArray{T,N}) = tail(ta, 2)
 
 #################################
+###### whentrue #################
+#################################
+
+function whentrue(ta::TimeArray{Bool,1})
+  tstamps = [date(1,1,1):years(1):date(sum(ta.values),1,1)]
+  j = 1
+  for i in 1:length(ta)
+    if ta.values[i]
+      tstamps[j] = ta.timestamp[i]
+      j+=1
+    end
+  end
+  tstamps
+end
+ 
+#################################
 ###### timing method ############
 #################################
- 
+
 # function timeit(f::Function, v::Any, n::Int)
 #     p = zeros(n)
 #       for i in 1:n
