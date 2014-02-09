@@ -30,7 +30,7 @@ head{T,N}(ta::TimeArray{T,N}) = head(ta, 1)
 tail{T,N}(ta::TimeArray{T,N}) = tail(ta, 2)
 
 #################################
-###### istrue ###################
+###### whentrue #################
 #################################
 
 function whentrue(ta::TimeArray{Bool,1})

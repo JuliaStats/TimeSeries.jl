@@ -28,7 +28,7 @@ facts("utilities") do
       @fact size(tail(cl, length(cl)-2).timestamp, 1) => 3
   end
 
-  context("istrue returns correct Array{Date{ISOCalendar},1}") do
+  context("whentrue returns correct Array{Date{ISOCalendar},1}") do
       @fact whentrue((cl .> op))[1] => secondday
   end
 end
