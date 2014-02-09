@@ -30,19 +30,19 @@ head{T,N}(ta::TimeArray{T,N}) = head(ta, 1)
 tail{T,N}(ta::TimeArray{T,N}) = tail(ta, 2)
 
 #################################
-###### whentrue #################
+###### findall ##################
 #################################
 
-function whentrue(ta::TimeArray{Bool,1})
-  tstamps = [date(1,1,1):years(1):date(sum(ta.values),1,1)]
+function findall(ta::TimeArray{Bool,1})
+  rownums = int(zeros(sum(ta.values)))
   j = 1
   for i in 1:length(ta)
     if ta.values[i]
-      tstamps[j] = ta.timestamp[i]
+      rownums[j] = i
       j+=1
     end
   end
-  tstamps
+  rownums
 end
  
 #################################
