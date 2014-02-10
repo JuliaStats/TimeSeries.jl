@@ -52,11 +52,9 @@ end
 #################################
 
 function upto{T,N}(ta::TimeArray{T,N}, f::Function) 
-    #vals = zeros(length(ta)
-    vals = T[]
+    vals = zeros(length(ta))
       for i=1:length(ta)
-        #vals[i], f(ta.values[1:i])) 
-        push!(vals, f(ta.values[1:i])) 
+        vals[i] = f(ta.values[1:i]) 
       end
     TimeArray(ta.timestamp, vals, ta.colnames)
 end
