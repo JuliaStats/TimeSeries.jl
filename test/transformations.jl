@@ -36,6 +36,7 @@ facts("transformations") do
  
   context("upto method accumulates") do
       @fact upto(cl, sum).values[10]    => roughly(sum(cl.values[1:10]))
+      @fact upto(cl, mean).values[10]   => roughly(sum(cl.values[1:10])/10)
       @fact upto(cl, sum).timestamp[10] => tenthday
   end
 end
