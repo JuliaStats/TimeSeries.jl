@@ -49,9 +49,9 @@ end
 
 function moving{T,N}(ta::TimeArray{T,N}, f::Function, window::Int) 
     tstamps = ta.timestamp[window:end]
-    vals = zeros(length(ta) - (window-1))
+    vals    = zeros(length(ta) - (window-1))
     for i=1:length(vals)
-      vals[i] = f(values(ta)[i:i+(window-1)])
+      vals[i] = f(ta.values[i:i+(window-1)])
     end
     TimeArray(tstamps, vals, ta.colnames)
 end
