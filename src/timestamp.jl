@@ -5,12 +5,16 @@
 for (byfun,datefun) = ((:byyear,:year), (:bymonth,:month), (:byday,:day), (:bydow,:dayofweek), (:bydoy,:dayofyear))
                       # (:byhour,:hour), (:byminute,:minute), (:bysecond,:second)
   @eval begin
-    # get array of ints that correspon to dates and call getindex on that
+    # get array of ints that correspond to dates and call getindex on that
     function ($byfun){T,N}(ta::TimeArray{T,N}, t::Int) 
       boolarray = [[$datefun(ta.timestamp[d]) for d in 1:length(ta.timestamp)] .== t]
+      #rownums = zeros(length(boolarray)
+      #j = 1
       rownums = Int[] 
       for i in 1:length(boolarray)
           if boolarray[i]
+              #rownumbs[j] = i
+              #j+=1
               push!(rownums, i)
           end
       end
