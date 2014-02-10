@@ -22,6 +22,61 @@ d = [date(1980,1,1):date(2015,1,1)];
 t = TimeArray(d,rand(length(d)),["test"])
 ````
 
+#### Package objectives
+
+TimeSeries aims to provide a lightweight framework for working with time series data in Julia. There are less than 500 total lines of code 
+in the `src/` directory.
+
+````bash
+✈  git ls-files | xargs wc -l
+      27 TimeSeries.jl
+      14 io.jl
+      68 operators.jl
+     174 timearray.jl
+      75 timestamp.jl
+      69 transformations.jl
+      43 utilities.jl
+     470 total
+````
+
+The following is a list of methods, taken from the `export` block of the module file. 
+
+````julia
+export TimeArray, 
+       readtimearray,
+       .+, .-, .*, ./, 
+       .>, .<, .>=, .<=, .==,  
+       byyear, bymonth, byday, bydow, bydoy,  
+       from, to,  collapse,                    
+       lag, lead, percentchange, upto, moving,                                  
+       findall, findwhen
+````
+This list is clearly not exhaustive and users may find they need to add their own methods. For example, suppose you could really use the `abs` method
+from Base. This simple three-line code block allows you to do so. 
+
+````julia
+function Base.abs{T,N}(ta::TimeArray{T,N})
+    TimeArray(ta.timestamp, abs(ta.values), ta.colnames)
+end
+````
+
+If you have a list of methods you'd like to extend, Julia provides a convenient code-generating block.
+
+````julia
+
+ops = ["Base.abs", "Base.log10", "Base.expm1", "Base.sin"]
+
+for op in ops
+  @eval begin
+    function ($op){T,N}(ta::TimeArray{T.N})
+      TimeArray(ta.timestamp, ($op)ta.values, ta.colnames)
+    end
+  end
+end
+````
+
+This approach allows the TimeSeries package to remain lightweight and flexible. 
+
 #### Quick tour of current API
 
 ````julia
