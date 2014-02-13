@@ -172,3 +172,40 @@ end
 
 # day of week
 # Base.getindex{T,N}(ta::TimeArray{T,N}, d::DAYOFWEEK) = ta[dayofweek(ta.timestamp) .== d]
+
+#################################
+###### join or merge ############
+#################################
+
+#function merge{T,N}(ta1::TimeArray{T,N}, ta2::TimeArray{T,N}; method="inner")
+function merge{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; method="inner")
+    tstamp = [date(1,1,1):years(1):date(length(ta1),1,1)]
+    n      = 1
+      for i in 1:length(ta1)
+        for j in 1:length(ta2)
+          if ta1.timestamp[i] == ta2.timestamp[j]
+            tstamp[n] = ta1.timestamp[i]
+            n+=1
+          end
+        end
+      end
+    tstamp = tstamp[1:n-1] # trim down the length, if necessary
+
+    # @time merge(cl, op) takes 1.627
+    vals = zeros(Float64, length(tstamp), (length(ta1.colnames) + length(ta2.colnames)))
+#     for k in 1:length(tstamp)
+#       vals[k,1:length(ta1.colnames)]       = ta1[tstamp[k]].values[:]'
+#       vals[k,(length(ta1.colnames)+1):end] = ta2[tstamp[k]].values[:]'
+#     end
+
+    # @time merge(cl, op) takes 3.433
+#    val1 = ta1[tstamp].values
+#    val2 = ta2[tstamp].values
+#    vals = hcat(val1, val2)
+
+    cnames = copy(ta1.colnames) # otherwise ta1 gets contaminated
+    for m in 1:length(ta2.colnames)
+      push!(cnames, ta2.colnames[m])
+    end
+    TimeArray(tstamp, vals, cnames)
+end
