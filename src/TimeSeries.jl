@@ -5,8 +5,8 @@ module TimeSeries
 using Datetime
 
 export TimeArray, 
-       readtimearray,
-       .+, .-, .*, ./, 
+       readtimearray, 
+       .+, .-, .*, ./, .^, +, -, *, /, 
        .>, .<, .>=, .<=, .==,  
        merge,
        byyear, bymonth, byday, bydow, bydoy,  
