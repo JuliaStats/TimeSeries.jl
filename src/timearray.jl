@@ -155,14 +155,17 @@ function Base.getindex{T,N}(ta::TimeArray{T,N}, d::Date{ISOCalendar})
  
 # range of dates
 function Base.getindex{T,N}(ta::TimeArray{T,N}, dates::Array{Date{ISOCalendar},1})
-  counter = Int[]
-  for i in 1:length(ta)
-    for j in 1:size(dates,1)
-      if ta[i].timestamp == [dates[j]]
-        push!(counter, i)
+  #counter = Int[]
+  counter = int(zeros(length(dates)))
+  for i in 1:length(dates)
+#  for i in 1:length(ta)
+#    for j in 1:size(dates,1)
+#      if ta[i].timestamp == [dates[j]]
+#        push!(counter, i)
+        counter[i] = findfirst(ta.timestamp, dates[i])
       end
-    end
-  end
+#    end
+#  end
   ta[counter]
 end
 
