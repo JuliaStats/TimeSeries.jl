@@ -24,19 +24,19 @@ t = TimeArray(d,rand(length(d)),["test"])
 
 #### Package objectives
 
-TimeSeries aims to provide a lightweight framework for working with time series data in Julia. There are less than 500 total lines of code 
+TimeSeries aims to provide a lightweight framework for working with time series data in Julia. There are less than 600 total lines of code 
 in the `src/` directory.
 
 ````bash
 ✈  git ls-files | xargs wc -l
-      27 TimeSeries.jl
+      28 TimeSeries.jl
       14 io.jl
-      68 operators.jl
-     174 timearray.jl
-      75 timestamp.jl
-      69 transformations.jl
+      93 operators.jl
+     214 timearray.jl
+      77 timestamp.jl
+      61 transformations.jl
       43 utilities.jl
-     470 total
+     530 total
 ````
 
 The following is a list of methods, taken from the `export` block of the module file. 
@@ -46,35 +46,32 @@ export TimeArray,
        readtimearray,
        .+, .-, .*, ./, 
        .>, .<, .>=, .<=, .==,  
+       merge, 
        byyear, bymonth, byday, bydow, bydoy,  
        from, to,  collapse,                    
        lag, lead, percentchange, upto, moving,                                  
-       findall, findwhen
+       findall, findwhen, basecall
 ````
-This list is clearly not exhaustive and users may find they need to add their own methods. For example, suppose you could really use the `abs` method
-from Base. This simple three-line code block allows you to do so. 
+This list is clearly not exhaustive and users may find they need to call Array methods defined in Base. The `basecall` method is provided
+to provide this functionality. 
 
 ````julia
-function Base.abs{T,N}(ta::TimeArray{T,N})
-    TimeArray(ta.timestamp, abs(ta.values), ta.colnames)
-end
+julia> basecall(cl, log10)[1:2]
+2x1 TimeArray{Float64,1} 1980-01-03 to 1980-01-04
+
+            Close
+1980-01-03 | 2.02
+1980-01-04 | 2.03
+
+
+julia> basecall(cl, exp)[1:2]
+2x1 TimeArray{Float64,1} 1980-01-03 to 1980-01-04
+
+             Close
+1980-01-03 | 4971247503081840662639169233919890442732699648.00
+1980-01-04 | 18240981896968634360791785955913500346617430016.00
+
 ````
-
-If you have a list of methods you'd like to extend, Julia provides a convenient code-generating block.
-
-````julia
-
-ops = ["Base.abs", "Base.log10", "Base.expm1", "Base.sin"]
-
-for op in ops
-  @eval begin
-    function ($op){T,N}(ta::TimeArray{T.N})
-      TimeArray(ta.timestamp, ($op)ta.values, ta.colnames)
-    end
-  end
-end
-````
-
 This approach allows the TimeSeries package to remain lightweight and flexible. 
 
 #### Quick tour of current API
@@ -140,4 +137,19 @@ julia> op[1:3] .- cl[2:4]
 1980-01-04 | -1.30
 1980-01-07 | -0.29
 
+
+julia> merge(op, cl)
+505x2 TimeArray{Float64,2} 1980-01-03 to 1981-12-31
+
+             Open    Close
+1980-01-03 | 105.76  105.22
+1980-01-04 | 105.22  106.52
+1980-01-07 | 106.52  106.81
+1980-01-08 | 106.81  108.95
+...
+1981-12-24 | 122.31  122.54
+1981-12-28 | 122.54  122.27
+1981-12-29 | 122.27  121.67
+1981-12-30 | 121.67  122.30
+1981-12-31 | 122.30  122.55
 ````
