@@ -43,10 +43,10 @@ The following is a list of methods, taken from the `export` block of the module 
 
 ````julia
 export TimeArray, 
-       readtimearray,
-       .+, .-, .*, ./, 
+       readtimearray, 
+       .+, .-, .*, ./, .^, +, -, *, /, 
        .>, .<, .>=, .<=, .==,  
-       merge, 
+       merge,
        byyear, bymonth, byday, bydow, bydoy,  
        from, to,  collapse,                    
        lag, lead, percentchange, upto, moving,                                  
