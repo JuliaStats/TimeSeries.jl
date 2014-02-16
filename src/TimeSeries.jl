@@ -11,7 +11,7 @@ export TimeArray,
        byyear, bymonth, byday, bydow, bydoy,  
        from, to,  collapse,                    
        lag, lead, percentchange, upto, moving,                                  
-       findall, findwhen
+       findall, findwhen, basecall
 
 #################################
 ###### include ##################

@@ -212,3 +212,9 @@ function merge{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; method="inner")
 
     TimeArray(tstamp, vals, cnames)
 end
+
+#################################
+###### basecall #################
+#################################
+
+basecall{T,N}(ta::TimeArray{T,N}, f::Function; cnames=ta.colnames) =  TimeArray(ta.timestamp, f(ta.values), cnames)
