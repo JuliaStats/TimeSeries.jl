@@ -24,55 +24,8 @@ t = TimeArray(d,rand(length(d)),["test"])
 
 #### Package objectives
 
-TimeSeries aims to provide a lightweight framework for working with time series data in Julia. There are less than 600 total lines of code 
+TimeSeries aims to provide a lightweight framework for working with time series data in Julia. There are less than 500 total lines of code 
 in the `src/` directory.
-
-````bash
-✈  git ls-files | xargs wc -l
-      28 TimeSeries.jl
-      14 io.jl
-      93 operators.jl
-     214 timearray.jl
-      77 timestamp.jl
-      61 transformations.jl
-      43 utilities.jl
-     530 total
-````
-
-The following is a list of methods, taken from the `export` block of the module file. 
-
-````julia
-export TimeArray, 
-       readtimearray, 
-       .+, .-, .*, ./, .^, +, -, *, /, 
-       .>, .<, .>=, .<=, .==,  
-       merge,
-       byyear, bymonth, byday, bydow, bydoy,  
-       from, to,  collapse,                    
-       lag, lead, percentchange, upto, moving,                                  
-       findall, findwhen, basecall
-````
-This list is clearly not exhaustive and users may find they need to call Array methods defined in Base. The `basecall` method is provided
-to provide this functionality. 
-
-````julia
-julia> basecall(cl, log10)[1:2]
-2x1 TimeArray{Float64,1} 1980-01-03 to 1980-01-04
-
-            Close
-1980-01-03 | 2.02
-1980-01-04 | 2.03
-
-
-julia> basecall(cl, exp)[1:2]
-2x1 TimeArray{Float64,1} 1980-01-03 to 1980-01-04
-
-             Close
-1980-01-03 | 4971247503081840662639169233919890442732699648.00
-1980-01-04 | 18240981896968634360791785955913500346617430016.00
-
-````
-This approach allows the TimeSeries package to remain lightweight and flexible. 
 
 #### Quick tour of current API
 

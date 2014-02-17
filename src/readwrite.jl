@@ -1,6 +1,4 @@
-#################################
 ###### readtimearray ############
-#################################
 
 function readtimearray(fname::String)
   blob    = readcsv(fname)

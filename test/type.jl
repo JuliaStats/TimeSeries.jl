@@ -56,29 +56,3 @@ facts("getindex methods") do
     @fact isa(cl[1:2], TimeArray{Float64,1}) => true
   end
 end
-
-facts("join works correctly") do
-  
-  context("returns correct alignment with dates and values") do
-    @fact merge(cl,op).values[2,1] => cl.values[2,1]
-    @fact merge(cl,op).values[2,2] => op.values[2,1]
-  end
-  
-  context("aligns with disparate sized objects") do
-    @fact merge(cl, op[2:5]).values[1,1]  => cl.values[2,1]
-    @fact merge(cl, op[2:5]).values[1,2]  => op.values[2,1]
-    @fact merge(cl, op[2:5]).timestamp[1] => secondday
-    @fact length(merge(cl, op[2:5]))      => 4
-  end
-end
-
-facts("basecall works with Base methods") do
-  
-  context("cumsum works") do
-    @fact basecall(cl, cumsum).values[2] => cl.values[1] + cl.values[2]
-  end
-  
-  context("log works") do
-    @fact basecall(cl, log).values[2] => log(cl.values[2])
-  end
-end

@@ -1,10 +1,9 @@
 using FactCheck
 
-include("timearray.jl")
-include("io.jl")
-include("operators.jl") 
-include("timestamp.jl")
-include("transformations.jl")
-include("utilities.jl")
+include("type.jl")
+include("split.jl") 
+include("apply.jl")
+include("combine.jl")
+include("readwrite.jl")
 
 exitstatus()
