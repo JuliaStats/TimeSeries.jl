@@ -21,10 +21,10 @@ facts("split date operations") do
   end
 
   context("bydate methods correctly subset") do
-      @fact byyear(cl,1981).timestamp[1] => date(1981,1,2)
-      @fact bymonth(cl,2).timestamp[1]   => date(1980,2,1)
-      @fact byday(cl,4).timestamp[1]     => secondday 
-      @fact bydow(cl,5).timestamp[1]     => secondday
-      @fact bydoy(cl,4).timestamp[1]     => secondday
+      @fact by(cl,1981, period=year).timestamp[1]   => date(1981,1,2)
+      @fact by(cl,2, period=month).timestamp[1]     => date(1980,2,1)
+      @fact by(cl,4, period=day).timestamp[1]       => secondday 
+      @fact by(cl,5, period=dayofweek).timestamp[1] => secondday
+      @fact by(cl,4, period=dayofyear).timestamp[1] => secondday
   end
 end

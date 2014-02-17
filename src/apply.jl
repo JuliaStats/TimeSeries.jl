@@ -1,6 +1,4 @@
-#################################
 ###### +, -, *, / ###############
-#################################
 
 # element-wise mathematical operations between two columns
 for op in [:.+, :.-, :.*, :./, :+, :-, :*, :/]
@@ -92,9 +90,7 @@ for op in [:.>, :.<, :.==, :.>=, :.<=]
   end # eval
 end # loop
 
-#################################
 ###### lag, lead ################
-#################################
   
 function lag{T,N}(ta::TimeArray{T,N}; period::Int=1) 
     TimeArray(ta.timestamp[period+1:end], ta.values[1:length(ta)-period], ta.colnames)
@@ -112,9 +108,7 @@ function lead{T,N}(ta::TimeArray{T,N}, n::Int)
     TimeArray(ta.timestamp[1:length(ta)-n], ta.values[n+1:end], ta.colnames)
 end
 
-#################################
 ###### percentchange ############
-#################################
 
 function percentchange{T,N}(ta::TimeArray{T,N}; method="simple") 
     logreturn = log(ta.values)[2:end] .- log(lag(ta).values)
@@ -128,9 +122,7 @@ function percentchange{T,N}(ta::TimeArray{T,N}; method="simple")
     end
 end
 
-#################################
 ###### moving ###################
-#################################
 
 function moving{T,N}(ta::TimeArray{T,N}, f::Function, window::Int) 
     tstamps = ta.timestamp[window:end]
@@ -141,9 +133,7 @@ function moving{T,N}(ta::TimeArray{T,N}, f::Function, window::Int)
     TimeArray(tstamps, vals, ta.colnames)
 end
 
-#################################
 ###### upto #####################
-#################################
 
 function upto{T,N}(ta::TimeArray{T,N}, f::Function) 
     vals    = zeros(length(ta))
@@ -154,8 +144,6 @@ function upto{T,N}(ta::TimeArray{T,N}, f::Function)
     TimeArray(ta.timestamp, vals, ta.colnames)
 end
 
-#################################
 ###### basecall #################
-#################################
 
 basecall{T,N}(ta::TimeArray{T,N}, f::Function; cnames=ta.colnames) =  TimeArray(ta.timestamp, f(ta.values), cnames)

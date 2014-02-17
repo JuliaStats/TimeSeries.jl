@@ -24,7 +24,7 @@ t = TimeArray(d,rand(length(d)),["test"])
 
 #### Package objectives
 
-TimeSeries aims to provide a lightweight framework for working with time series data in Julia. There are less than 600 total lines of code 
+TimeSeries aims to provide a lightweight framework for working with time series data in Julia. There are less than 500 total lines of code 
 in the `src/` directory.
 
 #### Quick tour of current API

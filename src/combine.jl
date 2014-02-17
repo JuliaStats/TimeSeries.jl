@@ -1,6 +1,4 @@
-#################################
 ###### merge ####################
-#################################
 
 #function merge{T,N}(ta1::TimeArray{T,N}, ta2::TimeArray{T,N}; method="inner")
 function merge{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; method="inner")
@@ -28,9 +26,7 @@ function merge{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; method="inner")
     TimeArray(tstamp, vals, cnames)
 end
 
-#################################
 # collapse ######################
-#################################
 
 function collapse{T,N}(ta::TimeArray{T,N}, f::Function; period=week)
   

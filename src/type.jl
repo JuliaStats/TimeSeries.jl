@@ -1,6 +1,4 @@
-#################################
 ###### type definition ##########
-#################################
 
 abstract AbstractTimeArray
 
@@ -38,9 +36,7 @@ function Base.length(ta::TimeArray)
     length(ta.timestamp)
 end
 
-#################################
 ###### show #####################
-#################################
  
 function Base.show(io::IO, ta::TimeArray)
   # variables 
@@ -96,9 +92,7 @@ function maxcolwidth(x)
     8
 end
 
-#################################
 ###### getindex #################
-#################################
 
 # single row
 function Base.getindex{T,N}(ta::TimeArray{T,N}, n::Int)

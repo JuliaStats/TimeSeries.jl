@@ -104,3 +104,14 @@ facts("base element-wise operators on TimeArray values") do
     @fact (105.22 .== cl).values[1] => true
   end
 end
+
+facts("basecall works with Base methods") do
+  
+  context("cumsum works") do
+    @fact basecall(cl, cumsum).values[2] => cl.values[1] + cl.values[2]
+  end
+  
+  context("log works") do
+    @fact basecall(cl, log).values[2] => log(cl.values[2])
+  end
+end
