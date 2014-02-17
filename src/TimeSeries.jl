@@ -5,7 +5,7 @@ module TimeSeries
 using Datetime
 
 export TimeArray, 
-       by, from, to, findwhen, findall, #timestamp, values, colnames, 
+       by, from, to, findwhen, findall, timestamp, values, colnames, 
        lag, lead, percentchange, moving, upto,                                  
        .+, .-, .*, ./, .^, +, -, *, /, 
        .>, .<, .>=, .<=, .==,  
