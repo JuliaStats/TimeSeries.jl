@@ -11,6 +11,15 @@ facts("collapse operations") do
 end
 
 facts("merge works correctly") do
+
+   context("takes colnames kwarg correctly") do
+    @fact merge(cl,op, colnames=["a", "b"]).colnames[1]      => "a"
+    @fact merge(cl,op, colnames=["a", "b"]).colnames[2]      => "b"
+    @fact merge(cl,op, colnames=["a", "b", "c"]).colnames[1] => "Close"
+    @fact merge(cl,op, colnames=["a", "b", "c"]).colnames[2] => "Open"
+    @fact merge(cl,op, colnames=["a"]).colnames[1]           => "Close"
+    @fact merge(cl,op, colnames=["a"]).colnames[2]           => "Open"
+  end
   
   context("returns correct alignment with dates and values") do
     @fact merge(cl,op).values[2,1] => cl.values[2,1]

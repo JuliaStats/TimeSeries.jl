@@ -1,7 +1,7 @@
 ###### merge ####################
 
 #function merge{T,N}(ta1::TimeArray{T,N}, ta2::TimeArray{T,N}; method="inner")
-function merge{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; method="inner")
+function merge{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; colnames = [""], method="inner",)
     tstamp = [date(1,1,1):years(1):date(length(ta1),1,1)]
     n      = 1
       for i in 1:length(ta1)
@@ -18,10 +18,13 @@ function merge{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; method="inner")
     val2 = ta2[tstamp].values
     vals = hcat(val1, val2)
 
+    if length(colnames) != 2
     cnames = copy(ta1.colnames) # otherwise ta1 gets contaminated
-    for m in 1:length(ta2.colnames)
-      push!(cnames, ta2.colnames[m])
-    end
+      for m in 1:length(ta2.colnames)
+        push!(cnames, ta2.colnames[m])
+      end
+     else cnames = colnames
+     end
 
     TimeArray(tstamp, vals, cnames)
 end
