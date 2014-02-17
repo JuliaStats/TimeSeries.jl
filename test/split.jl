@@ -1,13 +1,19 @@
 using MarketData
 
-facts("timestamp operations") do
+facts("find methods") do
 
-  context("collapse squishes correctly") do
-      @fact collapse(cl, last).values[1]                  => 106.52
-      @fact collapse(cl, last).timestamp[1]               => secondday
-      @fact collapse(cl, last, period=month).values[1]    => 114.16
-      @fact collapse(cl, last, period=month).timestamp[1] => date(1980,1,31)
+  context("findall returns correct row numbers array") do
+      @fact cl[findall(cl .> op)].timestamp[1] => secondday
+      @fact length(findall(cl .> op))          => 262
   end
+
+  context("findwhen returns correct dates array") do
+      @fact findwhen(cl .> op)[1]      => secondday
+      @fact length(findwhen(cl .> op)) => 262
+  end
+end
+
+facts("split date operations") do
 
   context("from and to correctly subset") do
       @fact length(from(cl, 1981,12,30)) => 2

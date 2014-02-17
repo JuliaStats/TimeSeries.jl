@@ -1,37 +1,32 @@
 #################################
-# bydate ########################
+###### merge ####################
 #################################
 
-for (byfun,datefun) = ((:byyear,:year), (:bymonth,:month), (:byday,:day), (:bydow,:dayofweek), (:bydoy,:dayofyear))
-                      # (:byhour,:hour), (:byminute,:minute), (:bysecond,:second)
-  @eval begin
-    # get array of ints that correspond to dates and call getindex on that
-    function ($byfun){T,N}(ta::TimeArray{T,N}, t::Int) 
-      boolarray = [[$datefun(ta.timestamp[d]) for d in 1:length(ta.timestamp)] .== t]
-      rownums = int(zeros(sum(boolarray)))
-      j = 1
-      for i in 1:length(boolarray)
-        if boolarray[i]
-          rownums[j] = i
-          j+=1
+#function merge{T,N}(ta1::TimeArray{T,N}, ta2::TimeArray{T,N}; method="inner")
+function merge{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; method="inner")
+    tstamp = [date(1,1,1):years(1):date(length(ta1),1,1)]
+    n      = 1
+      for i in 1:length(ta1)
+        for j in 1:length(ta2)
+          if ta1.timestamp[i] == ta2.timestamp[j]
+            tstamp[n] = ta1.timestamp[i]
+            n+=1
+          end
         end
       end
-      ta[rownums]
-    end # function
-  end # eval
-end # loop
- 
-#################################
-# from, to ######################
-#################################
- 
-function from{T,N}(ta::TimeArray{T,N}, y::Int, m::Int, d::Int)
-    ta[date(y,m,d):last(ta.timestamp)]
-end 
+    tstamp = tstamp[1:n-1] # trim down the length, if necessary
 
-function to{T,N}(ta::TimeArray{T,N}, y::Int, m::Int, d::Int)
-    ta[ta.timestamp[1]:date(y,m,d)]
-end 
+    val1 = ta1[tstamp].values
+    val2 = ta2[tstamp].values
+    vals = hcat(val1, val2)
+
+    cnames = copy(ta1.colnames) # otherwise ta1 gets contaminated
+    for m in 1:length(ta2.colnames)
+      push!(cnames, ta2.colnames[m])
+    end
+
+    TimeArray(tstamp, vals, cnames)
+end
 
 #################################
 # collapse ######################
