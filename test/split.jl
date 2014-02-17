@@ -28,3 +28,13 @@ facts("split date operations") do
       @fact by(cl,4, period=dayofyear).timestamp[1] => secondday
   end
 end
+
+facts("element wrappers") do
+
+  context("type element wrappers isolate elements") do
+      @fact isa(timestamp(cl), Array{Date{ISOCalendar},1}) => true
+      @fact isa(values(cl), Array{Float64,1})              => true
+      @fact isa(values(ohlc), Array{Float64,2})            => true
+      @fact isa(colnames(cl), Array{ASCIIString, 1})       => true
+  end
+end

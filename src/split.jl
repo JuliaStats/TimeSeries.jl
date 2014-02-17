@@ -50,3 +50,10 @@ function findwhen(ta::TimeArray{Bool,1})
     end
     tstamps
 end
+
+###### element wrapers ###########
+
+timestamp{T,N}(ta::TimeArray{T,N}) = ta.timestamp
+values{T,N}(ta::TimeArray{T,N})    = ta.values
+colnames{T,N}(ta::TimeArray{T,N})  = ta.colnames
+
