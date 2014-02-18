@@ -18,7 +18,8 @@ function merge{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; colnames = [""], method=
     val2 = ta2[tstamp].values
     vals = hcat(val1, val2)
 
-    if length(colnames) != 2
+    #if length(colnames) != 2
+    if length(colnames) < 2
     cnames = copy(ta1.colnames) # otherwise ta1 gets contaminated
       for m in 1:length(ta2.colnames)
         push!(cnames, ta2.colnames[m])
