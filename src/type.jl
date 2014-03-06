@@ -66,19 +66,19 @@ function Base.show(io::IO, ta::TimeArray)
   if nrow > 7
     for i in 1:4
       isa(ta.values[1], Float64)?
-      println(io, ta.timestamp[i], " | ", join([@sprintf("%.2f", t) for t in ta.values[i,:]], "  ")):
+      println(io, ta.timestamp[i], " | ", join([@sprintf("%.3f", t) for t in ta.values[i,:]], "  ")):
       println(io, ta.timestamp[i], " | ", join([@sprintf("%s", t) for t in ta.values[i,:]], "  "))
     end
     println("...")
     for j in nrow-4:nrow
       isa(ta.values[1], Float64)?
-      println(io, ta.timestamp[j], " | ", join([@sprintf("%.2f", t) for t in ta.values[j,:]], "  ")):
+      println(io, ta.timestamp[j], " | ", join([@sprintf("%.3f", t) for t in ta.values[j,:]], "  ")):
       println(io, ta.timestamp[j], " | ", join([@sprintf("%s", t) for t in ta.values[j,:]], "  "))
     end
   else
     for k in 1:nrow
       isa(ta.values[1], Float64)?
-      println(io, ta.timestamp[k], " | ", join([@sprintf("%.2f", t) for t in ta.values[k,:]], "  ")):
+      println(io, ta.timestamp[k], " | ", join([@sprintf("%.3f", t) for t in ta.values[k,:]], "  ")):
       println(io, ta.timestamp[k], " | ", join([@sprintf("%s", t) for t in ta.values[k,:]], "  "))
     end
   end
@@ -86,7 +86,7 @@ end
 
 function maxcolwidth(x)
     isa(x[1], Float64)?
-    strwidth(@sprintf("%.2f", maximum(x))):
+    strwidth(@sprintf("%.3f", maximum(x))):
     isa(x[1], Bool)?
     strwidth(@sprintf("%s", minimum(x))):
     8
