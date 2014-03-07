@@ -40,9 +40,14 @@ end
  
 function Base.show(io::IO, ta::TimeArray)
   # variables 
-  nrow       = size(ta.values, 1)
-  ncol       = size(ta.values, 2)
-  spacetime  = strwidth(string(ta.timestamp[1])) + 3
+  nrow          = size(ta.values, 1)
+  ncol          = size(ta.values, 2)
+  spacetime     = strwidth(string(ta.timestamp[1])) + 3
+  firstcolwidth = strwidth(ta.colnames[1])
+  colwidth      = Int[]
+      for m in 1:ncol
+          push!(colwidth, max(strwidth(ta.colnames[m]), strwidth(@sprintf("%.3f", maximum(ta.values[:,m])))))
+      end
 
   # summary line
   print(@sprintf "%dx%d %s %s to %s" nrow ncol typeof(ta) string(ta.timestamp[1]) string(ta.timestamp[nrow]))
@@ -50,22 +55,26 @@ function Base.show(io::IO, ta::TimeArray)
   println("")
 
   # row label line
-  firstcolwidth = strwidth(ta.colnames[1])
 
-  firstcolwidth > maxcolwidth(ta.values[:,1]) ?
-  print(io, ^(" ", spacetime-1), ta.colnames[1], ^(" ", maxcolwidth(ta.values[:,1]) + 2 -firstcolwidth)) :
-  print(io, ^(" ", spacetime), ta.colnames[1], ^(" ", maxcolwidth(ta.values[:,1]) + 2 -firstcolwidth))
+  #firstcolwidth > maxcolwidth(ta.values[:,1]) ?
 
-  for p in 2:length(ta.colnames)
-    nextcolwidth = strwidth(ta.colnames[p])
-    if nextcolwidth > 8  
-        stophere = 8
-    else  
-        stophere = nextcolwidth
-    end
+  # print(io, ^(" ", spacetime-1), ta.colnames[1], ^(" ", maxcolwidth(ta.values[:,1]) + 2 -firstcolwidth)) :
+  # print(io, ^(" ", spacetime), ta.colnames[1], ^(" ", maxcolwidth(ta.values[:,1]) + 2 -firstcolwidth))
+   print(io, ^(" ", spacetime), ta.colnames[1], ^(" ", colwidth[1] + 2 -firstcolwidth))
+
+  for p in 2:length(colwidth)
+  #for p in 2:length(ta.colnames)
+    #nextcolwidth = strwidth(ta.colnames[p])
+##     nextcolwidth = colwidth[p]
+##     if nextcolwidth > 8  
+##         stophere = 8
+##     else  
+##         stophere = nextcolwidth
+##     end
  #   print(io, ta.colnames[p], ^(" ", maxcolwidth(ta.values[:,p]) + 2 - nextcolwidth))
     #print(io, ta.colnames[p][1:stophere], ^(" ", maxcolwidth(ta.values[:,p]) + 2 - nextcolwidth))
-    print(io, ta.colnames[p][1:stophere], ^(" ", maxcolwidth(ta.values[:,p]) + 2 - min(nextcolwidth,8)))
+#    print(io, ta.colnames[p][1:stophere], ^(" ", maxcolwidth(ta.values[:,p]) + 2 - min(nextcolwidth,8)))
+    print(io, ta.colnames[p], ^(" ", colwidth[p] - strwidth(ta.colnames[p]) + 2))
   end
   println("")
 
@@ -90,17 +99,19 @@ function Base.show(io::IO, ta::TimeArray)
 #     end
 #   end
 
-    colwidth = Int[]
-    for m in 1:ncol
-            push!(colwidth, maximum(strwidth(ta.colnames[m]), strwidth(@sprintf("%.3f", maximum(ta.values[:,m])))))
-    end
+for i in 1:nrow
+    #println(io, ta.timestamp[i], " | ", join([@sprintf("%.3f", t) for t in ta.values[i,:]], "  "))
+    #println(io, ta.timestamp[i], " | ", join([@sprintf("%.3f", t) for t in ta.values[i,:]], "    "))
+    println(io, ta.timestamp[i], " | ", join([@sprintf("%.3f", t) for t in ta.values[i,:]], [^(" ", c) for c in colwidth]))
+end
 
-     for i in 1:nrow
-         for j in 1:ncol
-             valprint = @sprintf "%.3f" ta.values[i,j]
-             println(io, ta.timestamp[k], " | ", join(valprint, ^(" ", colwidth[i] - strwidth(valprint))))
-         end
-     end
+
+###      for i in 1:nrow
+###          for j in 1:ncol
+###              valprint = @sprintf "%.3f" ta.values[i,j]
+###              println(io, ta.timestamp[i], " | ", join(valprint, ^(" ", colwidth[i] - strwidth(valprint))))
+###          end
+###     end
 
 
 end
