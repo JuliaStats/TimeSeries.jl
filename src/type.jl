@@ -56,82 +56,42 @@ function Base.show(io::IO, ta::TimeArray)
 
   # row label line
 
-  #firstcolwidth > maxcolwidth(ta.values[:,1]) ?
-
-  # print(io, ^(" ", spacetime-1), ta.colnames[1], ^(" ", maxcolwidth(ta.values[:,1]) + 2 -firstcolwidth)) :
-  # print(io, ^(" ", spacetime), ta.colnames[1], ^(" ", maxcolwidth(ta.values[:,1]) + 2 -firstcolwidth))
    print(io, ^(" ", spacetime), ta.colnames[1], ^(" ", colwidth[1] + 2 -firstcolwidth))
 
-  for p in 2:length(colwidth)
-  #for p in 2:length(ta.colnames)
-    #nextcolwidth = strwidth(ta.colnames[p])
-##     nextcolwidth = colwidth[p]
-##     if nextcolwidth > 8  
-##         stophere = 8
-##     else  
-##         stophere = nextcolwidth
-##     end
- #   print(io, ta.colnames[p], ^(" ", maxcolwidth(ta.values[:,p]) + 2 - nextcolwidth))
-    #print(io, ta.colnames[p][1:stophere], ^(" ", maxcolwidth(ta.values[:,p]) + 2 - nextcolwidth))
-#    print(io, ta.colnames[p][1:stophere], ^(" ", maxcolwidth(ta.values[:,p]) + 2 - min(nextcolwidth,8)))
+   for p in 2:length(colwidth)
      print(io, ta.colnames[p], ^(" ", colwidth[p] - strwidth(ta.colnames[p]) + 2))
    end
    println("")
-# 
+ 
   # timestamp and values line
-#   if nrow > 7
-#     for i in 1:4
-#       isa(ta.values[1], Float64)?
-#       println(io, ta.timestamp[i], " | ", join([@sprintf("%.3f", t) for t in ta.values[i,:]], "  ")):
-#       println(io, ta.timestamp[i], " | ", join([@sprintf("%s", t) for t in ta.values[i,:]], "  "))
-#     end
-#     println("...")
-#     for j in nrow-4:nrow
-#       isa(ta.values[1], Float64)?
-#       println(io, ta.timestamp[j], " | ", join([@sprintf("%.3f", t) for t in ta.values[j,:]], "  ")):
-#       println(io, ta.timestamp[j], " | ", join([@sprintf("%s", t) for t in ta.values[j,:]], "  "))
-#     end
-#   else
-#     for k in 1:nrow
-#       isa(ta.values[1], Float64)?
-#       println(io, ta.timestamp[k], " | ", join([@sprintf("%.3f", t) for t in ta.values[k,:]], "  ")):
-#       println(io, ta.timestamp[k], " | ", join([@sprintf("%s", t) for t in ta.values[k,:]], "  "))
-#     end
-#   end
-
-for i in 1:nrow
-    #println(io, ta.timestamp[i], " | ", join([@sprintf("%.3f", t) for t in ta.values[i,:]], "  "))
-    #println(io, ta.timestamp[i], " | ", join([@sprintf("%.2f", t) for t in ta.values[i,:]], "  "))
-
-    print(io, ta.timestamp[i], " | ")
-for j in 1:ncol
-#    print(io, join([@sprintf("%.2f  ", t) for t in ta.values[i,j]], "        "))
-    print(rpad(ta.values[i,j], colwidth[j] + 2, " "))
-    #println(io, ta.timestamp[i], " | ", join([@sprintf("%.3f", t) for t in ta.values[i,:]], [^(" ", c) for c in colwidth]))
-    #println(io, ta.timestamp[i], " | ", join([@sprintf("%.3f", t) for t in ta.values[i,:]], ^(" ", 2) ))
-    #println(io, ta.timestamp[i], " | ", join([@sprintf("%.3f", t) for t in ta.values[i,:]], ^(" ", maximum(2, colwidth[3]-5)) ))
+    if nrow > 7
+        for i in 1:4
+            print(io, ta.timestamp[i], " | ")
+        for j in 1:ncol
+            print(rpad(ta.values[i,j], colwidth[j] + 2, " "))
+        end
+        println("")
+        end
+        println(".")
+        println(".")
+        println(".")
+        for i in nrow-3:nrow
+            print(io, ta.timestamp[i], " | ")
+        for j in 1:ncol
+            print(rpad(ta.values[i,j], colwidth[j] + 2, " "))
+        end
+        println("")
+        end
+    else
+        for i in 1:nrow
+            print(io, ta.timestamp[i], " | ")
+        for j in 1:ncol
+            print(rpad(ta.values[i,j], colwidth[j] + 2, " "))
+        end
+        println("")
+        end
+    end
 end
-println("")
-end
-
-
-###      for i in 1:nrow
-###          for j in 1:ncol
-###              valprint = @sprintf "%.3f" ta.values[i,j]
-###              println(io, ta.timestamp[i], " | ", join(valprint, ^(" ", colwidth[i] - strwidth(valprint))))
-###          end
-###     end
-
-
-end
-
-## function maxcolwidth(x)
-##     isa(x[1], Float64)?
-##     strwidth(@sprintf("%.3f", maximum(x))):
-##     isa(x[1], Bool)?
-##     strwidth(@sprintf("%s", minimum(x))):
-##     8
-## end
 
 ###### getindex #################
 
