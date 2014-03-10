@@ -50,7 +50,7 @@ function Base.show(io::IO, ta::TimeArray)
       end
 
   # summary line
-  print(@sprintf "%dx%d %s %s to %s" nrow ncol typeof(ta) string(ta.timestamp[1]) string(ta.timestamp[nrow]))
+  print(@sprintf("%dx%d %s %s to %s", nrow, ncol, typeof(ta), string(ta.timestamp[1]), string(ta.timestamp[nrow])))
   println("")
   println("")
 
@@ -74,10 +74,10 @@ function Base.show(io::IO, ta::TimeArray)
  #   print(io, ta.colnames[p], ^(" ", maxcolwidth(ta.values[:,p]) + 2 - nextcolwidth))
     #print(io, ta.colnames[p][1:stophere], ^(" ", maxcolwidth(ta.values[:,p]) + 2 - nextcolwidth))
 #    print(io, ta.colnames[p][1:stophere], ^(" ", maxcolwidth(ta.values[:,p]) + 2 - min(nextcolwidth,8)))
-    print(io, ta.colnames[p], ^(" ", colwidth[p] - strwidth(ta.colnames[p]) + 2))
-  end
-  println("")
-
+     print(io, ta.colnames[p], ^(" ", colwidth[p] - strwidth(ta.colnames[p]) + 2))
+   end
+   println("")
+# 
   # timestamp and values line
 #   if nrow > 7
 #     for i in 1:4
@@ -101,8 +101,10 @@ function Base.show(io::IO, ta::TimeArray)
 
 for i in 1:nrow
     #println(io, ta.timestamp[i], " | ", join([@sprintf("%.3f", t) for t in ta.values[i,:]], "  "))
-    #println(io, ta.timestamp[i], " | ", join([@sprintf("%.3f", t) for t in ta.values[i,:]], "    "))
-    println(io, ta.timestamp[i], " | ", join([@sprintf("%.3f", t) for t in ta.values[i,:]], [^(" ", c) for c in colwidth]))
+    println(io, ta.timestamp[i], " | ", join([@sprintf("%.3f", t) for t in ta.values[i,:]], "    "))
+    #println(io, ta.timestamp[i], " | ", join([@sprintf("%.3f", t) for t in ta.values[i,:]], [^(" ", c) for c in colwidth]))
+    #println(io, ta.timestamp[i], " | ", join([@sprintf("%.3f", t) for t in ta.values[i,:]], ^(" ", 2) ))
+    #println(io, ta.timestamp[i], " | ", join([@sprintf("%.3f", t) for t in ta.values[i,:]], ^(" ", maximum(2, colwidth[3]-5)) ))
 end
 
 
@@ -116,13 +118,13 @@ end
 
 end
 
-function maxcolwidth(x)
-    isa(x[1], Float64)?
-    strwidth(@sprintf("%.3f", maximum(x))):
-    isa(x[1], Bool)?
-    strwidth(@sprintf("%s", minimum(x))):
-    8
-end
+## function maxcolwidth(x)
+##     isa(x[1], Float64)?
+##     strwidth(@sprintf("%.3f", maximum(x))):
+##     isa(x[1], Bool)?
+##     strwidth(@sprintf("%s", minimum(x))):
+##     8
+## end
 
 ###### getindex #################
 
