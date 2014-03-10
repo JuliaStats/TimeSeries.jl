@@ -68,7 +68,7 @@ function Base.show(io::IO, ta::TimeArray)
         for i in 1:4
             print(io, ta.timestamp[i], " | ")
         for j in 1:ncol
-            print(rpad(ta.values[i,j], colwidth[j] + 2, " "))
+            print(rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
         end
         println("")
         end
@@ -76,7 +76,7 @@ function Base.show(io::IO, ta::TimeArray)
         for i in nrow-3:nrow
             print(io, ta.timestamp[i], " | ")
         for j in 1:ncol
-            print(rpad(ta.values[i,j], colwidth[j] + 2, " "))
+            print(rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
         end
         println("")
         end
@@ -84,7 +84,7 @@ function Base.show(io::IO, ta::TimeArray)
         for i in 1:nrow
             print(io, ta.timestamp[i], " | ")
         for j in 1:ncol
-            print(rpad(ta.values[i,j], colwidth[j] + 2, " "))
+            print(rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
         end
         println("")
         end
