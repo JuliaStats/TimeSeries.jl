@@ -72,9 +72,7 @@ function Base.show(io::IO, ta::TimeArray)
         end
         println("")
         end
-        println(".")
-        println(".")
-        println(".")
+        println('\u22EE')
         for i in nrow-3:nrow
             print(io, ta.timestamp[i], " | ")
         for j in 1:ncol
