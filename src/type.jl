@@ -46,7 +46,7 @@ function Base.show(io::IO, ta::TimeArray)
   firstcolwidth = strwidth(ta.colnames[1])
   colwidth      = Int[]
       for m in 1:ncol
-          push!(colwidth, max(strwidth(ta.colnames[m]), strwidth(@sprintf("%.3f", maximum(ta.values[:,m])))))
+          push!(colwidth, max(strwidth(ta.colnames[m]), strwidth(@sprintf("%.2f", maximum(ta.values[:,m])))))
       end
 
   # summary line
@@ -101,10 +101,17 @@ function Base.show(io::IO, ta::TimeArray)
 
 for i in 1:nrow
     #println(io, ta.timestamp[i], " | ", join([@sprintf("%.3f", t) for t in ta.values[i,:]], "  "))
-    println(io, ta.timestamp[i], " | ", join([@sprintf("%.3f", t) for t in ta.values[i,:]], "    "))
+    #println(io, ta.timestamp[i], " | ", join([@sprintf("%.2f", t) for t in ta.values[i,:]], "  "))
+
+    print(io, ta.timestamp[i], " | ")
+for j in 1:ncol
+#    print(io, join([@sprintf("%.2f  ", t) for t in ta.values[i,j]], "        "))
+    print(rpad(ta.values[i,j], colwidth[j] + 2, " "))
     #println(io, ta.timestamp[i], " | ", join([@sprintf("%.3f", t) for t in ta.values[i,:]], [^(" ", c) for c in colwidth]))
     #println(io, ta.timestamp[i], " | ", join([@sprintf("%.3f", t) for t in ta.values[i,:]], ^(" ", 2) ))
     #println(io, ta.timestamp[i], " | ", join([@sprintf("%.3f", t) for t in ta.values[i,:]], ^(" ", maximum(2, colwidth[3]-5)) ))
+end
+println("")
 end
 
 
