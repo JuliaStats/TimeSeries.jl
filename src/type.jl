@@ -28,13 +28,21 @@ function TimeArray{T,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{ASCIIStrin
     TimeArray([d], v, c)
 end
 
-#################################
 ###### length ###################
-#################################
 
-function Base.length(ta::TimeArray)
-    length(ta.timestamp)
-end
+Base.length(ta::TimeArray) = length(ta.timestamp)
+
+###### iterator protocol #########
+
+Base.start{T,N}(ta::TimeArray{T,N})   = 1
+Base.next{T,N}(ta::TimeArray{T,N},i)  = (ta[i],i+1)
+Base.done{T,N}(ta::TimeArray{T,N},i)  = (i > length(ta))
+Base.isempty{T,N}(ta::TimeArray{T,N}) = (length(ta) == 0)
+
+# Base.start(ta::TimeArray)   = 1
+# Base.next(ta::TimeArray,i)  = (ta[i],i+1)
+# Base.done(ta::TimeArray,i)  = (i > length(ta))
+# Base.isempty(ta::TimeArray) = (length(ta) == 0)
 
 ###### show #####################
  
