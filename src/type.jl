@@ -50,9 +50,9 @@ function Base.show(io::IO, ta::TimeArray)
       end
 
   # summary line
-  print(@sprintf("%dx%d %s %s to %s", nrow, ncol, typeof(ta), string(ta.timestamp[1]), string(ta.timestamp[nrow])))
-  println("")
-  println("")
+  print(io,@sprintf("%dx%d %s %s to %s", nrow, ncol, typeof(ta), string(ta.timestamp[1]), string(ta.timestamp[nrow])))
+  println(io,"")
+  println(io,"")
 
   # row label line
 
@@ -61,32 +61,32 @@ function Base.show(io::IO, ta::TimeArray)
    for p in 2:length(colwidth)
      print(io, ta.colnames[p], ^(" ", colwidth[p] - strwidth(ta.colnames[p]) + 2))
    end
-   println("")
+   println(io,"")
  
   # timestamp and values line
     if nrow > 7
         for i in 1:4
             print(io, ta.timestamp[i], " | ")
         for j in 1:ncol
-            print(rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
+            print(io,rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
         end
-        println("")
+        println(io,"")
         end
-        println('\u22EE')
+        println(io,'\u22EE')
         for i in nrow-3:nrow
             print(io, ta.timestamp[i], " | ")
         for j in 1:ncol
-            print(rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
+            print(io,rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
         end
-        println("")
+        println(io,"")
         end
     else
         for i in 1:nrow
             print(io, ta.timestamp[i], " | ")
         for j in 1:ncol
-            print(rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
+            print(io,rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
         end
-        println("")
+        println(io,"")
         end
     end
 end
