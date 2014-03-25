@@ -1,5 +1,7 @@
 ###### type definition ##########
 
+import Base: length, show, getindex
+
 abstract AbstractTimeArray
 
 immutable TimeArray{T,N} <: AbstractTimeArray
@@ -22,23 +24,17 @@ immutable TimeArray{T,N} <: AbstractTimeArray
 end
 
 TimeArray{T,N}(d::Vector{Date{ISOCalendar}}, v::Array{T,N}, c::Vector{ASCIIString}) = TimeArray{T,N}(d,v,c)
+TimeArray{T,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{ASCIIString,1}) = TimeArray([d], v, c)
 
-# from single values
-function TimeArray{T,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{ASCIIString,1})
-    TimeArray([d], v, c)
-end
-
-#################################
 ###### length ###################
-#################################
 
-function Base.length(ta::TimeArray)
+function length(ta::TimeArray)
     length(ta.timestamp)
 end
 
 ###### show #####################
  
-function Base.show(io::IO, ta::TimeArray)
+function show(io::IO, ta::TimeArray)
   # variables 
   nrow          = size(ta.values, 1)
   ncol          = size(ta.values, 2)
@@ -94,49 +90,49 @@ end
 ###### getindex #################
 
 # single row
-function Base.getindex{T,N}(ta::TimeArray{T,N}, n::Int)
+function getindex{T,N}(ta::TimeArray{T,N}, n::Int)
     TimeArray(ta.timestamp[n], ta.values[n,:], ta.colnames)
 end
 
 # single row 1d
-function Base.getindex{T}(ta::TimeArray{T,1}, n::Int)
+function getindex{T}(ta::TimeArray{T,1}, n::Int)
     TimeArray(ta.timestamp[n], ta.values[[n]], ta.colnames)
 end
 
 # range of rows
-function Base.getindex{T,N}(ta::TimeArray{T,N}, r::Range1{Int})
+function getindex{T,N}(ta::TimeArray{T,N}, r::Range1{Int})
     TimeArray(ta.timestamp[r], ta.values[r,:], ta.colnames)
 end
 
 # range of 1d rows
-function Base.getindex{T}(ta::TimeArray{T,1}, r::Range1{Int})
+function getindex{T}(ta::TimeArray{T,1}, r::Range1{Int})
     TimeArray(ta.timestamp[r], ta.values[r], ta.colnames)
 end
 
 # array of rows
-function Base.getindex{T,N}(ta::TimeArray{T,N}, a::Array{Int})
+function getindex{T,N}(ta::TimeArray{T,N}, a::Array{Int})
     TimeArray(ta.timestamp[a], ta.values[a,:], ta.colnames)
 end
 
 # array of 1d rows
-function Base.getindex{T}(ta::TimeArray{T,1}, a::Array{Int})
+function getindex{T}(ta::TimeArray{T,1}, a::Array{Int})
     TimeArray(ta.timestamp[a], ta.values[a], ta.colnames)
 end
 
 # single column by name 
-function Base.getindex{T,N}(ta::TimeArray{T,N}, s::ASCIIString)
+function getindex{T,N}(ta::TimeArray{T,N}, s::ASCIIString)
     n = findfirst(ta.colnames, s)
     TimeArray(ta.timestamp, ta.values[:, n], ASCIIString[s])
 end
 
 # array of columns by name
-function Base.getindex{T,N}(ta::TimeArray{T,N}, args::ASCIIString...)
+function getindex{T,N}(ta::TimeArray{T,N}, args::ASCIIString...)
     ns = [findfirst(ta.colnames, a) for a in args]
     TimeArray(ta.timestamp, ta.values[:,ns], ASCIIString[a for a in args])
 end
 
 # single date
-function Base.getindex{T,N}(ta::TimeArray{T,N}, d::Date{ISOCalendar})
+function getindex{T,N}(ta::TimeArray{T,N}, d::Date{ISOCalendar})
    for i in 1:length(ta)
      if [d] == ta[i].timestamp 
        return ta[i] 
@@ -147,7 +143,7 @@ function Base.getindex{T,N}(ta::TimeArray{T,N}, d::Date{ISOCalendar})
  end
  
 # range of dates
-function Base.getindex{T,N}(ta::TimeArray{T,N}, dates::Array{Date{ISOCalendar},1})
+function getindex{T,N}(ta::TimeArray{T,N}, dates::Array{Date{ISOCalendar},1})
   counter = Int[]
 #  counter = int(zeros(length(dates)))
   for i in 1:length(dates)
@@ -159,9 +155,9 @@ function Base.getindex{T,N}(ta::TimeArray{T,N}, dates::Array{Date{ISOCalendar},1
   ta[counter]
 end
 
-function Base.getindex{T,N}(ta::TimeArray{T,N}, r::DateRange{ISOCalendar}) 
+function getindex{T,N}(ta::TimeArray{T,N}, r::DateRange{ISOCalendar}) 
     ta[[r]]
 end
 
 # day of week
-# Base.getindex{T,N}(ta::TimeArray{T,N}, d::DAYOFWEEK) = ta[dayofweek(ta.timestamp) .== d]
+# getindex{T,N}(ta::TimeArray{T,N}, d::DAYOFWEEK) = ta[dayofweek(ta.timestamp) .== d]
