@@ -28,8 +28,8 @@ TimeArray{T,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{ASCIIString,1}) = T
 
 ###### length ###################
 
-function length(ta::TimeArray)
-    length(ta.timestamp)
+function length(ata::AbstractTimeArray)
+    length(ata.timestamp)
 end
 
 ###### show #####################
