@@ -13,11 +13,9 @@ export TimeArray, AbstractTimeSeries,
        merge, collapse,                    
        readtimearray 
 
-#################################
 ###### include ##################
-#################################
 
-include("type.jl")
+include("tatype.jl")
 include("split.jl") 
 include("apply.jl")
 include("combine.jl")
