@@ -1,6 +1,6 @@
 ###### type definition ##########
 
-import Base: length, show, getindex
+import Base: convert, length, show, getindex
 
 abstract AbstractTimeSeries
 
@@ -25,6 +25,14 @@ end
 
 TimeArray{T,N}(d::Vector{Date{ISOCalendar}}, v::Array{T,N}, c::Vector{ASCIIString}) = TimeArray{T,N}(d,v,c)
 TimeArray{T,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{ASCIIString,1}) = TimeArray([d], v, c)
+
+###### conversion ###############
+
+convert(::Type{TimeArray{Float64,1}}, x::TimeArray{Bool,1}) = (TimeArray(x.timestamp, float64(x.values), x.colnames))
+convert(::Type{TimeArray{Float64,2}}, x::TimeArray{Bool,2}) = (TimeArray(x.timestamp, float64(x.values), x.colnames))
+
+convert(x::TimeArray{Bool,1}) = convert(TimeArray{Float64,1}, x::TimeArray{Bool,1}) 
+convert(x::TimeArray{Bool,2}) = convert(TimeArray{Float64,2}, x::TimeArray{Bool,2}) 
 
 ###### length ###################
 
