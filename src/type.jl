@@ -2,9 +2,9 @@
 
 import Base: length, show, getindex
 
-abstract AbstractTimeArray
+abstract AbstractTimeSeries
 
-immutable TimeArray{T,N} <: AbstractTimeArray
+immutable TimeArray{T,N} <: AbstractTimeSeries
 
     timestamp::Vector{Date{ISOCalendar}}
     values::Array{T,N}
@@ -28,7 +28,7 @@ TimeArray{T,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{ASCIIString,1}) = T
 
 ###### length ###################
 
-function length(ata::AbstractTimeArray)
+function length(ata::AbstractTimeSeries)
     length(ata.timestamp)
 end
 
