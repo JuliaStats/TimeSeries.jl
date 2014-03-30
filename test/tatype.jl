@@ -24,6 +24,13 @@ facts("type constructors enforce invariants") do
   end
 end
   
+facts("conversion methods") do
+    @fact isa(convert(TimeArray{Float64,1}, (cl.>op)), TimeArray{Float64,1})                => true
+    @fact isa(convert(TimeArray{Float64,2}, (merge(cl.<op, cl.>op))), TimeArray{Float64,2}) => true
+    @fact isa(convert(cl.>op), TimeArray{Float64,1})                                        => true
+    @fact isa(convert(merge(cl.<op, cl.>op)), TimeArray{Float64,2})                         => true
+end
+
 facts("getindex methods") do
   
   context("getindex on single Int and DateTime") do
