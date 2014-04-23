@@ -19,5 +19,5 @@ function insertNaN{N}(aa::Array{Any,N})
             end
         end
     end
-    aa
+    convert(Array{FloatingPoint,N},aa)
 end
