@@ -10,16 +10,17 @@ immutable TimeArray{T,N} <: AbstractTimeSeries
     values::Array{T,N}
     colnames::Vector{ASCIIString}
 
-
-    function TimeArray(timestamp::Vector{Date{ISOCalendar}}, values::Array{T,N}, colnames::Vector{ASCIIString})
-        nrow, ncol = size(values, 1), size(values, 2)
-        nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
-        ncol != size(colnames,1) ? error("column names must match width of array"):
-        timestamp != unique(timestamp) ? error("there are duplicate dates"):
-        ~(flipud(timestamp) == sort(timestamp) || timestamp == sort(timestamp)) ? error("dates are mangled"):
-        flipud(timestamp) == sort(timestamp) ? 
-        new(flipud(timestamp), flipud(values), colnames):
-        new(timestamp, values, colnames)
+    function TimeArray(timestamp::Vector{Date{ISOCalendar}}, 
+                       values::Array{T,N}, 
+                       colnames::Vector{ASCIIString})
+                           nrow, ncol = size(values, 1), size(values, 2)
+                           nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
+                           ncol != size(colnames,1) ? error("column names must match width of array"):
+                           timestamp != unique(timestamp) ? error("there are duplicate dates"):
+                           ~(flipud(timestamp) == sort(timestamp) || timestamp == sort(timestamp)) ? error("dates are mangled"):
+                           flipud(timestamp) == sort(timestamp) ? 
+                           new(flipud(timestamp), flipud(values), colnames):
+                           new(timestamp, values, colnames)
     end
 end
 
@@ -40,11 +41,15 @@ function length(ata::AbstractTimeSeries)
     length(ata.timestamp)
 end
 
+###### iterator protocol #########
+
+Base.start(ta::TimeArray)   = 1
+Base.next(ta::TimeArray,i)  = ((ta.timestamp[i],ta.values[i,:]),i+1)
+Base.done(ta::TimeArray,i)  = (i > length(ta))
+Base.isempty(ta::TimeArray) = (length(ta) == 0)
+
 ###### show #####################
  
-
- 
-
 function show{T,N}(io::IO, ta::TimeArray{T,N})
 
   # variables 
