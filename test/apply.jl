@@ -71,18 +71,18 @@ facts("base element-wise operators on TimeArray values") do
   end
 
   # these methods need to be deprecated to match base
-#  context("correct non-dot operation between TimeVectors values and Int/Float64 and viceversa") do
-#     @fact (cl - 100).values[1] => roughly(5.22)
-#     @fact (cl + 100).values[1] => roughly(205.22)
-#     @fact (cl * 100).values[1] => roughly(10522)
-#     @fact (cl / 100).values[1] => roughly(1.0522)
-#      @fact_throws (cl ^ 2).values[1]   # not supported in Base butnot erroring out ~ strange
-#     @fact (100 - cl).values[1] => roughly(-5.22)
-#     @fact (100 + cl).values[1] => roughly(205.22)
-#     @fact (100 * cl).values[1] => roughly(10522)
-#     @fact (100 / cl).values[1] => roughly(0.95038965976)
-#     @fact_throws (2 ^ cl).values[1]  # not written
-#  end
+  context("throw error when calling  non-dot operation between TimeVectors values and Int/Float64 and viceversa") do
+     @fact_throws (cl - 100).values[1] 
+     @fact_throws (cl + 100).values[1] 
+     @fact_throws (cl * 100).values[1] 
+     @fact_throws (cl / 100).values[1] 
+     @fact_throws (cl ^ 2).values[1]
+     @fact_throws (100 - cl).values[1]
+     @fact_throws (100 + cl).values[1]
+     @fact_throws (100 * cl).values[1]
+     @fact_throws (100 / cl).values[1]
+     @fact_throws (2 ^ cl).values[1]  
+  end
 
   context("correct operation between two TimeVectors values returns bool for comparisons") do
      @fact (cl .> op).values[1]  => true
