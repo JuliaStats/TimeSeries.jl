@@ -96,7 +96,7 @@ julia> op[1:3] .- cl[2:4]
 2000-01-04 | 5.75
 2000-01-05 | -0.25
 
-julia> 2cl
+julia> 2.*cl
 500x1 TimeArray{Float64,1} 2000-01-03 to 2001-12-31
 
              Close
