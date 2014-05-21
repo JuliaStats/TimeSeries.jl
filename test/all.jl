@@ -1,5 +1,5 @@
-include("tatype.jl")
-include("split.jl") 
+include("split.jl")
 include("apply.jl")
-include("combine.jl")
+include("combine.jl") 
+include("tatype.jl")
 include("readwrite.jl")
