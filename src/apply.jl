@@ -1,7 +1,6 @@
-###### +, -, *, / ###############
+###### .+, .-, .*, ./ ###############
 
 # element-wise mathematical operations between two columns
-#for op in [:.+, :.-, :.*, :./, :+, :-, :*, :/]
 for op in [:.+, :.-, :.*, :./]
   @eval begin
     function ($op){T,N}(ta1::TimeArray{T,N}, ta2::TimeArray{T,N})
@@ -42,7 +41,6 @@ for op in [:.>, :.<, :.==, :.>=, :.<=]
 end # loop
 
 # element-wise mathematical operations between a column and Int,Float64
-#for op in [:.+, :.-, :.*, :./, :.^, :+, :-, :*, :/]
 for op in [:.+, :.-, :.*, :./, :.^]
   @eval begin
     function ($op){T,N}(ta::TimeArray{T,N}, var::Union(Int,Float64))
@@ -53,7 +51,6 @@ for op in [:.+, :.-, :.*, :./, :.^]
 end # loop
 
 # element-wise mathematical operations between an Int,Float64 and column
-#for op in [:.+, :.-, :.*, :./, :.^, :+, :-, :*, :/]
 for op in [:.+, :.-, :.*, :./, :.^]
   @eval begin
     function ($op){T,N}(var::Union(Int,Float64), ta::TimeArray{T,N})
