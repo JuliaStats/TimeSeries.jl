@@ -11,10 +11,23 @@ export TimeArray, AbstractTimeSeries,
        .>, .<, .>=, .<=, .==,  
        basecall,
        merge, collapse,                    
-       readtimearray 
+       readtimearray,
+       DECIMALS, SHOWINT 
+<<<<<<< HEAD
+=======
 
+<<<<<<< HEAD
+###### customizable show ########
+
+const DECIMALS = 2
+const SHOWINT = false
+>>>>>>> 58502e9... trouble shooting travis fail
+
+=======
+>>>>>>> 0f2bc35... reverting to organizing const values in rc file with tests passing locally
 ###### include ##################
 
+include("rc.jl")
 include("tatype.jl")
 include("split.jl") 
 include("apply.jl")
