@@ -94,13 +94,6 @@ function show{T,N}(io::IO, ta::TimeArray{T,N})
             print(io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
             intcatcher[j] & SHOWINT ?
             print(io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-            #print(io, rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
->>>>>>> 79dfee2... added DECIMALS const and tests for rc.jl file
-=======
->>>>>>> 4b882ad... removed commented lines and re-arranged order of loading rc.jl for travis
             print(io, rpad(round(ta.values[i,j], DECIMALS), colwidth[j] + 2, " "))
         end
         println(io, "")
@@ -115,13 +108,6 @@ function show{T,N}(io::IO, ta::TimeArray{T,N})
             print(io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
             intcatcher[j] & SHOWINT ?
             print(io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-            #print(io, rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
->>>>>>> 79dfee2... added DECIMALS const and tests for rc.jl file
-=======
->>>>>>> 4b882ad... removed commented lines and re-arranged order of loading rc.jl for travis
             print(io, rpad(round(ta.values[i,j], DECIMALS), colwidth[j] + 2, " "))
         end
         println(io, "")
@@ -134,13 +120,6 @@ function show{T,N}(io::IO, ta::TimeArray{T,N})
             print(io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
             intcatcher[j] & SHOWINT ?
             print(io, rpad(iround(ta.values[i,j]), colwidth[j] + 2, " ")) :
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-            #print(io, rpad(round(ta.values[i,j], 2), colwidth[j] + 2, " "))
->>>>>>> 79dfee2... added DECIMALS const and tests for rc.jl file
-=======
->>>>>>> 4b882ad... removed commented lines and re-arranged order of loading rc.jl for travis
             print(io, rpad(round(ta.values[i,j], DECIMALS), colwidth[j] + 2, " "))
         end
         println(io, "")

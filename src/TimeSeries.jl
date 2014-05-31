@@ -13,18 +13,7 @@ export TimeArray, AbstractTimeSeries,
        merge, collapse,                    
        readtimearray,
        DECIMALS, SHOWINT 
-<<<<<<< HEAD
-=======
 
-<<<<<<< HEAD
-###### customizable show ########
-
-const DECIMALS = 2
-const SHOWINT = false
->>>>>>> 58502e9... trouble shooting travis fail
-
-=======
->>>>>>> 0f2bc35... reverting to organizing const values in rc file with tests passing locally
 ###### include ##################
 
 include("rc.jl")
