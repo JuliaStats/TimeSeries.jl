@@ -2,9 +2,9 @@
 
 function readtimearray(fname::String)
     blob    = readcsv(fname)
-    tstamps = Date{ISOCalendar}[date(i) for i in blob[2:end, 1]]
+    tstamps = Date[Date(i) for i in blob[2:end, 1]]
     vals    = insertNaN(blob[2:end, 2:end])
-    cnames  = ASCIIString[]
+    cnames  = UTF8String[]
     for b in blob[1, 2:end]
         push!(cnames, b)
     end

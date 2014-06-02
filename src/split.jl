@@ -1,6 +1,6 @@
 # by ############################
 
-function by{T,N}(ta::TimeArray{T,N}, t::Int; period=day) 
+function by{T,N}(ta::TimeArray{T,N}, t::Int; period::Function=day) 
     boolarray = [[period(ta.timestamp[d]) for d in 1:length(ta.timestamp)] .== t]
     rownums = int(zeros(sum(boolarray)))
     j = 1
@@ -16,11 +16,11 @@ end
 # from, to ######################
  
 function from{T,N}(ta::TimeArray{T,N}, y::Int, m::Int, d::Int)
-    ta[date(y,m,d):last(ta.timestamp)]
+    ta[Date(y,m,d):last(ta.timestamp)]
 end 
 
 function to{T,N}(ta::TimeArray{T,N}, y::Int, m::Int, d::Int)
-    ta[ta.timestamp[1]:date(y,m,d)]
+    ta[ta.timestamp[1]:Date(y,m,d)]
 end 
 
 ###### findall ##################
@@ -40,7 +40,7 @@ end
 ###### findwhen #################
 
 function findwhen(ta::TimeArray{Bool,1})
-    tstamps = [date(1,1,1):years(1):date(sum(ta.values),1,1)]
+    tstamps = [Date(1,1,1):Year(1):Date(sum(ta.values),1,1)]
     j = 1
     for i in 1:length(ta)
       if ta.values[i]

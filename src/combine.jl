@@ -2,7 +2,7 @@
 
 #function merge{T,N}(ta1::TimeArray{T,N}, ta2::TimeArray{T,N}; method="inner")
 function merge{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; colnames = [""], method="inner",)
-    tstamp = [date(1,1,1):years(1):date(length(ta1),1,1)]
+    tstamp = [Date(1,1,1):Year(1):Date(length(ta1),1,1)]
     n      = 1
       for i in 1:length(ta1)
         for j in 1:length(ta2)
@@ -32,7 +32,7 @@ end
 
 # collapse ######################
 
-function collapse{T,N}(ta::TimeArray{T,N}, f::Function; period=week)
+function collapse{T,N}(ta::TimeArray{T,N}, f::Function; period::Function=week)
   
   w = [period(ta.timestamp[t]) for t in 1:length(ta)] # get weekly id from entire array
   z = Int[]; j = 1
@@ -51,7 +51,7 @@ function collapse{T,N}(ta::TimeArray{T,N}, f::Function; period=week)
   push!(z, z[length(z)] + 1)  
  
   # pre-allocate timestamp and value arrays
-  tstamps = [date(1,1,1):years(1):date(maximum(z),1,1)]
+  tstamps = [Date(1,1,1):Year(1):Date(maximum(z),1,1)]
   vals    = zeros(maximum(z)) # number of unique periods
   #replace their values except for the last row 
   for i = 1:maximum(z)-1  # iterate over period ID groupings
