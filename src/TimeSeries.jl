@@ -11,10 +11,12 @@ export TimeArray, AbstractTimeSeries,
        .>, .<, .>=, .<=, .==,  
        basecall,
        merge, collapse,                    
-       readtimearray 
+       readtimearray,
+       DECIMALS, SHOWINT 
 
 ###### include ##################
 
+include("rc.jl")
 include("tatype.jl")
 include("split.jl") 
 include("apply.jl")

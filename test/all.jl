@@ -1,3 +1,4 @@
+include("rc.jl")
 include("split.jl")
 include("apply.jl")
 include("combine.jl") 
