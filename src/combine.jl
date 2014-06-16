@@ -1,3 +1,5 @@
+import Base: merge
+
 ###### merge ####################
 
 #function merge{T,N}(ta1::TimeArray{T,N}, ta2::TimeArray{T,N}; method="inner")

@@ -1,6 +1,6 @@
 ###### type definition ##########
 
-import Base: convert, length, show, getindex
+import Base: convert, length, show, getindex, start, next, done, isempty
 
 abstract AbstractTimeSeries
 
@@ -43,10 +43,10 @@ end
 
 ###### iterator protocol #########
 
-Base.start(ta::TimeArray)   = 1
-Base.next(ta::TimeArray,i)  = ((ta.timestamp[i],ta.values[i,:]),i+1)
-Base.done(ta::TimeArray,i)  = (i > length(ta))
-Base.isempty(ta::TimeArray) = (length(ta) == 0)
+start(ta::TimeArray)   = 1
+next(ta::TimeArray,i)  = ((ta.timestamp[i],ta.values[i,:]),i+1)
+done(ta::TimeArray,i)  = (i > length(ta))
+isempty(ta::TimeArray) = (length(ta) == 0)
 
 ###### show #####################
  
