@@ -12,7 +12,7 @@ facts("time series methods") do
   end
 
   context("lag operates on 2d arrays") do
-      @fact lag(ohlc, period=9).timestamp[1] => date(2000,1,14)
+      @fact lag(ohlc, period=9).timestamp[1] => Date(2000,1,14)
   end
 
   context("lead takes next day and timestamps it to current day") do
@@ -26,7 +26,7 @@ facts("time series methods") do
   end
 
   context("lead operates on 2d arrays") do
-      @fact lead(ohlc, period=9).timestamp[1] => date(2000,1,3)
+      @fact lead(ohlc, period=9).timestamp[1] => Date(2000,1,3)
   end
 
   context("correct simple return value") do
