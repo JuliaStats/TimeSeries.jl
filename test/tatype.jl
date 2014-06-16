@@ -19,7 +19,7 @@ facts("type constructors enforce invariants") do
   end
 
   context("flipping occurs when needed") do
-    @fact TimeArray(flipud(cl.timestamp), flipud(cl.values),  ["Close"]).timestamp[1] => date(2000,1,3)
+    @fact TimeArray(flipud(cl.timestamp), flipud(cl.values),  ["Close"]).timestamp[1] => Date(2000,1,3)
     @fact TimeArray(flipud(cl.timestamp), flipud(cl.values),  ["Close"]).values[1]    => 111.94
   end
 end
@@ -34,23 +34,23 @@ end
 facts("getindex methods") do
   
   context("getindex on single Int and DateTime") do
-    @fact ohlc[1].timestamp        => [date(2000,1,3)]
-    @fact ohlc[date(2000,1,3)].timestamp => [date(2000,1,3)]
+    @fact ohlc[1].timestamp        => [Date(2000,1,3)]
+    @fact ohlc[Date(2000,1,3)].timestamp => [Date(2000,1,3)]
   end
   
   context("getindex on array of Int and DateTime") do
-    @fact ohlc[[1,10]].timestamp              => [date(2000,1,3), date(2000,1,14)]
-    @fact ohlc[[date(2000,1,3),date(2000,1,14)]].timestamp => [date(2000,1,3), date(2000,1,14)]
+    @fact ohlc[[1,10]].timestamp              => [Date(2000,1,3), Date(2000,1,14)]
+    @fact ohlc[[Date(2000,1,3),Date(2000,1,14)]].timestamp => [Date(2000,1,3), Date(2000,1,14)]
   end
 
   context("getindex on range of Int and DateTime") do
-    @fact ohlc[1:2].timestamp                        => [date(2000,1,3), date(2000,1,4)]
-    @fact ohlc[date(2000,1,3):days(1):date(2000,1,4)].timestamp => [date(2000,1,3), date(2000,1,4)]
+    @fact ohlc[1:2].timestamp                        => [Date(2000,1,3), Date(2000,1,4)]
+    @fact ohlc[Date(2000,1,3):Day(1):Date(2000,1,4)].timestamp => [Date(2000,1,3), Date(2000,1,4)]
   end
 
   context("getindex on single column name") do
     @fact size(ohlc["Open"].values, 2)                            => 1
-    @fact size(ohlc["Open"][date(2000,1,3):days(1):date(2000,1,14)].values, 1) => 10
+    @fact size(ohlc["Open"][Date(2000,1,3):Day(1):Date(2000,1,14)].values, 1) => 10
   end
 
   context("getindex on multiple column name") do

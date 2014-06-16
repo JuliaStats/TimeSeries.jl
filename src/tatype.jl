@@ -6,13 +6,13 @@ abstract AbstractTimeSeries
 
 immutable TimeArray{T,N} <: AbstractTimeSeries
 
-    timestamp::Vector{Date{ISOCalendar}}
+    timestamp::Vector{Date}
     values::Array{T,N}
-    colnames::Vector{ASCIIString}
+    colnames::Vector{UTF8String}
 
-    function TimeArray(timestamp::Vector{Date{ISOCalendar}}, 
+    function TimeArray(timestamp::Vector{Date}, 
                        values::Array{T,N}, 
-                       colnames::Vector{ASCIIString})
+                       colnames::Vector{UTF8String})
                            nrow, ncol = size(values, 1), size(values, 2)
                            nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
                            ncol != size(colnames,1) ? error("column names must match width of array"):
@@ -24,8 +24,8 @@ immutable TimeArray{T,N} <: AbstractTimeSeries
     end
 end
 
-TimeArray{T,N}(d::Vector{Date{ISOCalendar}}, v::Array{T,N}, c::Vector{ASCIIString}) = TimeArray{T,N}(d,v,c)
-TimeArray{T,N}(d::Date{ISOCalendar}, v::Array{T,N}, c::Array{ASCIIString,1}) = TimeArray([d], v, c)
+TimeArray{T,N,S<:String}(d::Vector{Date}, v::Array{T,N}, c::Vector{S}) = TimeArray{T,N}(d,v,map(utf8,c))
+TimeArray{T,N,S<:String}(d::Date, v::Array{T,N}, c::Array{S,1}) = TimeArray([d], v, map(utf8,c))
 
 ###### conversion ###############
 
@@ -147,19 +147,19 @@ function getindex{T}(ta::TimeArray{T,1}, a::Array{Int})
 end
 
 # single column by name 
-function getindex{T,N}(ta::TimeArray{T,N}, s::ASCIIString)
+function getindex{T,N}(ta::TimeArray{T,N}, s::String)
     n = findfirst(ta.colnames, s)
-    TimeArray(ta.timestamp, ta.values[:, n], ASCIIString[s])
+    TimeArray(ta.timestamp, ta.values[:, n], UTF8String[s])
 end
 
 # array of columns by name
-function getindex{T,N}(ta::TimeArray{T,N}, args::ASCIIString...)
+function getindex{T,N}(ta::TimeArray{T,N}, args::String...)
     ns = [findfirst(ta.colnames, a) for a in args]
-    TimeArray(ta.timestamp, ta.values[:,ns], ASCIIString[a for a in args])
+    TimeArray(ta.timestamp, ta.values[:,ns], UTF8String[a for a in args])
 end
 
 # single date
-function getindex{T,N}(ta::TimeArray{T,N}, d::Date{ISOCalendar})
+function getindex{T,N}(ta::TimeArray{T,N}, d::Date)
    for i in 1:length(ta)
      if [d] == ta[i].timestamp 
        return ta[i] 
@@ -170,7 +170,7 @@ function getindex{T,N}(ta::TimeArray{T,N}, d::Date{ISOCalendar})
  end
  
 # range of dates
-function getindex{T,N}(ta::TimeArray{T,N}, dates::Array{Date{ISOCalendar},1})
+function getindex{T,N}(ta::TimeArray{T,N}, dates::Array{Date,1})
   counter = Int[]
 #  counter = int(zeros(length(dates)))
   for i in 1:length(dates)
@@ -182,7 +182,7 @@ function getindex{T,N}(ta::TimeArray{T,N}, dates::Array{Date{ISOCalendar},1})
   ta[counter]
 end
 
-function getindex{T,N}(ta::TimeArray{T,N}, r::DateRange{ISOCalendar}) 
+function getindex{T,N}(ta::TimeArray{T,N}, r::StepRange{Date}) 
     ta[[r]]
 end
 

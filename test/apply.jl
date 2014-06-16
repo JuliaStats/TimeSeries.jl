@@ -4,21 +4,21 @@ facts("time series methods") do
 
   context("lag takes previous day and timestamps it to next day") do
       @fact lag(cl).values[1]    => roughly(111.94) 
-      @fact lag(cl).timestamp[1] => date(2000,1,4)
+      @fact lag(cl).timestamp[1] => Date(2000,1,4)
   end
 
   context("lag accepts kwarg") do
-      @fact lag(cl, period=9).timestamp[1] => date(2000,1,14)
+      @fact lag(cl, period=9).timestamp[1] => Date(2000,1,14)
   end
 
   context("lead takes next day and timestamps it to current day") do
       @fact lead(cl).values[1]    => roughly(102.5) 
-      @fact lead(cl).timestamp[1] => date(2000,1,3)
+      @fact lead(cl).timestamp[1] => Date(2000,1,3)
   end
 
   context("lead accepts kwarg") do
       @fact lead(cl, period=9).values[1]    => 100.44 
-      @fact lead(cl, period=9).timestamp[1] => date(2000,1,3)
+      @fact lead(cl, period=9).timestamp[1] => Date(2000,1,3)
   end
 
   context("correct simple return value") do
@@ -31,13 +31,13 @@ facts("time series methods") do
 
   context("moving supplies correct window length") do
       @fact moving(cl, mean, 10).values[1]    => roughly(sum(cl.values[1:10])/10)
-      @fact moving(cl, mean, 10).timestamp[1] => date(2000,1,14)
+      @fact moving(cl, mean, 10).timestamp[1] => Date(2000,1,14)
   end
  
   context("upto method accumulates") do
       @fact upto(cl, sum).values[10]    => roughly(sum(cl.values[1:10]))
       @fact upto(cl, mean).values[10]   => roughly(sum(cl.values[1:10])/10)
-      @fact upto(cl, sum).timestamp[10] => date(2000,1,14)
+      @fact upto(cl, sum).timestamp[10] => Date(2000,1,14)
   end
 end
 
@@ -50,7 +50,7 @@ facts("base element-wise operators on TimeArray values") do
      @fact (cl ./ op).values[1]           => roughly(1.067315)
   end
 
-  context("only values on intersecting dates computed") do
+  context("only values on intersecting Dates computed") do
      @fact (cl[1:2] ./ op[2:3]).values[1] => roughly(0.946882) 
      @fact (cl[1:4] .+ op[4:7]).values[1] => roughly(201.12)
      @fact length(cl[1:2] ./ op[2:3])     => 1

@@ -11,7 +11,7 @@ facts("readwrite parses csv file correctly") do
   end
 
   context("timestamp parses to correct type") do
-      @fact typeof(cl.timestamp) => Array{Date{ISOCalendar},1}
+      @fact typeof(cl.timestamp) => Array{Date,1}
   end
 end
 

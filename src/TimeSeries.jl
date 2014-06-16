@@ -1,17 +1,15 @@
-using Datetime
+using Dates
 
 module TimeSeries
 
-using Datetime
+using Dates
 
 export TimeArray, AbstractTimeSeries,
        by, from, to, findwhen, findall, timestamp, values, colnames, 
-       lag, lead, percentchange, moving, upto,                                  
-       .+, .-, .*, ./, .^, +, -, *, /, 
-       .>, .<, .>=, .<=, .==,  
+       lag, lead, percentchange, moving, upto,
        basecall,
-       merge, collapse,                    
-       readtimearray 
+       merge, collapse,
+       readtimearray
 
 ###### include ##################
 
