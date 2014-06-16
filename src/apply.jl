@@ -93,19 +93,20 @@ end # loop
 ###### lag, lead ################
   
 function lag{T,N}(ta::TimeArray{T,N}; period::Int=1) 
-    TimeArray(ta.timestamp[period+1:end], ta.values[1:length(ta)-period], ta.colnames)
+    #TimeArray(ta.timestamp[period+1:end], ta.values[1:length(ta)-period], ta.colnames)
+    TimeArray(ta.timestamp[period+1:end], ta.values[1:length(ta)-period,:], ta.colnames)
 end
 
 function lag{T,N}(ta::TimeArray{T,N}, n::Int) 
-    TimeArray(ta.timestamp[n+1:end], ta.values[1:length(ta)-n], ta.colnames)
+    TimeArray(ta.timestamp[n+1:end], ta.values[1:length(ta)-n, :], ta.colnames)
 end
 
 function lead{T,N}(ta::TimeArray{T,N}; period::Int=1) 
-    TimeArray(ta.timestamp[1:length(ta)-period], ta.values[period+1:end], ta.colnames)
+    TimeArray(ta.timestamp[1:length(ta)-period], ta.values[period+1:end, :], ta.colnames)
 end
 
 function lead{T,N}(ta::TimeArray{T,N}, n::Int) 
-    TimeArray(ta.timestamp[1:length(ta)-n], ta.values[n+1:end], ta.colnames)
+    TimeArray(ta.timestamp[1:length(ta)-n], ta.values[n+1:end, :], ta.colnames)
 end
 
 ###### percentchange ############

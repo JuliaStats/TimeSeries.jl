@@ -11,6 +11,10 @@ facts("time series methods") do
       @fact lag(cl, period=9).timestamp[1] => Date(2000,1,14)
   end
 
+  context("lag operates on 2d arrays") do
+      @fact lag(ohlc, period=9).timestamp[1] => date(2000,1,14)
+  end
+
   context("lead takes next day and timestamps it to current day") do
       @fact lead(cl).values[1]    => roughly(102.5) 
       @fact lead(cl).timestamp[1] => Date(2000,1,3)
@@ -19,6 +23,10 @@ facts("time series methods") do
   context("lead accepts kwarg") do
       @fact lead(cl, period=9).values[1]    => 100.44 
       @fact lead(cl, period=9).timestamp[1] => Date(2000,1,3)
+  end
+
+  context("lead operates on 2d arrays") do
+      @fact lead(ohlc, period=9).timestamp[1] => date(2000,1,3)
   end
 
   context("correct simple return value") do
