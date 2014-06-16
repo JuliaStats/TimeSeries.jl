@@ -1,6 +1,6 @@
 using FactCheck
 
-include("tatype.jl")
+include("timearray.jl")
 include("split.jl") 
 include("apply.jl")
 include("combine.jl")

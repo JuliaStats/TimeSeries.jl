@@ -14,7 +14,7 @@ export TimeArray, AbstractTimeSeries,
 ###### include ##################
 
 include(".timeseriesrc.jl")
-include("tatype.jl")
+include("timearray.jl")
 include("split.jl") 
 include("apply.jl")
 include("combine.jl")
