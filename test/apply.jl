@@ -15,6 +15,14 @@ facts("time series methods") do
       @fact lag(ohlc, period=9).timestamp[1] => Date(2000,1,14)
   end
 
+  context("lag returns 1d from 1d time arrays") do
+      @fact ndims(lag(cl).values) => 1
+  end
+
+  context("lag returns 2d from 2d time arrays") do
+      @fact ndims(lag(ohlc).values) => 2
+  end
+
   context("lead takes next day and timestamps it to current day") do
       @fact lead(cl).values[1]    => roughly(102.5) 
       @fact lead(cl).timestamp[1] => Date(2000,1,3)
@@ -27,6 +35,14 @@ facts("time series methods") do
 
   context("lead operates on 2d arrays") do
       @fact lead(ohlc, period=9).timestamp[1] => Date(2000,1,3)
+  end
+
+  context("lead returns 1d from 1d time arrays") do
+      @fact ndims(lead(cl).values) => 1
+  end
+
+  context("lead returns 2d from 2d time arrays") do
+      @fact ndims(lead(ohlc).values) => 2
   end
 
   context("correct simple return value") do
