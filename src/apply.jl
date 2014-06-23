@@ -4,7 +4,7 @@
 for op in [:.+, :.-, :.*, :./]
   @eval begin
     function ($op){T,N}(ta1::TimeArray{T,N}, ta2::TimeArray{T,N})
-      cname  = [ta1.colnames[1][1:2] *  string($op) *  ta2.colnames[1][1:2]]
+      cname  = [string(ta1.colnames[1])[1:2] *  string($op) * string(ta2.colnames[1])[1:2]]
       tstamp = Date[]
       vals   = T[]
       for i in 1:size(ta1.timestamp, 1)
@@ -24,7 +24,7 @@ end # loop
 for op in [:.>, :.<, :.==, :.>=, :.<=]
   @eval begin
     function ($op){T,N}(ta1::TimeArray{T,N}, ta2::TimeArray{T,N})
-      cname  = [ta1.colnames[1][1:2] *  string($op) *  ta2.colnames[1][1:2]]
+      cname  = [string(ta1.colnames[1])[1:2] *  string($op) *  string(ta2.colnames[1])[1:2]]
       tstamp = Date[]
       vals   = Bool[]
       for i in 1:size(ta1.timestamp, 1)
@@ -64,7 +64,7 @@ end # loop
 for op in [:.>, :.<, :.==, :.>=, :.<=]
   @eval begin
     function ($op){T,N}(ta::TimeArray{T,N}, var::Union(Int,Float64))
-      cname  = [ta.colnames[1][1:2] *  string($op) *  string(var)]
+      cname  = [string(ta.colnames[1])[1:2] *  string($op) *  string(var)]
       tstamp = Date[]
       vals   = Bool[]
       for i in 1:length(ta)
@@ -79,7 +79,7 @@ end # loop
 for op in [:.>, :.<, :.==, :.>=, :.<=]
   @eval begin
     function ($op){T,N}(var::Union(Int,Float64), ta::TimeArray{T,N})
-      cname  = [ta.colnames[1][1:2] *  string($op) *  string(var)]
+      cname  = [string(ta.colnames[1])[1:2] *  string($op) *  string(var)]
       tstamp = Date[]
       vals   = Bool[]
       for i in 1:length(ta)
