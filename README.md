@@ -19,7 +19,7 @@ julia> Pkg.add("MarketData")
 Alternately, you can create some dummy data with this code block.
 
 ````julia
-d = [date(1980,1,1):date(2015,1,1)];
+d = [Date(1980,1,1):Date(2015,1,1)];
 t = TimeArray(d,rand(length(d)),["test"])
 ````
 
@@ -64,7 +64,7 @@ julia> ohlc[1:2]
 2000-01-03 | 104.88  112.5   101.69  111.94
 2000-01-04 | 108.25  110.62  101.19  102.5
 
-julia> ohlc[[date(2000,1,3), date(2000,1,14)]]
+julia> ohlc[[Date(2000,1,3), Date(2000,1,14)]]
 2x4 TimeArray{Float64,2} 2000-01-03 to 2000-01-14
 
              Open    High    Low     Close
