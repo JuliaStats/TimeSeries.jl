@@ -8,11 +8,11 @@ immutable TimeArray{T,N} <: AbstractTimeSeries
 
     timestamp::Vector{Date}
     values::Array{T,N}
-    colnames::Vector{UTF8String}
+    colnames::Vector{Symbol}
 
     function TimeArray(timestamp::Vector{Date}, 
                        values::Array{T,N}, 
-                       colnames::Vector{UTF8String})
+                       colnames::Vector{Symbol})
                            nrow, ncol = size(values, 1), size(values, 2)
                            nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
                            ncol != size(colnames,1) ? error("column names must match width of array"):
@@ -24,8 +24,10 @@ immutable TimeArray{T,N} <: AbstractTimeSeries
     end
 end
 
-TimeArray{T,N,S<:String}(d::Vector{Date}, v::Array{T,N}, c::Vector{S}) = TimeArray{T,N}(d,v,map(utf8,c))
-TimeArray{T,N,S<:String}(d::Date, v::Array{T,N}, c::Array{S,1}) = TimeArray([d], v, map(utf8,c))
+TimeArray{T,N,S<:Symbol}(d::Vector{Date}, v::Array{T,N}, c::Vector{S}) = TimeArray{T,N}(d, v, c)
+TimeArray{T,N,S<:Symbol}(d::Date, v::Array{T,N}, c::Array{S,1}) = TimeArray([d], v, c)
+TimeArray{T,N,S<:String}(d::Vector{Date}, v::Array{T,N}, c::Vector{S}) = TimeArray{T,N}(d,v,map(symbol, c))
+TimeArray{T,N,S<:String}(d::Date, v::Array{T,N}, c::Array{S,1}) = TimeArray([d], v, map(symbol, c))
 
 ###### conversion ###############
 
@@ -63,12 +65,12 @@ function show{T,N}(io::IO, ta::TimeArray{T,N})
       end
   end
   spacetime     = strwidth(string(ta.timestamp[1])) + 3
-  firstcolwidth = strwidth(ta.colnames[1])
+  firstcolwidth = strwidth(string(ta.colnames[1]))
   colwidth      = Int[]
       for m in 1:ncol
           T == Bool ?
-          push!(colwidth, max(strwidth(ta.colnames[m]), 5)) :
-          push!(colwidth, max(strwidth(ta.colnames[m]), strwidth(@sprintf("%.2f", maximum(ta.values[:,m]))) + DECIMALS - 2))
+          push!(colwidth, max(strwidth(string(ta.colnames[m])), 5)) :
+          push!(colwidth, max(strwidth(string(ta.colnames[m])), strwidth(@sprintf("%.2f", maximum(ta.values[:,m]))) + DECIMALS - 2))
       end
 
   # summary line
@@ -81,7 +83,7 @@ function show{T,N}(io::IO, ta::TimeArray{T,N})
    print(io, ^(" ", spacetime), ta.colnames[1], ^(" ", colwidth[1] + 2 -firstcolwidth))
 
    for p in 2:length(colwidth)
-     print(io, ta.colnames[p], ^(" ", colwidth[p] - strwidth(ta.colnames[p]) + 2))
+     print(io, ta.colnames[p], ^(" ", colwidth[p] - strwidth(string(ta.colnames[p])) + 2))
    end
    println(io, "")
 
@@ -160,15 +162,24 @@ function getindex{T}(ta::TimeArray{T,1}, a::Array{Int})
 end
 
 # single column by name 
-function getindex{T,N}(ta::TimeArray{T,N}, s::String)
+function getindex{T,N}(ta::TimeArray{T,N}, s::Symbol)
     n = findfirst(ta.colnames, s)
-    TimeArray(ta.timestamp, ta.values[:, n], UTF8String[s])
+    TimeArray(ta.timestamp, ta.values[:, n], Symbol[s])
+end
+function getindex{T,N}(ta::TimeArray{T,N}, s::String)
+    getindex(ta, symbol(s))
 end
 
 # array of columns by name
-function getindex{T,N}(ta::TimeArray{T,N}, args::String...)
+function getindex{T,N}(ta::TimeArray{T,N})
+    TimeArray(ta.timestamp, ta.values[:, []], [])
+end
+function getindex{T,N}(ta::TimeArray{T,N}, args::Symbol...)
     ns = [findfirst(ta.colnames, a) for a in args]
-    TimeArray(ta.timestamp, ta.values[:,ns], UTF8String[a for a in args])
+    TimeArray(ta.timestamp, ta.values[:,ns], [args...])
+end
+function getindex{T,N}(ta::TimeArray{T,N}, args::String...)
+    getindex(ta, map(symbol, args)...)
 end
 
 # single date

@@ -32,9 +32,9 @@ end
 facts("element wrappers") do
 
   context("type element wrappers isolate elements") do
-     @fact isa(timestamp(cl), Array{Date,1}) => true
-     @fact isa(values(cl), Array{Float64,1})              => true
-     @fact isa(values(ohlc), Array{Float64,2})            => true
-     @fact isa(colnames(cl), Array{UTF8String, 1})       => true
+     @fact isa(timestamp(cl), Array{Date,1})   => true
+     @fact isa(values(cl), Array{Float64,1})   => true
+     @fact isa(values(ohlc), Array{Float64,2}) => true
+     @fact isa(colnames(cl), Array{Symbol, 1}) => true
   end
 end
