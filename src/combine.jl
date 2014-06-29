@@ -2,25 +2,36 @@ import Base: merge
 
 ###### merge ####################
 
-#function merge{T,N}(ta1::TimeArray{T,N}, ta2::TimeArray{T,N}; method="inner")
-function merge{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; colnames = [""], method="inner",)
-    tstamp = [Date(1,1,1):Year(1):Date(length(ta1),1,1)]
-    n      = 1
-      for i in 1:length(ta1)
-        for j in 1:length(ta2)
-          if ta1.timestamp[i] == ta2.timestamp[j]
-            tstamp[n] = ta1.timestamp[i]
-            n+=1
-          end
+function merge{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; colnames = [""], method="inner")
+    # find the smaller time array if it exists
+    if  length(ta1) > length(ta2) 
+        longer        = ta1 
+        shorter       = ta2
+        originalorder = true
+    else
+        longer        = ta2 
+        shorter       = ta1
+        originalorder = false
+    end
+
+    # interate to find when there is a match on timestamp
+    counter = Int[]
+    for i in 1:length(shorter)
+        if in(shorter[i].timestamp[1], longer.timestamp)
+            push!(counter, i)
         end
-      end
-    tstamp = tstamp[1:n-1] # trim down the length, if necessary
+    end
 
-    val1 = ta1[tstamp].values
-    val2 = ta2[tstamp].values
-    vals = hcat(val1, val2)
+    # create new shortened versions of ta1 and ta2
+    newshorter  = shorter[counter]
+    longermatch = longer[newshorter.timestamp]
 
-    #if length(colnames) != 2
+    # concat the values columns
+    originalorder ?
+    vals = hcat(longermatch.values, newshorter.values) :
+    vals = hcat(newshorter.values, longermatch.values)
+
+    # get column names
     if length(colnames) < 2
     cnames = copy(ta1.colnames) # otherwise ta1 gets contaminated
       for m in 1:length(ta2.colnames)
@@ -29,7 +40,7 @@ function merge{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; colnames = [""], method=
      else cnames = colnames
      end
 
-    TimeArray(tstamp, vals, cnames)
+    TimeArray(newshorter.timestamp, vals, cnames)
 end
 
 # collapse ######################
