@@ -20,6 +20,35 @@ for op in [:.+, :.-, :.*, :./]
   end # eval
 end # loop
 
+# element-wise mathematical operations between 2d and 1d
+for op in [:.+, :.-, :.*, :./]
+  @eval begin
+    function ($op){T}(ta1::TimeArray{T,2}, ta2::TimeArray{T,1})
+
+        # interate to find when there is a match on timestamp
+        counter = Int[]
+        for i in 1:length(ta1)
+            if in(ta1[i].timestamp[1], ta2.timestamp)
+                push!(counter, i)
+            end
+        end
+
+        # create new shortened versions of ta1 and ta2
+        newta1 = ta1[counter]
+        newta2 = ta2[newta1.timestamp]
+
+        # operate on the values columns
+        vals = ($op)(ta1.values, ta2.values) 
+
+        cnames = repmat([""], length(ta1.colnames))
+        for i in 1:length(ta1.colnames)
+            cnames[i] = string(ta1.colnames[i])[1:2] * " " *  string($op) * " " *  string(ta2.colnames[1])[1:2]
+        end
+        TimeArray(newta1.timestamp, vals, cnames)
+    end # function
+  end # eval
+end # loop
+
 # element-wise comparison operations between two columns
 for op in [:.>, :.<, :.==, :.>=, :.<=]
   @eval begin

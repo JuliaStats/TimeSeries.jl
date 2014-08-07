@@ -94,7 +94,13 @@ facts("base element-wise operators on TimeArray values") do
      @fact (2 .^ cl).values[1]   => 4980784073277740581384811358191616
   end
 
-  # these methods need to be deprecated to match base
+  context("element-wise mathematical operations between 2d time array and 1d time array") do
+     @fact (ohlc .+ cl).values[1,1] => roughly(216.82)
+     @fact (ohlc .+ cl).values[1,2] => roughly(224.44)
+     @fact (ohlc .* cl).values[1,1] => roughly(11740.27)
+     @fact (ohlc .* cl).values[1,2] => roughly(12593.25)
+  end
+
   context("throw error when calling  non-dot operation between TimeVectors values and Int/Float64 and viceversa") do
      @fact_throws (cl - 100).values[1] 
      @fact_throws (cl + 100).values[1] 
