@@ -4,33 +4,38 @@ import Base: convert, length, show, getindex, start, next, done, isempty
 
 abstract AbstractTimeSeries
 
-immutable TimeArray{T,N} <: AbstractTimeSeries
+immutable TimeArray{T,N,M} <: AbstractTimeSeries
 
     timestamp::Vector{Date}
     values::Array{T,N}
     colnames::Vector{UTF8String}
+    metadata::M
 
     function TimeArray(timestamp::Vector{Date}, 
                        values::Array{T,N}, 
-                       colnames::Vector{UTF8String})
+                       colnames::Vector{UTF8String}, 
+                       metadata::M)
                            nrow, ncol = size(values, 1), size(values, 2)
                            nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
                            ncol != size(colnames,1) ? error("column names must match width of array"):
                            timestamp != unique(timestamp) ? error("there are duplicate dates"):
                            ~(flipud(timestamp) == sort(timestamp) || timestamp == sort(timestamp)) ? error("dates are mangled"):
                            flipud(timestamp) == sort(timestamp) ? 
-                           new(flipud(timestamp), flipud(values), colnames):
-                           new(timestamp, values, colnames)
+                           new(flipud(timestamp), flipud(values), colnames, metadata):
+                           new(timestamp, values, colnames, metadata)
     end
 end
 
-TimeArray{T,N,S<:String}(d::Vector{Date}, v::Array{T,N}, c::Vector{S}) = TimeArray{T,N}(d,v,map(utf8,c))
-TimeArray{T,N,S<:String}(d::Date, v::Array{T,N}, c::Array{S,1}) = TimeArray([d], v, map(utf8,c))
+TimeArray{T,N,S<:String,M}(d::Vector{Date}, v::Array{T,N}, c::Vector{S}, m::M) = TimeArray{T,N,M}(d,v,map(utf8,c), m)
+TimeArray{T,N,S<:String,M}(d::Date, v::Array{T,N}, c::Array{S,1}, m::M) = TimeArray([d], v, map(utf8,c), m)
+
+TimeArray{T,N}(d::Vector{Date}, v::Array{T,N}, c) = TimeArray(d,v,c,Nothing)
+TimeArray{T,N}(d::Date, v::Array{T,N}, c)         = TimeArray([d],v,c,Nothing)
 
 ###### conversion ###############
 
-convert(::Type{TimeArray{Float64,1}}, x::TimeArray{Bool,1}) = (TimeArray(x.timestamp, float64(x.values), x.colnames))
-convert(::Type{TimeArray{Float64,2}}, x::TimeArray{Bool,2}) = (TimeArray(x.timestamp, float64(x.values), x.colnames))
+convert(::Type{TimeArray{Float64,1}}, x::TimeArray{Bool,1}) = (TimeArray(x.timestamp, float64(x.values), x.colnames, x.metadata))
+convert(::Type{TimeArray{Float64,2}}, x::TimeArray{Bool,2}) = (TimeArray(x.timestamp, float64(x.values), x.colnames, x.metadata))
 
 convert(x::TimeArray{Bool,1}) = convert(TimeArray{Float64,1}, x::TimeArray{Bool,1}) 
 convert(x::TimeArray{Bool,2}) = convert(TimeArray{Float64,2}, x::TimeArray{Bool,2}) 
@@ -131,44 +136,44 @@ end
 
 # single row
 function getindex{T,N}(ta::TimeArray{T,N}, n::Int)
-    TimeArray(ta.timestamp[n], ta.values[n,:], ta.colnames)
+    TimeArray(ta.timestamp[n], ta.values[n,:], ta.colnames, ta.metadata)
 end
 
 # single row 1d
 function getindex{T}(ta::TimeArray{T,1}, n::Int)
-    TimeArray(ta.timestamp[n], ta.values[[n]], ta.colnames)
+    TimeArray(ta.timestamp[n], ta.values[[n]], ta.colnames, ta.metadata)
 end
 
 # range of rows
 function getindex{T,N}(ta::TimeArray{T,N}, r::Range1{Int})
-    TimeArray(ta.timestamp[r], ta.values[r,:], ta.colnames)
+    TimeArray(ta.timestamp[r], ta.values[r,:], ta.colnames, ta.metadata)
 end
 
 # range of 1d rows
 function getindex{T}(ta::TimeArray{T,1}, r::Range1{Int})
-    TimeArray(ta.timestamp[r], ta.values[r], ta.colnames)
+    TimeArray(ta.timestamp[r], ta.values[r], ta.colnames, ta.metadata)
 end
 
 # array of rows
 function getindex{T,N}(ta::TimeArray{T,N}, a::Array{Int})
-    TimeArray(ta.timestamp[a], ta.values[a,:], ta.colnames)
+    TimeArray(ta.timestamp[a], ta.values[a,:], ta.colnames, ta.metadata)
 end
 
 # array of 1d rows
 function getindex{T}(ta::TimeArray{T,1}, a::Array{Int})
-    TimeArray(ta.timestamp[a], ta.values[a], ta.colnames)
+    TimeArray(ta.timestamp[a], ta.values[a], ta.colnames, ta.metadata)
 end
 
 # single column by name 
 function getindex{T,N}(ta::TimeArray{T,N}, s::String)
     n = findfirst(ta.colnames, s)
-    TimeArray(ta.timestamp, ta.values[:, n], UTF8String[s])
+    TimeArray(ta.timestamp, ta.values[:, n], UTF8String[s], ta.metadata)
 end
 
 # array of columns by name
 function getindex{T,N}(ta::TimeArray{T,N}, args::String...)
     ns = [findfirst(ta.colnames, a) for a in args]
-    TimeArray(ta.timestamp, ta.values[:,ns], UTF8String[a for a in args])
+    TimeArray(ta.timestamp, ta.values[:,ns], UTF8String[a for a in args], ta.metadata)
 end
 
 # single date
