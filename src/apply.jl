@@ -20,7 +20,7 @@ for op in [:.+, :.-, :.*, :./]
   end # eval
 end # loop
 
-# element-wise mathematical operations between 2d and 1d
+# element-wise mathematical operations between 2d time array and 1d time array
 for op in [:.+, :.-, :.*, :./]
   @eval begin
     function ($op){T}(ta1::TimeArray{T,2}, ta2::TimeArray{T,1})
