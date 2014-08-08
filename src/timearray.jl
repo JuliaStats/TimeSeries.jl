@@ -6,11 +6,12 @@ abstract AbstractTimeSeries
 
 immutable TimeArray{T,N} <: AbstractTimeSeries
 
-    timestamp::Vector{Date}
+    #timestamp::Vector{Date}
+    timestamp::Union(Vector{Date}, Vector{DateTime})
     values::Array{T,N}
     colnames::Vector{UTF8String}
 
-    function TimeArray(timestamp::Vector{Date}, 
+    function TimeArray(timestamp::Union(Vector{Date}, Vector{DateTime}),
                        values::Array{T,N}, 
                        colnames::Vector{UTF8String})
                            nrow, ncol = size(values, 1), size(values, 2)
@@ -24,8 +25,8 @@ immutable TimeArray{T,N} <: AbstractTimeSeries
     end
 end
 
-TimeArray{T,N,S<:String}(d::Vector{Date}, v::Array{T,N}, c::Vector{S}) = TimeArray{T,N}(d,v,map(utf8,c))
-TimeArray{T,N,S<:String}(d::Date, v::Array{T,N}, c::Array{S,1}) = TimeArray([d], v, map(utf8,c))
+TimeArray{T,N,S<:String}(d::Union(Vector{Date}, Vector{DateTime}), v::Array{T,N}, c::Vector{S}) = TimeArray{T,N}(d,v,map(utf8,c))
+TimeArray{T,N,S<:String}(d::Union(Date, DateTime), v::Array{T,N}, c::Array{S,1}) = TimeArray([d], v, map(utf8,c))
 
 ###### conversion ###############
 
@@ -172,7 +173,7 @@ function getindex{T,N}(ta::TimeArray{T,N}, args::String...)
 end
 
 # single date
-function getindex{T,N}(ta::TimeArray{T,N}, d::Date)
+function getindex{T,N}(ta::TimeArray{T,N}, d::Union(Date, DateTime))
    for i in 1:length(ta)
      if [d] == ta[i].timestamp 
        return ta[i] 
@@ -183,7 +184,7 @@ function getindex{T,N}(ta::TimeArray{T,N}, d::Date)
  end
  
 # range of dates
-function getindex{T,N}(ta::TimeArray{T,N}, dates::Array{Date,1})
+function getindex{T,N}(ta::TimeArray{T,N}, dates::Union(Vector{Date}, Vector{DateTime}))
   counter = Int[]
 #  counter = int(zeros(length(dates)))
   for i in 1:length(dates)
@@ -195,7 +196,7 @@ function getindex{T,N}(ta::TimeArray{T,N}, dates::Array{Date,1})
   ta[counter]
 end
 
-function getindex{T,N}(ta::TimeArray{T,N}, r::StepRange{Date}) 
+function getindex{T,N}(ta::TimeArray{T,N}, r::Union(StepRange{Date}, StepRange{DateTime})) 
     ta[[r]]
 end
 

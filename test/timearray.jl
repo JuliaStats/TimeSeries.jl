@@ -33,23 +33,30 @@ end
 
 facts("getindex methods") do
   
-  context("getindex on single Int and DateTime") do
-    @fact ohlc[1].timestamp        => [Date(2000,1,3)]
+  context("getindex on single Int and Date") do
+    @fact ohlc[1].timestamp              => [Date(2000,1,3)]
     @fact ohlc[Date(2000,1,3)].timestamp => [Date(2000,1,3)]
   end
   
-  context("getindex on array of Int and DateTime") do
-    @fact ohlc[[1,10]].timestamp              => [Date(2000,1,3), Date(2000,1,14)]
+  context("getindex on array of Int and Date") do
+    @fact ohlc[[1,10]].timestamp                           => [Date(2000,1,3), Date(2000,1,14)]
     @fact ohlc[[Date(2000,1,3),Date(2000,1,14)]].timestamp => [Date(2000,1,3), Date(2000,1,14)]
   end
 
-  context("getindex on range of Int and DateTime") do
-    @fact ohlc[1:2].timestamp                        => [Date(2000,1,3), Date(2000,1,4)]
+  context("getindex on range of Int and Date") do
+    @fact ohlc[1:2].timestamp                                  => [Date(2000,1,3), Date(2000,1,4)]
     @fact ohlc[Date(2000,1,3):Day(1):Date(2000,1,4)].timestamp => [Date(2000,1,3), Date(2000,1,4)]
   end
 
+  # TODO get meaningful tests
+  context("getindex on range of DateTime when only Date is in timestamp") do
+    @fact ohlc[DateTime(2000,1,3,0,0,0)].timestamp                                 => [DateTime(2000,1,3,0,0,0)]
+    @fact ohlc[[DateTime(2000,1,3,0,0,0),DateTime(2000,1,14,0,0,0)]].timestamp     => [DateTime(2000,1,3,0,0,0), DateTime(2000,1,14,0,0,0)]
+    @fact ohlc[DateTime(2000,1,3,0,0,0):Day(1):DateTime(2000,1,4,0,0,0)].timestamp => [DateTime(2000,1,3,0,0,0), DateTime(2000,1,4,0,0,0)]
+  end
+
   context("getindex on single column name") do
-    @fact size(ohlc["Open"].values, 2)                            => 1
+    @fact size(ohlc["Open"].values, 2)                                        => 1
     @fact size(ohlc["Open"][Date(2000,1,3):Day(1):Date(2000,1,14)].values, 1) => 10
   end
 
