@@ -1,12 +1,17 @@
 ###### readtimearray ############
 
 function readtimearray(fname::String)
-    blob    = readcsv(fname)
-    tstamps = Date[Date(i) for i in blob[2:end, 1]]
-    vals    = insertNaN(blob[2:end, 2:end])
-    cnames  = UTF8String[]
-    for b in blob[1, 2:end]
-        push!(cnames, b)
+    cfile = readcsv(fname)
+    time  = cfile[2:end,1]
+
+    length(time[1]) < 11 ?
+    tstamps = Date[Date(t) for t in time] :
+    tstamps = DateTime[DateTime(t) for t in time] 
+
+    vals   = insertNaN(cfile[2:end, 2:end])
+    cnames = UTF8String[]
+    for c in cfile[1, 2:end]
+        push!(cnames, c)
     end
     TimeArray(tstamps, vals, cnames)
 end
