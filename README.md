@@ -24,7 +24,7 @@ d = [Date(1980,1,1):Date(2015,1,1)];
 t = TimeArray(d,rand(length(d)),["test"])
 ````
 
-#### Package objectives
+#### Package objective
 
 TimeSeries aims to provide a lightweight framework for working with time series data in Julia. There are less than 500 total lines of code 
 in the `src/` directory.
