@@ -1,15 +1,15 @@
-if VERSION >= v"0.4"
-    using Base.Dates
-else
+if VERSION <= v"0.3"
     using Dates
+else
+    using Base.Dates
 end
 
 module TimeSeries
 
-if VERSION >= v"0.4"
-    using Base.Dates
-else
+if VERSION <= v"0.3"
     using Dates
+else
+    using Base.Dates
 end
 
 export TimeArray, AbstractTimeSeries,
