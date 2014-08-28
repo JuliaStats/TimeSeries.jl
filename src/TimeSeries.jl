@@ -1,4 +1,4 @@
-if VERSION <= v"0.3"
+if VERSION < v"0.4-"
     using Dates
 else
     using Base.Dates
@@ -6,7 +6,7 @@ end
 
 module TimeSeries
 
-if VERSION <= v"0.3"
+if VERSION < v"0.4-"
     using Dates
 else
     using Base.Dates
