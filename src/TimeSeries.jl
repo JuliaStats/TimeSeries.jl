@@ -1,8 +1,16 @@
-using Dates
+if VERSION >= v"0.4"
+    using Base.Dates
+else
+    using Dates
+end
 
 module TimeSeries
 
-using Dates
+if VERSION >= v"0.4"
+    using Base.Dates
+else
+    using Dates
+end
 
 export TimeArray, AbstractTimeSeries,
        by, from, to, findwhen, findall, timestamp, values, colnames, 
