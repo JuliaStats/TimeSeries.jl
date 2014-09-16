@@ -2,7 +2,7 @@ TimeSeries.jl
 ============
 [![Build Status](https://travis-ci.org/JuliaStats/TimeSeries.jl.png)](https://travis-ci.org/JuliaStats/TimeSeries.jl)
 [![Coverage Status](https://coveralls.io/repos/JuliaStats/TimeSeries.jl/badge.png?branch=master)](https://coveralls.io/r/JuliaStats/TimeSeries.jl?branch=master)
-[![Package Evaluator](http://iainnz.github.io/packages.julialang.org/badges/TimeSeries_0.3.svg)](http://iainnz.github.io/packages.julialang.org/?pkg=TimeSeries&ver=0.3)
+[![TimeSeries](http://pkg.julialang.org/badges/TimeSeries_release.svg)](http://pkg.julialang.org/?pkg=TimeSeries&ver=release)
 
 #### Installation
 
