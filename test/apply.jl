@@ -1,4 +1,4 @@
-using MarketData
+#using MarketData
 
 facts("time series methods") do
 
