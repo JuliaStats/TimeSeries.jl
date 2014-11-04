@@ -1,5 +1,3 @@
-using MarketData
-
 facts("collapse operations") do
 
     context("collapse squishes correctly") do

@@ -11,4 +11,3 @@ facts("const values are set the package defaults") do
       @fact DECIMALS => 2
   end
 end
-
