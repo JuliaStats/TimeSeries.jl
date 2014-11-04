@@ -1,3 +1,5 @@
+using MarketData
+
 facts("readwrite parses csv file correctly") do
 
   context("1d values array works") do

@@ -1,3 +1,5 @@
+using Market Data
+
 facts("find methods") do
 
   context("findall returns correct row numbers array") do

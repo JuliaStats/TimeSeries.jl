@@ -1,3 +1,5 @@
+using MarketData
+
 facts("type constructors enforce invariants") do
 
   context("unequal length between values and timestamp fails") do

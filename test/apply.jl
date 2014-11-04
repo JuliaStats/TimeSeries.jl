@@ -1,3 +1,5 @@
+using MarketData
+
 facts("time series methods") do
 
   context("lag takes previous day and timestamps it to next day") do
