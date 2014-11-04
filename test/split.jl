@@ -1,4 +1,4 @@
-using Market Data
+using MarketData
 
 facts("find methods") do
 
