@@ -1,4 +1,4 @@
 ###### customizable show ########
 
-const DECIMALS = 2  
-const SHOWINT = false
+const DECIMALS = 4  
+const SHOWINT = true
