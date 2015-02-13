@@ -1,13 +1,13 @@
-n = TimeArray(Date(12,12,2012), 12, ["twelve"])
-t = TimeArray(Date(12,12,2012), 12, ["twelve"], 12.0)
+cll = TimeArray(cl.timestamp, cl.values, cl.colnames, "AAPL")
 
 facts("construction with and without meta field") do
 
     context("default meta field to Nothing") do
-        @fact typeof(n.meta) => Nothing
+        @fact cl.meta    => Void
+        @pending cl.meta => Nothing
     end
 
     context("allow typed objects in meta field") do
-        @fact typeof(t.meta) => Float64
+        @fact cll.meta => "AAPL"
     end
 end

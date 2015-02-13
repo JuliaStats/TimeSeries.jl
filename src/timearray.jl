@@ -30,8 +30,8 @@ TimeArray{T,N,S<:String}(d::Union(Vector{Date}, Vector{DateTime}), v::Array{T,N}
 TimeArray{T,N,S<:String}(d::Union(Date, DateTime), v::Array{T,N}, c::Array{S,1}, m) = TimeArray([d], v, map(utf8,c),m)
 
 # when no meta is provided
-TimeArray{T,N}(d::Vector{Date}, v::Array{T,N}, c) = TimeArray(d,v,c,Nothing)
-TimeArray{T,N}(d::Date, v::Array{T,N}, c)         = TimeArray([d],v,c,Nothing)
+TimeArray{T,N}(d::Union(Vector{Date}, Vector{DateTime}), v::Array{T,N}, c) = TimeArray(d,v,c,Nothing)
+TimeArray{T,N}(d::Union(Date, DateTime), v::Array{T,N}, c) = TimeArray([d],v,c,Nothing)
 
 ###### conversion ###############
 
@@ -168,7 +168,8 @@ end
 # single column by name 
 function getindex{T,N}(ta::TimeArray{T,N}, s::String)
     n = findfirst(ta.colnames, s)
-    TimeArray(ta.timestamp, ta.values[:, n], UTF8String[s], ta.meta)
+    #TimeArray(ta.timestamp, ta.values[:, n], UTF8String[s], ta.meta)
+    TimeArray(ta.timestamp, ta.values[:, n], UTF8String[s])
 end
 
 # array of columns by name
@@ -178,7 +179,7 @@ function getindex{T,N}(ta::TimeArray{T,N}, args::String...)
 end
 
 # single date
-function getindex{T,N}(ta::TimeArray{T,N}, d::Union(Date, DateTime), m)
+function getindex{T,N}(ta::TimeArray{T,N}, d::Union(Date, DateTime))
    for i in 1:length(ta)
      if [d] == ta[i].timestamp 
        return ta[i] 
@@ -189,7 +190,7 @@ function getindex{T,N}(ta::TimeArray{T,N}, d::Union(Date, DateTime), m)
  end
  
 # range of dates
-function getindex{T,N}(ta::TimeArray{T,N}, dates::Union(Vector{Date}, Vector{DateTime}), m)
+function getindex{T,N}(ta::TimeArray{T,N}, dates::Union(Vector{Date}, Vector{DateTime}))
   counter = Int[]
 #  counter = int(zeros(length(dates)))
   for i in 1:length(dates)
