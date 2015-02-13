@@ -3,6 +3,8 @@ import Base: merge
 ###### merge ####################
 
 function merge{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; colnames = [""], method="inner")
+    # first test metadata matches
+    ta1.meta == ta2.meta ? meta = ta1.meta : error("metadata doesn't match")
     # find the smaller time array if it exists
     if  length(ta1) > length(ta2) 
         longer        = ta1 
@@ -40,7 +42,7 @@ function merge{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; colnames = [""], method=
      else cnames = colnames
      end
 
-    TimeArray(newshorter.timestamp, vals, cnames)
+    TimeArray(newshorter.timestamp, vals, cnames, meta)
 end
 
 # collapse ######################
@@ -81,5 +83,5 @@ function collapse{T,N}(ta::TimeArray{T,N}, f::Function; period::Function=week)
   tstamps[length(tstamps)] = lasttempindex[1]
   vals[length(vals)]       = lasttempvalue
 
-  TimeArray(tstamps, vals, ta.colnames)
+  TimeArray(tstamps, vals, ta.colnames, ta.meta)
 end
