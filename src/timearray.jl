@@ -4,17 +4,17 @@ import Base: convert, length, show, getindex, start, next, done, isempty
 
 abstract AbstractTimeSeries
 
-immutable TimeArray{T,N} <: AbstractTimeSeries
+immutable TimeArray{T,N,M} <: AbstractTimeSeries
 
     timestamp::Union(Vector{Date}, Vector{DateTime})
     values::Array{T,N}
     colnames::Vector{UTF8String}
-    meta
+    meta::M
 
     function TimeArray(timestamp::Union(Vector{Date}, Vector{DateTime}),
                        values::Array{T,N}, 
                        colnames::Vector{UTF8String},
-                       meta)
+                       meta::M)
                            nrow, ncol = size(values, 1), size(values, 2)
                            nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
                            ncol != size(colnames,1) ? error("column names must match width of array"):
@@ -26,8 +26,8 @@ immutable TimeArray{T,N} <: AbstractTimeSeries
     end
 end
 
-TimeArray{T,N,S<:String}(d::Union(Vector{Date}, Vector{DateTime}), v::Array{T,N}, c::Vector{S}, m) = TimeArray{T,N}(d,v,map(utf8,c),m)
-TimeArray{T,N,S<:String}(d::Union(Date, DateTime), v::Array{T,N}, c::Array{S,1}, m) = TimeArray([d], v, map(utf8,c),m)
+TimeArray{T,N,S<:String}(d::Union(Vector{Date}, Vector{DateTime}), v::Array{T,N}, c::Vector{S}, m::M) = TimeArray{T,N}(d,v,map(utf8,c),m)
+TimeArray{T,N,S<:String}(d::Union(Date, DateTime), v::Array{T,N}, c::Array{S,1}, m::M) = TimeArray([d],v,map(utf8,c),m)
 
 # when no meta is provided
 TimeArray{T,N}(d::Union(Vector{Date}, Vector{DateTime}), v::Array{T,N}, c) = TimeArray(d,v,c,Nothing)
