@@ -4,6 +4,8 @@
 for op in [:.+, :.-, :.*, :./]
   @eval begin
     function ($op){T,N}(ta1::TimeArray{T,N}, ta2::TimeArray{T,N})
+      # first test metadata matches
+      ta1.meta == ta2.meta ? meta = ta1.meta : error("metadata doesn't match")
       cname  = [ta1.colnames[1][1:2] *  string($op) *  ta2.colnames[1][1:2]]
       tstamp = Date[]
       vals   = T[]
@@ -15,7 +17,7 @@ for op in [:.+, :.-, :.*, :./]
           end
         end
       end
-      TimeArray(tstamp, vals, cname)
+      TimeArray(tstamp, vals, cname, meta)
     end # function
   end # eval
 end # loop
@@ -25,26 +27,28 @@ for op in [:.+, :.-, :.*, :./]
   @eval begin
     function ($op){T}(ta1::TimeArray{T,2}, ta2::TimeArray{T,1})
 
-        # interate to find when there is a match on timestamp
-        counter = Int[]
-        for i in 1:length(ta1)
-            if in(ta1[i].timestamp[1], ta2.timestamp)
-                push!(counter, i)
-            end
-        end
+       # first test metadata matches
+       ta1.meta == ta2.meta ? meta = ta1.meta : error("metadata doesn't match")
+       # interate to find when there is a match on timestamp
+       counter = Int[]
+       for i in 1:length(ta1)
+           if in(ta1[i].timestamp[1], ta2.timestamp)
+               push!(counter, i)
+           end
+       end
 
-        # create new shortened versions of ta1 and ta2
-        newta1 = ta1[counter]
-        newta2 = ta2[newta1.timestamp]
+       # create new shortened versions of ta1 and ta2
+       newta1 = ta1[counter]
+       newta2 = ta2[newta1.timestamp]
 
-        # operate on the values columns
-        vals = ($op)(ta1.values, ta2.values) 
+       # operate on the values columns
+       vals = ($op)(ta1.values, ta2.values) 
 
-        cnames = repmat([""], length(ta1.colnames))
-        for i in 1:length(ta1.colnames)
-            cnames[i] = string(ta1.colnames[i])[1:2] * " " *  string($op) * " " *  string(ta2.colnames[1])[1:2]
-        end
-        TimeArray(newta1.timestamp, vals, cnames)
+       cnames = repmat([""], length(ta1.colnames))
+       for i in 1:length(ta1.colnames)
+           cnames[i] = string(ta1.colnames[i])[1:2] * " " *  string($op) * " " *  string(ta2.colnames[1])[1:2]
+       end
+       TimeArray(newta1.timestamp, vals, cnames, meta)
     end # function
   end # eval
 end # loop
@@ -53,6 +57,8 @@ end # loop
 for op in [:.>, :.<, :.==, :.>=, :.<=]
   @eval begin
     function ($op){T,N}(ta1::TimeArray{T,N}, ta2::TimeArray{T,N})
+      # first test metadata matches
+      ta1.meta == ta2.meta ? meta = ta1.meta : error("metadata doesn't match")
       cname  = [ta1.colnames[1][1:2] *  string($op) *  ta2.colnames[1][1:2]]
       tstamp = Date[]
       vals   = Bool[]
@@ -64,7 +70,7 @@ for op in [:.>, :.<, :.==, :.>=, :.<=]
           end
         end
       end
-      TimeArray(tstamp, vals, cname)
+      TimeArray(tstamp, vals, cname, meta)
     end # function
   end # eval
 end # loop
@@ -74,7 +80,7 @@ for op in [:.+, :.-, :.*, :./, :.^]
   @eval begin
     function ($op){T,N}(ta::TimeArray{T,N}, var::Union(Int,Float64))
       vals = ($op)([t for t in ta.values], var)
-      TimeArray(ta.timestamp, vals, ta.colnames)
+      TimeArray(ta.timestamp, vals, ta.colnames, ta.meta)
     end # function
   end # eval
 end # loop
@@ -84,7 +90,7 @@ for op in [:.+, :.-, :.*, :./, :.^]
   @eval begin
     function ($op){T,N}(var::Union(Int,Float64), ta::TimeArray{T,N})
       vals = ($op)(var, [t for t in ta.values])
-      TimeArray(ta.timestamp, vals, ta.colnames)
+      TimeArray(ta.timestamp, vals, ta.colnames, ta.meta)
     end # function
   end # eval
 end # loop
@@ -99,7 +105,7 @@ for op in [:.>, :.<, :.==, :.>=, :.<=]
       for i in 1:length(ta)
         push!(vals, ($op)(ta.values[i], var))
       end
-      TimeArray(ta.timestamp, vals, cname)
+      TimeArray(ta.timestamp, vals, cname, ta.meta)
     end # function
   end # eval
 end # loop
@@ -114,7 +120,7 @@ for op in [:.>, :.<, :.==, :.>=, :.<=]
       for i in 1:length(ta)
         push!(vals, ($op)(var, ta.values[i]))
       end
-      TimeArray(ta.timestamp, vals, cname)
+      TimeArray(ta.timestamp, vals, cname, ta.meta)
     end # function
   end # eval
 end # loop
@@ -123,26 +129,26 @@ end # loop
   
 function lag{T,N}(ta::TimeArray{T,N}; period::Int=1) 
     N == 1 ?
-    TimeArray(ta.timestamp[period+1:end], ta.values[1:length(ta)-period], ta.colnames) :
-    TimeArray(ta.timestamp[period+1:end], ta.values[1:length(ta)-period,:], ta.colnames)
+    TimeArray(ta.timestamp[period+1:end], ta.values[1:length(ta)-period], ta.colnames, ta.meta) :
+    TimeArray(ta.timestamp[period+1:end], ta.values[1:length(ta)-period,:], ta.colnames, ta.meta)
 end
 
 function lag{T,N}(ta::TimeArray{T,N}, n::Int) 
     N == 1 ?
-    TimeArray(ta.timestamp[n+1:end], ta.values[1:length(ta)-n], ta.colnames) :
-    TimeArray(ta.timestamp[n+1:end], ta.values[1:length(ta)-n, :], ta.colnames)
+    TimeArray(ta.timestamp[n+1:end], ta.values[1:length(ta)-n], ta.colnames, ta.meta) :
+    TimeArray(ta.timestamp[n+1:end], ta.values[1:length(ta)-n, :], ta.colnames, ta.meta)
 end
 
 function lead{T,N}(ta::TimeArray{T,N}; period::Int=1) 
     N == 1 ?
-    TimeArray(ta.timestamp[1:length(ta)-period], ta.values[period+1:end], ta.colnames) :
-    TimeArray(ta.timestamp[1:length(ta)-period], ta.values[period+1:end, :], ta.colnames)
+    TimeArray(ta.timestamp[1:length(ta)-period], ta.values[period+1:end], ta.colnames, ta.meta) :
+    TimeArray(ta.timestamp[1:length(ta)-period], ta.values[period+1:end, :], ta.colnames, ta.meta)
 end
 
 function lead{T,N}(ta::TimeArray{T,N}, n::Int) 
     N == 1 ?
-    TimeArray(ta.timestamp[1:length(ta)-n], ta.values[n+1:end], ta.colnames) :
-    TimeArray(ta.timestamp[1:length(ta)-n], ta.values[n+1:end, :], ta.colnames)
+    TimeArray(ta.timestamp[1:length(ta)-n], ta.values[n+1:end], ta.colnames, ta.meta) :
+    TimeArray(ta.timestamp[1:length(ta)-n], ta.values[n+1:end, :], ta.colnames, ta.meta)
 end
 
 ###### percentchange ############
@@ -152,9 +158,9 @@ function percentchange{T,N}(ta::TimeArray{T,N}; method="simple")
 #    logreturn = T[ta.values[t] for t in 1:length(ta)] |> log |> diff
 
     if method == "simple" 
-      TimeArray(ta.timestamp[2:end], expm1(logreturn), ta.colnames) 
+      TimeArray(ta.timestamp[2:end], expm1(logreturn), ta.colnames, ta.meta) 
     elseif method == "log" 
-      TimeArray(ta.timestamp[2:end], logreturn, ta.colnames) 
+      TimeArray(ta.timestamp[2:end], logreturn, ta.colnames, ta.meta) 
     else msg("only simple and log methods supported")
     end
 end
@@ -167,7 +173,7 @@ function moving{T,N}(ta::TimeArray{T,N}, f::Function, window::Int)
     for i=1:length(vals)
       vals[i] = f(ta.values[i:i+(window-1)])
     end
-    TimeArray(tstamps, vals, ta.colnames)
+    TimeArray(tstamps, vals, ta.colnames, ta.meta)
 end
 
 ###### upto #####################
@@ -178,9 +184,9 @@ function upto{T,N}(ta::TimeArray{T,N}, f::Function)
       for i=1:length(ta)
         vals[i] = f(push!(nextta, ta.values[i]))
       end
-    TimeArray(ta.timestamp, vals, ta.colnames)
+    TimeArray(ta.timestamp, vals, ta.colnames, ta.meta)
 end
 
 ###### basecall #################
 
-basecall{T,N}(ta::TimeArray{T,N}, f::Function; cnames=ta.colnames) =  TimeArray(ta.timestamp, f(ta.values), cnames)
+basecall{T,N}(ta::TimeArray{T,N}, f::Function; cnames=ta.colnames) =  TimeArray(ta.timestamp, f(ta.values), cnames, ta.meta)

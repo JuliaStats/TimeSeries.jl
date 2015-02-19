@@ -1,6 +1,6 @@
 ###### readtimearray ############
 
-function readtimearray(fname::String)
+function readtimearray(fname::String; meta=Nothing)
     cfile = readcsv(fname)
     time  = cfile[2:end,1]
 
@@ -13,7 +13,7 @@ function readtimearray(fname::String)
     for c in cfile[1, 2:end]
         push!(cnames, c)
     end
-    TimeArray(tstamps, vals, cnames)
+    TimeArray(tstamps, vals, cnames, meta)
 end
 
 function insertNaN{N}(aa::Array{Any,N})
