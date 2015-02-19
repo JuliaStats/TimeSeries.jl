@@ -4,6 +4,12 @@ TimeSeries.jl
 [![Coverage Status](https://coveralls.io/repos/JuliaStats/TimeSeries.jl/badge.png?branch=master)](https://coveralls.io/r/JuliaStats/TimeSeries.jl?branch=master)
 [![TimeSeries](http://pkg.julialang.org/badges/TimeSeries_release.svg)](http://pkg.julialang.org/?pkg=TimeSeries&ver=release)
 
+#### API CHANGE NOTICE for versions 0.5
+
+A new metadata field has been added to the `TimeArray` type. This allows users to specify information about their `TimeArray` object that is unique to their
+application. The anticipated turmoil from this add is *expected* to be near zero, since a constructor exists to default the `meta` field with `Nothing` (which
+has been redefined as `Void` starting in Julia `0.4`).
+
 #### Installation
 
 ````julia
