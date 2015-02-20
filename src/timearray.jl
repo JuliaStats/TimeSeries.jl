@@ -203,7 +203,7 @@ function getindex{T,N}(ta::TimeArray{T,N}, dates::Union(Vector{Date}, Vector{Dat
 end
 
 function getindex{T,N}(ta::TimeArray{T,N}, r::Union(StepRange{Date}, StepRange{DateTime})) 
-    ta[[r]]
+    ta[[r;]]
 end
 
 # day of week

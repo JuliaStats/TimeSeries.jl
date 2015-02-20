@@ -55,6 +55,10 @@ facts("getindex methods") do
     @fact ohlc[DateTime(2000,1,3,0,0,0):Day(1):DateTime(2000,1,4,0,0,0)].timestamp => [DateTime(2000,1,3,0,0,0), DateTime(2000,1,4,0,0,0)]
   end
 
+  context("getindex on range of Date") do
+    @fact length(cl[Date(2000,1,1):Date(2001,12,31)]) => 500
+  end
+
   context("getindex on single column name") do
     @fact size(ohlc["Open"].values, 2)                                        => 1
     @fact size(ohlc["Open"][Date(2000,1,3):Day(1):Date(2000,1,14)].values, 1) => 10
