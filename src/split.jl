@@ -2,7 +2,7 @@
 
 function by{T,N}(ta::TimeArray{T,N}, t::Int; period::Function=day) 
     boolarray = [[period(ta.timestamp[d]) for d in 1:length(ta.timestamp)] .== t]
-    #boolarray = [period(ta.timestamp[d;]) for d in 1:length(ta.timestamp)] .== t]
+    #boolarray = [[period(ta.timestamp[d;]) for d in 1:length(ta.timestamp)] .== t]
     rownums = int(zeros(sum(boolarray)))
     j = 1
     for i in 1:length(boolarray)

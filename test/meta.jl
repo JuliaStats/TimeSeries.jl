@@ -14,8 +14,20 @@ end
 
 facts("get index operations preserve meta") do
 
-    context(" ") do
-        @pending by(mdata).meta => "Apple"
+    context("index by integer row") do
+        @fact mdata[1].meta => "Apple"
+    end
+
+    context("index by integer range") do
+        @fact mdata[1:2].meta => "Apple"
+    end
+
+    context("index by column name") do
+        @fact mdata["Close"].meta => "Apple"
+    end
+
+    context("index by date range") do
+        @fact mdata[[Date(2000,1,3), Date(2000,1,14)]].meta => "Apple"
     end
 end
    
@@ -49,11 +61,11 @@ facts("apply operations preserve meta") do
     end
 
     context("moving") do
-        @pending moving(mdata).meta => "Apple"
+        @fact moving(mdata,mean,10).meta => "Apple"
     end
      
     context("upto") do
-        @pending upto(mdata).meta => "Apple"
+        @fact upto(mdata,sum).meta => "Apple"
     end
 end
 

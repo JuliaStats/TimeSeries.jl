@@ -168,8 +168,7 @@ end
 # single column by name 
 function getindex{T,N}(ta::TimeArray{T,N}, s::String)
     n = findfirst(ta.colnames, s)
-    #TimeArray(ta.timestamp, ta.values[:, n], UTF8String[s], ta.meta)
-    TimeArray(ta.timestamp, ta.values[:, n], UTF8String[s])
+    TimeArray(ta.timestamp, ta.values[:, n], UTF8String[s], ta.meta)
 end
 
 # array of columns by name
