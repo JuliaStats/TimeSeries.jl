@@ -14,5 +14,8 @@ facts("readwrite parses csv file correctly") do
       @fact typeof(cl.timestamp)    => Vector{Date}
       @fact typeof(sdata.timestamp) => Vector{DateTime}
   end
-end
 
+  context("readtimearray accepts meta field") do
+      @pending mdata => "construct mdata from csv vs reconstructing a Time Array" 
+  end
+end

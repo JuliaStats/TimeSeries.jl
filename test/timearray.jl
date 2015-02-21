@@ -1,5 +1,12 @@
 using MarketData
 
+facts("field extraction methods work") do
+    @fact typeof(timestamp(cl)) => Array{Base.Dates.Date,1}
+    @fact typeof(values(cl))    => Array{Float64,1}
+    @fact typeof(colnames(cl))  => Array{UTF8String,1}
+    @pending meta(mdata)        => "Apple" 
+end
+
 facts("type constructors enforce invariants") do
 
   context("unequal length between values and timestamp fails") do
