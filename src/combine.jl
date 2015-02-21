@@ -66,7 +66,7 @@ function collapse{T,N}(ta::TimeArray{T,N}, f::Function; period::Function=week)
   push!(z, z[length(z)] + 1)  
  
   # pre-allocate timestamp and value arrays
-  tstamps = [Date(1,1,1):Year(1):Date(maximum(z),1,1)]
+  tstamps = [(Date(1,1,1):Year(1):Date(maximum(z),1,1));]
   vals    = zeros(maximum(z)) # number of unique periods
   #replace their values except for the last row 
   for i = 1:maximum(z)-1  # iterate over period ID groupings

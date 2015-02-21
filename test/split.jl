@@ -3,21 +3,21 @@ using MarketData
 facts("find methods") do
 
   context("findall returns correct row numbers array") do
-    @fact cl[findall(cl .> op)].timestamp[1] => Date(2000,1,3)
-    @fact length(findall(cl .> op))          => 244
+     @fact cl[findall(cl .> op)].timestamp[1] => Date(2000,1,3)
+     @fact length(findall(cl .> op))          => 244
   end
 
   context("findwhen returns correct Dates array") do
-    @fact findwhen(cl .> op)[1]      => Date(2000,1,3)
-    @fact length(findwhen(cl .> op)) => 244 
+#     @fact findwhen(cl .> op)[1]      => Date(2000,1,3)
+#     @fact length(findwhen(cl .> op)) => 244 
   end
 end
 
 facts("split date operations") do
 
   context("from and to correctly subset") do
-    @fact length(from(cl, 2001,12,28)) => 2
-    @fact length(to(cl, 2000,1,4))     => 2
+     @fact length(from(cl, 2001,12,28)) => 2
+     @fact length(to(cl, 2000,1,4))     => 2
   end
 
   context("bydate methods correctly subset") do
