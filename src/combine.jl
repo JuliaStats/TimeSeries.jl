@@ -45,6 +45,26 @@ function merge{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; colnames = [""], method=
     TimeArray(newshorter.timestamp, vals, cnames, meta)
 end
 
+function merge1{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; col_names=[""], method="inner")
+    # start with array of Date
+    tstamp = intersect(ta1.timestamp, ta2.timestamp)
+    # get array of Ints
+    tt1    = findin(ta1.timestamp, tstamp)
+    tt2    = findin(ta2.timestamp, tstamp)
+    # retrieve values that match the Int array matching dates
+    vals1  = ta1[tt1].values
+    vals2  = ta2[tt2].values
+    # combine the values arrays
+    vals   = hcat(vals1,vals2)
+    # combine existing colnames
+    cnames = vcat(ta1.colnames, ta2.colnames)
+    # check if kwarg to over-ride simple vcat and then if colnames is valid length
+    size(col_names,1) == 1 ? cnames = cnames :       # kwarg not supplied
+    size(col_names,1) == size(vals,2) ? cnames = col_names : error("col_names supplied is not correct size")
+    # put it all together
+    TimeArray(tstamp, vals, cnames)
+end
+
 # collapse ######################
 
 function collapse{T,N}(ta::TimeArray{T,N}, f::Function; period::Function=week)

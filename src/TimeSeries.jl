@@ -16,7 +16,7 @@ export TimeArray, AbstractTimeSeries,
        by, from, to, findwhen, findall, timestamp, values, colnames, 
        lag, lead, percentchange, moving, upto,
        basecall,
-       merge, collapse,
+       merge, collapse, merge1,
        readtimearray
 
 ###### include ##################
