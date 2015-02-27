@@ -2,70 +2,8 @@ import Base: merge
 
 ###### merge ####################
 
-function merge{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; colnames = [""], method="inner")
-    # first test metadata matches
-    ta1.meta == ta2.meta ? meta = ta1.meta : error("metadata doesn't match")
-    # find the smaller time array if it exists
-    if  length(ta1) > length(ta2) 
-        longer        = ta1 
-        shorter       = ta2
-        originalorder = true
-    else
-        longer        = ta2 
-        shorter       = ta1
-        originalorder = false
-    end
+# used by merge method
 
-    # interate to find when there is a match on timestamp
-    counter = Int[]
-    for i in 1:length(shorter)
-        if in(shorter[i].timestamp[1], longer.timestamp)
-            push!(counter, i)
-        end
-    end
-
-    # create new shortened versions of ta1 and ta2
-    newshorter  = shorter[counter]
-    longermatch = longer[newshorter.timestamp]
-
-    # concat the values columns
-    originalorder ?
-    vals = hcat(longermatch.values, newshorter.values) :
-    vals = hcat(newshorter.values, longermatch.values)
-
-    # get column names
-    if length(colnames) < 2
-    cnames = copy(ta1.colnames) # otherwise ta1 gets contaminated
-      for m in 1:length(ta2.colnames)
-        push!(cnames, ta2.colnames[m])
-      end
-     else cnames = colnames
-     end
-
-    TimeArray(newshorter.timestamp, vals, cnames, meta)
-end
-
-function merge1{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; col_names=[""], method="inner")
-    # start with array of Date
-    tstamp = intersect(ta1.timestamp, ta2.timestamp)
-    # get array of Ints
-    tt1    = findin(ta1.timestamp, tstamp)
-    tt2    = findin(ta2.timestamp, tstamp)
-    # retrieve values that match the Int array matching dates
-    vals1  = ta1[tt1].values
-    vals2  = ta2[tt2].values
-    # combine the values arrays
-    vals   = hcat(vals1,vals2)
-    # combine existing colnames
-    cnames = vcat(ta1.colnames, ta2.colnames)
-    # check if kwarg to over-ride simple vcat and then if colnames is valid length
-    size(col_names,1) == 1 ? cnames = cnames :       # kwarg not supplied
-    size(col_names,1) == size(vals,2) ? cnames = col_names : error("col_names supplied is not correct size")
-    # put it all together
-    TimeArray(tstamp, vals, cnames)
-end
-
-# part of merge2 method
 function overlaps(t1, t2)
     i = j = 1
     idx1 = Int[]
@@ -87,11 +25,12 @@ end
 
 # thanks Tom Short @tshort for this implementation
 
-function merge2{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; col_names=[""])
+function merge{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; col_names=[""])
+    # first test metadata matches
+    ta1.meta == ta2.meta ? meta = ta1.meta : error("metadata doesn't match")
     # obtain unique indexes of when dates match
     idx1, idx2 = overlaps(ta1.timestamp, ta2.timestamp)
     # obtain shared timestamp
-    #tstamp = intersect(ta1.timestamp, ta2.timestamp)
     tstamp = ta1[idx1].timestamp
     # retrieve values that match the Int array matching dates
     vals1  = ta1[idx1].values
@@ -104,7 +43,7 @@ function merge2{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; col_names=[""])
     size(col_names,1) == 1 ? cnames = cnames :       # kwarg not supplied
     size(col_names,1) == size(vals,2) ? cnames = col_names : error("col_names supplied is not correct size")
     # put it all together
-    TimeArray(tstamp, vals, cnames)
+    TimeArray(tstamp, vals, cnames, meta)
 end
 
 # collapse ######################
