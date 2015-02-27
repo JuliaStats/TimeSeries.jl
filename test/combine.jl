@@ -77,3 +77,37 @@ facts("merge1 works correctly") do
         @fact merge1(op[2:5], cl).colnames[2]  => "Close"
     end
 end
+
+facts("merge2 works correctly") do
+
+    context("takes colnames kwarg correctly") do
+        @fact merge2(cl,ohlc["High", "Low"], col_names=["a","b","c"]).colnames[1] => "a"
+        @fact merge2(cl,ohlc["High", "Low"], col_names=["a","b","c"]).colnames[2] => "b"
+        @fact merge2(cl,ohlc["High", "Low"], col_names=["a","b","c"]).colnames[3] => "c"
+        @fact merge2(cl,op, col_names=["a","b"]).colnames[1]                      => "a"
+        @fact merge2(cl,op, col_names=["a","b"]).colnames[2]                      => "b"
+        @fact merge2(cl,op, col_names=["a"]).colnames[1]                          => "Close"
+        @fact merge2(cl,op, col_names=["a"]).colnames[2]                          => "Open"
+        @fact_throws merge2(cl,op, col_names=["a","b","c"])
+        @fact_throws merge2(cl,op, col_names=["a","b","c"])
+    end
+  
+    context("returns correct alignment with Dates and values") do
+        @fact merge2(cl,op).values[2,1] => cl.values[2,1]
+        @fact merge2(cl,op).values[2,2] => op.values[2,1]
+    end
+    
+    context("aligns with disparate sized objects") do
+        @fact merge2(cl, op[2:5]).values[1,1]  => cl.values[2,1]
+        @fact merge2(cl, op[2:5]).values[1,2]  => op.values[2,1]
+        @fact merge2(cl, op[2:5]).timestamp[1] => Date(2000,1,4)
+        @fact length(merge2(cl, op[2:5]))      => 4
+    end
+
+    context("column names match the correct values") do
+        @fact merge2(cl, op[2:5]).colnames[1]  => "Close"
+        @fact merge2(cl, op[2:5]).colnames[2]  => "Open"
+        @fact merge2(op[2:5], cl).colnames[1]  => "Open"
+        @fact merge2(op[2:5], cl).colnames[2]  => "Close"
+    end
+end

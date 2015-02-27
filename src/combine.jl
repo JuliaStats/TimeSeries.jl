@@ -65,6 +65,48 @@ function merge1{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; col_names=[""], method=
     TimeArray(tstamp, vals, cnames)
 end
 
+# part of merge2 method
+function overlaps(t1, t2)
+    i = j = 1
+    idx1 = Int[]
+    idx2 = Int[]
+    while i < length(t1) + 1 && j < length(t2) + 1
+        if t1[i] > t2[j]
+            j += 1
+        elseif t1[i] < t2[j]
+            i += 1
+        else
+            push!(idx1, i)
+            push!(idx2, j)
+            i += 1
+            j += 1
+        end
+    end
+    (idx1, idx2)        
+end
+
+# thanks Tom Short @tshort for this implementation
+
+function merge2{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; col_names=[""])
+    # obtain unique indexes of when dates match
+    idx1, idx2 = overlaps(ta1.timestamp, ta2.timestamp)
+    # obtain shared timestamp
+    #tstamp = intersect(ta1.timestamp, ta2.timestamp)
+    tstamp = ta1[idx1].timestamp
+    # retrieve values that match the Int array matching dates
+    vals1  = ta1[idx1].values
+    vals2  = ta2[idx2].values
+    # combine the values arrays
+    vals   = hcat(vals1,vals2)
+    # combine existing colnames
+    cnames = vcat(ta1.colnames, ta2.colnames)
+    # check if kwarg to over-ride simple vcat and then if colnames is valid length
+    size(col_names,1) == 1 ? cnames = cnames :       # kwarg not supplied
+    size(col_names,1) == size(vals,2) ? cnames = col_names : error("col_names supplied is not correct size")
+    # put it all together
+    TimeArray(tstamp, vals, cnames)
+end
+
 # collapse ######################
 
 function collapse{T,N}(ta::TimeArray{T,N}, f::Function; period::Function=week)

@@ -16,7 +16,7 @@ export TimeArray, AbstractTimeSeries,
        by, from, to, findwhen, findall, timestamp, values, colnames, 
        lag, lead, percentchange, moving, upto,
        basecall,
-       merge, collapse, merge1,
+       merge, collapse, merge1, merge2, overlaps, # don't export overlaps after troubleshooting
        readtimearray
 
 ###### include ##################
