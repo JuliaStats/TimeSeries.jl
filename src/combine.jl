@@ -2,47 +2,48 @@ import Base: merge
 
 ###### merge ####################
 
-function merge{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; colnames = [""], method="inner")
-    # first test metadata matches
-    ta1.meta == ta2.meta ? meta = ta1.meta : error("metadata doesn't match")
-    # find the smaller time array if it exists
-    if  length(ta1) > length(ta2) 
-        longer        = ta1 
-        shorter       = ta2
-        originalorder = true
-    else
-        longer        = ta2 
-        shorter       = ta1
-        originalorder = false
-    end
+# used by merge method
 
-    # interate to find when there is a match on timestamp
-    counter = Int[]
-    for i in 1:length(shorter)
-        if in(shorter[i].timestamp[1], longer.timestamp)
-            push!(counter, i)
+function overlaps(t1, t2)
+    i = j = 1
+    idx1 = Int[]
+    idx2 = Int[]
+    while i < length(t1) + 1 && j < length(t2) + 1
+        if t1[i] > t2[j]
+            j += 1
+        elseif t1[i] < t2[j]
+            i += 1
+        else
+            push!(idx1, i)
+            push!(idx2, j)
+            i += 1
+            j += 1
         end
     end
+    (idx1, idx2)        
+end
 
-    # create new shortened versions of ta1 and ta2
-    newshorter  = shorter[counter]
-    longermatch = longer[newshorter.timestamp]
+# thanks Tom Short @tshort for this implementation
 
-    # concat the values columns
-    originalorder ?
-    vals = hcat(longermatch.values, newshorter.values) :
-    vals = hcat(newshorter.values, longermatch.values)
-
-    # get column names
-    if length(colnames) < 2
-    cnames = copy(ta1.colnames) # otherwise ta1 gets contaminated
-      for m in 1:length(ta2.colnames)
-        push!(cnames, ta2.colnames[m])
-      end
-     else cnames = colnames
-     end
-
-    TimeArray(newshorter.timestamp, vals, cnames, meta)
+function merge{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; col_names=[""])
+    # first test metadata matches
+    ta1.meta == ta2.meta ? meta = ta1.meta : error("metadata doesn't match")
+    # obtain unique indexes of when dates match
+    idx1, idx2 = overlaps(ta1.timestamp, ta2.timestamp)
+    # obtain shared timestamp
+    tstamp = ta1[idx1].timestamp
+    # retrieve values that match the Int array matching dates
+    vals1  = ta1[idx1].values
+    vals2  = ta2[idx2].values
+    # combine the values arrays
+    vals   = hcat(vals1,vals2)
+    # combine existing colnames
+    cnames = vcat(ta1.colnames, ta2.colnames)
+    # check if kwarg to over-ride simple vcat and then if colnames is valid length
+    size(col_names,1) == 1 ? cnames = cnames :       # kwarg not supplied
+    size(col_names,1) == size(vals,2) ? cnames = col_names : error("col_names supplied is not correct size")
+    # put it all together
+    TimeArray(tstamp, vals, cnames, meta)
 end
 
 # collapse ######################
