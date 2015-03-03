@@ -2,7 +2,7 @@ Combine methods
 ===============
 
 merge
-====
+-----
 
 collapse
-=======
+--------
