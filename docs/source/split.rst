@@ -1,13 +1,13 @@
 Split methods: bracketing by time or boolean array
 =================================================
 
-Splitting up a time series is done by appending a bracketed expression after the object name. 
+Specific methods for segmenting on time ranges of if condition is met.
 
 by
 --
 
 from
---
+----
 
 to
 --
