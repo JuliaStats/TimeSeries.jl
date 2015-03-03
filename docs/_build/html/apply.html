@@ -32,7 +32,7 @@
   
     <link rel="top" title="timeseriesjl 0.2.2 documentation" href="index.html"/>
         <link rel="next" title="Combine methods" href="combine.html"/>
-        <link rel="prev" title="Split methods" href="split.html"/> 
+        <link rel="prev" title="Split methods: array indexing" href="split.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -66,10 +66,33 @@
             <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="timearray.html">The TimeArray time series type</a></li>
-<li class="toctree-l1"><a class="reference internal" href="split.html">Split methods</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Apply methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="indexing.html">Array indexing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html#integers">Integers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html#strings">Strings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html#date-and-datetime">Date and DateTime</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="split.html">Split methods: array indexing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="split.html#integers">Integers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="split.html#strings">Strings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="split.html#date-and-datetime">Date and DateTime</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Apply methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#lag">lag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lead">lead</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#percentchange">percentchange</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#moving">moving</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#basecall">basecall</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="combine.html">Combine methods</a></li>
-<li class="toctree-l1"><a class="reference internal" href="readwrite.html">Read/write methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="combine.html#merge">merge</a></li>
+<li class="toctree-l1"><a class="reference internal" href="combine.html#collapse">collapse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readwrite.html">Read/write methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="readwrite.html#readtimearray">readtimearray</a></li>
+</ul>
+</li>
 </ul>
 
         
@@ -106,12 +129,23 @@
             
   <div class="section" id="apply-methods">
 <h1>Apply methods<a class="headerlink" href="#apply-methods" title="Permalink to this headline">¶</a></h1>
-<p>TimeSeries is a registered package. To add it to your Julia packages, simply do the following in
-REPL:</p>
-<div class="highlight-julia"><div class="highlight"><pre><span class="n">Pkg</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&quot;TimeSeries&quot;</span><span class="p">)</span>
-</pre></div>
+<div class="section" id="lag">
+<h2>lag<a class="headerlink" href="#lag" title="Permalink to this headline">¶</a></h2>
 </div>
-<p>Throughout this tutorial, we&#8217;ll be using historical financial data sets, which are made available in the</p>
+<div class="section" id="lead">
+<h2>lead<a class="headerlink" href="#lead" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="percentchange">
+<h2>percentchange<a class="headerlink" href="#percentchange" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="moving">
+<h2>moving<a class="headerlink" href="#moving" title="Permalink to this headline">¶</a></h2>
+<p>upto
+&#8212;</p>
+</div>
+<div class="section" id="basecall">
+<h2>basecall<a class="headerlink" href="#basecall" title="Permalink to this headline">¶</a></h2>
+</div>
 </div>
 
 
@@ -123,7 +157,7 @@ REPL:</p>
         <a href="combine.html" class="btn btn-neutral float-right" title="Combine methods">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="split.html" class="btn btn-neutral" title="Split methods"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="split.html" class="btn btn-neutral" title="Split methods: array indexing"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>The TimeArray time series type &mdash; timeseriesjl 0.2.2 documentation</title>
+  <title>Split methods: bracketing by time or boolean array &mdash; timeseriesjl 0.2.2 documentation</title>
   
 
   
@@ -30,9 +30,7 @@
   
     <link rel="stylesheet" href="_static/julia.css" type="text/css" />
   
-    <link rel="top" title="timeseriesjl 0.2.2 documentation" href="index.html"/>
-        <link rel="next" title="Array indexing" href="indexing.html"/>
-        <link rel="prev" title="Getting Started" href="getting_started.html"/> 
+    <link rel="top" title="timeseriesjl 0.2.2 documentation" href="index.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -63,29 +61,21 @@
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
         
         
-            <ul class="current">
+            <ul>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">The TimeArray time series type</a></li>
-<li class="toctree-l1"><a class="reference internal" href="indexing.html">Array indexing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="indexing.html#integers">Integers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="indexing.html#strings">Strings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="indexing.html#date-and-datetime">Date and DateTime</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="timearray.html">The TimeArray time series type</a></li>
 <li class="toctree-l1"><a class="reference internal" href="split.html">Split methods: array indexing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="split.html#integers">Integers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="split.html#strings">Strings</a></li>
 <li class="toctree-l2"><a class="reference internal" href="split.html#date-and-datetime">Date and DateTime</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="apply.html">Apply methods</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="apply.html#lag">lag</a></li>
-<li class="toctree-l2"><a class="reference internal" href="apply.html#lead">lead</a></li>
-<li class="toctree-l2"><a class="reference internal" href="apply.html#percentchange">percentchange</a></li>
-<li class="toctree-l2"><a class="reference internal" href="apply.html#moving">moving</a></li>
-<li class="toctree-l2"><a class="reference internal" href="apply.html#basecall">basecall</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="apply.html">Apply methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apply.html#lag">lag</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apply.html#lead">lead</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apply.html#percentchange">percentchange</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apply.html#moving">moving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apply.html#basecall">basecall</a></li>
 <li class="toctree-l1"><a class="reference internal" href="combine.html">Combine methods</a></li>
 <li class="toctree-l1"><a class="reference internal" href="combine.html#merge">merge</a></li>
 <li class="toctree-l1"><a class="reference internal" href="combine.html#collapse">collapse</a></li>
@@ -116,10 +106,10 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>The TimeArray time series type</li>
+    <li>Split methods: bracketing by time or boolean array</li>
       <li class="wy-breadcrumbs-aside">
         
-          <a href="_sources/timearray.txt" rel="nofollow"> View page source</a>
+          <a href="_sources/split2.txt" rel="nofollow"> View page source</a>
         
       </li>
   </ul>
@@ -127,22 +117,28 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="the-timearray-time-series-type">
-<h1>The TimeArray time series type<a class="headerlink" href="#the-timearray-time-series-type" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="split-methods-bracketing-by-time-or-boolean-array">
+<h1>Split methods: bracketing by time or boolean array<a class="headerlink" href="#split-methods-bracketing-by-time-or-boolean-array" title="Permalink to this headline">¶</a></h1>
+<p>Splitting up a time series is done by appending a bracketed expression after the object name.</p>
+<div class="section" id="by">
+<h2>by<a class="headerlink" href="#by" title="Permalink to this headline">¶</a></h2>
+<p>from
+&#8211;</p>
+</div>
+<div class="section" id="to">
+<h2>to<a class="headerlink" href="#to" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="findwhen">
+<h2>findwhen<a class="headerlink" href="#findwhen" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="findall">
+<h2>findall<a class="headerlink" href="#findall" title="Permalink to this headline">¶</a></h2>
+</div>
 </div>
 
 
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="indexing.html" class="btn btn-neutral float-right" title="Array indexing">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="getting_started.html" class="btn btn-neutral" title="Getting Started"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
   
 
   <hr/>

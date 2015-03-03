@@ -1,7 +1,7 @@
-Split methods: array indexing
-=============================
+Array indexing
+==============
 
-Splitting up a time series is done by appending a bracketed expression after the object name. 
+Indexing out a time series is done with common bracketing semantics.
 
 Integers
 --------

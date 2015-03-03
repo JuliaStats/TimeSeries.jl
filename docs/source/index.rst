@@ -12,6 +12,7 @@ Contents
 
    getting_started
    timearray
+   indexing
    split
    apply
    combine
