@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Read/write methods &mdash; timeseriesjl 0.2.2 documentation</title>
+  <title>Read method &mdash; timeseriesjl 0.2.2 documentation</title>
   
 
   
@@ -31,6 +31,7 @@
     <link rel="stylesheet" href="_static/julia.css" type="text/css" />
   
     <link rel="top" title="timeseriesjl 0.2.2 documentation" href="index.html"/>
+        <link rel="next" title="Customize how TimeArray is displayed" href="dotfile.html"/>
         <link rel="prev" title="Combine methods" href="combine.html"/> 
 
   
@@ -65,23 +66,42 @@
             <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="timearray.html">The TimeArray time series type</a></li>
-<li class="toctree-l1"><a class="reference internal" href="split.html">Split methods: array indexing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="split.html#integers">Integers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="split.html#strings">Strings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="split.html#date-and-datetime">Date and DateTime</a></li>
+<li class="toctree-l1"><a class="reference internal" href="indexing.html">Array indexing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html#integers">Integers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html#strings">Strings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html#date-and-datetime">Date and DateTime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html#mixed-approach">Mixed approach</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="apply.html">Apply methods</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apply.html#lag">lag</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apply.html#lead">lead</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apply.html#percentchange">percentchange</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apply.html#moving">moving</a></li>
-<li class="toctree-l1"><a class="reference internal" href="apply.html#basecall">basecall</a></li>
-<li class="toctree-l1"><a class="reference internal" href="combine.html">Combine methods</a></li>
-<li class="toctree-l1"><a class="reference internal" href="combine.html#merge">merge</a></li>
-<li class="toctree-l1"><a class="reference internal" href="combine.html#collapse">collapse</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Read/write methods</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="split.html">Split methods: bracketing by time or boolean array</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="split.html#by">by</a></li>
+<li class="toctree-l2"><a class="reference internal" href="split.html#from">from</a></li>
+<li class="toctree-l2"><a class="reference internal" href="split.html#to">to</a></li>
+<li class="toctree-l2"><a class="reference internal" href="split.html#findwhen">findwhen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="split.html#findall">findall</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="apply.html">Apply methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#lag">lag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#lead">lead</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#percentchange">percentchange</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#moving">moving</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#upto">upto</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#basecall">basecall</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="combine.html">Combine methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="combine.html#merge">merge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="combine.html#collapse">collapse</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Read method</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#readtimearray">readtimearray</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dotfile.html">Customize how TimeArray is displayed</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dotfile.html#decimals">DECIMALS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dotfile.html#showint">SHOWINT</a></li>
 </ul>
 </li>
 </ul>
@@ -107,7 +127,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>Read/write methods</li>
+    <li>Read method</li>
       <li class="wy-breadcrumbs-aside">
         
           <a href="_sources/readwrite.txt" rel="nofollow"> View page source</a>
@@ -118,10 +138,19 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="read-write-methods">
-<h1>Read/write methods<a class="headerlink" href="#read-write-methods" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="read-method">
+<h1>Read method<a class="headerlink" href="#read-method" title="Permalink to this headline">¶</a></h1>
+<p>Reading a <tt class="docutils literal"><span class="pre">csv</span></tt> file into a TimeArray object is supported.</p>
 <div class="section" id="readtimearray">
 <h2>readtimearray<a class="headerlink" href="#readtimearray" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">readtimearray</span></tt> method is a wrapper for the <tt class="docutils literal"><span class="pre">Base.readcsv</span></tt> method that returns a TimeArray.</p>
+<blockquote>
+<div>function readtimearray(fname::String; meta=Nothing)</div></blockquote>
+<p>The <tt class="docutils literal"><span class="pre">fname</span></tt> argument is a string that represents the location and name of the <tt class="docutils literal"><span class="pre">csv</span></tt> file that you wish to parse into
+a TimeArray object. Optionally, you can add a value to the <tt class="docutils literal"><span class="pre">meta</span></tt> field.</p>
+<p>This method is currently limited in its ability to parse different representations for a timestamp value. See GitHub issue
+#105. If you&#8217;re bored some weekend and feel like ruining some brain cells on regex, then feel free to fix this and submit a
+pull request.</p>
 </div>
 </div>
 
@@ -130,6 +159,8 @@
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="dotfile.html" class="btn btn-neutral float-right" title="Customize how TimeArray is displayed">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="combine.html" class="btn btn-neutral" title="Combine methods"><span class="fa fa-arrow-circle-left"></span> Previous</a>

@@ -17,3 +17,4 @@ Contents
    apply
    combine
    readwrite
+   dotfile

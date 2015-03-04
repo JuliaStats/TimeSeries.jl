@@ -31,7 +31,7 @@
     <link rel="stylesheet" href="_static/julia.css" type="text/css" />
   
     <link rel="top" title="timeseriesjl 0.2.2 documentation" href="index.html"/>
-        <link rel="next" title="Split methods: array indexing" href="split.html"/>
+        <link rel="next" title="Split methods: bracketing by time or boolean array" href="split.html"/>
         <link rel="prev" title="The TimeArray time series type" href="timearray.html"/> 
 
   
@@ -73,10 +73,12 @@
 <li class="toctree-l2"><a class="reference internal" href="#mixed-approach">Mixed approach</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="split.html">Split methods: array indexing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="split.html#integers">Integers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="split.html#strings">Strings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="split.html#date-and-datetime">Date and DateTime</a></li>
+<li class="toctree-l1"><a class="reference internal" href="split.html">Split methods: bracketing by time or boolean array</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="split.html#by">by</a></li>
+<li class="toctree-l2"><a class="reference internal" href="split.html#from">from</a></li>
+<li class="toctree-l2"><a class="reference internal" href="split.html#to">to</a></li>
+<li class="toctree-l2"><a class="reference internal" href="split.html#findwhen">findwhen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="split.html#findall">findall</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="apply.html">Apply methods</a><ul>
@@ -84,14 +86,22 @@
 <li class="toctree-l2"><a class="reference internal" href="apply.html#lead">lead</a></li>
 <li class="toctree-l2"><a class="reference internal" href="apply.html#percentchange">percentchange</a></li>
 <li class="toctree-l2"><a class="reference internal" href="apply.html#moving">moving</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#upto">upto</a></li>
 <li class="toctree-l2"><a class="reference internal" href="apply.html#basecall">basecall</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="combine.html">Combine methods</a></li>
-<li class="toctree-l1"><a class="reference internal" href="combine.html#merge">merge</a></li>
-<li class="toctree-l1"><a class="reference internal" href="combine.html#collapse">collapse</a></li>
-<li class="toctree-l1"><a class="reference internal" href="readwrite.html">Read/write methods</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="combine.html">Combine methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="combine.html#merge">merge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="combine.html#collapse">collapse</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="readwrite.html">Read method</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="readwrite.html#readtimearray">readtimearray</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dotfile.html">Customize how TimeArray is displayed</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dotfile.html#decimals">DECIMALS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dotfile.html#showint">SHOWINT</a></li>
 </ul>
 </li>
 </ul>
@@ -351,7 +361,7 @@ Open      High      Low       Close
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="split.html" class="btn btn-neutral float-right" title="Split methods: array indexing">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="split.html" class="btn btn-neutral float-right" title="Split methods: bracketing by time or boolean array">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="timearray.html" class="btn btn-neutral" title="The TimeArray time series type"><span class="fa fa-arrow-circle-left"></span> Previous</a>

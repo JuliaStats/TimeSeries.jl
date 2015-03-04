@@ -1,6 +1,5 @@
 
 
-
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -8,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; timeseriesjl 0.2.2 documentation</title>
+  <title>Mathematical and comparison operators &mdash; timeseriesjl 0.2.2 documentation</title>
   
 
   
@@ -126,8 +125,10 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li></li>
+    <li>Mathematical and comparison operators</li>
       <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/operators.txt" rel="nofollow"> View page source</a>
         
       </li>
   </ul>
@@ -135,11 +136,81 @@
 </div>
           <div role="main" class="document">
             
-
-<h1 id="index">Index</h1>
-
-<div class="genindex-jumpbox">
- 
+  <div class="section" id="mathematical-and-comparison-operators">
+<h1>Mathematical and comparison operators<a class="headerlink" href="#mathematical-and-comparison-operators" title="Permalink to this headline">¶</a></h1>
+<p>TimeSeries supports common mathematical (such as <tt class="docutils literal"><span class="pre">+</span></tt>) and comparison ( such as <tt class="docutils literal"><span class="pre">==</span></tt>)
+operators. The operations are only calculated on values that share a timestamp.</p>
+<div class="section" id="mathematical">
+<h2>mathematical<a class="headerlink" href="#mathematical" title="Permalink to this headline">¶</a></h2>
+<p>Mathematical operators create a TimeArray object where values are computed on shared timestamps when two TimeArray
+objects are provided. Operations between a single TimeArray and <tt class="docutils literal"><span class="pre">Int</span></tt> or <tt class="docutils literal"><span class="pre">Float</span></tt> is also supported.  The semantics
+of a single operator (<tt class="docutils literal"><span class="pre">+</span></tt>) and one preceded with a <tt class="docutils literal"><span class="pre">.</span></tt> is identical since operations are bound to shared timestamps
+when two TimeArrays are calculated against one another. Support for the broadcasting <tt class="docutils literal"><span class="pre">.</span></tt> is provided for convenience.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="31%" />
+<col width="69%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Operator</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">+</span></tt> or  <tt class="docutils literal"><span class="pre">.+</span></tt></td>
+<td>mathematial element-wise add</td>
+</tr>
+<tr class="row-odd"><td rowspan="2"><blockquote class="first">
+<div><tt class="docutils literal"><span class="pre">-</span></tt> or  <tt class="docutils literal"><span class="pre">.-</span></tt></div></blockquote>
+<dl class="last docutils">
+<dt>&#8212;&#8212;&#8212; &#8212;&#8212;&#8211;</dt>
+<dd><tt class="docutils literal"><span class="pre">*</span></tt> or  <tt class="docutils literal"><span class="pre">.*</span></tt></dd>
+</dl>
+</td>
+<td>mathematial element-wise subtraction</td>
+</tr>
+<tr class="row-even"><td>mathematial element-wise multiplication</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">/</span></tt> or  <tt class="docutils literal"><span class="pre">./</span></tt></td>
+<td>mathematial element-wise division</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="comparison">
+<h2>comparison<a class="headerlink" href="#comparison" title="Permalink to this headline">¶</a></h2>
+<p>Comparison operators create a TimeArray of type <tt class="docutils literal"><span class="pre">Bool</span></tt>. Values are compared on shared timestamps when two TimeArray
+objects are provided. Comparison between a single TimeArray and <tt class="docutils literal"><span class="pre">Int</span></tt> or <tt class="docutils literal"><span class="pre">Float</span></tt> is also supported. The semantics of
+an operator (<tt class="docutils literal"><span class="pre">&gt;</span></tt>) and its broadcasting relative (<tt class="docutils literal"><span class="pre">.&gt;</span></tt>) are identical.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="71%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Operator</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">&gt;</span></tt> or <tt class="docutils literal"><span class="pre">.&gt;</span></tt></td>
+<td>element-wise greater-than comparision</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">&lt;</span></tt> or <tt class="docutils literal"><span class="pre">.&lt;</span></tt></td>
+<td>element-wise less-than comparision</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">==</span></tt> or <tt class="docutils literal"><span class="pre">.==</span></tt></td>
+<td>element-wise equivalent comparison</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">&gt;=</span></tt> or <tt class="docutils literal"><span class="pre">.&gt;=</span></tt></td>
+<td>element-wise greater-than or equal comparison</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">&lt;=</span></tt> or <tt class="docutils literal"><span class="pre">.&lt;=</span></tt></td>
+<td>element-wise less-than or equal comparison</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 
 
