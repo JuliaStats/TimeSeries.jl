@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Split methods: bracketing by time or boolean array &mdash; timeseriesjl 0.2.2 documentation</title>
+  <title>Spliting by time constraint or when condition is true &mdash; timeseriesjl 0.2.2 documentation</title>
   
 
   
@@ -31,7 +31,7 @@
     <link rel="stylesheet" href="_static/julia.css" type="text/css" />
   
     <link rel="top" title="timeseriesjl 0.2.2 documentation" href="index.html"/>
-        <link rel="next" title="Apply methods" href="apply.html"/>
+        <link rel="next" title="Mathematical and comparison operators" href="operators.html"/>
         <link rel="prev" title="Array indexing" href="indexing.html"/> 
 
   
@@ -65,7 +65,13 @@
         
             <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="timearray.html">The TimeArray time series type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timearray.html">The TimeArray time series type</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="timearray.html#timestamp">timestamp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timearray.html#values">values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timearray.html#colnames">colnames</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timearray.html#meta">meta</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="indexing.html">Array indexing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="indexing.html#integers">Integers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="indexing.html#strings">Strings</a></li>
@@ -73,7 +79,7 @@
 <li class="toctree-l2"><a class="reference internal" href="indexing.html#mixed-approach">Mixed approach</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Split methods: bracketing by time or boolean array</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Spliting by time constraint or when condition is true</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#by">by</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#from">from</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#to">to</a></li>
@@ -81,19 +87,32 @@
 <li class="toctree-l2"><a class="reference internal" href="#findall">findall</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="operators.html">Mathematical and comparison operators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="operators.html#mathematical">mathematical</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operators.html#comparison">comparison</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="apply.html">Apply methods</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="apply.html#lag">lag</a></li>
 <li class="toctree-l2"><a class="reference internal" href="apply.html#lead">lead</a></li>
 <li class="toctree-l2"><a class="reference internal" href="apply.html#percentchange">percentchange</a></li>
 <li class="toctree-l2"><a class="reference internal" href="apply.html#moving">moving</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#upto">upto</a></li>
 <li class="toctree-l2"><a class="reference internal" href="apply.html#basecall">basecall</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="combine.html">Combine methods</a></li>
-<li class="toctree-l1"><a class="reference internal" href="combine.html#merge">merge</a></li>
-<li class="toctree-l1"><a class="reference internal" href="combine.html#collapse">collapse</a></li>
-<li class="toctree-l1"><a class="reference internal" href="readwrite.html">Read/write methods</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="combine.html">Combine methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="combine.html#merge">merge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="combine.html#collapse">collapse</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="readwrite.html">Read method</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="readwrite.html#readtimearray">readtimearray</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dotfile.html">Customize how TimeArray is displayed</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dotfile.html#decimals">DECIMALS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dotfile.html#showint">SHOWINT</a></li>
 </ul>
 </li>
 </ul>
@@ -119,7 +138,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>Split methods: bracketing by time or boolean array</li>
+    <li>Spliting by time constraint or when condition is true</li>
       <li class="wy-breadcrumbs-aside">
         
           <a href="_sources/split.txt" rel="nofollow"> View page source</a>
@@ -130,23 +149,152 @@
 </div>
           <div role="main" class="document">
             
-  <div class="section" id="split-methods-bracketing-by-time-or-boolean-array">
-<h1>Split methods: bracketing by time or boolean array<a class="headerlink" href="#split-methods-bracketing-by-time-or-boolean-array" title="Permalink to this headline">¶</a></h1>
-<p>Specific methods for segmenting on time ranges of if condition is met.</p>
+  <div class="section" id="spliting-by-time-constraint-or-when-condition-is-true">
+<h1>Spliting by time constraint or when condition is true<a class="headerlink" href="#spliting-by-time-constraint-or-when-condition-is-true" title="Permalink to this headline">¶</a></h1>
+<p>Specific methods for segmenting on time ranges or if condition is met is supported with the following methods.</p>
 <div class="section" id="by">
 <h2>by<a class="headerlink" href="#by" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">by</span></tt> methods allows aggregating elements from a TimeArray into specific time periods, such as Mondays or the month of
+October:</p>
+<div class="highlight-julia"><div class="highlight"><pre>julia&gt; by(cl, 1, period=dayofweek)
+95x1 TimeSeries.TimeArray{Float64,1,DataType} 2000-01-03 to 2001-12-31
+
+             Close
+2000-01-03 | 111.94
+2000-01-10 | 97.75
+2000-01-24 | 106.25
+2000-01-31 | 103.75
+⋮
+2001-12-10 | 22.54
+2001-12-17 | 20.62
+2001-12-24 | 21.36
+2001-12-31 | 21.9
+</pre></div>
+</div>
+<p>The period argument holds a valid <tt class="docutils literal"><span class="pre">Date</span></tt> method. Below are currently available alternatives.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="46%" />
+<col width="54%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Dates method</th>
+<th class="head">Example</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">day</span></tt></td>
+<td>Jan 3, 2000 = 3</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">dayname</span></tt></td>
+<td>Jan 3, 2000 = &#8220;Monday&#8221;</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">week</span></tt></td>
+<td>Jan 3, 2000 = 1</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">month</span></tt></td>
+<td>Jan 3, 2000 = 1</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">monthname</span></tt></td>
+<td>Jan 3, 2000 = &#8220;January&#8221;</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">year</span></tt></td>
+<td>Jan 3, 2000 = 2000</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">dayofweek</span></tt></td>
+<td>Monday = 1</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">dayofweekofmonth</span></tt></td>
+<td>Fourth Monday in Jan = 4</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">dayofyear</span></tt></td>
+<td>Dec 31, 2000 = 366</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">quarterofyear</span></tt></td>
+<td>Dec 31, 2000 = 4</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">dayofquarter</span></tt></td>
+<td>Dec 31, 2000 = 93</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="from">
 <h2>from<a class="headerlink" href="#from" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">from</span></tt> method truncates a TimeArray starting with the date passed to the method:</p>
+<div class="highlight-julia"><div class="highlight"><pre><span class="n">julia</span><span class="o">&gt;</span> <span class="n">from</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="mi">2001</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">27</span><span class="p">)</span>
+<span class="mi">3</span><span class="n">x1</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">TimeArray</span><span class="p">{</span><span class="kt">Float64</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">DataType</span><span class="p">}</span> <span class="mi">2001</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">27</span> <span class="n">to</span> <span class="mi">2001</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">31</span>
+
+             <span class="n">Close</span>
+<span class="mi">2001</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">27</span> <span class="o">|</span> <span class="mf">22.07</span>
+<span class="mi">2001</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">28</span> <span class="o">|</span> <span class="mf">22.43</span>
+<span class="mi">2001</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">31</span> <span class="o">|</span> <span class="mf">21.9</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="to">
 <h2>to<a class="headerlink" href="#to" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">to</span></tt> method truncates a TimeArray after the date passed to the method:</p>
+<div class="highlight-julia"><div class="highlight"><pre><span class="n">julia</span><span class="o">&gt;</span> <span class="n">to</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="mi">3</span><span class="n">x1</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">TimeArray</span><span class="p">{</span><span class="kt">Float64</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">DataType</span><span class="p">}</span> <span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">03</span> <span class="n">to</span> <span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">05</span>
+
+             <span class="n">Close</span>
+<span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">03</span> <span class="o">|</span> <span class="mf">111.94</span>
+<span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">04</span> <span class="o">|</span> <span class="mf">102.5</span>
+<span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">05</span> <span class="o">|</span> <span class="mf">104.0</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="findwhen">
 <h2>findwhen<a class="headerlink" href="#findwhen" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">findwhen</span></tt> method test a condition and returns a vector of <tt class="docutils literal"><span class="pre">Date</span></tt> or <tt class="docutils literal"><span class="pre">DateTime</span></tt> where the condition is <tt class="docutils literal"><span class="pre">true</span></tt>:</p>
+<div class="highlight-julia"><div class="highlight"><pre>julia&gt; green = findwhen(ohlc[&quot;Close&quot;] .&gt; ohlc[&quot;Open&quot;]);
+
+julia&gt; typeof(green)
+Array{Base.Dates.Date,1}
+
+julia&gt; ohlc[green]
+244x4 TimeSeries.TimeArray{Float64,2,DataType} 2000-01-03 to 2001-12-28
+
+             Open      High      Low       Close
+2000-01-03 | 104.88    112.5     101.69    111.94
+2000-01-05 | 103.75    110.56    103.0     104.0
+2000-01-07 | 96.5      101.0     95.5      99.5
+2000-01-13 | 94.48     98.75     92.5      96.75
+⋮
+2001-12-24 | 20.9      21.45     20.9      21.36
+2001-12-26 | 21.35     22.3      21.14     21.49
+2001-12-27 | 21.58     22.25     21.58     22.07
+2001-12-28 | 21.97     23.0      21.96     22.43
+</pre></div>
+</div>
 </div>
 <div class="section" id="findall">
 <h2>findall<a class="headerlink" href="#findall" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">findall</span></tt> method test a condition and returns a vector of <tt class="docutils literal"><span class="pre">Int</span></tt> representing the row in the array where the condition
+is <tt class="docutils literal"><span class="pre">true</span></tt>:</p>
+<div class="highlight-julia"><div class="highlight"><pre>julia&gt; red = findwhen(ohlc[&quot;Close&quot;] .&lt; ohlc[&quot;Open&quot;]);
+
+julia&gt; typeof(red)
+Array{Int64,1}
+
+julia&gt; ohlc[red]
+252x4 TimeSeries.TimeArray{Float64,2,DataType} 2000-01-04 to 2001-12-31
+
+             Open      High      Low       Close
+2000-01-04 | 108.25    110.62    101.19    102.5
+2000-01-06 | 106.12    107.0     95.0      95.0
+2000-01-10 | 102.0     102.25    94.75     97.75
+2000-01-11 | 95.94     99.38     90.5      92.75
+⋮
+2001-12-14 | 20.73     20.83     20.09     20.39
+2001-12-20 | 21.4      21.47     20.62     20.67
+2001-12-21 | 21.01     21.54     20.8      21.0
+2001-12-31 | 22.51     22.66     21.83     21.9
+</pre></div>
+</div>
+<p>The operation of indexing a TimeArray with an array of integers is considerably faster than doing it with an array of <tt class="docutils literal"><span class="pre">Date</span></tt> or
+<tt class="docutils literal"><span class="pre">DateTime</span></tt>.</p>
 </div>
 </div>
 
@@ -156,7 +304,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="apply.html" class="btn btn-neutral float-right" title="Apply methods">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="operators.html" class="btn btn-neutral float-right" title="Mathematical and comparison operators">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="indexing.html" class="btn btn-neutral" title="Array indexing"><span class="fa fa-arrow-circle-left"></span> Previous</a>

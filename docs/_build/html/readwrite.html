@@ -65,7 +65,13 @@
         
             <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="timearray.html">The TimeArray time series type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timearray.html">The TimeArray time series type</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="timearray.html#timestamp">timestamp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timearray.html#values">values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timearray.html#colnames">colnames</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timearray.html#meta">meta</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="indexing.html">Array indexing</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="indexing.html#integers">Integers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="indexing.html#strings">Strings</a></li>
@@ -73,12 +79,17 @@
 <li class="toctree-l2"><a class="reference internal" href="indexing.html#mixed-approach">Mixed approach</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="split.html">Split methods: bracketing by time or boolean array</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="split.html">Spliting by time constraint or when condition is true</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="split.html#by">by</a></li>
 <li class="toctree-l2"><a class="reference internal" href="split.html#from">from</a></li>
 <li class="toctree-l2"><a class="reference internal" href="split.html#to">to</a></li>
 <li class="toctree-l2"><a class="reference internal" href="split.html#findwhen">findwhen</a></li>
 <li class="toctree-l2"><a class="reference internal" href="split.html#findall">findall</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="operators.html">Mathematical and comparison operators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="operators.html#mathematical">mathematical</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operators.html#comparison">comparison</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="apply.html">Apply methods</a><ul>
@@ -148,9 +159,9 @@
 <div>function readtimearray(fname::String; meta=Nothing)</div></blockquote>
 <p>The <tt class="docutils literal"><span class="pre">fname</span></tt> argument is a string that represents the location and name of the <tt class="docutils literal"><span class="pre">csv</span></tt> file that you wish to parse into
 a TimeArray object. Optionally, you can add a value to the <tt class="docutils literal"><span class="pre">meta</span></tt> field.</p>
-<p>This method is currently limited in its ability to parse different representations for a timestamp value. See GitHub issue
-#105. If you&#8217;re bored some weekend and feel like ruining some brain cells on regex, then feel free to fix this and submit a
-pull request.</p>
+<p>This method is currently limited in its ability to parse different representations for a timestamp value. See
+<a class="reference external" href="https://github.com/JuliaStats/TimeSeries.jl/issues/105">TimeSeries issue #105</a>. If you&#8217;re bored some weekend and feel like
+ruining some brain cells on regex, then feel free to fix this and submit a pull request.</p>
 </div>
 </div>
 
