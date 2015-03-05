@@ -19,7 +19,7 @@ when two TimeArrays are calculated against one another. Support for the broadcas
 | ``+`` or  ``.+`` | mathematial element-wise add            |
 +------------------+-----------------------------------------+
 | ``-`` or  ``.-`` | mathematial element-wise subtraction    |
-+--------- --------+-----------------------------------------+
++------------------+-----------------------------------------+
 | ``*`` or  ``.*`` | mathematial element-wise multiplication |
 +------------------+-----------------------------------------+
 | ``/`` or  ``./`` | mathematial element-wise division       |
