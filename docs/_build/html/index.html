@@ -1,0 +1,277 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>TimeSeries Overview &mdash; timeseriesjl 0.2.2 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/julia.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/julia.css" type="text/css" />
+  
+    <link rel="top" title="timeseriesjl 0.2.2 documentation" href="#"/>
+        <link rel="next" title="Getting Started" href="getting_started.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="http://julialang.org/"><img src="_static/julia-logo.svg" class="logo"></a>
+        <!--
+        <a href="#" class="fa fa-home"> timeseriesjl</a>
+        -->
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timearray.html">The TimeArray time series type</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="timearray.html#timestamp">timestamp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timearray.html#values">values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timearray.html#colnames">colnames</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timearray.html#meta">meta</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="indexing.html">Array indexing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html#integers">Integers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html#strings">Strings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html#date-and-datetime">Date and DateTime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html#mixed-approach">Mixed approach</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="split.html">Spliting by time constraint or when condition is true</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="split.html#by">by</a></li>
+<li class="toctree-l2"><a class="reference internal" href="split.html#from">from</a></li>
+<li class="toctree-l2"><a class="reference internal" href="split.html#to">to</a></li>
+<li class="toctree-l2"><a class="reference internal" href="split.html#findwhen">findwhen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="split.html#findall">findall</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="operators.html">Mathematical and comparison operators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="operators.html#mathematical">mathematical</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operators.html#comparison">comparison</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="apply.html">Apply methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#lag">lag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#lead">lead</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#percentchange">percentchange</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#moving">moving</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#upto">upto</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#basecall">basecall</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="combine.html">Combine methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="combine.html#merge">merge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="combine.html#collapse">collapse</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="readwrite.html">Read method</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="readwrite.html#readtimearray">readtimearray</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dotfile.html">Customize how TimeArray is displayed</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dotfile.html#decimals">DECIMALS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dotfile.html#showint">SHOWINT</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="#">timeseriesjl</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="#">Docs</a> &raquo;</li>
+      
+    <li>TimeSeries Overview</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/index.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="timeseries-overview">
+<h1>TimeSeries Overview<a class="headerlink" href="#timeseries-overview" title="Permalink to this headline">¶</a></h1>
+<p>The TimeSeries package provides convenient methods for working with time series data in Julia</p>
+<div class="section" id="contents">
+<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timearray.html">The TimeArray time series type</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="timearray.html#timestamp">timestamp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timearray.html#values">values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timearray.html#colnames">colnames</a></li>
+<li class="toctree-l2"><a class="reference internal" href="timearray.html#meta">meta</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="indexing.html">Array indexing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html#integers">Integers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html#strings">Strings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html#date-and-datetime">Date and DateTime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="indexing.html#mixed-approach">Mixed approach</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="split.html">Spliting by time constraint or when condition is true</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="split.html#by">by</a></li>
+<li class="toctree-l2"><a class="reference internal" href="split.html#from">from</a></li>
+<li class="toctree-l2"><a class="reference internal" href="split.html#to">to</a></li>
+<li class="toctree-l2"><a class="reference internal" href="split.html#findwhen">findwhen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="split.html#findall">findall</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="operators.html">Mathematical and comparison operators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="operators.html#mathematical">mathematical</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operators.html#comparison">comparison</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="apply.html">Apply methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#lag">lag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#lead">lead</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#percentchange">percentchange</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#moving">moving</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#upto">upto</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#basecall">basecall</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="combine.html">Combine methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="combine.html#merge">merge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="combine.html#collapse">collapse</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="readwrite.html">Read method</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="readwrite.html#readtimearray">readtimearray</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dotfile.html">Customize how TimeArray is displayed</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dotfile.html#decimals">DECIMALS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dotfile.html#showint">SHOWINT</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="getting_started.html" class="btn btn-neutral float-right" title="Getting Started">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Multiple.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.2.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

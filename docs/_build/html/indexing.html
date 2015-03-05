@@ -1,0 +1,423 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Array indexing &mdash; timeseriesjl 0.2.2 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/julia.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/julia.css" type="text/css" />
+  
+    <link rel="top" title="timeseriesjl 0.2.2 documentation" href="index.html"/>
+        <link rel="next" title="Split methods: bracketing by time or boolean array" href="split.html"/>
+        <link rel="prev" title="The TimeArray time series type" href="timearray.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="http://julialang.org/"><img src="_static/julia-logo.svg" class="logo"></a>
+        <!--
+        <a href="index.html" class="fa fa-home"> timeseriesjl</a>
+        -->
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timearray.html">The TimeArray time series type</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Array indexing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#integers">Integers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#strings">Strings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#date-and-datetime">Date and DateTime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mixed-approach">Mixed approach</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="split.html">Split methods: bracketing by time or boolean array</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="split.html#by">by</a></li>
+<li class="toctree-l2"><a class="reference internal" href="split.html#from">from</a></li>
+<li class="toctree-l2"><a class="reference internal" href="split.html#to">to</a></li>
+<li class="toctree-l2"><a class="reference internal" href="split.html#findwhen">findwhen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="split.html#findall">findall</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="apply.html">Apply methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#lag">lag</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#lead">lead</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#percentchange">percentchange</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#moving">moving</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#upto">upto</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apply.html#basecall">basecall</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="combine.html">Combine methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="combine.html#merge">merge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="combine.html#collapse">collapse</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="readwrite.html">Read method</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="readwrite.html#readtimearray">readtimearray</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dotfile.html">Customize how TimeArray is displayed</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dotfile.html#decimals">DECIMALS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dotfile.html#showint">SHOWINT</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">timeseriesjl</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Array indexing</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/indexing.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="array-indexing">
+<h1>Array indexing<a class="headerlink" href="#array-indexing" title="Permalink to this headline">¶</a></h1>
+<p>Indexing out a time series is done with common bracketing semantics.</p>
+<div class="section" id="integers">
+<h2>Integers<a class="headerlink" href="#integers" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="13%" />
+<col width="48%" />
+<col width="39%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Example</th>
+<th class="head">Description</th>
+<th class="head">Indexing value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>[1]</td>
+<td>First row of data only</td>
+<td>single integer</td>
+</tr>
+<tr class="row-odd"><td>[1:3]</td>
+<td>First through third row only</td>
+<td>integer range</td>
+</tr>
+<tr class="row-even"><td>[[1:3,8]]</td>
+<td>First through third row and eight row</td>
+<td>integer range &amp; single inteter</td>
+</tr>
+</tbody>
+</table>
+<p>Examples in REPL:</p>
+<div class="highlight-julia"><div class="highlight"><pre><span class="n">julia</span><span class="o">&gt;</span> <span class="n">ohlc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="mi">1</span><span class="n">x4</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">TimeArray</span><span class="p">{</span><span class="kt">Float64</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">DataType</span><span class="p">}</span> <span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">03</span> <span class="n">to</span> <span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">03</span>
+
+             <span class="n">Open</span>      <span class="n">High</span>      <span class="n">Low</span>       <span class="n">Close</span>
+<span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">03</span> <span class="o">|</span> <span class="mf">104.88</span>    <span class="mf">112.5</span>     <span class="mf">101.69</span>    <span class="mf">111.94</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">ohlc</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
+<span class="mi">3</span><span class="n">x4</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">TimeArray</span><span class="p">{</span><span class="kt">Float64</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">DataType</span><span class="p">}</span> <span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">03</span> <span class="n">to</span> <span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">05</span>
+
+             <span class="n">Open</span>      <span class="n">High</span>      <span class="n">Low</span>       <span class="n">Close</span>
+<span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">03</span> <span class="o">|</span> <span class="mf">104.88</span>    <span class="mf">112.5</span>     <span class="mf">101.69</span>    <span class="mf">111.94</span>
+<span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">04</span> <span class="o">|</span> <span class="mf">108.25</span>    <span class="mf">110.62</span>    <span class="mf">101.19</span>    <span class="mf">102.5</span>
+<span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">05</span> <span class="o">|</span> <span class="mf">103.75</span>    <span class="mf">110.56</span>    <span class="mf">103.0</span>     <span class="mf">104.0</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">ohlc</span><span class="p">[[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">;</span><span class="mi">8</span><span class="p">]]</span>
+<span class="mi">4</span><span class="n">x4</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">TimeArray</span><span class="p">{</span><span class="kt">Float64</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="n">DataType</span><span class="p">}</span> <span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">03</span> <span class="n">to</span> <span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">12</span>
+
+             <span class="n">Open</span>      <span class="n">High</span>      <span class="n">Low</span>       <span class="n">Close</span>
+<span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">03</span> <span class="o">|</span> <span class="mf">104.88</span>    <span class="mf">112.5</span>     <span class="mf">101.69</span>    <span class="mf">111.94</span>
+<span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">04</span> <span class="o">|</span> <span class="mf">108.25</span>    <span class="mf">110.62</span>    <span class="mf">101.19</span>    <span class="mf">102.5</span>
+<span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">05</span> <span class="o">|</span> <span class="mf">103.75</span>    <span class="mf">110.56</span>    <span class="mf">103.0</span>     <span class="mf">104.0</span>
+<span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">12</span> <span class="o">|</span> <span class="mf">95.0</span>      <span class="mf">95.5</span>      <span class="mf">86.5</span>      <span class="mf">87.19</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="strings">
+<h2>Strings<a class="headerlink" href="#strings" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="51%" />
+<col width="24%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Example</th>
+<th class="head">Description</th>
+<th class="head">Indexing value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>[&#8220;Open&#8221;]</td>
+<td>The column named &#8220;Open&#8221;</td>
+<td>single string</td>
+</tr>
+<tr class="row-odd"><td>[&#8220;Open&#8221;,&#8221;Close&#8221;]</td>
+<td>The columns named &#8220;Open&#8221; and &#8220;Close&#8221;</td>
+<td>multiple strings</td>
+</tr>
+</tbody>
+</table>
+<p>Examples in REPL:</p>
+<div class="highlight-julia"><div class="highlight"><pre>julia&gt; ohlc[&quot;Open&quot;]
+500x1 TimeSeries.TimeArray{Float64,1,DataType} 2000-01-03 to 2001-12-31
+
+         Open
+2000-01-03 | 104.88
+2000-01-04 | 108.25
+2000-01-05 | 103.75
+2000-01-06 | 106.12
+⋮
+2001-12-26 | 21.35
+2001-12-27 | 21.58
+2001-12-28 | 21.97
+2001-12-31 | 22.51
+
+julia&gt; ohlc[&quot;Open&quot;,&quot;Close&quot;]
+500x2 TimeSeries.TimeArray{Float64,2,DataType} 2000-01-03 to 2001-12-31
+
+             Open      Close
+2000-01-03 | 104.88    111.94
+2000-01-04 | 108.25    102.5
+2000-01-05 | 103.75    104.0
+2000-01-06 | 106.12    95.0
+⋮
+2001-12-26 | 21.35     21.49
+2001-12-27 | 21.58     22.07
+2001-12-28 | 21.97     22.43
+2001-12-31 | 22.51     21.9
+</pre></div>
+</div>
+</div>
+<div class="section" id="date-and-datetime">
+<h2>Date and DateTime<a class="headerlink" href="#date-and-datetime" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="36%" />
+<col width="47%" />
+<col width="17%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Example</th>
+<th class="head">Description</th>
+<th class="head">Indexing value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>[Date(2000,1,3)]</td>
+<td>The row containing Jan 3, 2000 timestamp</td>
+<td>single Date</td>
+</tr>
+<tr class="row-odd"><td>[[Date(2000,1,3),Date(2000,2,4)]]</td>
+<td>The rows containing Jan 3 &amp; Jan 4, 2000</td>
+<td>multiple Dates</td>
+</tr>
+<tr class="row-even"><td>[Date(2000,1,3):Date(2000,2,4)]</td>
+<td>The rows between Jan 1, 2000 &amp; Feb 1, 2000</td>
+<td>range of Date</td>
+</tr>
+</tbody>
+</table>
+<p>Examples in REPL:</p>
+<div class="highlight-julia"><div class="highlight"><pre>julia&gt; ohlc[Date(2000,1,3)]
+1x4 TimeSeries.TimeArray{Float64,2,DataType} 2000-01-03 to 2000-01-03
+
+         Open      High      Low       Close
+2000-01-03 | 104.88    112.5     101.69    111.94
+
+julia&gt; ohlc[[Date(2000,1,3),Date(2000,2,4)]]
+2x4 TimeSeries.TimeArray{Float64,2,DataType} 2000-01-03 to 2000-02-04
+
+          Open      High      Low       Close
+2000-01-03 | 104.88    112.5     101.69    111.94
+2000-02-04 | 103.94    110.0     103.62    108.0
+
+julia&gt; ohlc[Date(2000,1,3):Date(2000,2,4)]
+24x4 TimeSeries.TimeArray{Float64,2,DataType} 2000-01-03 to 2000-02-04
+
+Open      High      Low       Close
+2000-01-03 | 104.88    112.5     101.69    111.94
+2000-01-04 | 108.25    110.62    101.19    102.5
+2000-01-05 | 103.75    110.56    103.0     104.0
+2000-01-06 | 106.12    107.0     95.0      95.0
+⋮
+2000-02-01 | 104.0     105.0     100.0     100.25
+2000-02-02 | 100.75    102.12    97.0      98.81
+2000-02-03 | 100.31    104.25    100.25    103.31
+2000-02-04 | 103.94    110.0     103.62    108.0
+</pre></div>
+</div>
+</div>
+<div class="section" id="mixed-approach">
+<h2>Mixed approach<a class="headerlink" href="#mixed-approach" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="30%" />
+<col width="35%" />
+<col width="35%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Example</th>
+<th class="head">Description</th>
+<th class="head">Indexing value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>[&#8220;Open&#8221;][1:3]</td>
+<td>&#8220;Open&#8221; column &amp; first 3 rows</td>
+<td>single string &amp; integer range</td>
+</tr>
+<tr class="row-odd"><td>[&#8220;Open&#8221;][Date(2000,1,3)]</td>
+<td>&#8220;Open&#8221; column and Jan 3, 2000</td>
+<td>single string &amp; Date</td>
+</tr>
+</tbody>
+</table>
+<p>Examples in REPL:</p>
+<div class="highlight-julia"><div class="highlight"><pre><span class="n">julia</span><span class="o">&gt;</span> <span class="n">ohlc</span><span class="p">[</span><span class="s">&quot;Open&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
+<span class="mi">3</span><span class="n">x1</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">TimeArray</span><span class="p">{</span><span class="kt">Float64</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">DataType</span><span class="p">}</span> <span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">03</span> <span class="n">to</span> <span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">05</span>
+
+             <span class="n">Open</span>
+<span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">03</span> <span class="o">|</span> <span class="mf">104.88</span>
+<span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">04</span> <span class="o">|</span> <span class="mf">108.25</span>
+<span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">05</span> <span class="o">|</span> <span class="mf">103.75</span>
+
+<span class="n">julia</span><span class="o">&gt;</span> <span class="n">ohlc</span><span class="p">[</span><span class="s">&quot;Open&quot;</span><span class="p">][</span><span class="n">Date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)]</span>
+<span class="mi">1</span><span class="n">x1</span> <span class="n">TimeSeries</span><span class="o">.</span><span class="n">TimeArray</span><span class="p">{</span><span class="kt">Float64</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">DataType</span><span class="p">}</span> <span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">03</span> <span class="n">to</span> <span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">03</span>
+
+             <span class="n">Open</span>
+<span class="mi">2000</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">03</span> <span class="o">|</span> <span class="mf">104.88</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="split.html" class="btn btn-neutral float-right" title="Split methods: bracketing by time or boolean array">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="timearray.html" class="btn btn-neutral" title="The TimeArray time series type"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Multiple.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.2.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

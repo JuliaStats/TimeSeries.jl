@@ -1,0 +1,195 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Split methods: bracketing by time or boolean array &mdash; timeseriesjl 0.2.2 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/julia.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/julia.css" type="text/css" />
+  
+    <link rel="top" title="timeseriesjl 0.2.2 documentation" href="index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="http://julialang.org/"><img src="_static/julia-logo.svg" class="logo"></a>
+        <!--
+        <a href="index.html" class="fa fa-home"> timeseriesjl</a>
+        -->
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timearray.html">The TimeArray time series type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="split.html">Split methods: array indexing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="split.html#integers">Integers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="split.html#strings">Strings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="split.html#date-and-datetime">Date and DateTime</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="apply.html">Apply methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apply.html#lag">lag</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apply.html#lead">lead</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apply.html#percentchange">percentchange</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apply.html#moving">moving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apply.html#basecall">basecall</a></li>
+<li class="toctree-l1"><a class="reference internal" href="combine.html">Combine methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="combine.html#merge">merge</a></li>
+<li class="toctree-l1"><a class="reference internal" href="combine.html#collapse">collapse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="readwrite.html">Read/write methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="readwrite.html#readtimearray">readtimearray</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">timeseriesjl</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Split methods: bracketing by time or boolean array</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/split2.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="split-methods-bracketing-by-time-or-boolean-array">
+<h1>Split methods: bracketing by time or boolean array<a class="headerlink" href="#split-methods-bracketing-by-time-or-boolean-array" title="Permalink to this headline">¶</a></h1>
+<p>Splitting up a time series is done by appending a bracketed expression after the object name.</p>
+<div class="section" id="by">
+<h2>by<a class="headerlink" href="#by" title="Permalink to this headline">¶</a></h2>
+<p>from
+&#8211;</p>
+</div>
+<div class="section" id="to">
+<h2>to<a class="headerlink" href="#to" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="findwhen">
+<h2>findwhen<a class="headerlink" href="#findwhen" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="findall">
+<h2>findall<a class="headerlink" href="#findall" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Multiple.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.2.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
