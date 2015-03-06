@@ -30,18 +30,18 @@ comparison
 
 Comparison operators create a TimeArray of type ``Bool``. Values are compared on shared timestamps when two TimeArray 
 objects are provided. Comparison between a single TimeArray and ``Int`` or ``Float`` is also supported. The semantics of
-an operator (``>``) and its broadcasting relative (``.>``) are identical. 
+an non-dot operators (``>``) is unclear, so it is not supported.
 
-+-------------------+-----------------------------------------------+
-| Operator          | Description                                   |
-+===================+===============================================+
-| ``>`` or ``.>``   | element-wise greater-than comparision         |
-+-------------------+-----------------------------------------------+
-| ``<`` or ``.<``   | element-wise less-than comparision            |
-+-------------------+-----------------------------------------------+
-| ``==`` or ``.==`` | element-wise equivalent comparison            |
-+-------------------+-----------------------------------------------+
-| ``>=`` or ``.>=`` | element-wise greater-than or equal comparison |
-+-------------------+-----------------------------------------------+
-| ``<=`` or ``.<=`` | element-wise less-than or equal comparison    |
-+-------------------+-----------------------------------------------+
++---------+-----------------------------------------------+
+| Operator| Description                                   |
++=========+===============================================+
+| ``.>``  | element-wise greater-than comparision         |
++---------+-----------------------------------------------+
+| ``.<``  | element-wise less-than comparision            |
++---------+-----------------------------------------------+
+| ``.==`` | element-wise equivalent comparison            |
++---------+-----------------------------------------------+
+| ``.>=`` | element-wise greater-than or equal comparison |
++---------+-----------------------------------------------+
+| ``.<=`` | element-wise less-than or equal comparison    |
++---------+-----------------------------------------------+
