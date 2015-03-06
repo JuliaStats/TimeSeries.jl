@@ -101,17 +101,18 @@ facts("base element-wise operators on TimeArray values") do
      @fact (ohlc .* cl).values[1,2] => roughly(12593.25)
   end
 
-  context("throw error when calling  non-dot operation between TimeVectors values and Int/Float64 and viceversa") do
-     @fact_throws (cl - 100).values[1] 
-     @fact_throws (cl + 100).values[1] 
-     @fact_throws (cl * 100).values[1] 
-     @fact_throws (cl / 100).values[1] 
-     @fact_throws (cl ^ 2).values[1]
-     @fact_throws (100 - cl).values[1]
-     @fact_throws (100 + cl).values[1]
-     @fact_throws (100 * cl).values[1]
-     @fact_throws (100 / cl).values[1]
-     @fact_throws (2 ^ cl).values[1]  
+  context("correct non-dot operation between TimeVectors values and Int/Float64 and viceversa") do
+     @fact (cl - 100).values[1] => roughly(11.94)
+     @fact (cl + 100).values[1] => roughly(211.94)
+     @fact (cl * 100).values[1] => roughly(11194)
+     @fact (cl / 100).values[1] => roughly(1.1194)
+     @pending (cl ^ 2).values[1]   => roughly(12530.5636)
+     @fact (100 - cl).values[1] => roughly(-11.94)
+     @fact (100 + cl).values[1] => roughly(211.94)
+     @fact (100 * cl).values[1] => roughly(11194)
+     #@fact (100 / cl).values[1] => roughly(0.8933357155619082)
+     @fact_throws (100 / cl).values[1] # related to base not supporting this 
+     @pending (2 ^ cl).values[1]   => 4980784073277740581384811358191616
   end
 
   context("correct operation between two TimeVectors values returns bool for comparisons") do

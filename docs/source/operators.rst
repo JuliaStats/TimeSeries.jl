@@ -8,22 +8,27 @@ mathematical
 ------------
 
 Mathematical operators create a TimeArray object where values are computed on shared timestamps when two TimeArray 
-objects are provided. Operations between a single TimeArray and ``Int`` or ``Float`` is also supported.  The semantics 
-of a single operator (``+``) and one preceded with a ``.`` is identical since operations are bound to shared timestamps
-when two TimeArrays are calculated against one another. Support for the broadcasting ``.`` is provided for convenience.
+objects are provided. Operations between a single TimeArray and ``Int`` or ``Float`` is also supported. The number 
+can precede the TimeArray object or vice versa (e.g. ``cl + 2`` or ``2 + cl``).
 
+Except in the case of the ``/`` operator, both dot (``.+``) and non-dot (``+``) operations are supported. The semantics
+of non-dot operations are fairly clear when working with time series data, where it is assumed that only equivalent 
+timestamped values are being operated on. 
 
-+------------------+-----------------------------------------+
-| Operator         | Description                             |
-+==================+=========================================+
-| ``+`` or  ``.+`` | mathematial element-wise add            |
-+------------------+-----------------------------------------+
-| ``-`` or  ``.-`` | mathematial element-wise subtraction    |
-+------------------+-----------------------------------------+
-| ``*`` or  ``.*`` | mathematial element-wise multiplication |
-+------------------+-----------------------------------------+
-| ``/`` or  ``./`` | mathematial element-wise division       |
-+------------------+-----------------------------------------+
+The exclusion of ``/`` from this logic is a special case. In matrix operations it has been confused with being 
+equivalent to the inverse, and because of the confusion base has excluded it. It is likewise excluded here. 
+
++------------------+------------------------------------------+
+| Operator         | Description                              |
++==================+==========================================+
+| ``+`` or  ``.+`` | mathematical element-wise addition       |
++------------------+------------------------------------------+
+| ``-`` or  ``.-`` | mathematical element-wise subtraction    |
++------------------+------------------------------------------+
+| ``*`` or  ``.*`` | mathematical element-wise multiplication |
++------------------+------------------------------------------+
+|      ``/``       | mathematical element-wise division       |
++------------------+------------------------------------------+
 
 comparison
 ----------
