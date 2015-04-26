@@ -12,11 +12,12 @@ facts("readwrite parses csv file correctly") do
 
   context("Specifying DateTime string format for reading") do
       # incorrect reading without format specification
-      ta0 = readtimearray("test/read_example_txns.csv")
+      #ta0 = readtimearray("test/read_example_txns.csv")
+      ta0 = readtimearray(Pkg.dir("TimeSeries/test/data/read_example_txns.csv"))
       @fact ta0.timestamp[1] => not(DateTime(1961,12,31))
       
-      ta = readtimearray("test/read_example_txns.csv",
-                         dtformat="yyyy-mm-dd HH:MM:SS")
+      #ta = readtimearray("test/read_example_txns.csv", dtformat="yyyy-mm-dd HH:MM:SS")
+      ta = readtimearray(Pkg.dir("TimeSeries/test/data/read_example_txns.csv"), dtformat="yyyy-mm-dd HH:MM:SS")
       @fact length(ta) => 5
       @fact size(ta.values) => (5,6)
       @fact ta.timestamp[4] => DateTime(1967,2,15,16)
