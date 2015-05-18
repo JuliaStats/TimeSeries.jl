@@ -1,12 +1,23 @@
 ###### readtimearray ############
 
-function readtimearray(fname::String; meta=Nothing)
+function readtimearray(fname::String; meta=Nothing, format::String="")
     cfile = readcsv(fname)
+    
+    # remove empty lines if any
+    inoempty = find(s -> length(s) > 2, cfile[:,1])
+    cfile = cfile[inoempty,:]
+    
     time  = cfile[2:end,1]
-
-    length(time[1]) < 11 ?
-    tstamps = Date[Date(t) for t in time] :
-    tstamps = DateTime[DateTime(t) for t in time] 
+    if length(time[1]) < 11
+        # assuming Date not DateTime
+        format == "" ?
+        tstamps = Date[Date(t) for t in time] :
+        tstamps = Date[Date(t, format) for t in time]
+    else
+        format == "" ?
+        tstamps = DateTime[DateTime(t) for t in time] :
+        tstamps = DateTime[DateTime(t, format) for t in time]
+    end 
 
     vals   = insertNaN(cfile[2:end, 2:end])
     cnames = UTF8String[]
