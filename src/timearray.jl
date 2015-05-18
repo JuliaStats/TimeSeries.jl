@@ -149,12 +149,12 @@ function getindex{T}(ta::TimeArray{T,1}, n::Int)
 end
 
 # range of rows
-function getindex{T,N}(ta::TimeArray{T,N}, r::Range1{Int})
+function getindex{T,N}(ta::TimeArray{T,N}, r::UnitRange{Int})
     TimeArray(ta.timestamp[r], ta.values[r,:], ta.colnames, ta.meta)
 end
 
 # range of 1d rows
-function getindex{T}(ta::TimeArray{T,1}, r::Range1{Int})
+function getindex{T}(ta::TimeArray{T,1}, r::UnitRange{Int})
     TimeArray(ta.timestamp[r], ta.values[r], ta.colnames, ta.meta)
 end
 
