@@ -1,6 +1,6 @@
 ###### readtimearray ############
 
-function readtimearray(fname::String; meta=Nothing, dtformat::String="")
+function readtimearray(fname::String; meta=Nothing, format::String="")
     cfile = readcsv(fname)
     
     # remove empty lines if any
@@ -10,13 +10,13 @@ function readtimearray(fname::String; meta=Nothing, dtformat::String="")
     time  = cfile[2:end,1]
     if length(time[1]) < 11
         # assuming Date not DateTime
-        dtformat == "" ?
+        format == "" ?
         tstamps = Date[Date(t) for t in time] :
-        tstamps = Date[Date(t, dtformat) for t in time]
+        tstamps = Date[Date(t, format) for t in time]
     else
-        dtformat == "" ?
+        format == "" ?
         tstamps = DateTime[DateTime(t) for t in time] :
-        tstamps = DateTime[DateTime(t, dtformat) for t in time]
+        tstamps = DateTime[DateTime(t, format) for t in time]
     end 
 
     vals   = insertNaN(cfile[2:end, 2:end])
