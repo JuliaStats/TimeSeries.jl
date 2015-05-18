@@ -25,8 +25,8 @@ facts("readwrite parses csv file correctly") do
   end
 
   context("timestamp parses to correct type") do
-      @fact typeof(cl.timestamp)    => Vector{Date}
-      @fact typeof(sdata.timestamp) => Vector{DateTime}
+      @fact typeof(cl.timestamp)           => Vector{Date}
+      @fact typeof(seconds_data.timestamp) => Vector{DateTime}
   end
 
   context("readtimearray accepts meta field") do
