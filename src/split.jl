@@ -1,3 +1,5 @@
+import Base.values
+
 # by ############################
 
 function by{T,N}(ta::TimeArray{T,N}, t::Int; period::Function=day) 
