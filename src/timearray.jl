@@ -99,8 +99,8 @@ function show{T,N}(io::IO, ta::TimeArray{T,N})
             T == Bool ?
             print(io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
             intcatcher[j] & SHOWINT ?
-            print(io, rpad(iround(Integer, ta.values[i,j]), colwidth[j] + 2, " ")) : 
-            print(io, rpad(iround(Integer, ta.values[i,j], DECIMALS), colwidth[j] + 2, " "))
+            print(io, rpad(round(Integer, ta.values[i,j]), colwidth[j] + 2, " ")) : 
+            print(io, rpad(round(ta.values[i,j], DECIMALS), colwidth[j] + 2, " "))
         end
         println(io, "")
         end
@@ -113,8 +113,8 @@ function show{T,N}(io::IO, ta::TimeArray{T,N})
             T == Bool ?
             print(io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
             intcatcher[j] & SHOWINT ?
-            print(io, rpad(iround(Integer, ta.values[i,j]), colwidth[j] + 2, " ")) : 
-            print(io, rpad(iround(Integer, ta.values[i,j], DECIMALS), colwidth[j] + 2, " "))
+            print(io, rpad(round(Integer, ta.values[i,j]), colwidth[j] + 2, " ")) : 
+            print(io, rpad(round(ta.values[i,j], DECIMALS), colwidth[j] + 2, " "))
         end
         println(io, "")
         end
@@ -125,8 +125,8 @@ function show{T,N}(io::IO, ta::TimeArray{T,N})
             T == Bool ?
             print(io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
             intcatcher[j] & SHOWINT ?
-            print(io, rpad(iround(Integer, ta.values[i,j]), colwidth[j] + 2, " ")) :
-            print(io, rpad(iround(Integer, ta.values[i,j], DECIMALS), colwidth[j] + 2, " "))
+            print(io, rpad(round(Integer, ta.values[i,j]), colwidth[j] + 2, " ")) :
+            print(io, rpad(round(ta.values[i,j], DECIMALS), colwidth[j] + 2, " "))
         end
         println(io, "")
         end
