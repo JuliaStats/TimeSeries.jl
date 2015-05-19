@@ -26,8 +26,8 @@ facts("type constructors enforce invariants") do
   end
 
   context("flipping occurs when needed") do
-    @fact TimeArray(flipud(cl.timestamp), flipud(cl.values),  ["Close"]).timestamp[1] => Date(2000,1,3)
-    @fact TimeArray(flipud(cl.timestamp), flipud(cl.values),  ["Close"]).values[1]    => 111.94
+    @fact TimeArray(flipdim(cl.timestamp, 1), flipdim(cl.values, 1),  ["Close"]).timestamp[1] => Date(2000,1,3)
+    @fact TimeArray(flipdim(cl.timestamp, 1), flipdim(cl.values, 1),  ["Close"]).values[1]    => 111.94
   end
 end
   
