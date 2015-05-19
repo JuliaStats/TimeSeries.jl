@@ -1,3 +1,7 @@
+### 0.5.10
+
+> changed references of flipud(A) to flipdim(A,1)
+
 ### 0.5.9
 
 Added kwarg argument `format` to the `readtimearray` method to allow parsing datetime formats that are not 

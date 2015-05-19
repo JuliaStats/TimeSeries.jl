@@ -19,9 +19,9 @@ immutable TimeArray{T,N,M} <: AbstractTimeSeries
                            nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
                            ncol != size(colnames,1) ? error("column names must match width of array"):
                            timestamp != unique(timestamp) ? error("there are duplicate dates"):
-                           ~(flipud(timestamp) == sort(timestamp) || timestamp == sort(timestamp)) ? error("dates are mangled"):
-                           flipud(timestamp) == sort(timestamp) ? 
-                           new(flipud(timestamp), flipud(values), colnames, meta):
+                           ~(flipdim(timestamp, 1) == sort(timestamp) || timestamp == sort(timestamp)) ? error("dates are mangled"):
+                           flipdim(timestamp, 1) == sort(timestamp) ? 
+                           new(flipdim(timestamp, 1), flipdim(values, 1), colnames, meta):
                            new(timestamp, values, colnames, meta)
     end
 end
