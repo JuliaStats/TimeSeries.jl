@@ -1,6 +1,7 @@
-### 0.5.10
+### 0.5.10 (not tagged yet)
 
 > changed references of flipud(A) to flipdim(A,1)
+> changed references of round(x) to iround(Integer,x)
 
 ### 0.5.9
 
