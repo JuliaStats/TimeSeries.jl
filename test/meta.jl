@@ -38,11 +38,11 @@ facts("split operations preserve meta") do
     end
 
     context("from") do
-        @fact from(mdata, 2012,1,1).meta => "Apple"
+        @fact from(mdata, 2000,1,1).meta => "Apple"
     end
   
     context("to") do
-        @fact to(mdata, 2012,1,1).meta => "Apple"
+        @fact to(mdata, 2000,1,1).meta => "Apple"
     end
 end
 

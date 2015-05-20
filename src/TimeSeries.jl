@@ -12,6 +12,8 @@ else
     using Base.Dates
 end
 
+using Compat
+
 export TimeArray, AbstractTimeSeries,
        by, from, to, findwhen, findall, timestamp, values, colnames, 
        lag, lead, percentchange, moving, upto,

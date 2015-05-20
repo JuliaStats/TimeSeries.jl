@@ -3,9 +3,8 @@ import Base.values
 # by ############################
 
 function by{T,N}(ta::TimeArray{T,N}, t::Int; period::Function=day) 
-    boolarray = [[period(ta.timestamp[d]) for d in 1:length(ta.timestamp)] .== t]
-    #boolarray = [[period(ta.timestamp[d;]) for d in 1:length(ta.timestamp)] .== t]
-    rownums = int(zeros(sum(boolarray)))
+    boolarray = [[period(ta.timestamp[d]) for d in 1:length(ta.timestamp)] .== t;] # odd syntax for t; but just t deprecated
+    rownums = round(Int64, zeros(sum(boolarray)))
     j = 1
     for i in 1:length(boolarray)
       if boolarray[i]
@@ -29,7 +28,7 @@ end
 ###### findall ##################
 
 function findall(ta::TimeArray{Bool,1})
-    rownums = int(zeros(sum(ta.values)))
+    rownums = round(Int64, zeros(sum(ta.values)))
     j = 1
     for i in 1:length(ta)
       if ta.values[i]
