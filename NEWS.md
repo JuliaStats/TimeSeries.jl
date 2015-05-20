@@ -6,6 +6,7 @@
 * changed references of int(x) to round(Int64, x)
 * changed references of float(x) to map(Float64, x)
 * changed references of [a] to [a;] in a comprehension found in the by() method
+* added Compat package
 
 ### 0.5.9
 
