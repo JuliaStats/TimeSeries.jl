@@ -1,4 +1,4 @@
-### 0.5.10 (not tagged yet)
+### 0.5.10
 
 * changed references of flipud(A) to flipdim(A,1)_
 * changed references of round(x) to iround(Integer,x)_
@@ -10,12 +10,10 @@
 
 ### 0.5.9
 
-Added kwarg argument `format` to the `readtimearray` method to allow parsing datetime formats that are not 
+* added kwarg argument `format` to the `readtimearray` method to allow parsing datetime formats that are not 
 currently supported.
-
-Changed two references to `Range1` to `UnitRange`
-
-Added import of Base.values. I had defined it first and I guess they like it so much they co-opted it. :)
+* changed two references to `Range1` to `UnitRange`
+* added import of Base.values. I had defined it first and I guess they like it so much they co-opted it. :)
 
 ### pre-0.5.8
 
