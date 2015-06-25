@@ -4,25 +4,6 @@ COMPARE_DOTONLY = [:.>, :.<, :.==, :.>=, :.<=]
 
 ###### Mathematical operators  ###############
 
-function overlaps(t1, t2)
-    i = j = 1
-    idx1 = Int[]
-    idx2 = Int[]
-    while i < length(t1) + 1 && j < length(t2) + 1
-        if t1[i] > t2[j]
-            j += 1
-        elseif t1[i] < t2[j]
-            i += 1
-        else
-            push!(idx1, i)
-            push!(idx2, j)
-            i += 1
-            j += 1
-        end
-    end
-    (idx1, idx2)        
-end
-
 # TimeArray <--> TimeArray 
 for op in MATH_DOTONLY
   @eval begin
@@ -49,7 +30,6 @@ end # loop
 for op in MATH_DOTONLY
   @eval begin
     function ($op){T}(ta1::TimeArray{T,2}, ta2::TimeArray{T,1})
-
        # first test metadata matches
        ta1.meta == ta2.meta ? meta = ta1.meta : error("metadata doesn't match")
        # interate to find when there is a match on timestamp
@@ -59,7 +39,6 @@ for op in MATH_DOTONLY
                push!(counter, i)
            end
        end
-
        # create new shortened versions of ta1 and ta2
        newta1 = ta1[counter]
        newta2 = ta2[newta1.timestamp]
