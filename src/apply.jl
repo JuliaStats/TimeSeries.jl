@@ -4,6 +4,25 @@ COMPARE_DOTONLY = [:.>, :.<, :.==, :.>=, :.<=]
 
 ###### Mathematical operators  ###############
 
+function overlaps(t1, t2)
+    i = j = 1
+    idx1 = Int[]
+    idx2 = Int[]
+    while i < length(t1) + 1 && j < length(t2) + 1
+        if t1[i] > t2[j]
+            j += 1
+        elseif t1[i] < t2[j]
+            i += 1
+        else
+            push!(idx1, i)
+            push!(idx2, j)
+            i += 1
+            j += 1
+        end
+    end
+    (idx1, idx2)        
+end
+
 # TimeArray <--> TimeArray 
 for op in MATH_DOTONLY
   @eval begin
@@ -11,15 +30,15 @@ for op in MATH_DOTONLY
       # first test metadata matches
       ta1.meta == ta2.meta ? meta = ta1.meta : error("metadata doesn't match")
       cname  = [ta1.colnames[1][1:2] *  string($op) *  ta2.colnames[1][1:2]]
-      tstamp = Date[]
-      vals   = T[]
-      for i in 1:size(ta1.timestamp, 1)
-        for j in 1:size(ta2.timestamp, 1)
-          if ta1.timestamp[i] == ta2.timestamp[j] 
-            push!(tstamp, ta1.timestamp[i]) 
-            push!(vals, ($op)(ta1.values[i], ta2.values[j])) 
-          end
-        end
+      idx1, idx2 = overlaps(ta1.timestamp, ta2.timestamp)
+      # obtain shared timestamp
+      tstamp = ta1[idx1].timestamp
+      # retrieve values that match the Int array matching dates
+      vals1  = ta1[idx1].values
+      vals2  = ta2[idx2].values
+      vals = Array(T, length(idx1))
+      for i in 1:length(vals)
+        vals[i] = ($op)(vals1[i], vals2[i])
       end
       TimeArray(tstamp, vals, cname, meta)
     end # function
@@ -79,22 +98,22 @@ end # loop
 
 ###### Comparison operators  ###############
 
-# TimeArray <--> Time Array
+# TimeArray <--> TimeArray 
 for op in COMPARE_DOTONLY 
   @eval begin
     function ($op){T,N}(ta1::TimeArray{T,N}, ta2::TimeArray{T,N})
       # first test metadata matches
       ta1.meta == ta2.meta ? meta = ta1.meta : error("metadata doesn't match")
       cname  = [ta1.colnames[1][1:2] *  string($op) *  ta2.colnames[1][1:2]]
-      tstamp = Date[]
-      vals   = Bool[]
-      for i in 1:size(ta1.timestamp, 1)
-        for j in 1:size(ta2.timestamp, 1)
-          if ta1.timestamp[i] == ta2.timestamp[j] 
-            push!(tstamp, ta1.timestamp[i]) 
-            push!(vals, ($op)(ta1.values[i], ta2.values[j])) 
-          end
-        end
+      idx1, idx2 = overlaps(ta1.timestamp, ta2.timestamp)
+      # obtain shared timestamp
+      tstamp = ta1[idx1].timestamp
+      # retrieve values that match the Int array matching dates
+      vals1  = ta1[idx1].values
+      vals2  = ta2[idx2].values
+      vals = Array(Bool, length(idx1))
+      for i in 1:length(vals)
+        vals[i] = ($op)(vals1[i], vals2[i])
       end
       TimeArray(tstamp, vals, cname, meta)
     end # function
@@ -106,10 +125,9 @@ for op in COMPARE_DOTONLY
   @eval begin
     function ($op){T,N}(ta::TimeArray{T,N}, var::Union(Int,Float64))
       cname  = [ta.colnames[1][1:2] *  string($op) *  string(var)]
-      tstamp = Date[]
-      vals   = Bool[]
-      for i in 1:length(ta)
-        push!(vals, ($op)(ta.values[i], var))
+      vals   = Array(Bool, length(ta))
+      for i in 1:length(vals)
+        vals[i] = ($op)(ta.values[i], var) 
       end
       TimeArray(ta.timestamp, vals, cname, ta.meta)
     end # function
@@ -121,10 +139,9 @@ for op in COMPARE_DOTONLY
   @eval begin
     function ($op){T,N}(var::Union(Int,Float64), ta::TimeArray{T,N})
       cname  = [ta.colnames[1][1:2] *  string($op) *  string(var)]
-      tstamp = Date[]
-      vals   = Bool[]
-      for i in 1:length(ta)
-        push!(vals, ($op)(var, ta.values[i]))
+      vals   = Array(Bool, length(ta))
+      for i in 1:length(vals)
+        vals[i] = ($op)(var, ta.values[i])
       end
       TimeArray(ta.timestamp, vals, cname, ta.meta)
     end # function
