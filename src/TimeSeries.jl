@@ -29,5 +29,6 @@ include("split.jl")
 include("apply.jl")
 include("combine.jl")
 include("readwrite.jl")
+include("utilities.jl")
 
 end
