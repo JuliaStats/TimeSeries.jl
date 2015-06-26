@@ -1,6 +1,7 @@
 MATH_ALL        = [:.+, :.-, :.*, :./, :.^, :+, :-, :*, :/, :^]
 MATH_DOTONLY    = [:.+, :.-, :.*, :./]
-COMPARE_DOTONLY = [:.>, :.<, :.==, :.>=, :.<=] 
+COMPARE_DOTONLY = [:.>, :.<, :.==, :.>=, :.<=, :.!=] 
+UNARY           = [:!]
 
 ###### Mathematical operators  ###############
 
@@ -121,6 +122,21 @@ for op in COMPARE_DOTONLY
       vals   = Array(Bool, length(ta))
       for i in 1:length(vals)
         vals[i] = ($op)(var, ta.values[i])
+      end
+      TimeArray(ta.timestamp, vals, cname, ta.meta)
+    end # function
+  end # eval
+end # loop
+
+###### Unary operators  ###############
+
+for op in UNARY
+  @eval begin
+    function ($op){T,N}(ta::TimeArray{T,N})
+      cname  = [string($op) * ta.colnames[1][1:2] ]
+      vals   = Array(Bool, length(ta))
+      for i in 1:length(vals)
+        vals[i] = ($op)(ta.values[i]) 
       end
       TimeArray(ta.timestamp, vals, cname, ta.meta)
     end # function
