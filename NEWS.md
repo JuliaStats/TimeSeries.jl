@@ -7,6 +7,7 @@
 * changed references of float(x) to map(Float64, x)
 * changed references of [a] to [a;] in a comprehension found in the by() method
 * added Compat package
+* substantial speedup for eleemnt-wise mathematical operators
 
 ### 0.5.9
 
