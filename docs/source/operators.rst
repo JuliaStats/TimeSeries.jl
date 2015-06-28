@@ -1,8 +1,8 @@
-Mathematical and comparison operators
-=====================================
+Mathematical, comparison, and logical operators
+===============================================
 
-TimeSeries supports common mathematical (such as ``+``) and comparison ( such as ``==``)
-operators. The operations are only calculated on values that share a timestamp.
+TimeSeries supports common mathematical (such as ``+``), comparison ( such as ``==``)
+, and logic (such as ``&``) operators. The operations are only calculated on values that share a timestamp.
 
 mathematical
 ------------
@@ -50,3 +50,22 @@ an non-dot operators (``>``) is unclear, so it is not supported.
 +---------+-----------------------------------------------+
 | ``.<=`` | element-wise less-than or equal comparison    |
 +---------+-----------------------------------------------+
+
+logic
+-----
+
+Logical operators are defined for TimeArrays of type ``Bool`` and return a TimeArray of type ``Bool``. Values are computed on shared timestamps when two TimeArray 
+objects are provided. Operations between a single TimeArray and ``Bool`` are also supported.
+
++---------+---------------------------------+
+| Operator| Description                     |
++=========+=================================+
+| ``&``   | element-wise logical AND        |
++---------+---------------------------------+
+| ``|``   | element-wise logical OR         |
++---------+---------------------------------+
+| ``!``   | element-wise logical NOT        |
++---------+---------------------------------+
+| ``$``   | element-wise logical XOR        |
++---------+---------------------------------+
+

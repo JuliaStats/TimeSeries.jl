@@ -1,6 +1,19 @@
+UNARY           = [:+, :-, :!]
 MATH_ALL        = [:.+, :.-, :.*, :./, :.^, :+, :-, :*, :/, :^]
 MATH_DOTONLY    = [:.+, :.-, :.*, :./]
 COMPARE_DOTONLY = [:.>, :.<, :.==, :.>=, :.<=] 
+BOOLEAN_OPS     = [:&; :|; :$; COMPARE_DOTONLY]
+
+###### Math and boolean unary operators  #####
+
+for op in UNARY
+  @eval begin
+    function ($op){T,N}(ta::TimeArray{T,N})
+      cnames  = [string($op) * name for name in ta.colnames]
+      basecall(ta, ($op), cnames=cnames) 
+    end # function
+  end # eval
+end # loop
 
 ###### Mathematical operators  ###############
 
@@ -123,6 +136,55 @@ for op in COMPARE_DOTONLY
         vals[i] = ($op)(var, ta.values[i])
       end
       TimeArray(ta.timestamp, vals, cname, ta.meta)
+    end # function
+  end # eval
+end # loop
+
+###### Boolean operations and comparisons ###########
+
+# TimeArray <--> Bool 
+for op in BOOLEAN_OPS 
+  @eval begin
+    function ($op){N}(ta::TimeArray{Bool,N}, var::Bool)
+      cnames = [name * string($op) * string(var) for name in ta.colnames]
+      vals   = ($op)(ta.values, var)
+      TimeArray(ta.timestamp, vals, cnames, ta.meta)
+    end # function
+  end # eval
+end # loop
+
+# Bool <--> TimeArray
+for op in BOOLEAN_OPS 
+  @eval begin
+    function ($op){N}(var::Bool, ta::TimeArray{Bool,N})
+      cnames = [string(var) * string($op) * name for name in ta.colnames]
+      vals   = ($op)(var, ta.values)
+      TimeArray(ta.timestamp, vals, cnames, ta.meta)
+    end # function
+  end # eval
+end # loop
+
+# Boolean ND TimeArray <--> Boolean ND TimeArray
+for op in BOOLEAN_OPS 
+  @eval begin
+    function ($op){N}(ta1::TimeArray{Bool,N}, ta2::TimeArray{Bool,N})
+      # test column count matches
+      length(ta1.colnames) == length(ta2.colnames) ?
+        ncols=length(ta1.colnames) :
+        error("arrays must have the same number of columns")
+      # test metadata matches
+      ta1.meta == ta2.meta ?
+        meta = ta1.meta :
+        error("metadata doesn't match")
+      cnames = [ta1.colnames[i]*string($op)*ta2.colnames[i] for i=1:ncols]
+      idx1, idx2 = overlaps(ta1.timestamp, ta2.timestamp)
+      # obtain shared timestamp
+      tstamp = ta1[idx1].timestamp
+      # retrieve values that match the Int array matching dates
+      vals1  = ta1[idx1].values
+      vals2  = ta2[idx2].values
+      vals = ($op)(vals1, vals2)
+      TimeArray(tstamp, vals, cnames, meta)
     end # function
   end # eval
 end # loop

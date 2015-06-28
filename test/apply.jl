@@ -81,6 +81,15 @@ facts("base element-wise operators on TimeArray values") do
      @fact length(cl[1:4] .+ op[4:7])     => 1
   end
 
+  context("correct unary operation on TimeArray values") do
+     @fact (+cl).values[1]  => cl.values[1]
+     @fact (-cl).values[1]  => -cl.values[1]
+     @fact (!(cl .== op)).values[1]  => true
+     @fact (+ohlc).values[1,:]  => ohlc.values[1,:]
+     @fact (-ohlc).values[1,:]  => -(ohlc.values[1,:])
+     @fact (!(ohlc .== ohlc)).values[1,1]  => false 
+  end
+
   context("correct dot operation between TimeVectors values and Int/Float64 and viceversa") do
      @fact (cl .- 100).values[1] => roughly(11.94)
      @fact (cl .+ 100).values[1] => roughly(211.94)
@@ -135,6 +144,22 @@ facts("base element-wise operators on TimeArray values") do
      @fact (111.94 .<= cl).values[1] => true
      @fact (111.94 .== cl).values[1] => true
   end
+
+  context("correct bitwise elementwise operations between bool and TimeArrays' values") do
+     @fact ((cl .> 100) & true).values[1] => true
+     @fact (false & (cl .> 100)).values[1] => false
+     @fact ((cl .> 100) | true).values[1] => true
+     @fact (false | (cl .> 100)).values[1] => true
+     @fact ((cl .> 100) $ true).values[1] => false
+     @fact (false $ (cl .> 100)).values[1] => true
+    end
+
+  context("correct bitwise elementwise operations between same-dimensioned TimeArrays' boolean values") do
+     @fact ((cl .> 100) & (cl .< 120)).values[1] => true
+     @fact ((cl .> 100) | (cl .< 120)).values[1] => true
+     @fact ((cl .> 100) $ (cl .< 120)).values[1] => false
+  end
+
 end
 
 facts("basecall works with Base methods") do
