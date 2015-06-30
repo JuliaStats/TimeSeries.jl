@@ -68,10 +68,12 @@ end
 facts("base element-wise operators on TimeArray values") do
 
   context("correct alignment and operation between two TimeVectors") do
-     @fact (cl .+ op).values[1]           => roughly(216.82)
-     @fact (cl .- op).values[1]           => roughly(7.06)
-     @fact (cl .* op).values[1]           => roughly(11740.27)
-     @fact (cl ./ op).values[1]           => roughly(1.067315)
+     @fact (cl .+ op).values[1]      => roughly(216.82)
+     @fact (cl .- op).values[1]      => roughly(7.06)
+     @fact (cl .* op).values[1]      => roughly(11740.27)
+     @fact (cl ./ op).values[1]      => roughly(1.067315)
+     @fact (cl .% op).values         => cl.values .% op.values
+     @fact (cl .^ op).values         => cl.values .^ op.values
   end
 
   context("only values on intersecting Dates computed") do
@@ -96,18 +98,22 @@ facts("base element-wise operators on TimeArray values") do
      @fact (cl .* 100).values[1] => roughly(11194)
      @fact (cl ./ 100).values[1] => roughly(1.1194)
      @fact (cl .^ 2).values[1]   => roughly(12530.5636)
+     @fact (cl .% 2).values[1]   => cl.values[1] % 2
      @fact (100 .- cl).values[1] => roughly(-11.94)
      @fact (100 .+ cl).values[1] => roughly(211.94)
      @fact (100 .* cl).values[1] => roughly(11194)
      @fact (100 ./ cl).values[1] => roughly(0.8933357155619082)
      @fact (2 .^ cl).values[1]   => 4980784073277740581384811358191616
+     @fact (2 .% cl).values[1]   => 2
   end
 
   context("element-wise mathematical operations between 2d time array and 1d time array") do
-     @fact (ohlc .+ cl).values[1,1] => roughly(216.82)
-     @fact (ohlc .+ cl).values[1,2] => roughly(224.44)
-     @fact (ohlc .* cl).values[1,1] => roughly(11740.27)
-     @fact (ohlc .* cl).values[1,2] => roughly(12593.25)
+     @fact (ohlc .+ cl).values => ohlc.values .+ cl.values
+     @fact (ohlc .- cl).values => ohlc.values .- cl.values
+     @fact (ohlc .* cl).values => ohlc.values .* cl.values
+     @fact (ohlc ./ cl).values => ohlc.values ./ cl.values
+     @fact (ohlc .% cl).values => ohlc.values .% cl.values
+     @fact (ohlc .^ cl).values => ohlc.values .^ cl.values
   end
 
   context("correct non-dot operation between TimeVectors values and Int/Float64 and viceversa") do
@@ -124,12 +130,13 @@ facts("base element-wise operators on TimeArray values") do
      @pending (2 ^ cl).values[1]   => 4980784073277740581384811358191616
   end
 
-  context("correct operation between two TimeVectors values returns bool for comparisons") do
+  context("correct operation between two TimeArrays' values returns bool for comparisons") do
      @fact (cl .> op).values[1]  => true
      @fact (cl .< op).values[1]  => false
      @fact (cl .<= op).values[1] => false
      @fact (cl .>= op).values[1] => true
      @fact (cl .== op).values[1] => false
+     @fact (cl .!= op).values[1] => true
   end
 
   context("correct operation between TimeVectors values and Int/Float64 (and viceversa) returns bool for comparison") do
@@ -138,11 +145,13 @@ facts("base element-wise operators on TimeArray values") do
      @fact (cl .>= 111.94).values[1] => true
      @fact (cl .<= 111.94).values[1] => true
      @fact (cl .== 111.94).values[1] => true
+     @fact (cl .!= 111.94).values[1] => false
      @fact (111.94 .> cl).values[1]  => false
      @fact (111.94 .< cl).values[1]  => false
      @fact (111.94 .>= cl).values[1] => true
      @fact (111.94 .<= cl).values[1] => true
      @fact (111.94 .== cl).values[1] => true
+     @fact (111.94 .!= cl).values[1] => false
   end
 
   context("correct bitwise elementwise operations between bool and TimeArrays' values") do

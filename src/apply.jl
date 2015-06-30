@@ -1,7 +1,7 @@
 UNARY           = [:+, :-, :!]
-MATH_ALL        = [:.+, :.-, :.*, :./, :.^, :+, :-, :*, :/, :^]
-MATH_DOTONLY    = [:.+, :.-, :.*, :./]
-COMPARE_DOTONLY = [:.>, :.<, :.==, :.>=, :.<=] 
+MATH_ALL        = [:.+, :.-, :.*, :./, :.^, :.%, :+, :-, :*, :/, :^, :%]
+MATH_DOTONLY    = [:.+, :.-, :.*, :./, :.^, :.%]
+COMPARE_DOTONLY = [:.>, :.<, :.==, :.>=, :.<=, :.!=]
 BOOLEAN_OPS     = [:&; :|; :$; COMPARE_DOTONLY]
 
 ###### Math and boolean unary operators  #####

@@ -27,14 +27,18 @@ equivalent to the inverse, and because of the confusion base has excluded it. It
 +------------------+------------------------------------------+
 | ``*`` or  ``.*`` | mathematical element-wise multiplication |
 +------------------+------------------------------------------+
-|      ``/``       | mathematical element-wise division       |
+|      ``./``      | mathematical element-wise division       |
++------------------+------------------------------------------+
+| ``^`` or ``.^``  | mathematical element-wise exponentiation |
++------------------+------------------------------------------+
+| ``%`` or ``.%``  | mathematical element-wise remainder      |
 +------------------+------------------------------------------+
 
 comparison
 ----------
 
 Comparison operators create a TimeArray of type ``Bool``. Values are compared on shared timestamps when two TimeArray 
-objects are provided. Comparison between a single TimeArray and ``Int`` or ``Float`` is also supported. The semantics of
+objects are provided. Comparison between a single TimeArray and ``Int``, ``Float``, or ``Bool`` is also supported. The semantics of
 an non-dot operators (``>``) is unclear, so it is not supported.
 
 +---------+-----------------------------------------------+
@@ -49,6 +53,8 @@ an non-dot operators (``>``) is unclear, so it is not supported.
 | ``.>=`` | element-wise greater-than or equal comparison |
 +---------+-----------------------------------------------+
 | ``.<=`` | element-wise less-than or equal comparison    |
++---------+-----------------------------------------------+
+| ``.!=`` | element-wise not-equivalent comparison        |
 +---------+-----------------------------------------------+
 
 logic
