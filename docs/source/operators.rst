@@ -1,22 +1,23 @@
 Mathematical, comparison, and logical operators
 ===============================================
 
-TimeSeries supports common mathematical (such as ``+``), comparison ( such as ``==``)
+TimeSeries supports common mathematical (such as ``+``), comparison ( such as ``.==``)
 , and logic (such as ``&``) operators. The operations are only calculated on values that share a timestamp.
 
 mathematical
 ------------
 
 Mathematical operators create a TimeArray object where values are computed on shared timestamps when two TimeArray 
-objects are provided. Operations between a single TimeArray and ``Int`` or ``Float`` is also supported. The number 
-can precede the TimeArray object or vice versa (e.g. ``cl + 2`` or ``2 + cl``).
+objects are provided. Operations between a single TimeArray and ``Int`` or ``Float`` are also supported. The number
+can precede the TimeArray object or vice versa (e.g. ``cl + 2`` or ``2 + cl``). Broadcasting single-column arrays over multiple columns to perform operations is also supported.
 
-Except in the case of the ``/`` operator, both dot (``.+``) and non-dot (``+``) operations are supported. The semantics
+Except in the case of the ``/`` and ``^`` operators, both dot (``.+``) and non-dot (``+``) operations are supported when working with scalar values. The semantics
 of non-dot operations are fairly clear when working with time series data, where it is assumed that only equivalent 
 timestamped values are being operated on. 
 
-The exclusion of ``/`` from this logic is a special case. In matrix operations it has been confused with being 
-equivalent to the inverse, and because of the confusion base has excluded it. It is likewise excluded here. 
+The exclusion of ``/`` and ``^`` from this logic are special cases. In matrix operations ``/`` has been confused with being
+equivalent to the inverse, and because of the confusion base has excluded it. It is likewise excluded here. Base uses ``^`` to indicate matrix self-multiplication, and so it is not implemented
+ in this context.
 
 +------------------+------------------------------------------+
 | Operator         | Description                              |
@@ -29,7 +30,7 @@ equivalent to the inverse, and because of the confusion base has excluded it. It
 +------------------+------------------------------------------+
 |      ``./``      | mathematical element-wise division       |
 +------------------+------------------------------------------+
-| ``^`` or ``.^``  | mathematical element-wise exponentiation |
+|      ``.^``      | mathematical element-wise exponentiation |
 +------------------+------------------------------------------+
 | ``%`` or ``.%``  | mathematical element-wise remainder      |
 +------------------+------------------------------------------+
@@ -38,8 +39,8 @@ comparison
 ----------
 
 Comparison operators create a TimeArray of type ``Bool``. Values are compared on shared timestamps when two TimeArray 
-objects are provided. Comparison between a single TimeArray and ``Int``, ``Float``, or ``Bool`` is also supported. The semantics of
-an non-dot operators (``>``) is unclear, so it is not supported.
+objects are provided. Broadcasting single-column arrays over multiple columns to perform comparisonsis supported, as are comparisons between a single TimeArray and ``Int``, ``Float``, or ``Bool`` values.  The semantics of
+an non-dot operators (``>``) is unclear, and such operators are not supported.
 
 +---------+-----------------------------------------------+
 | Operator| Description                                   |
@@ -61,7 +62,7 @@ logic
 -----
 
 Logical operators are defined for TimeArrays of type ``Bool`` and return a TimeArray of type ``Bool``. Values are computed on shared timestamps when two TimeArray 
-objects are provided. Operations between a single TimeArray and ``Bool`` are also supported.
+objects are provided. Operations between a single TimeArray and ``Bool`` are also supported. In keeping with base, broadcasting of logical operators is not supported.
 
 +---------+---------------------------------+
 | Operator| Description                     |
