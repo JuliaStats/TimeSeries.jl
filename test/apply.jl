@@ -70,12 +70,12 @@ facts("base element-wise operators on TimeArray values") do
   context("correct alignment and operation between two TimeVectors") do
      @fact (cl .+ op).values[1]           => roughly(216.82)
      @fact (cl .- op).values[1]           => roughly(7.06)
-     @fact (cl .* op).values[1]           => roughly(11740.27)
-     @fact (cl ./ op).values[1]           => roughly(1.067315)
+     @fact (cl .* op).values[1]           => roughly(11740.2672)
+     @fact (cl ./ op).values[1]           => roughly(1.067315027)
   end
 
   context("only values on intersecting Dates computed") do
-     @fact (cl[1:2] ./ op[2:3]).values[1] => roughly(0.946882) 
+     @fact (cl[1:2] ./ op[2:3]).values[1] => roughly(0.94688222) 
      @fact (cl[1:4] .+ op[4:7]).values[1] => roughly(201.12)
      @fact length(cl[1:2] ./ op[2:3])     => 1
      @fact length(cl[1:4] .+ op[4:7])     => 1
@@ -97,7 +97,7 @@ facts("base element-wise operators on TimeArray values") do
   context("element-wise mathematical operations between 2d time array and 1d time array") do
      @fact (ohlc .+ cl).values[1,1] => roughly(216.82)
      @fact (ohlc .+ cl).values[1,2] => roughly(224.44)
-     @fact (ohlc .* cl).values[1,1] => roughly(11740.27)
+     @fact (ohlc .* cl).values[1,1] => roughly(11740.2672)
      @fact (ohlc .* cl).values[1,2] => roughly(12593.25)
   end
 
