@@ -1,6 +1,10 @@
-MATH_ALL        = [:.+, :.-, :.*, :./, :.^, :+, :-, :*, :/, :^]
-MATH_DOTONLY    = [:.+, :.-, :.*, :./]
+MATH_DOTONLY    = [:.+, :.-, :.*, :./, :.^]
+MATH_ALL        = [MATH_DOTONLY; [:+, :-, :*, :/, :^]]
 COMPARE_DOTONLY = [:.>, :.<, :.==, :.>=, :.<=] 
+
+for op in [MATH_ALL; COMPARE_DOTONLY]
+  @eval import Base.$op
+end # for
 
 ###### Mathematical operators  ###############
 
