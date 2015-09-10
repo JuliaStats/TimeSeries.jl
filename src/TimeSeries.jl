@@ -1,21 +1,11 @@
-if VERSION < v"0.4-"
-    using Dates
-else
-    using Base.Dates
-end
+using Dates
 
 module TimeSeries
 
-if VERSION < v"0.4-"
-    using Dates
-else
-    using Base.Dates
-end
-
-using Compat
+using Dates
 
 export TimeArray, AbstractTimeSeries,
-       by, from, to, findwhen, findall, timestamp, values, colnames, 
+       by, from, to, findwhen, findall, timestamp, values, colnames, meta,
        lag, lead, percentchange, moving, upto,
        basecall,
        merge, collapse,

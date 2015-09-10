@@ -4,10 +4,10 @@ include(Pkg.dir("TimeSeries/src/.timeseriesrc.jl"))
 facts("const values are set the package defaults") do
 
   context("SHOWINT") do
-      @fact SHOWINT --> true
+      @fact SHOWINT => true
   end
 
   context("DECIMALS") do
-      @fact DECIMALS --> 4
+      @fact DECIMALS => 4
   end
 end

@@ -4,7 +4,7 @@ import Base.values
 
 function by{T,N}(ta::TimeArray{T,N}, t::Int; period::Function=day) 
     boolarray = [[period(ta.timestamp[d]) for d in 1:length(ta.timestamp)] .== t;] # odd syntax for t; but just t deprecated
-    rownums = round(Int64, zeros(sum(boolarray)))
+    rownums = iround(Int64, zeros(sum(boolarray)))
     j = 1
     for i in 1:length(boolarray)
       if boolarray[i]
@@ -28,7 +28,7 @@ end
 ###### findall ##################
 
 function findall(ta::TimeArray{Bool,1})
-    rownums = round(Int64, zeros(sum(ta.values)))
+    rownums = iround(Int64, zeros(sum(ta.values)))
     j = 1
     for i in 1:length(ta)
       if ta.values[i]
@@ -58,3 +58,4 @@ end
 timestamp{T,N}(ta::TimeArray{T,N}) = ta.timestamp
 values{T,N}(ta::TimeArray{T,N})    = ta.values
 colnames{T,N}(ta::TimeArray{T,N})  = ta.colnames
+meta{T,N}(ta::TimeArray{T,N})      = ta.meta
