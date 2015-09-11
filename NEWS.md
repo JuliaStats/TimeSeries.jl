@@ -1,3 +1,7 @@
+### 0.5.11
+
+* last version with support for Julia 0.3
+
 ### 0.5.10
 
 * changed references of flipud(A) to flipdim(A,1)_
