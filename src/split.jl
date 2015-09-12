@@ -7,10 +7,10 @@ function by{T,N}(ta::TimeArray{T,N}, t::Int; period::Function=day)
     rownums = iround(Int64, zeros(sum(boolarray)))
     j = 1
     for i in 1:length(boolarray)
-      if boolarray[i]
-        rownums[j] = i
-        j+=1
-      end
+        if boolarray[i]
+            rownums[j] = i
+            j+=1
+        end
     end
     ta[rownums]
 end 
@@ -31,10 +31,10 @@ function findall(ta::TimeArray{Bool,1})
     rownums = iround(Int64, zeros(sum(ta.values)))
     j = 1
     for i in 1:length(ta)
-      if ta.values[i]
-        rownums[j] = i
-        j+=1
-      end
+        if ta.values[i]
+            rownums[j] = i
+            j+=1
+        end
     end
     rownums
 end
@@ -45,10 +45,10 @@ function findwhen(ta::TimeArray{Bool,1})
     tstamps = [Date(1,1,1):Year(1):Date(sum(ta.values),1,1)]
     j = 1
     for i in 1:length(ta)
-      if ta.values[i]
-        tstamps[j] = ta.timestamp[i]
-        j+=1
-      end
+        if ta.values[i]
+            tstamps[j] = ta.timestamp[i]
+            j+=1
+        end
     end
     tstamps
 end

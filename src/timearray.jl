@@ -58,36 +58,36 @@ isempty(ta::TimeArray) = (length(ta) == 0)
  
 function show{T,N}(io::IO, ta::TimeArray{T,N})
 
-  # variables 
-  nrow          = size(ta.values, 1)
-  ncol          = size(ta.values, 2)
-  intcatcher    = falses(ncol)
-  for c in 1:ncol
-      rowcheck =  trunc(ta.values[:,c]) - ta.values[:,c] .== 0
-      if sum(rowcheck) == length(rowcheck)
-          intcatcher[c] = true
-      end
-  end
-  spacetime     = strwidth(string(ta.timestamp[1])) + 3
-  firstcolwidth = strwidth(ta.colnames[1])
-  colwidth      = Int[]
-      for m in 1:ncol
-          T == Bool ?
-          push!(colwidth, max(strwidth(ta.colnames[m]), 5)) :
-          push!(colwidth, max(strwidth(ta.colnames[m]), strwidth(@sprintf("%.2f", maximum(ta.values[:,m]))) + DECIMALS - 2))
-      end
+    # variables 
+    nrow          = size(ta.values, 1)
+    ncol          = size(ta.values, 2)
+    intcatcher    = falses(ncol)
+    for c in 1:ncol
+        rowcheck =  trunc(ta.values[:,c]) - ta.values[:,c] .== 0
+        if sum(rowcheck) == length(rowcheck)
+            intcatcher[c] = true
+        end
+    end
+    spacetime     = strwidth(string(ta.timestamp[1])) + 3
+    firstcolwidth = strwidth(ta.colnames[1])
+    colwidth      = Int[]
+        for m in 1:ncol
+            T == Bool ?
+            push!(colwidth, max(strwidth(ta.colnames[m]), 5)) :
+            push!(colwidth, max(strwidth(ta.colnames[m]), strwidth(@sprintf("%.2f", maximum(ta.values[:,m]))) + DECIMALS - 2))
+        end
+  
+    # summary line
+    print(io, @sprintf("%dx%d %s %s to %s", nrow, ncol, typeof(ta), string(ta.timestamp[1]), string(ta.timestamp[nrow])))
+    println(io, "")
+    println(io, "")
 
-  # summary line
-  print(io, @sprintf("%dx%d %s %s to %s", nrow, ncol, typeof(ta), string(ta.timestamp[1]), string(ta.timestamp[nrow])))
-  println(io, "")
-  println(io, "")
+   # row label line
 
-  # row label line
-
-   print(io, ^(" ", spacetime), ta.colnames[1], ^(" ", colwidth[1] + 2 -firstcolwidth))
+    print(io, ^(" ", spacetime), ta.colnames[1], ^(" ", colwidth[1] + 2 -firstcolwidth))
 
    for p in 2:length(colwidth)
-     print(io, ta.colnames[p], ^(" ", colwidth[p] - strwidth(ta.colnames[p]) + 2))
+       print(io, ta.colnames[p], ^(" ", colwidth[p] - strwidth(ta.colnames[p]) + 2))
    end
    println(io, "")
 
@@ -179,26 +179,26 @@ end
 
 # single date
 function getindex{T,N}(ta::TimeArray{T,N}, d::Union(Date, DateTime))
-   for i in 1:length(ta)
-     if [d] == ta[i].timestamp 
-       return ta[i] 
-     else 
-       nothing
-     end
-   end
- end
+    for i in 1:length(ta)
+        if [d] == ta[i].timestamp 
+            return ta[i] 
+        else 
+            nothing
+       end
+    end
+end
  
 # range of dates
 function getindex{T,N}(ta::TimeArray{T,N}, dates::Union(Vector{Date}, Vector{DateTime}))
-  counter = Int[]
-#  counter = int(zeros(length(dates)))
-  for i in 1:length(dates)
-    if findfirst(ta.timestamp, dates[i]) != 0
-      #counter[i] = findfirst(ta.timestamp, dates[i])
-      push!(counter, findfirst(ta.timestamp, dates[i]))
+    counter = Int[]
+  #  counter = int(zeros(length(dates)))
+    for i in 1:length(dates)
+        if findfirst(ta.timestamp, dates[i]) != 0
+        #counter[i] = findfirst(ta.timestamp, dates[i])
+            push!(counter, findfirst(ta.timestamp, dates[i]))
+        end
     end
-  end
-  ta[counter]
+    ta[counter]
 end
 
 function getindex{T,N}(ta::TimeArray{T,N}, r::Union(StepRange{Date}, StepRange{DateTime})) 
