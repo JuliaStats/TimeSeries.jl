@@ -27,31 +27,11 @@ end
 
 ###### findall ##################
 
-function findall(ta::TimeArray{Bool,1})
-    rownums = round(Int64, zeros(sum(ta.values)))
-    j = 1
-    for i in 1:length(ta)
-        if ta.values[i]
-            rownums[j] = i
-            j+=1
-        end
-    end
-    rownums
-end
- 
+findall(ta::TimeArray{Bool,1}) = find(ta.values)
+
 ###### findwhen #################
 
-function findwhen(ta::TimeArray{Bool,1})
-    tstamps = collect(Date(1,1,1):Year(1):Date(sum(ta.values),1,1))
-    j = 1
-    for i in 1:length(ta)
-        if ta.values[i]
-            tstamps[j] = ta.timestamp[i]
-            j+=1
-        end
-    end
-    tstamps
-end
+findwhen(ta::TimeArray{Bool,1}) = ta.timestamp[find(ta.values)]
 
 ###### element wrapers ###########
 

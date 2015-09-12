@@ -44,8 +44,20 @@ facts("conversion methods") do
     end
 end
 
-facts("getindex methods") do
-  
+facts("ordered collection methods") do
+
+    context("iterator protocol is valid") do
+      @fact op --> not(isempty)
+      @fact op[op .< 0] --> isempty
+      @fact start(op) --> 1
+      @fact next(op, 1) --> ((op.timestamp[1], op.values[1,:]), 2)
+      @fact done(op, length(op)+1) --> true
+    end
+
+    context("end keyword returns correct index") do
+      @fact ohlc[end].timestamp[1] --> ohlc.timestamp[end]
+    end
+
     context("getindex on single Int and Date") do
         @fact ohlc[1].timestamp              --> [Date(2000,1,3)]
         @fact ohlc[Date(2000,1,3)].timestamp --> [Date(2000,1,3)]
@@ -87,4 +99,11 @@ facts("getindex methods") do
         @fact isa(cl[1], TimeArray{Float64,1})   --> true
         @fact isa(cl[1:2], TimeArray{Float64,1}) --> true
     end
+
+    context("getindex on a 1d Boolean TimeArray returns appropriate rows") do
+        @fact ohlc[op .> cl][2].values --> ohlc[4].values
+        @fact ohlc[op[300:end] .> cl][2].timestamp --> ohlc[303].timestamp
+        @fact_throws ohlc[merge(op.>cl, op.<cl)] # MethodError, Bool must be 1D-TimeArray
+    end
+
 end
