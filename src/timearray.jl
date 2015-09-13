@@ -35,7 +35,7 @@ TimeArray{T,N}(d::Union(Date, DateTime), v::Array{T,N}, c) = TimeArray([d],v,c,N
 
 ###### conversion ###############
 
-convert(::Type{TimeArray{Float64,1}}, x::TimeArray{Bool,1}) = TimeArray(x.timestamp, map(Float64, values), x.colnames, x.meta)
+convert(::Type{TimeArray{Float64,1}}, x::TimeArray{Bool,1}) = TimeArray(x.timestamp, map(Float64, x.values), x.colnames, x.meta)
 convert(::Type{TimeArray{Float64,2}}, x::TimeArray{Bool,2}) = TimeArray(x.timestamp, map(Float64, x.values), x.colnames, x.meta)
 
 convert(x::TimeArray{Bool,1}) = convert(TimeArray{Float64,1}, x::TimeArray{Bool,1}) 
