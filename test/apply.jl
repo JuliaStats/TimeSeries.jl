@@ -3,7 +3,7 @@ using MarketData
 facts("time series methods") do
 
     context("lag takes previous day and timestamps it to next day") do
-        @fact lag(cl).values[1]    --> roughly(111.94) 
+        @fact lag(cl).values[1]    --> roughly(111.94, atol=.01) 
         @fact lag(cl).timestamp[1] --> Date(2000,1,4)
     end
   
@@ -24,7 +24,7 @@ facts("time series methods") do
     end
   
     context("lead takes next day and timestamps it to current day") do
-        @fact lead(cl).values[1]    --> roughly(102.5) 
+        @fact lead(cl).values[1]    --> roughly(102.5, atol=.1) 
         @fact lead(cl).timestamp[1] --> Date(2000,1,3)
     end
   
@@ -46,21 +46,21 @@ facts("time series methods") do
     end
   
     context("correct simple return value") do
-        @fact percentchange(cl).values[1] --> roughly((102.5-111.94)/111.94)
+        @fact percentchange(cl).values[1] --> roughly((102.5-111.94)/111.94, atol=.01)
     end
   
     context("correct log return value") do
-        @fact percentchange(cl, method="log").values[1] --> roughly(log(102.5) - log(111.94))
+        @fact percentchange(cl, method="log").values[1] --> roughly(log(102.5) - log(111.94), atol=.01)
     end
   
     context("moving supplies correct window length") do
-        @fact moving(cl, mean, 10).values[1]    --> roughly(sum(cl.values[1:10])/10)
+        @fact moving(cl, mean, 10).values[1]    --> roughly(sum(cl.values[1:10])/10, atol=.01)
         @fact moving(cl, mean, 10).timestamp[1] --> Date(2000,1,14)
     end
    
     context("upto method accumulates") do
-        @fact upto(cl, sum).values[10]    --> roughly(sum(cl.values[1:10]))
-        @fact upto(cl, mean).values[10]   --> roughly(sum(cl.values[1:10])/10)
+        @fact upto(cl, sum).values[10]    --> roughly(sum(cl.values[1:10]), atol=.01)
+        @fact upto(cl, mean).values[10]   --> roughly(sum(cl.values[1:10])/10, atol=.01)
         @fact upto(cl, sum).timestamp[10] --> Date(2000,1,14)
     end
 end
@@ -68,51 +68,48 @@ end
 facts("base element-wise operators on TimeArray values") do
 
     context("correct alignment and operation between two TimeVectors") do
-        @fact (cl .+ op).values[1]           --> roughly(216.82)
-        @fact (cl .- op).values[1]           --> roughly(7.06)
-        @fact (cl .* op).values[1]           --> roughly(11740.2672)
+        @fact (cl .+ op).values[1]           --> roughly(216.82, atol=.01)
+        @fact (cl .- op).values[1]           --> roughly(7.06, atol=.01)
+        @fact (cl .* op).values[1]           --> roughly(11740.2672, atol=.0001)
         @fact (cl ./ op).values[1]           --> roughly(1.067315027)
     end
 
     context("only values on intersecting Dates computed") do
         @fact (cl[1:2] ./ op[2:3]).values[1] --> roughly(0.94688222) 
-        @fact (cl[1:4] .+ op[4:7]).values[1] --> roughly(201.12)
+        @fact (cl[1:4] .+ op[4:7]).values[1] --> roughly(201.12, atol=.01)
         @fact length(cl[1:2] ./ op[2:3])     --> 1
         @fact length(cl[1:4] .+ op[4:7])     --> 1
     end
 
     context("correct dot operation between TimeVectors values and Int/Float64 and viceversa") do
-        @fact (cl .- 100).values[1] --> roughly(11.94)
-        @fact (cl .+ 100).values[1] --> roughly(211.94)
-        @fact (cl .* 100).values[1] --> roughly(11194)
-        @fact (cl ./ 100).values[1] --> roughly(1.1194)
-        @fact (cl .^ 2).values[1]   --> roughly(12530.5636)
-        @fact (100 .- cl).values[1] --> roughly(-11.94)
-        @fact (100 .+ cl).values[1] --> roughly(211.94)
-        @fact (100 .* cl).values[1] --> roughly(11194)
+        @fact (cl .- 100).values[1] --> roughly(11.94, atol=.01)
+        @fact (cl .+ 100).values[1] --> roughly(211.94, atol=.01)
+        @fact (cl .* 100).values[1] --> roughly(11194, atol=1)
+        @fact (cl ./ 100).values[1] --> roughly(1.1194, atol=.0001)
+        @fact (cl .^ 2).values[1]   --> roughly(12530.5636, atol=.0001)
+        @fact (100 .- cl).values[1] --> roughly(-11.94, atol=.01)
+        @fact (100 .+ cl).values[1] --> roughly(211.94, atol=.01)
+        @fact (100 .* cl).values[1] --> roughly(11194, atol=.01)
         @fact (100 ./ cl).values[1] --> roughly(0.8933357155619082)
         @fact (2 .^ cl).values[1]   --> 4980784073277740581384811358191616
     end
 
     context("element-wise mathematical operations between 2d time array and 1d time array") do
-        @fact (ohlc .+ cl).values[1,1] --> roughly(216.82)
-        @fact (ohlc .+ cl).values[1,2] --> roughly(224.44)
-        @fact (ohlc .* cl).values[1,1] --> roughly(11740.2672)
-        @fact (ohlc .* cl).values[1,2] --> roughly(12593.25)
+        @fact (ohlc .+ cl).values[1,1] --> roughly(216.82, atol=.01)
+        @fact (ohlc .+ cl).values[1,2] --> roughly(224.44, atol=.01)
+        @fact (ohlc .* cl).values[1,1] --> roughly(11740.2672, atol=.0001)
+        @fact (ohlc .* cl).values[1,2] --> roughly(12593.25, atol=.01)
     end
 
     context("correct non-dot operation between TimeVectors values and Int/Float64 and viceversa") do
-        @fact (cl - 100).values[1] --> roughly(11.94)
-        @fact (cl + 100).values[1] --> roughly(211.94)
-        @fact (cl * 100).values[1] --> roughly(11194)
-        @fact (cl / 100).values[1] --> roughly(1.1194)
-        # @fact (cl ^ 2).values[1]   --> roughly(12530.5636)
-        @fact (100 - cl).values[1] --> roughly(-11.94)
-        @fact (100 + cl).values[1] --> roughly(211.94)
-        @fact (100 * cl).values[1] --> roughly(11194)
-        #@fact (100 / cl).values[1] --> roughly(0.8933357155619082)
+        @fact (cl - 100).values[1] --> roughly(11.94, atol=.01)
+        @fact (cl + 100).values[1] --> roughly(211.94, atol=.01)
+        @fact (cl * 100).values[1] --> roughly(11194, atol=1)
+        @fact (cl / 100).values[1] --> roughly(1.1194, atol=.01)
+        @fact (100 - cl).values[1] --> roughly(-11.94, atol=.01)
+        @fact (100 + cl).values[1] --> roughly(211.94, atol=.01)
+        @fact (100 * cl).values[1] --> roughly(11194, atol=1)
         @fact_throws (100 / cl).values[1] # related to base not supporting this 
-        # @fact (2 ^ cl).values[1]   --> 4980784073277740581384811358191616
     end
 
     context("correct operation between two TimeVectors values returns bool for comparisons") do

@@ -5,6 +5,7 @@
 ### 0.5.11
 
 * last version with support for Julia 0.3
+* support for Julia 0.4 dropped, along with the Compat package
 
 ### 0.5.10
 
