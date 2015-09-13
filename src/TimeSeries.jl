@@ -1,8 +1,8 @@
-using Dates
+using Base.Dates
 
 module TimeSeries
 
-using Dates
+using Base.Dates
 
 export TimeArray, AbstractTimeSeries,
        by, from, to, findwhen, findall, timestamp, values, colnames, meta,

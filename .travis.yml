@@ -2,7 +2,7 @@ language: julia
 os:
   - linux
 julia:
-  - 0.3
+  - 0.4
 notifications:
   email: false
 sudo: false
