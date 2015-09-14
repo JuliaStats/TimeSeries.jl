@@ -1,3 +1,9 @@
+### 0.6.2
+
+* generalized value container from Array to AbstractArray
+* implemented new element-wise operators: !, ~, &, |, $, %, !==
+* implemented element-wise unary math operators (+, -)
+
 ### 0.6.1
 
 * fix REQUIRE file to reflect only Julia 0.4 is supported
@@ -20,7 +26,7 @@
 * changed references of float(x) to map(Float64, x)
 * changed references of [a] to [a;] in a comprehension found in the by() method
 * added Compat package
-* substantial speedup for eleemnt-wise mathematical operators
+* substantial speedup for element-wise mathematical operators
 
 ### 0.5.9
 
