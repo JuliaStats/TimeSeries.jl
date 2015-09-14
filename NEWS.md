@@ -1,3 +1,9 @@
+### 0.6.1
+
+* added support for `end` keyword in indices
+* added support for lookups via Boolean TimeArrays - e.g. ta[ta["col"] .> 50]
+* speedup for lookups via lists of Date/DateTime objects
+
 ### 0.6.0
 
 * first version with support for Julia 0.4 only
