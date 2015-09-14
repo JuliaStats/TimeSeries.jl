@@ -1,12 +1,10 @@
-### 0.6.1
-
-* generalized value container from Array to AbstractArray
-* implemented new element-wise operators: !, ~, &, |, $, %, !==
-* implemented element-wise unary math operators (+, -)
-
 ### 0.6.0
 
 * first version with support for Julia 0.4 only
+* generalized value container from Array to AbstractArray
+* implemented new element-wise operators: !, ~, &, |, $, %, !==
+* implemented element-wise unary math operators (+, -)
+* side note: a previous commit was tagged with v0.6.0 incorrectly, this commit resolves that mistake
 
 ### 0.5.11
 
