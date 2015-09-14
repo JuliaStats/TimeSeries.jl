@@ -7,12 +7,12 @@ abstract AbstractTimeSeries
 immutable TimeArray{T,N,M} <: AbstractTimeSeries
 
     timestamp::Union(Vector{Date}, Vector{DateTime})
-    values::Array{T,N}
+    values::AbstractArray{T,N}
     colnames::Vector{UTF8String}
     meta::M
 
     function TimeArray(timestamp::Union(Vector{Date}, Vector{DateTime}),
-                       values::Array{T,N}, 
+                       values::AbstractArray{T,N},
                        colnames::Vector{UTF8String},
                        meta::M)
                            nrow, ncol = size(values, 1), size(values, 2)
@@ -26,12 +26,12 @@ immutable TimeArray{T,N,M} <: AbstractTimeSeries
     end
 end
 
-TimeArray{T,N,S<:String,M}(d::Union(Vector{Date}, Vector{DateTime}), v::Array{T,N}, c::Vector{S}, m::M) = TimeArray{T,N,M}(d,v,map(utf8,c),m)
-TimeArray{T,N,S<:String,M}(d::Union(Date, DateTime), v::Array{T,N}, c::Array{S,1}, m::M) = TimeArray([d],v,map(utf8,c),m)
+TimeArray{T,N,S<:String,M}(d::Union(Vector{Date}, Vector{DateTime}), v::AbstractArray{T,N}, c::Vector{S}, m::M) = TimeArray{T,N,M}(d,v,map(utf8,c),m)
+TimeArray{T,N,S<:String,M}(d::Union(Date, DateTime), v::AbstractArray{T,N}, c::Vector{S}, m::M) = TimeArray([d],v,map(utf8,c),m)
 
 # when no meta is provided
-TimeArray{T,N}(d::Union(Vector{Date}, Vector{DateTime}), v::Array{T,N}, c) = TimeArray(d,v,c,Nothing)
-TimeArray{T,N}(d::Union(Date, DateTime), v::Array{T,N}, c) = TimeArray([d],v,c,Nothing)
+TimeArray{T,N}(d::Union(Vector{Date}, Vector{DateTime}), v::AbstractArray{T,N}, c) = TimeArray(d,v,c,Nothing)
+TimeArray{T,N}(d::Union(Date, DateTime), v::AbstractArray{T,N}, c) = TimeArray([d],v,c,Nothing)
 
 ###### conversion ###############
 

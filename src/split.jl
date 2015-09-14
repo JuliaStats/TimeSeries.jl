@@ -42,7 +42,7 @@ end
 ###### findwhen #################
 
 function findwhen(ta::TimeArray{Bool,1})
-    tstamps = [Date(1,1,1):Year(1):Date(sum(ta.values),1,1)]
+    tstamps = collect(Date(1,1,1):Year(1):Date(sum(ta.values),1,1))
     j = 1
     for i in 1:length(ta)
         if ta.values[i]
