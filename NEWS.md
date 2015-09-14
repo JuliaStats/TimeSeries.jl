@@ -1,3 +1,7 @@
+### 0.6.1
+
+* fix REQUIRE file to reflect only Julia 0.4 is supported
+
 ### 0.6.0
 
 * first version with support for Julia 0.4 only
