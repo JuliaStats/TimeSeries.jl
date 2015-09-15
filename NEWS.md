@@ -1,8 +1,12 @@
-### 0.6.1
+### 0.6.2
 
 * added support for `end` keyword in indices
 * added support for lookups via Boolean TimeArrays - e.g. ta[ta["col"] .> 50]
 * speedup for lookups via lists of Date/DateTime objects
+
+### 0.6.1
+
+* a phantom release that is actually older than 0.6.0
 
 ### 0.6.0
 
