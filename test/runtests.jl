@@ -1,4 +1,6 @@
 using FactCheck
+using TimeSeries
+using Base.Dates
 
 include("timearray.jl")
 include("split.jl") 
