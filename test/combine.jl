@@ -18,9 +18,7 @@ facts("merge works correctly") do
         @fact merge(cl,ohlc["High", "Low"], col_names=["a","b","c"]).colnames[3] --> "c"
         @fact merge(cl,op, col_names=["a","b"]).colnames[1]                      --> "a"
         @fact merge(cl,op, col_names=["a","b"]).colnames[2]                      --> "b"
-        @fact merge(cl,op, col_names=["a"]).colnames[1]                          --> "Close"
-        @fact merge(cl,op, col_names=["a"]).colnames[2]                          --> "Open"
-        @fact_throws merge(cl,op, col_names=["a","b","c"])
+        @fact_throws merge(cl,op, col_names=["a"])
         @fact_throws merge(cl,op, col_names=["a","b","c"])
     end
   

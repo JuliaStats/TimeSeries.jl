@@ -2,11 +2,9 @@ import Base: merge
 
 ###### merge ####################
 
-# used by merge method
-
 # thanks Tom Short @tshort for this implementation
 
-function merge{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; col_names=[""])
+function merge{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; col_names::Vector=[])
     # first test metadata matches
     ta1.meta == ta2.meta ? meta = ta1.meta : error("metadata doesn't match")
     # obtain unique indexes of when dates match
@@ -21,8 +19,9 @@ function merge{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; col_names=[""])
     # combine existing colnames
     cnames = vcat(ta1.colnames, ta2.colnames)
     # check if kwarg to over-ride simple vcat and then if colnames is valid length
-    size(col_names,1) == 1 ? cnames = cnames :       # kwarg not supplied
-    size(col_names,1) == size(vals,2) ? cnames = col_names : error("col_names supplied is not correct size")
+    length(col_names) == size(vals,2) ? cnames = col_names :
+        length(col_names) == 0 ? cnames = cnames : # kwarg not supplied
+        error("col_names supplied is not correct size")
     # put it all together
     TimeArray(tstamp, vals, cnames, meta)
 end
