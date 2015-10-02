@@ -1,4 +1,4 @@
-using MarketData
+using MarketData, Base.Dates
 
 facts("collapse operations") do
 

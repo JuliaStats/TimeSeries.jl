@@ -1,3 +1,8 @@
+### 0.6.3
+
+* precompile support added
+* test/combine.jl and test/split.jl now imports Base.Dates explicity 
+
 ### 0.6.2
 
 * added support for `end` keyword in indices
