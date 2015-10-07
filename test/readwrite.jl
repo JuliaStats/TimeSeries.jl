@@ -1,4 +1,4 @@
-using MarketData
+using TimeSeries, MarketData
 
 facts("readwrite parses csv file correctly") do
 

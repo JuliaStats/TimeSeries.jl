@@ -1,4 +1,4 @@
-using MarketData
+using TimeSeries, MarketData
 
 facts("construction with and without meta field") do
 

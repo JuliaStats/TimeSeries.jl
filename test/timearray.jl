@@ -1,4 +1,4 @@
-using MarketData
+using TimeSeries, MarketData
 
 facts("field extraction methods work") do
 

@@ -1,4 +1,4 @@
-using MarketData, Base.Dates
+using TimeSeries, MarketData, Base.Dates
 
 facts("find methods") do
 
