@@ -1,4 +1,4 @@
-using TimeSeries, MarketData
+using Base.Dates, TimeSeries, MarketData
 
 facts("field extraction methods work") do
 
