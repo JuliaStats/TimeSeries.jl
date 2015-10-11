@@ -1,6 +1,6 @@
 ###### readtimearray ############
 
-function readtimearray(fname::String; meta=Nothing, format::String="")
+function readtimearray(fname::AbstractString; meta=nothing, format::AbstractString="")
     cfile = readcsv(fname)
     
     # remove empty lines if any

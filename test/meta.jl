@@ -2,8 +2,8 @@ using TimeSeries, MarketData
 
 facts("construction with and without meta field") do
 
-    context("default meta field to Nothing") do
-        @fact cl.meta --> Nothing
+    context("default meta field to nothing") do
+        @fact cl.meta --> nothing
     end
 
     context("allow objects in meta field") do
