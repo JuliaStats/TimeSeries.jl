@@ -187,3 +187,22 @@ end
 ###### basecall #################
 
 basecall{T,N}(ta::TimeArray{T,N}, f::Function; cnames=ta.colnames) =  TimeArray(ta.timestamp, f(ta.values), cnames, ta.meta)
+
+###### uniform observations #####
+
+function uniformlyspaced(ta::TimeArray)
+    gap1 = ta.timestamp[2] - ta.timestamp[1]
+    i, n, is_uniform = 2, length(ta), true
+    while is_uniform & (i < n)
+        is_uniform = gap1 == (ta.timestamp[i+1] - ta.timestamp[i])
+        i += 1
+    end #while
+    return is_uniform
+end #uniformlyspaced
+
+function uniformlyspace(ta::TimeArray)
+    min_gap = minimum(ta.timestamp[2:end] - ta.timestamp[1:end-1])
+    newtimestamp = ta.timestamp[1]:min_gap:ta.timestamp[end]
+    emptyta = TimeArray(collect(newtimestamp), zeros(length(newtimestamp), 0), UTF8String[])
+    return merge_left(emptyta, ta)
+end #uniformlyspace
