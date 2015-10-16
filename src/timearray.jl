@@ -177,8 +177,8 @@ end
 
 # single date
 function getindex{T,N,D}(ta::TimeArray{T,N,D}, d::D)
-    idx = findfirst(ta.timestamp, d)
-    idx > 0 ? ta[idx] : nothing
+    idxs = searchsorted(ta.timestamp, d)
+    length(idxs) == 1 ? ta[idxs[1]] : nothing
 end
  
 # multiple dates
