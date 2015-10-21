@@ -9,8 +9,8 @@ using Base.Dates
 export TimeArray, AbstractTimeSeries,
        by, from, to, findwhen, findall, timestamp, values, colnames, meta,
        lag, lead, percentchange, moving, upto,
-       basecall,
-       merge, collapse,
+       basecall, uniformlyspaced, uniformlyspace,
+       merge, merge_left, collapse,
        readtimearray
 
 ###### include ##################
