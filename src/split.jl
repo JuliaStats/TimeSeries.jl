@@ -17,15 +17,15 @@ end
  
 # from, to ######################
  
-function from{T,N,D}(ta::TimeArray{T,N,D}, d::D)
-    d_idx = searchsortedfirst(ta.timestamp, d)
-    d_idx < length(ta)+1 ? ta[d_idx:end] : ta
-end 
+from{T,N,D}(ta::TimeArray{T,N,D}, d::D) =
+    d < ta.timestamp[1] ? ta :
+    d > ta.timestamp[end] ? ta[1:0] :
+    ta[searchsortedfirst(ta.timestamp, d):end]
 
-function to{T,N,D}(ta::TimeArray{T,N,D}, d::D)
-    d_idx = searchsortedlast(ta.timestamp, d)
-    d_idx > 0 ? ta[1:d_idx] : ta
-end 
+to{T,N,D}(ta::TimeArray{T,N,D}, d::D) =
+    d < ta.timestamp[1] ? ta[1:0] :
+    d > ta.timestamp[end] ? ta :
+    ta[1:searchsortedlast(ta.timestamp, d)]
 
 ###### findall ##################
 

@@ -73,11 +73,10 @@ facts("ordered collection methods") do
         @fact ohlc[Date(2000,1,3):Day(1):Date(2000,1,4)].timestamp --> [Date(2000,1,3), Date(2000,1,4)]
     end
   
-    # TODO get meaningful tests
     context("getindex on range of DateTime when only Date is in timestamp") do
-        @fact ohlc[DateTime(2000,1,3,0,0,0)].timestamp                                 --> [DateTime(2000,1,3,0,0,0)]
-        @fact ohlc[[DateTime(2000,1,3,0,0,0),DateTime(2000,1,14,0,0,0)]].timestamp     --> [DateTime(2000,1,3,0,0,0), DateTime(2000,1,14,0,0,0)]
-        @fact ohlc[DateTime(2000,1,3,0,0,0):Day(1):DateTime(2000,1,4,0,0,0)].timestamp --> [DateTime(2000,1,3,0,0,0), DateTime(2000,1,4,0,0,0)]
+        @fact_throws ohlc[DateTime(2000,1,3,0,0,0)]
+        @fact_throws ohlc[[DateTime(2000,1,3,0,0,0),DateTime(2000,1,14,0,0,0)]]
+        @fact_throws ohlc[DateTime(2000,1,3,0,0,0):Day(1):DateTime(2000,1,4,0,0,0)]
     end
   
     context("getindex on range of Date") do

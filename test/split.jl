@@ -16,8 +16,8 @@ end
 facts("split date operations") do
 
     context("from and to correctly subset") do
-        @fact length(from(cl, 2001,12,28)) --> 2
-        @fact length(to(cl, 2000,1,4))     --> 2
+        @fact length(from(cl, Date(2001,12,28))) --> 2
+        @fact length(to(cl, Date(2000,1,4)))     --> 2
     end
 
     context("bydate methods correctly subset") do
