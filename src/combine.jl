@@ -29,7 +29,7 @@ end
 
 # collapse ######################
 
-function collapse{T,N}(ta::TimeArray{T,N}, f::Function; period::Function=week)
+function collapse{T,N,D}(ta::TimeArray{T,N,D}, f::Function; period::Function=week)
   
     w = [period(ta.timestamp[t]) for t in 1:length(ta)] # get weekly id from entire array
     z = Int[]; j = 1
@@ -48,7 +48,7 @@ function collapse{T,N}(ta::TimeArray{T,N}, f::Function; period::Function=week)
     push!(z, z[length(z)] + 1)  
    
     # pre-allocate timestamp and value arrays
-    tstamps = [(Date(1,1,1):Year(1):Date(maximum(z),1,1));]
+    tstamps = Array{D}(maximum(z))
     vals    = zeros(maximum(z)) # number of unique periods
     #replace their values except for the last row 
     for i = 1:maximum(z)-1  # iterate over period ID groupings

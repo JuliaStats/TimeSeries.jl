@@ -17,13 +17,15 @@ end
  
 # from, to ######################
  
-function from{T,N}(ta::TimeArray{T,N}, y::Int, m::Int, d::Int)
-    ta[Date(y,m,d):last(ta.timestamp)]
-end 
+from{T,N,D}(ta::TimeArray{T,N,D}, d::D) =
+    d < ta.timestamp[1] ? ta :
+    d > ta.timestamp[end] ? ta[1:0] :
+    ta[searchsortedfirst(ta.timestamp, d):end]
 
-function to{T,N}(ta::TimeArray{T,N}, y::Int, m::Int, d::Int)
-    ta[ta.timestamp[1]:Date(y,m,d)]
-end 
+to{T,N,D}(ta::TimeArray{T,N,D}, d::D) =
+    d < ta.timestamp[1] ? ta[1:0] :
+    d > ta.timestamp[end] ? ta :
+    ta[1:searchsortedlast(ta.timestamp, d)]
 
 ###### findall ##################
 
