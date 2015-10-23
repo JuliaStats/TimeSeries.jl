@@ -2,30 +2,69 @@ import Base: merge
 
 ###### merge ####################
 
-# used by merge method
+function merge{T,N,M,D}(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, ::Type{Val{:inner}};
+														colnames::Vector=[])
 
-# thanks Tom Short @tshort for this implementation
+    ta1.meta != ta2.meta && error("metadata doesn't match")
 
-function merge{T}(ta1::TimeArray{T}, ta2::TimeArray{T}; col_names=[""])
-    # first test metadata matches
-    ta1.meta == ta2.meta ? meta = ta1.meta : error("metadata doesn't match")
-    # obtain unique indexes of when dates match
     idx1, idx2 = overlaps(ta1.timestamp, ta2.timestamp)
-    # obtain shared timestamp
-    tstamp = ta1[idx1].timestamp
-    # retrieve values that match the Int array matching dates
-    vals1  = ta1[idx1].values
-    vals2  = ta2[idx2].values
-    # combine the values arrays
-    vals   = hcat(vals1,vals2)
-    # combine existing colnames
-    cnames = vcat(ta1.colnames, ta2.colnames)
-    # check if kwarg to over-ride simple vcat and then if colnames is valid length
-    size(col_names,1) == 1 ? cnames = cnames :       # kwarg not supplied
-    size(col_names,1) == size(vals,2) ? cnames = col_names : error("col_names supplied is not correct size")
-    # put it all together
-    TimeArray(tstamp, vals, cnames, meta)
+    vals = [ta1[idx1].values ta2[idx2].values]
+
+    ta = TimeArray(ta1[idx1].timestamp, vals, [ta1.colnames; ta2.colnames], ta1.meta)
+		setcolnames!(ta, colnames)
+		return ta
+
 end
+
+function merge{T,N,M,D}(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, ::Type{Val{:left}};
+														colnames::Vector=[])
+
+    ta1.meta != ta2.meta && error("metadata doesn't match")
+
+    new_idx2, old_idx2 = overlaps(ta1.timestamp, ta2.timestamp)
+
+    right_vals = NaN * zeros(length(ta1), length(ta2.colnames))
+    right_vals[new_idx2, :]  = ta2.values[old_idx2, :]
+
+    ta = TimeArray(ta1.timestamp, [ta1.values right_vals], [ta1.colnames; ta2.colnames], ta1.meta)
+		setcolnames!(ta, colnames)
+		return ta
+
+end
+
+function merge{T,N,M,D}(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, ::Type{Val{:right}};
+														colnames::Vector=[])
+
+		ta = merge(ta2, ta1, Val{:left})
+
+		ncol2 = length(ta2.colnames)
+		vals = [ta.values[:, (ncol2+1):end] ta.values[:, 1:ncol2]]
+
+		ta = TimeArray(ta.timestamp, vals, [ta1.colnames; ta2.colnames])
+		setcolnames!(ta, colnames)
+		return ta
+
+end
+
+function merge{T,N,M,D}(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, ::Type{Val{:outer}};
+														colnames::Vector=[])
+
+    ta1.meta != ta2.meta && error("metadata doesn't match")
+
+		timestamps = sorted_unique_merge(ta1.timestamp, ta2.timestamp)
+
+		ta = TimeArray(timestamps, zeros(length(timestamps), 0), UTF8String[])
+		ta = merge(ta, ta1, Val{:left})
+		ta = merge(ta, ta2, Val{:left})
+		setcolnames!(ta, colnames)
+		return ta
+
+end
+
+# Default to inner merge
+merge(ta1::TimeArray, ta2::TimeArray; colnames::Vector=[]) =
+		merge(ta1, ta2, Val{:inner}, colnames=colnames)
+
 
 # collapse ######################
 
