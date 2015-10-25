@@ -68,17 +68,18 @@ function show{T,N}(io::IO, ta::TimeArray{T,N})
             intcatcher[c] = true
         end
     end
-    spacetime     = strwidth(string(ta.timestamp[1])) + 3
+    spacetime     = nrow > 0 ? strwidth(string(ta.timestamp[1])) + 3 : 3
     firstcolwidth = strwidth(ta.colnames[1])
     colwidth      = Int[]
-        for m in 1:ncol
-            T == Bool ?
-            push!(colwidth, max(strwidth(ta.colnames[m]), 5)) :
-            push!(colwidth, max(strwidth(ta.colnames[m]), strwidth(@sprintf("%.2f", maximum(ta.values[:,m]))) + DECIMALS - 2))
-        end
+    for m in 1:ncol
+        (T == Bool) || (nrow == 0) ?
+        push!(colwidth, max(strwidth(ta.colnames[m]), 5)) :
+        push!(colwidth, max(strwidth(ta.colnames[m]), strwidth(@sprintf("%.2f", maximum(ta.values[:,m]))) + DECIMALS - 2))
+    end
   
     # summary line
-    print(io, @sprintf("%dx%d %s %s to %s", nrow, ncol, typeof(ta), string(ta.timestamp[1]), string(ta.timestamp[nrow])))
+    @printf(io, "%dx%d %s", nrow, ncol, typeof(ta))
+    nrow > 0 && @printf(io, " %s to %s", string(ta.timestamp[1]), string(ta.timestamp[end]))
     println(io, "")
     println(io, "")
 
@@ -118,7 +119,7 @@ function show{T,N}(io::IO, ta::TimeArray{T,N})
         end
         println(io, "")
         end
-    else
+    elseif nrow > 0
         for i in 1:nrow
             print(io, ta.timestamp[i], " | ")
         for j in 1:ncol
