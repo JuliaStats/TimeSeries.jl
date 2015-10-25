@@ -3,7 +3,7 @@ import Base: merge
 ###### merge ####################
 
 function merge{T,N,M,D}(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, ::Type{Val{:inner}};
-														colnames::Vector=[])
+                          colnames::Vector=[])
 
     ta1.meta != ta2.meta && error("metadata doesn't match")
 
@@ -11,13 +11,13 @@ function merge{T,N,M,D}(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, ::Type{Val
     vals = [ta1[idx1].values ta2[idx2].values]
 
     ta = TimeArray(ta1[idx1].timestamp, vals, [ta1.colnames; ta2.colnames], ta1.meta)
-		setcolnames!(ta, colnames)
-		return ta
+    setcolnames!(ta, colnames)
+    return ta
 
 end
 
 function merge{T,N,M,D}(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, ::Type{Val{:left}};
-														colnames::Vector=[])
+                          colnames::Vector=[])
 
     ta1.meta != ta2.meta && error("metadata doesn't match")
 
@@ -27,22 +27,22 @@ function merge{T,N,M,D}(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, ::Type{Val
     right_vals[new_idx2, :]  = ta2.values[old_idx2, :]
 
     ta = TimeArray(ta1.timestamp, [ta1.values right_vals], [ta1.colnames; ta2.colnames], ta1.meta)
-		setcolnames!(ta, colnames)
-		return ta
+    setcolnames!(ta, colnames)
+    return ta
 
 end
 
 function merge{T,N,M,D}(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, ::Type{Val{:right}};
-														colnames::Vector=[])
+                          colnames::Vector=[])
 
-		ta = merge(ta2, ta1, Val{:left})
+    ta = merge(ta2, ta1, Val{:left})
 
-		ncol2 = length(ta2.colnames)
-		vals = [ta.values[:, (ncol2+1):end] ta.values[:, 1:ncol2]]
+    ncol2 = length(ta2.colnames)
+    vals = [ta.values[:, (ncol2+1):end] ta.values[:, 1:ncol2]]
 
-		ta = TimeArray(ta.timestamp, vals, [ta1.colnames; ta2.colnames])
-		setcolnames!(ta, colnames)
-		return ta
+    ta = TimeArray(ta.timestamp, vals, [ta1.colnames; ta2.colnames])
+    setcolnames!(ta, colnames)
+    return ta
 
 end
 
@@ -51,25 +51,25 @@ function merge{T,N,M,D}(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, ::Type{Val
 
     ta1.meta != ta2.meta && error("metadata doesn't match")
 
-		timestamps = sorted_unique_merge(ta1.timestamp, ta2.timestamp)
+    timestamps = sorted_unique_merge(ta1.timestamp, ta2.timestamp)
 
-		ta = TimeArray(timestamps, zeros(length(timestamps), 0), UTF8String[])
-		ta = merge(ta, ta1, Val{:left})
-		ta = merge(ta, ta2, Val{:left})
-		setcolnames!(ta, colnames)
-		return ta
+    ta = TimeArray(timestamps, zeros(length(timestamps), 0), UTF8String[])
+    ta = merge(ta, ta1, Val{:left})
+    ta = merge(ta, ta2, Val{:left})
+    setcolnames!(ta, colnames)
+    return ta
 
 end
 
 # Default to inner merge
 merge(ta1::TimeArray, ta2::TimeArray; colnames::Vector=[]) =
-		merge(ta1, ta2, Val{:inner}, colnames=colnames)
+    merge(ta1, ta2, Val{:inner}, colnames=colnames)
 
 
 # collapse ######################
 
 function collapse{T,N,D}(ta::TimeArray{T,N,D}, f::Function; period::Function=week)
-  
+
     w = [period(ta.timestamp[t]) for t in 1:length(ta)] # get weekly id from entire array
     z = Int[]; j = 1
     for i=1:length(ta) - 1 # create unique period ID array

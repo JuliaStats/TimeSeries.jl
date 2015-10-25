@@ -8,6 +8,8 @@ for op in [UNARY; MATH_ALL; BOOLEAN_OPS]
     eval(Expr(:import, :Base, op))
 end # for
 
+import Base.diff
+
 ###### Unary operators and functions ################
 
 # TimeArray
@@ -123,67 +125,104 @@ for op in BOOLEAN_OPS
 end # loop
 
 ###### lag, lead ################
-  
-function lag{T,N}(ta::TimeArray{T,N}; period::Int=1) 
-    N == 1 ?
-    TimeArray(ta.timestamp[period+1:end], ta.values[1:length(ta)-period], ta.colnames, ta.meta) :
-    TimeArray(ta.timestamp[period+1:end], ta.values[1:length(ta)-period,:], ta.colnames, ta.meta)
-end
 
-function lag{T,N}(ta::TimeArray{T,N}, n::Int) 
-    N == 1 ?
-    TimeArray(ta.timestamp[n+1:end], ta.values[1:length(ta)-n], ta.colnames, ta.meta) :
-    TimeArray(ta.timestamp[n+1:end], ta.values[1:length(ta)-n, :], ta.colnames, ta.meta)
-end
+lag{T}(ta::TimeArray{T,1}, n::Int=1; padding::Bool=false) =
+    padding ? TimeArray(ta.timestamp, [NaN*ones(n); ta.values[1:end-n]], ta.colnames, ta.meta) :
+    TimeArray(ta.timestamp[1+n:end], ta.values[1:end-n], ta.colnames, ta.meta)
 
-function lead{T,N}(ta::TimeArray{T,N}; period::Int=1) 
-    N == 1 ?
-    TimeArray(ta.timestamp[1:length(ta)-period], ta.values[period+1:end], ta.colnames, ta.meta) :
-    TimeArray(ta.timestamp[1:length(ta)-period], ta.values[period+1:end, :], ta.colnames, ta.meta)
-end
+lag{T}(ta::TimeArray{T,2}, n::Int=1; padding::Bool=false) =
+    padding ? TimeArray(ta.timestamp, [NaN*ones(n, length(ta.colnames)); ta.values[1:end-n, :]], ta.colnames, ta.meta) :
+    TimeArray(ta.timestamp[1+n:end], ta.values[1:end-n, :], ta.colnames, ta.meta)
 
-function lead{T,N}(ta::TimeArray{T,N}, n::Int) 
-    N == 1 ?
-    TimeArray(ta.timestamp[1:length(ta)-n], ta.values[n+1:end], ta.colnames, ta.meta) :
-    TimeArray(ta.timestamp[1:length(ta)-n], ta.values[n+1:end, :], ta.colnames, ta.meta)
-end
+lead{T}(ta::TimeArray{T,1}, n::Int=1; padding::Bool=false) =
+    padding ? TimeArray(ta.timestamp, [ta.values[1+n:end]; NaN*ones(n)], ta.colnames, ta.meta) :
+    TimeArray(ta.timestamp[1:end-n], ta.values[1+n:end], ta.colnames, ta.meta)
+
+lead{T}(ta::TimeArray{T,2}, n::Int=1; padding::Bool=false) =
+    padding ? TimeArray(ta.timestamp, [ta.values[1+n:end, :]; NaN*ones(n, length(ta.colnames))], ta.colnames, ta.meta) :
+    TimeArray(ta.timestamp[1:end-n], ta.values[1+n:end, :], ta.colnames, ta.meta)
+
+###### diff #####################
+
+# TODO: Support higher-order differencing?
+diff(ta::TimeArray; padding::Bool=false) = ta .- lag(ta, padding=padding)
 
 ###### percentchange ############
 
-function percentchange{T,N}(ta::TimeArray{T,N}; method="simple") 
-    logreturn = log(ta.values)[2:end] .- log(lag(ta).values)
-#    logreturn = T[ta.values[t] for t in 1:length(ta)] |> log |> diff
+percentchange(ta::TimeArray, ::Type{Val{:log}}; padding::Bool=false) =
+    diff(basecall(ta, log), padding=padding)
 
-    if method == "simple" 
-        TimeArray(ta.timestamp[2:end], expm1(logreturn), ta.colnames, ta.meta) 
-    elseif method == "log" 
-        TimeArray(ta.timestamp[2:end], logreturn, ta.colnames, ta.meta) 
-    else msg("only simple and log methods supported")
-    end
-end
+percentchange(ta::TimeArray, ::Type{Val{:simple}}; padding::Bool=false) =
+    basecall(percentchange(ta, Val{:log}, padding=padding), expm1)
+
+percentchange(ta::TimeArray; padding::Bool=false) =
+    percentchange(ta::TimeArray, Val{:simple}, padding=padding)
 
 ###### moving ###################
 
-function moving{T,N}(ta::TimeArray{T,N}, f::Function, window::Int) 
-    tstamps = ta.timestamp[window:end]
-    vals    = zeros(length(ta) - (window-1))
+function moving{T}(ta::TimeArray{T,1}, f::Function, window::Int; padding::Bool=false)
+    tstamps = padding ? ta.timestamp : ta.timestamp[window:end]
+    vals    = zeros(ta.values[window:end])
     for i=1:length(vals)
         vals[i] = f(ta.values[i:i+(window-1)])
     end
+    padding && (vals = [NaN*ones(window-1); vals])
+    TimeArray(tstamps, vals, ta.colnames, ta.meta)
+end
+
+function moving{T}(ta::TimeArray{T,2}, f::Function, window::Int; padding::Bool=false)
+    tstamps = padding ? ta.timestamp : ta.timestamp[window:end]
+    vals    = zeros(ta.values[window:end, :])
+    for i=1:size(vals,1), j=1:size(vals, 2)
+        vals[i, j] = f(ta.values[i:i+(window-1), j])
+    end
+    padding && (vals = [NaN*ones(ta.values[1:(window-1), :]); vals])
     TimeArray(tstamps, vals, ta.colnames, ta.meta)
 end
 
 ###### upto #####################
 
-function upto{T,N}(ta::TimeArray{T,N}, f::Function) 
-    vals    = zeros(length(ta))
-    nextta  = T[]
-        for i=1:length(ta)
-            vals[i] = f(push!(nextta, ta.values[i]))
-        end
+function upto{T}(ta::TimeArray{T,1}, f::Function)
+    vals = zeros(ta.values)
+    for i=1:length(vals)
+        vals[i] = f(ta.values[1:i])
+    end
+    TimeArray(ta.timestamp, vals, ta.colnames, ta.meta)
+end
+
+function upto{T}(ta::TimeArray{T,2}, f::Function)
+    vals = zeros(ta.values)
+    for i=1:size(vals, 1), j=1:size(vals, 2)
+        vals[i, j] = f(ta.values[1:i, j])
+    end
     TimeArray(ta.timestamp, vals, ta.colnames, ta.meta)
 end
 
 ###### basecall #################
 
 basecall{T,N}(ta::TimeArray{T,N}, f::Function; cnames=ta.colnames) =  TimeArray(ta.timestamp, f(ta.values), cnames, ta.meta)
+
+###### uniform observations #####
+
+function uniformspaced(ta::TimeArray)
+    gap1 = ta.timestamp[2] - ta.timestamp[1]
+    i, n, is_uniform = 2, length(ta), true
+    while is_uniform & (i < n)
+        is_uniform = gap1 == (ta.timestamp[i+1] - ta.timestamp[i])
+        i += 1
+    end #while
+    return is_uniform
+end #uniformlyspaced
+
+function uniformspace(ta::TimeArray)
+    min_gap = minimum(ta.timestamp[2:end] - ta.timestamp[1:end-1])
+    newtimestamp = ta.timestamp[1]:min_gap:ta.timestamp[end]
+    emptyta = TimeArray(collect(newtimestamp), zeros(length(newtimestamp), 0), UTF8String[])
+    return merge(emptyta, ta, Val{:left})
+end #uniformlyspace
+
+###### dropnan ####################
+
+dropnan(ta::TimeArray, ::Type{Val{:all}}) = ta[find(any(!isnan(ta.values), 2))]
+dropnan(ta::TimeArray, ::Type{Val{:any}}) = ta[find(all(!isnan(ta.values), 2))]
+dropnan(ta::TimeArray) = dropnan(ta, Val{:all})
