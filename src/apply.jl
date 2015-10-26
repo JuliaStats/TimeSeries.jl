@@ -1,4 +1,9 @@
-UNARY = [:+, :-, :~, :!]
+UNARY = [:+, :-, :~, :!, :abs, :sign, :sqrt, :cbrt,
+          :log, :log2, :log10, :log1p,
+          :exp, :exp2, :exp10, :expm1,
+          :cos, :sin, :tan, :cosd, :sind, :tand,
+          :acos, :asin, :atan, :acosd, :asind, :atand
+        ]
 MATH_DOTONLY    = [:.+, :.-, :.*, :./, :.%, :.^]
 MATH_ALL        = [MATH_DOTONLY; [:+, :-, :*, :/, :%]]
 COMPARE_DOTONLY = [:.>, :.<, :.==, :.>=, :.<=, :.!=]

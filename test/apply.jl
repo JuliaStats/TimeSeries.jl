@@ -78,9 +78,14 @@ facts("base element-wise operators on TimeArray values") do
         @fact (+cl).values[1]  --> cl.values[1]
         @fact (-cl).values[1]  --> -cl.values[1]
         @fact (!(cl .== op)).values[1]  --> true
+        @fact log(cl).values[1]  --> log(cl.values[1])
+        @fact sqrt(cl).values[1]  --> sqrt(cl.values[1])
         @fact (+ohlc).values[1,:]  --> ohlc.values[1,:]
         @fact (-ohlc).values[1,:]  --> -(ohlc.values[1,:])
         @fact (!(ohlc .== ohlc)).values[1,1]  --> false
+        @fact log(ohlc).values[1, :]  --> log(ohlc.values[1, :])
+        @fact sqrt(ohlc).values[1, :]  --> sqrt(ohlc.values[1, :])
+        @fact_throws sqrt(-ohlc)
     end
 
     context("correct dot operation between TimeArray values and Int/Float and viceversa") do
