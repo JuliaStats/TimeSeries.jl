@@ -1,4 +1,4 @@
-import Base.values
+import Base: values, find
 
 # by ############################
 
@@ -29,7 +29,7 @@ to{T,N,D}(ta::TimeArray{T,N,D}, d::D) =
 
 ###### findall ##################
 
-findall(ta::TimeArray{Bool,1}) = find(ta.values)
+find(ta::TimeArray{Bool,1}) = find(ta.values)
 
 ###### findwhen #################
 

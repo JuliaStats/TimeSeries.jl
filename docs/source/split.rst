@@ -101,13 +101,13 @@ The ``findwhen`` method test a condition and returns a vector of ``Date`` or ``D
     2001-12-27 | 21.58     22.25     21.58     22.07     
     2001-12-28 | 21.97     23.0      21.96     22.43     
 
-findall
+find
 -------
 
-The ``findall`` method test a condition and returns a vector of ``Int`` representing the row in the array where the condition
+The ``find`` method tests a condition and returns a vector of ``Int`` representing the row in the array where the condition
 is ``true``::
 
-    julia> red = findwhen(ohlc["Close"] .< ohlc["Open"]);
+    julia> red = find(ohlc["Close"] .< ohlc["Open"]);
 
     julia> typeof(red)
     Array{Int64,1}
@@ -126,5 +126,4 @@ is ``true``::
     2001-12-21 | 21.01     21.54     20.8      21.0      
     2001-12-31 | 22.51     22.66     21.83     21.9      
 
-The operation of indexing a TimeArray with an array of integers is considerably faster than doing it with an array of ``Date`` or
-``DateTime``.
+

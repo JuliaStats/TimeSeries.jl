@@ -2,9 +2,9 @@ using TimeSeries, MarketData, Base.Dates
 
 facts("find methods") do
 
-    context("findall returns correct row numbers array") do
-        @fact cl[findall(cl .> op)].timestamp[1] --> Date(2000,1,3)
-        @fact length(findall(cl .> op))          --> 244
+    context("find returns correct row numbers array") do
+        @fact cl[find(cl .> op)].timestamp[1] --> Date(2000,1,3)
+        @fact length(find(cl .> op))          --> 244
     end
 
     context("findwhen returns correct Dates array") do
