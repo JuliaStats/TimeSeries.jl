@@ -4,17 +4,17 @@ import Base: convert, length, show, getindex, start, next, done, isempty, endof
 
 abstract AbstractTimeSeries
 
-immutable TimeArray{T, N, D<:TimeType, M} <: AbstractTimeSeries
+immutable TimeArray{T, N, D<:TimeType} <: AbstractTimeSeries
 
     timestamp::Vector{D}
     values::AbstractArray{T,N}
     colnames::Vector{UTF8String}
-    meta::M
+    meta::Any
 
     function TimeArray(timestamp::Vector{D},
                        values::AbstractArray{T,N},
                        colnames::Vector{UTF8String},
-                       meta::M)
+                       meta::Any)
                            nrow, ncol = size(values, 1), size(values, 2)
                            nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
                            ncol != size(colnames,1) ? error("column names must match width of array"):
@@ -26,8 +26,8 @@ immutable TimeArray{T, N, D<:TimeType, M} <: AbstractTimeSeries
     end
 end
 
-TimeArray{T,N,D<:TimeType,S<:AbstractString,M}(d::Vector{D}, v::AbstractArray{T,N}, c::Vector{S}, m::M) = TimeArray{T,N,D,M}(d,v,map(utf8,c),m)
-TimeArray{T,N,D<:TimeType,S<:AbstractString,M}(d::D, v::AbstractArray{T,N}, c::Vector{S}, m::M) = TimeArray([d],v,map(utf8,c),m)
+TimeArray{T,N,D<:TimeType,S<:AbstractString}(d::Vector{D}, v::AbstractArray{T,N}, c::Vector{S}, m::Any) = TimeArray{T,N,D}(d,v,map(utf8,c),m)
+TimeArray{T,N,D<:TimeType,S<:AbstractString}(d::D, v::AbstractArray{T,N}, c::Vector{S}, m::Any) = TimeArray([d],v,map(utf8,c),m)
 
 # when no meta is provided
 TimeArray{T,N,D<:TimeType}(d::Vector{D}, v::AbstractArray{T,N}, c) = TimeArray(d,v,c,nothing)
