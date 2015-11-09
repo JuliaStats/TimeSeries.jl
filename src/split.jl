@@ -27,7 +27,10 @@ end
 
 ###### findall ##################
 
+import Base.find
+
 findall(ta::TimeArray{Bool,1}) = find(ta.values)
+find(ta::TimeArray{Bool,1}) = ta[(findall(ta))]
 
 ###### findwhen #################
 

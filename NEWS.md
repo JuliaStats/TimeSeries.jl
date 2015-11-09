@@ -1,3 +1,14 @@
+### 0.6.5 (not yet released)
+
+* support added for displaying empty TimeArray
+* common scalar -> scalar math functions as unary operators
+* adds isnan and isinf
+* fixes tests on meta field
+
+### 0.6.4
+
+* replaces Nothing -> nothing and String -> AbstractString
+
 ### 0.6.3
 
 * precompile support added
