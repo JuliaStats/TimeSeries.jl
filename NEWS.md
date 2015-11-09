@@ -1,9 +1,10 @@
-### 0.6.5 (not yet released)
+### 0.6.5
 
 * support added for displaying empty TimeArray
 * common scalar -> scalar math functions as unary operators
 * adds isnan and isinf
 * fixes tests on meta field
+* downgrades show tests to pending
 
 ### 0.6.4
 

@@ -1,4 +1,6 @@
 using TimeSeries, MarketData
+FactCheck.setstyle(:compact)
+FactCheck.onlystats(true)
 
 facts("construction with and without meta field") do
 

@@ -1,4 +1,6 @@
 using TimeSeries, MarketData, Base.Dates
+FactCheck.setstyle(:compact)
+FactCheck.onlystats(true)
 
 facts("find methods") do
 
