@@ -1,3 +1,9 @@
+### 0.6.6
+
+* begin deprecation of by() method, which is being replaced by when()
+* when() re-arranges the argument order to TimeArray, Function, Int (or ASCIIString)
+* support for ASCIIStrings are now provided for both by() and when() methods
+
 ### 0.6.5
 
 * support added for displaying empty TimeArray
