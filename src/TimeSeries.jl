@@ -7,11 +7,13 @@ module TimeSeries
 using Base.Dates
 
 export TimeArray, AbstractTimeSeries,
-       by, from, to, findwhen, findall, timestamp, values, colnames, meta,
+       when, from, to, findwhen, findall, timestamp, values, colnames, meta,
        lag, lead, percentchange, moving, upto,
        basecall,
        merge, collapse,
-       readtimearray
+       readtimearray,
+       # deprecated
+       by
 
 ###### include ##################
 
@@ -22,5 +24,6 @@ include("apply.jl")
 include("combine.jl")
 include("readwrite.jl")
 include("utilities.jl")
+include("deprecated.jl")
 
 end

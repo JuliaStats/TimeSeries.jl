@@ -3,11 +3,45 @@ Spliting by time constraint or when condition is true
 
 Specific methods for segmenting on time ranges or if condition is met is supported with the following methods.
 
-by
---
+when
+----
 
-The ``by`` methods allows aggregating elements from a TimeArray into specific time periods, such as Mondays or the month of
-October::
+The ``when`` methods allows aggregating elements from a TimeArray into specific time periods,
+such as Mondays or the month of October ::
+
+    julia> when(cl, dayofweek, 1)
+    95x1 TimeSeries.TimeArray{Float64,1,ASCIIString} 2000-01-03 to 2001-12-31
+
+                 Close     
+    2000-01-03 | 111.94    
+    2000-01-10 | 97.75     
+    2000-01-24 | 106.25    
+    2000-01-31 | 103.75    
+    ⋮
+    2001-12-10 | 22.54     
+    2001-12-17 | 20.62     
+    2001-12-24 | 21.36     
+    2001-12-31 | 21.9      
+
+    julia> when(cl, dayname, "Monday")
+    95x1 TimeSeries.TimeArray{Float64,1,ASCIIString} 2000-01-03 to 2001-12-31
+
+                 Close     
+    2000-01-03 | 111.94    
+    2000-01-10 | 97.75     
+    2000-01-24 | 106.25    
+    2000-01-31 | 103.75    
+    ⋮
+    2001-12-10 | 22.54     
+    2001-12-17 | 20.62     
+    2001-12-24 | 21.36     
+    2001-12-31 | 21.9      
+
+by - being deprecated in favor of when
+--------------------------------------
+
+The ``by`` methods allows aggregating elements from a TimeArray into specific time periods, 
+such as Mondays or the month of October - this method is being deprecated ::
 
     julia> by(cl, 1, period=dayofweek)
     95x1 TimeSeries.TimeArray{Float64,1,DataType} 2000-01-03 to 2001-12-31
