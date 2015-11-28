@@ -2,8 +2,8 @@ import Base.values
 
 # when ############################
 
-function when{T,N}(ta::TimeArray{T,N}, period::Function=day, t::Int=1) 
-    boolarray = [[period(ta.timestamp[d]) for d in 1:length(ta.timestamp)] .== t;] # odd syntax for t; but just t deprecated
+function when{T,N}(ta::TimeArray{T,N}, period::Function, t::Int) 
+    boolarray = period(ta.timestamp) .== t
     rownums = round(Int64, zeros(sum(boolarray)))
     j = 1
     for i in 1:length(boolarray)
@@ -15,8 +15,8 @@ function when{T,N}(ta::TimeArray{T,N}, period::Function=day, t::Int=1)
     ta[rownums]
 end 
  
-function when{T,N}(ta::TimeArray{T,N}, period::Function=day, t::ASCIIString="Monday") 
-    boolarray = [[period(ta.timestamp[d]) for d in 1:length(ta.timestamp)] .== t;] # odd syntax for t; but just t deprecated
+function when{T,N}(ta::TimeArray{T,N}, period::Function, t::ASCIIString) 
+    boolarray = period(ta.timestamp) .== t
     rownums = round(Int64, zeros(sum(boolarray)))
     j = 1
     for i in 1:length(boolarray)
