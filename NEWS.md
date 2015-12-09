@@ -1,3 +1,7 @@
+### 0.6.7
+
+* refactors when() method for 30% performance improvement
+
 ### 0.6.6
 
 * begin deprecation of by() method, which is being replaced by when()
