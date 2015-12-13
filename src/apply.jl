@@ -155,14 +155,10 @@ diff(ta::TimeArray; padding::Bool=false) = ta .- lag(ta, padding=padding)
 
 ###### percentchange ############
 
-percentchange(ta::TimeArray, ::Type{Val{:log}}; padding::Bool=false) =
-    diff(basecall(ta, log), padding=padding)
-
-percentchange(ta::TimeArray, ::Type{Val{:simple}}; padding::Bool=false) =
-    basecall(percentchange(ta, Val{:log}, padding=padding), expm1)
-
-percentchange(ta::TimeArray; padding::Bool=false) =
-    percentchange(ta::TimeArray, Val{:simple}, padding=padding)
+percentchange(ta::TimeArray, returns::Symbol=:simple; padding::Bool=false) =
+    returns == :log ? diff(log(ta), padding=padding) :
+    returns == :simple ? expm1(percentchange(ta, :log, padding=padding)) :
+    error("returns must be either :simple or :log")
 
 ###### moving ###################
 
@@ -224,11 +220,12 @@ function uniformspace(ta::TimeArray)
     min_gap = minimum(ta.timestamp[2:end] - ta.timestamp[1:end-1])
     newtimestamp = ta.timestamp[1]:min_gap:ta.timestamp[end]
     emptyta = TimeArray(collect(newtimestamp), zeros(length(newtimestamp), 0), UTF8String[], ta.meta)
-    return merge(emptyta, ta, Val{:left})
+    return merge(emptyta, ta, :left)
 end #uniformlyspace
 
 ###### dropnan ####################
 
-dropnan(ta::TimeArray, ::Type{Val{:all}}) = ta[find(any(!isnan(ta.values), 2))]
-dropnan(ta::TimeArray, ::Type{Val{:any}}) = ta[find(all(!isnan(ta.values), 2))]
-dropnan(ta::TimeArray) = dropnan(ta, Val{:all})
+dropnan(ta::TimeArray, method::Symbol=:all) =
+    method == :all ? ta[find(any(!isnan(ta.values), 2))] :
+    method == :any ? ta[find(all(!isnan(ta.values), 2))] :
+    error("dropnan method must be :all or :any")

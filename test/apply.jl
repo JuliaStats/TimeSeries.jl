@@ -57,6 +57,7 @@ facts("time series methods") do
     end
 
     context("correct simple return value") do
+        @fact percentchange(cl, :simple).values --> percentchange(cl).values
         @fact percentchange(cl).values --> percentchange(cl, padding=false).values
         @fact percentchange(cl).values[1] --> roughly((102.5-111.94)/111.94, atol=.01)
         @fact percentchange(ohlc).values[1, :] --> roughly((ohlc.values[2,:] - ohlc.values[1,:]) ./ ohlc.values[1,:])
@@ -66,12 +67,12 @@ facts("time series methods") do
     end
 
     context("correct log return value") do
-        @fact percentchange(cl, Val{:log}).values --> percentchange(cl, Val{:log}, padding=false).values
-        @fact percentchange(cl, Val{:log}).values[1] --> roughly(log(102.5) - log(111.94), atol=.01)
-        @fact percentchange(ohlc, Val{:log}).values[1, :] --> roughly(log(ohlc.values[2,:]) - log(ohlc.values[1,:]), atol=.01)
-        @fact percentchange(cl, Val{:log}, padding=true).values[1] --> isnan
-        @fact percentchange(cl, Val{:log}, padding=true).values[2] --> roughly(log(102.5) - log(111.94))
-        @fact percentchange(ohlc, Val{:log}, padding=true).values[2, :] --> roughly(log(ohlc.values[2,:]) - log(ohlc.values[1,:]))
+        @fact percentchange(cl, :log).values --> percentchange(cl, :log, padding=false).values
+        @fact percentchange(cl, :log).values[1] --> roughly(log(102.5) - log(111.94), atol=.01)
+        @fact percentchange(ohlc, :log).values[1, :] --> roughly(log(ohlc.values[2,:]) - log(ohlc.values[1,:]), atol=.01)
+        @fact percentchange(cl, :log, padding=true).values[1] --> isnan
+        @fact percentchange(cl, :log, padding=true).values[2] --> roughly(log(102.5) - log(111.94))
+        @fact percentchange(ohlc, :log, padding=true).values[2, :] --> roughly(log(ohlc.values[2,:]) - log(ohlc.values[1,:]))
     end
 
     context("moving supplies correct window length") do
@@ -346,19 +347,19 @@ facts("adding / removing missing rows works") do
         nohlc = TimeArray(ohlc.timestamp, copy(ohlc.values), ohlc.colnames, ohlc.meta)
         nohlc.values[7:12, 2] = NaN
 
-        @fact dropnan(uohlc).timestamp            --> dropnan(uohlc, Val{:all}).timestamp
-        @fact dropnan(uohlc).values               --> dropnan(uohlc, Val{:all}).values
+        @fact dropnan(uohlc).timestamp            --> dropnan(uohlc, :all).timestamp
+        @fact dropnan(uohlc).values               --> dropnan(uohlc, :all).values
 
-        @fact dropnan(ohlc, Val{:all}).values     --> ohlc.values
-        @fact dropnan(nohlc, Val{:all}).timestamp --> ohlc.timestamp
-        @fact dropnan(uohlc, Val{:all}).timestamp --> ohlc[1:8].timestamp
-        @fact dropnan(uohlc, Val{:all}).values    --> ohlc[1:8].values
+        @fact dropnan(ohlc, :all).values     --> ohlc.values
+        @fact dropnan(nohlc, :all).timestamp --> ohlc.timestamp
+        @fact dropnan(uohlc, :all).timestamp --> ohlc[1:8].timestamp
+        @fact dropnan(uohlc, :all).values    --> ohlc[1:8].values
 
-        @fact dropnan(ohlc, Val{:any}).values     --> ohlc.values
-        @fact dropnan(nohlc, Val{:any}).timestamp --> ohlc.timestamp[[1:6;13:end]]
-        @fact dropnan(nohlc, Val{:any}).values    --> ohlc.values[[1:6;13:end], :]
-        @fact dropnan(uohlc, Val{:any}).timestamp --> ohlc[1:8].timestamp
-        @fact dropnan(uohlc, Val{:any}).values    --> ohlc[1:8].values
+        @fact dropnan(ohlc, :any).values     --> ohlc.values
+        @fact dropnan(nohlc, :any).timestamp --> ohlc.timestamp[[1:6;13:end]]
+        @fact dropnan(nohlc, :any).values    --> ohlc.values[[1:6;13:end], :]
+        @fact dropnan(uohlc, :any).timestamp --> ohlc[1:8].timestamp
+        @fact dropnan(uohlc, :any).values    --> ohlc[1:8].values
 
     end
 
