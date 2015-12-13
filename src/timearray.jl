@@ -4,10 +4,10 @@ import Base: convert, length, show, getindex, start, next, done, isempty, endof
 
 abstract AbstractTimeSeries
 
-immutable TimeArray{T, N, D<:TimeType} <: AbstractTimeSeries
+immutable TimeArray{T, N, D<:TimeType, A<:AbstractArray} <: AbstractTimeSeries
 
     timestamp::Vector{D}
-    values::AbstractArray{T,N}
+    values::A
     colnames::Vector{UTF8String}
     meta::Any
 
@@ -26,8 +26,10 @@ immutable TimeArray{T, N, D<:TimeType} <: AbstractTimeSeries
     end
 end
 
-TimeArray{T,N,D<:TimeType,S<:AbstractString}(d::Vector{D}, v::AbstractArray{T,N}, c::Vector{S}, m::Any) = TimeArray{T,N,D}(d,v,map(utf8,c),m)
-TimeArray{T,N,D<:TimeType,S<:AbstractString}(d::D, v::AbstractArray{T,N}, c::Vector{S}, m::Any) = TimeArray([d],v,map(utf8,c),m)
+TimeArray{T,N,D<:TimeType,S<:AbstractString}(d::Vector{D}, v::AbstractArray{T,N}, c::Vector{S}, m::Any) =
+        TimeArray{T,N,D,typeof(v)}(d,v,map(utf8,c),m)
+TimeArray{T,N,D<:TimeType,S<:AbstractString}(d::D, v::AbstractArray{T,N}, c::Vector{S}, m::Any) =
+        TimeArray{T,N,D,typeof(v)}([d],v,map(utf8,c),m)
 
 # when no meta is provided
 TimeArray{T,N,D<:TimeType}(d::Vector{D}, v::AbstractArray{T,N}, c) = TimeArray(d,v,c,nothing)
