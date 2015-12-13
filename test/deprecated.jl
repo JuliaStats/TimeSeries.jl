@@ -34,4 +34,8 @@ facts("deprecated methods") do
         @fact percentchange(op, method="simple").values  --> percentchange(op, :simple).values
         @fact percentchange(op, method="log").values     --> percentchange(op, :log).values
     end
+
+    context("deprecated findall returns correct indices") do
+        @fact findall(cl .> op) --> find(cl .> op)
+    end
 end

@@ -14,7 +14,7 @@ export TimeArray, AbstractTimeSeries,
        merge, collapse,
        readtimearray, writetimearray,
        # deprecated
-       by
+       by, findall
 
 ###### include ##################
 

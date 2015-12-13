@@ -41,3 +41,8 @@ function from(ta::TimeArray, y::Int, m::Int, d::Int)
     warn("from(ta::TimeArray, y::Int, m::Int, d::Int) is being deprecated.\nPlease use from(ta::TimeArray, d::TimeType) instead")
     return from(ta, Date(y,m,d))
 end #from
+
+function findall(ta::TimeArray)
+    warn("findall is deprecated, use find instead")
+    return find(ta)
+end #findall
