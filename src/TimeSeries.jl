@@ -12,7 +12,7 @@ export TimeArray, AbstractTimeSeries,
        uniformspaced, uniformspace, dropnan,
        basecall,
        merge, collapse,
-       readtimearray, writetimearray
+       readtimearray, writetimearray,
        # deprecated
        by
 

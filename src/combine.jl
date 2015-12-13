@@ -40,7 +40,7 @@ function merge{T,N,M,D}(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, ::Type{Val
     ncol2 = length(ta2.colnames)
     vals = [ta.values[:, (ncol2+1):end] ta.values[:, 1:ncol2]]
 
-    ta = TimeArray(ta.timestamp, vals, [ta1.colnames; ta2.colnames])
+    ta = TimeArray(ta.timestamp, vals, [ta1.colnames; ta2.colnames], ta.meta)
     setcolnames!(ta, colnames)
     return ta
 
@@ -53,7 +53,7 @@ function merge{T,N,M,D}(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, ::Type{Val
 
     timestamps = sorted_unique_merge(ta1.timestamp, ta2.timestamp)
 
-    ta = TimeArray(timestamps, zeros(length(timestamps), 0), UTF8String[])
+    ta = TimeArray(timestamps, zeros(length(timestamps), 0), UTF8String[], ta1.meta)
     ta = merge(ta, ta1, Val{:left})
     ta = merge(ta, ta2, Val{:left})
     setcolnames!(ta, colnames)

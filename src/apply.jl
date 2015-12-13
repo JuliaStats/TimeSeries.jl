@@ -223,7 +223,7 @@ end #uniformlyspaced
 function uniformspace(ta::TimeArray)
     min_gap = minimum(ta.timestamp[2:end] - ta.timestamp[1:end-1])
     newtimestamp = ta.timestamp[1]:min_gap:ta.timestamp[end]
-    emptyta = TimeArray(collect(newtimestamp), zeros(length(newtimestamp), 0), UTF8String[])
+    emptyta = TimeArray(collect(newtimestamp), zeros(length(newtimestamp), 0), UTF8String[], ta.meta)
     return merge(emptyta, ta, Val{:left})
 end #uniformlyspace
 
