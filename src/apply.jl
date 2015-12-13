@@ -132,21 +132,43 @@ end # loop
 
 ###### lag, lead ################
 
-lag{T}(ta::TimeArray{T,1}, n::Int=1; padding::Bool=false) =
-    padding ? TimeArray(ta.timestamp, [NaN*ones(n); ta.values[1:end-n]], ta.colnames, ta.meta) :
-    TimeArray(ta.timestamp[1+n:end], ta.values[1:end-n], ta.colnames, ta.meta)
+function lag{T,N}(ta::TimeArray{T,N}, n::Int=1; padding::Bool=false, period::Int=0)
 
-lag{T}(ta::TimeArray{T,2}, n::Int=1; padding::Bool=false) =
-    padding ? TimeArray(ta.timestamp, [NaN*ones(n, length(ta.colnames)); ta.values[1:end-n, :]], ta.colnames, ta.meta) :
-    TimeArray(ta.timestamp[1+n:end], ta.values[1:end-n, :], ta.colnames, ta.meta)
+    if period != 0
+      warn("the period kwarg is deprecated, use lag(ta::TimeArray, period::Int) instead")
+      n = period
+    end #if
 
-lead{T}(ta::TimeArray{T,1}, n::Int=1; padding::Bool=false) =
-    padding ? TimeArray(ta.timestamp, [ta.values[1+n:end]; NaN*ones(n)], ta.colnames, ta.meta) :
-    TimeArray(ta.timestamp[1:end-n], ta.values[1+n:end], ta.colnames, ta.meta)
+    if padding
+        paddedvals = [NaN*ones(n, length(ta.colnames)); ta.values[1:end-n, :]]
+        ta = TimeArray(ta.timestamp, paddedvals, ta.colnames, ta.meta)
+    else
+        ta = TimeArray(ta.timestamp[1+n:end], ta.values[1:end-n, :], ta.colnames, ta.meta)
+    end #if
 
-lead{T}(ta::TimeArray{T,2}, n::Int=1; padding::Bool=false) =
-    padding ? TimeArray(ta.timestamp, [ta.values[1+n:end, :]; NaN*ones(n, length(ta.colnames))], ta.colnames, ta.meta) :
-    TimeArray(ta.timestamp[1:end-n], ta.values[1+n:end, :], ta.colnames, ta.meta)
+    N == 1 && (ta = ta[ta.colnames[1]])
+    return ta
+
+end #lag
+
+function lead{T,N}(ta::TimeArray{T,N}, n::Int=1; padding::Bool=false, period::Int=0)
+
+    if period != 0
+      warn("the period kwarg is deprecated, use lead(ta::TimeArray, period::Int) instead")
+      n = period
+    end #if
+
+    if padding
+        paddedvals = [ta.values[1+n:end, :]; NaN*ones(n, length(ta.colnames))]
+        ta = TimeArray(ta.timestamp, paddedvals, ta.colnames, ta.meta)
+    else
+        ta = TimeArray(ta.timestamp[1:end-n], ta.values[1+n:end, :], ta.colnames, ta.meta)
+    end #if
+
+    N == 1 && (ta = ta[ta.colnames[1]])
+    return ta
+
+end #lead
 
 ###### diff #####################
 
@@ -155,10 +177,18 @@ diff(ta::TimeArray; padding::Bool=false) = ta .- lag(ta, padding=padding)
 
 ###### percentchange ############
 
-percentchange(ta::TimeArray, returns::Symbol=:simple; padding::Bool=false) =
+function percentchange(ta::TimeArray, returns::Symbol=:simple; padding::Bool=false, method::AbstractString="")
+
+    if method != ""
+        warn("the method kwarg is deprecated, use percentchange(ta, :methodname) instead")
+        returns = symbol(method)
+    end #if
+
     returns == :log ? diff(log(ta), padding=padding) :
     returns == :simple ? expm1(percentchange(ta, :log, padding=padding)) :
     error("returns must be either :simple or :log")
+
+end #percentchange
 
 ###### moving ###################
 
@@ -216,11 +246,13 @@ function uniformspaced(ta::TimeArray)
     return is_uniform
 end #uniformlyspaced
 
-function uniformspace(ta::TimeArray)
+function uniformspace{T,N}(ta::TimeArray{T,N})
     min_gap = minimum(ta.timestamp[2:end] - ta.timestamp[1:end-1])
     newtimestamp = ta.timestamp[1]:min_gap:ta.timestamp[end]
     emptyta = TimeArray(collect(newtimestamp), zeros(length(newtimestamp), 0), UTF8String[], ta.meta)
-    return merge(emptyta, ta, :left)
+    ta = merge(emptyta, ta, :left)
+    N == 1 && (ta = ta[ta.colnames[1]])
+    return ta
 end #uniformlyspace
 
 ###### dropnan ####################

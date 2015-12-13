@@ -45,8 +45,7 @@ end #sorted_unique_merge
 
 function setcolnames!(ta::TimeArray, colnames::Vector)
     length(colnames) == length(ta.colnames) ? ta.colnames[:] = colnames :
-    length(colnames) == 0 ? nothing : # colnames vector not supplied
-    error("colnames supplied is not correct size")
-		return nothing
+    length(colnames) > 0 && error("colnames supplied is not correct size")
+    return ta
 end #setcolnames!
 

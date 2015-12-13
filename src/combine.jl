@@ -38,8 +38,7 @@ function merge{T,N,M,D}(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D},
         error("merge method must be one of :inner, :left, :right, :outer")
     end
 
-    setcolnames!(ta, colnames)
-    return ta
+    return setcolnames!(ta, colnames)
 
 end
 

@@ -29,3 +29,15 @@ function by{T,N}(ta::TimeArray{T,N}, t::ASCIIString; period::Function=day)
     end
     ta[rownums]
 end 
+
+# deprecated to / from methods
+
+function to(ta::TimeArray, y::Int, m::Int, d::Int)
+    warn("to(ta::TimeArray, y::Int, m::Int, d::Int) is being deprecated.\nPlease use to(ta::TimeArray, d::TimeType) instead")
+    return to(ta, Date(y,m,d))
+end #to
+
+function from(ta::TimeArray, y::Int, m::Int, d::Int)
+    warn("from(ta::TimeArray, y::Int, m::Int, d::Int) is being deprecated.\nPlease use from(ta::TimeArray, d::TimeType) instead")
+    return from(ta, Date(y,m,d))
+end #from

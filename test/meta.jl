@@ -33,11 +33,11 @@ facts("get index operations preserve meta") do
         @fact mdata[[Date(2000,1,3), Date(2000,1,14)]].meta --> "Apple"
     end
 end
-   
+
 facts("split operations preserve meta") do
 
-    context("by") do
-        @fact by(mdata, 1, period=dayofweek).meta --> "Apple"
+    context("when") do
+        @fact when(mdata, dayofweek, 1).meta --> "Apple"
     end
 
     context("from") do
