@@ -1,9 +1,13 @@
 using TimeSeries, MarketData
+FactCheck.setstyle(:compact)
+FactCheck.onlystats(true)
 
 facts("construction with and without meta field") do
 
+    nometa = TimeArray(cl.timestamp, cl.values, cl.colnames)
+
     context("default meta field to nothing") do
-        @fact cl.meta --> nothing
+        @fact nometa.meta --> nothing
     end
 
     context("allow objects in meta field") do

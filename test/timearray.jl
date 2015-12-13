@@ -1,4 +1,6 @@
 using Base.Dates, TimeSeries, MarketData
+FactCheck.setstyle(:compact)
+FactCheck.onlystats(true)
 
 facts("field extraction methods work") do
 
@@ -106,3 +108,20 @@ facts("ordered collection methods") do
     end
 
 end
+
+facts("show method displays correctly") do
+
+    context("long TimeArray") do
+        @pending sprint(show, ohlc) --> "500x4 TimeSeries.TimeArray{Float64,2,Void} 2000-01-03 to 2001-12-31\n\n             Open      High      Low       Close     \n2000-01-03 | 104.88    112.5     101.69    111.94    \n2000-01-04 | 108.25    110.62    101.19    102.5     \n2000-01-05 | 103.75    110.56    103.0     104.0     \n2000-01-06 | 106.12    107.0     95.0      95.0      \n⋮\n2001-12-26 | 21.35     22.3      21.14     21.49     \n2001-12-27 | 21.58     22.25     21.58     22.07     \n2001-12-28 | 21.97     23.0      21.96     22.43     \n2001-12-31 | 22.51     22.66     21.83     21.9      \n"
+    end
+
+    context("short TimeArray") do
+        @pending sprint(show, ohlc[1:4]) --> "4x4 TimeSeries.TimeArray{Float64,2,Void} 2000-01-03 to 2000-01-06\n\n             Open      High      Low       Close     \n2000-01-03 | 104.88    112.5     101.69    111.94    \n2000-01-04 | 108.25    110.62    101.19    102.5     \n2000-01-05 | 103.75    110.56    103.0     104.0     \n2000-01-06 | 106.12    107.0     95.0      95.0      \n"
+    end 
+
+    context("empty TimeArray") do
+        @pending sprint(show, ohlc[1:0]) --> "0x4 TimeSeries.TimeArray{Float64,2,Void}\n\n   Open   High   Low    Close  \n"
+    end
+
+end
+

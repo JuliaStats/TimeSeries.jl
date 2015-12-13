@@ -1,4 +1,6 @@
 using TimeSeries, MarketData, Base.Dates
+FactCheck.setstyle(:compact)
+FactCheck.onlystats(true)
 
 facts("find methods") do
 
@@ -19,13 +21,20 @@ facts("split date operations") do
         @fact length(from(cl, Date(2001,12,28))) --> 2
         @fact length(to(cl, Date(2000,1,4)))     --> 2
     end
-
-    context("bydate methods correctly subset") do
-        @fact by(cl,2001, period=year).timestamp[1]   --> Date(2001,1,2)
-        @fact by(cl,2, period=month).timestamp[1]     --> Date(2000,2,1)
-        @fact by(cl,4, period=day).timestamp[1]       --> Date(2000,1,4) 
-        @fact by(cl,5, period=dayofweek).timestamp[1] --> Date(2000,1,7)
-        @fact by(cl,4, period=dayofyear).timestamp[1] --> Date(2000,1,4)
+        
+    context("when method correctly subset") do
+        @fact when(cl, day, 4).timestamp[1]              --> Date(2000,1,4) 
+        @fact when(cl, dayname, "Friday").timestamp[1]   --> Date(2000,1,7)
+        @fact when(cl, week, 5).timestamp[1]             --> Date(2000,1,31)
+        @fact when(cl, month, 5).timestamp[1]            --> Date(2000,5,1)
+        @fact when(cl, monthname, "June").timestamp[1]   --> Date(2000,6,1)
+        @fact when(cl, year, 2001).timestamp[1]          --> Date(2001,1,2)
+        @fact when(cl, dayofweek, 1).timestamp[1]        --> Date(2000,1,3)
+        # all the days in the nth week of each month
+        @fact when(cl, dayofweekofmonth, 5).timestamp[1] --> Date(2000,1,31)
+        @fact when(cl, dayofyear, 365).timestamp[1]      --> Date(2001,12,31)
+        @fact when(cl, quarterofyear, 4).timestamp[1]    --> Date(2000,10,2)
+        @fact when(cl, dayofquarter, 1).timestamp[1]     --> Date(2001,10,1)
     end
 end
 

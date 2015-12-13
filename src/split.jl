@@ -1,20 +1,10 @@
 import Base: values, find
 
-# by ############################
+# when ############################
 
-function by{T,N}(ta::TimeArray{T,N}, t::Int; period::Function=day) 
-    boolarray = [[period(ta.timestamp[d]) for d in 1:length(ta.timestamp)] .== t;] # odd syntax for t; but just t deprecated
-    rownums = round(Int64, zeros(sum(boolarray)))
-    j = 1
-    for i in 1:length(boolarray)
-        if boolarray[i]
-            rownums[j] = i
-            j+=1
-        end
-    end
-    ta[rownums]
-end 
- 
+when{T,N}(ta::TimeArray{T,N}, period::Function, t::Int)         = ta[find(period(ta.timestamp) .== t)]
+when{T,N}(ta::TimeArray{T,N}, period::Function, t::ASCIIString) = ta[find(period(ta.timestamp) .== t)]
+
 # from, to ######################
  
 from{T,N,D}(ta::TimeArray{T,N,D}, d::D) =
@@ -27,7 +17,7 @@ to{T,N,D}(ta::TimeArray{T,N,D}, d::D) =
     d > ta.timestamp[end] ? ta :
     ta[1:searchsortedlast(ta.timestamp, d)]
 
-###### findall ##################
+###### find ##################
 
 find(ta::TimeArray{Bool,1}) = find(ta.values)
 

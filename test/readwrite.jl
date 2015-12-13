@@ -1,4 +1,6 @@
 using TimeSeries, MarketData
+FactCheck.setstyle(:compact)
+FactCheck.onlystats(true)
 
 facts("readwrite parses csv file correctly") do
 

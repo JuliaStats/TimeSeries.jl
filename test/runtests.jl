@@ -9,5 +9,6 @@ include("combine.jl")
 include("meta.jl")
 include("readwrite.jl")
 include("timeseriesrc.jl")
+include("deprecated.jl")
 
 exitstatus()

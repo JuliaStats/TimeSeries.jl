@@ -1,3 +1,25 @@
+### 0.6.7
+
+* refactors when() method for 30% performance improvement
+
+### 0.6.6
+
+* begin deprecation of by() method, which is being replaced by when()
+* when() re-arranges the argument order to TimeArray, Function, Int (or ASCIIString)
+* support for ASCIIStrings are now provided for both by() and when() methods
+
+### 0.6.5
+
+* support added for displaying empty TimeArray
+* common scalar -> scalar math functions as unary operators
+* adds isnan and isinf
+* fixes tests on meta field
+* downgrades show tests to pending
+
+### 0.6.4
+
+* replaces Nothing -> nothing and String -> AbstractString
+
 ### 0.6.3
 
 * precompile support added
