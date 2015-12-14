@@ -9,7 +9,7 @@ DECIMALS
 The default setting is 4. It shows values out to four decimal places::
 
     julia> percentchange(cl)
-    499x1 TimeSeries.TimeArray{Float64,1,DataType} 2000-01-04 to 2001-12-31
+    499x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-04 to 2001-12-31
 
                  Close   
     2000-01-04 | -0.0843 
@@ -25,7 +25,7 @@ The default setting is 4. It shows values out to four decimal places::
 You can change it to whatever value you prefer. If you change it to 6, the same transformation will display like this::
 
     julia> percentchange(cl)
-    499x1 TimeSeries.TimeArray{Float64,1,DataType} 2000-01-04 to 2001-12-31
+    499x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-04 to 2001-12-31
 
                  Close     
     2000-01-04 | -0.084331 
@@ -46,7 +46,7 @@ The default setting is ``true``. This will display floats as integers, which is 
 Here is an example in REPL::
 
     julia> ohlcv
-    500x5 TimeSeries.TimeArray{Float64,2,DataType} 2000-01-03 to 2001-12-31
+    500x5 TimeSeries.TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2001-12-31
 
                  Open      High      Low       Close     Volume          
     2000-01-03 | 104.88    112.5     101.69    111.94    4783900         
@@ -65,7 +65,7 @@ If they don't, they display without a decimal. If you prefer to not use this for
 deception at play, you can assign this varaible to ``false``. The same object will then display this way::
 
     julia> ohlcv
-    500x5 TimeSeries.TimeArray{Float64,2,DataType} 2000-01-03 to 2001-12-31
+    500x5 TimeSeries.TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2001-12-31
 
                  Open      High      Low       Close     Volume          
     2000-01-03 | 104.88    112.5     101.69    111.94    4.7839e6        

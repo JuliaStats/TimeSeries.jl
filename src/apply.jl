@@ -173,7 +173,12 @@ end #lead
 ###### diff #####################
 
 # TODO: Support higher-order differencing?
-diff(ta::TimeArray; padding::Bool=false) = ta .- lag(ta, padding=padding)
+function diff(ta::TimeArray; padding::Bool=false)
+    cols = ta.colnames
+    ta = ta .- lag(ta, padding=padding)
+    ta.colnames[:] = cols
+    return ta
+end #diff
 
 ###### percentchange ############
 
@@ -184,9 +189,13 @@ function percentchange(ta::TimeArray, returns::Symbol=:simple; padding::Bool=fal
         returns = symbol(method)
     end #if
 
-    returns == :log ? diff(log(ta), padding=padding) :
-    returns == :simple ? expm1(percentchange(ta, :log, padding=padding)) :
-    error("returns must be either :simple or :log")
+    cols = ta.colnames
+    ta =  returns == :log ? diff(log(ta), padding=padding) :
+          returns == :simple ? expm1(percentchange(ta, :log, padding=padding)) :
+          error("returns must be either :simple or :log")
+    ta.colnames[:] = cols
+
+   return ta 
 
 end #percentchange
 

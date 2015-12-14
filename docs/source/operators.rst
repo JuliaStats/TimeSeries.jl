@@ -67,12 +67,12 @@ objects are provided. Operations between a single TimeArray and ``Bool`` are als
 +---------+---------------------------------+
 | Operator| Description                     |
 +=========+=================================+
-|     ``&``   | element-wise logical AND        |
+|     ``&``   | element-wise logical AND    |
 +-------------+-----------------------------+
-|     ``|``   | element-wise logical OR         |
+|     ``|``   | element-wise logical OR     |
 +-------------+-----------------------------+
-| ``!``,``~`` | element-wise logical NOT        |
+| ``!``,``~`` | element-wise logical NOT    |
 +-------------+-----------------------------+
-|     ``$``   | element-wise logical XOR        |
+|     ``$``   | element-wise logical XOR    |
 +-------------+-----------------------------+
 

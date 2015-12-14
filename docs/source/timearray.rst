@@ -4,12 +4,12 @@ The TimeArray time series type
 The TimeArray time series type is defined here (with inner constructor code removed for readability)::
 
 
-    immutable TimeArray{T,N,M} <: AbstractTimeSeries
+    immutable TimeArray{T,N,D<:TimeType,A<:AbstractArray} <: AbstractTimeSeries
 
-        timestamp::Union(Vector{Date}, Vector{DateTime})
-        values::Array{T,N}
+        timestamp::Vector{D}
+        values::A # some kind of AbstractArray{T,N}
         colnames::Vector{UTF8String}
-        meta::M
+        meta::Any
 
         # inner constructor code enforcing invariants
 
@@ -20,23 +20,23 @@ There are four fields for the type.
 timestamp
 ---------
 
-The ``timestamp`` field consists of a vector of either ``Date`` or ``DateTime`` type. The ``DateTime`` type is similar to the
-``Date`` type except it represents time frames smaller than a day. For the construction of a TimeArray to work, this vector needs 
-to be sorted. If the vector includes dates that are not sequential, the construction of the object will error out. The vector also
-needs to be ordered from oldest to latest date, but this can be handled by the constructor and will not prohibit an object from 
-being created. 
+The ``timestamp`` field consists of a vector of values of a child type of of ``TimeType`` - in practise either ``Date`` or ``DateTime``. 
+The ``DateTime`` type is similar to the ``Date`` type except it represents time frames smaller than a day. For the construction
+of a TimeArray to work, this vector needs to be sorted. If the vector includes dates that are not sequential, the construction
+of the object will error out. The vector also needs to be ordered from oldest to latest date, but this can be handled by the
+constructor and will not prohibit an object from being created. 
 
 values
 ------
 
-The ``values`` field holds the data from the time series and its length must match the length of the ``timestamp`` array. If these
+The ``values`` field holds the data from the time series and its row count must match the length of the ``timestamp`` array. If these
 do not match, the constructor will fail. All the values inside the ``values`` array must be of the same type.
 
 colnames
 --------
 
 The ``colnames`` field is a vector of type ``UTF8String`` and contains the names of the columns for each column in the ``values``
-field. The length of this vector must match the width of the ``values`` array, or the construction of an object will fail. 
+field. The length of this vector must match the column count of the ``values`` array, or the construction of an object will fail. 
 
 meta
 ----
