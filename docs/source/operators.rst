@@ -16,8 +16,7 @@ of non-dot operations are fairly clear when working with time series data, where
 timestamped values are being operated on. 
 
 The exclusion of ``/`` and ``^`` from this logic are special cases. In matrix operations ``/`` has been confused with being
-equivalent to the inverse, and because of the confusion base has excluded it. It is likewise excluded here. Base uses ``^`` to indicate matrix self-multiplication, and so it is not implemented
- in this context.
+equivalent to the inverse, and because of the confusion base has excluded it. It is likewise excluded here. Base uses ``^`` to indicate matrix self-multiplication, and so it is not implemented in this context.
 
 +------------------+------------------------------------------+
 | Operator         | Description                              |
@@ -64,15 +63,15 @@ logic
 Logical operators are defined for TimeArrays of type ``Bool`` and return a TimeArray of type ``Bool``. Values are computed on shared timestamps when two TimeArray 
 objects are provided. Operations between a single TimeArray and ``Bool`` are also supported. In keeping with base, broadcasting of logical operators is not supported.
 
-+---------+---------------------------------+
-| Operator| Description                     |
-+=========+=================================+
-|     ``&``   | element-wise logical AND    |
-+-------------+-----------------------------+
-|     ``|``   | element-wise logical OR     |
-+-------------+-----------------------------+
-| ``!``,``~`` | element-wise logical NOT    |
-+-------------+-----------------------------+
-|     ``$``   | element-wise logical XOR    |
-+-------------+-----------------------------+
++--------------+-----------------------------+
+| Operator     | Description                 |
++==============+=============================+
+|     ``&``    | element-wise logical AND    |
++--------------+-----------------------------+
+|     ``|``    | element-wise logical OR     |
++--------------+-----------------------------+
+| ``!``, ``~`` | element-wise logical NOT    |
++--------------+-----------------------------+
+|     ``$``    | element-wise logical XOR    |
++--------------+-----------------------------+
 
