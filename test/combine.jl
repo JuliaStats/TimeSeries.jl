@@ -14,21 +14,41 @@ end
 
 facts("merge works correctly") do
 
+    cl1 = cl[1:3]
+    op1 = cl[2:4]
+
     context("takes colnames kwarg correctly") do
-        @fact merge(cl,ohlc["High", "Low"], col_names=["a","b","c"]).colnames[1] --> "a"
-        @fact merge(cl,ohlc["High", "Low"], col_names=["a","b","c"]).colnames[2] --> "b"
-        @fact merge(cl,ohlc["High", "Low"], col_names=["a","b","c"]).colnames[3] --> "c"
-        @fact merge(cl,op, col_names=["a","b"]).colnames[1]                      --> "a"
-        @fact merge(cl,op, col_names=["a","b"]).colnames[2]                      --> "b"
-        @fact merge(cl,op, col_names=["a"]).colnames[1]                          --> "Close"
-        @fact merge(cl,op, col_names=["a"]).colnames[2]                          --> "Open"
-        @fact_throws merge(cl,op, col_names=["a","b","c"])
-        @fact_throws merge(cl,op, col_names=["a","b","c"])
+        @fact merge(cl, ohlc["High", "Low"], colnames=["a","b","c"]).colnames --> ["a", "b", "c"]
+        @fact merge(cl, op, colnames=["a","b"]).colnames                      --> ["a", "b"]
+        @fact_throws merge(cl, op, colnames=["a"])
+        @fact_throws merge(cl, op, colnames=["a","b","c"])
+
+        @fact merge(cl, ohlc["High", "Low"], :inner, colnames=["a","b","c"]).colnames --> ["a", "b", "c"]
+        @fact merge(cl, op, :inner, colnames=["a","b"]).colnames         --> ["a", "b"]
+        @fact_throws merge(cl, op, :inner, colnames=["a"])
+        @fact_throws merge(cl, op, :inner, colnames=["a","b","c"])
+
+        @fact merge(cl, ohlc["High", "Low"], :left, colnames=["a","b","c"]).colnames --> ["a", "b", "c"]
+        @fact merge(cl, op, :left, colnames=["a","b"]).colnames          --> ["a", "b"]
+        @fact_throws merge(cl, op, :left, colnames=["a"])
+        @fact_throws merge(cl, op, :left, colnames=["a","b","c"])
+
+        @fact merge(cl, ohlc["High", "Low"], :right, colnames=["a","b","c"]).colnames --> ["a", "b", "c"]
+        @fact merge(cl, op, :right, colnames=["a","b"]).colnames         --> ["a", "b"]
+        @fact_throws merge(cl, op, :right, colnames=["a"])
+        @fact_throws merge(cl, op, :right, colnames=["a","b","c"])
+
+        @fact merge(cl, ohlc["High", "Low"], :outer, colnames=["a","b","c"]).colnames --> ["a", "b", "c"]
+        @fact merge(cl, op, :outer, colnames=["a","b"]).colnames         --> ["a", "b"]
+        @fact_throws merge(cl, op, :outer, colnames=["a"])
+        @fact_throws merge(cl, op, :outer, colnames=["a","b","c"])
     end
   
     context("returns correct alignment with Dates and values") do
+        @fact merge(cl,op).values --> merge(cl,op, :inner).values
         @fact merge(cl,op).values[2,1] --> cl.values[2,1]
         @fact merge(cl,op).values[2,2] --> op.values[2,1]
+
     end
     
     context("aligns with disparate sized objects") do
@@ -36,12 +56,42 @@ facts("merge works correctly") do
         @fact merge(cl, op[2:5]).values[1,2]  --> op.values[2,1]
         @fact merge(cl, op[2:5]).timestamp[1] --> Date(2000,1,4)
         @fact length(merge(cl, op[2:5]))      --> 4
+
+        @fact length(merge(cl1, op1, :inner))    --> 2
+        @fact merge(cl1,op1, :inner).values[2,1] --> cl1.values[3,1]
+        @fact merge(cl1,op1, :inner).values[2,2] --> op1.values[2,1]
+
+        @fact length(merge(cl1, op1, :left))     --> 3
+        @fact merge(cl1,op1, :left).values[1,2]  --> isnan
+        @fact merge(cl1,op1, :left).values[2,1]  --> cl1.values[2,1]
+        @fact merge(cl1,op1, :left).values[2,2]  --> op1.values[1,1]
+
+        @fact length(merge(cl1, op1, :right))    --> 3
+        @fact merge(cl1,op1, :right).values[2,1] --> cl1.values[3,1]
+        @fact merge(cl1,op1, :right).values[2,2] --> op1.values[2,1]
+        @fact merge(cl1,op1, :right).values[3,1] --> isnan
+
+        @fact length(merge(cl1, op1, :outer))    --> 4
+        @fact merge(cl1,op1, :outer).values[1,2] --> isnan
+        @fact merge(cl1,op1, :outer).values[2,1] --> cl1.values[2,1]
+        @fact merge(cl1,op1, :outer).values[2,2] --> op1.values[1,1]
+        @fact merge(cl1,op1, :outer).values[4,1] --> isnan
     end
 
     context("column names match the correct values") do
-        @fact merge(cl, op[2:5]).colnames[1]  --> "Close"
-        @fact merge(cl, op[2:5]).colnames[2]  --> "Open"
-        @fact merge(op[2:5], cl).colnames[1]  --> "Open"
-        @fact merge(op[2:5], cl).colnames[2]  --> "Close"
+        @fact merge(cl, op[2:5]).colnames               --> ["Close", "Open"]
+        @fact merge(op[2:5], cl).colnames               --> ["Open", "Close"]
+
+        @fact merge(cl, op[2:5], :inner).colnames  --> ["Close", "Open"]
+        @fact merge(op[2:5], cl, :inner).colnames  --> ["Open", "Close"]
+
+        @fact merge(cl, op[2:5], :left).colnames   --> ["Close", "Open"]
+        @fact merge(op[2:5], cl, :left).colnames   --> ["Open", "Close"]
+
+        @fact merge(cl, op[2:5], :right).colnames  --> ["Close", "Open"]
+        @fact merge(op[2:5], cl, :right).colnames  --> ["Open", "Close"]
+
+        @fact merge(cl, op[2:5], :outer).colnames  --> ["Close", "Open"]
+        @fact merge(op[2:5], cl, :outer).colnames  --> ["Open", "Close"]
     end
 end

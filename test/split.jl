@@ -4,9 +4,9 @@ FactCheck.onlystats(true)
 
 facts("find methods") do
 
-    context("findall returns correct row numbers array") do
-        @fact cl[findall(cl .> op)].timestamp[1] --> Date(2000,1,3)
-        @fact length(findall(cl .> op))          --> 244
+    context("find returns correct row numbers array") do
+        @fact cl[find(cl .> op)].timestamp[1] --> Date(2000,1,3)
+        @fact length(find(cl .> op))          --> 244
     end
 
     context("findwhen returns correct Dates array") do
@@ -18,8 +18,8 @@ end
 facts("split date operations") do
 
     context("from and to correctly subset") do
-        @fact length(from(cl, 2001,12,28)) --> 2
-        @fact length(to(cl, 2000,1,4))     --> 2
+        @fact length(from(cl, Date(2001,12,28))) --> 2
+        @fact length(to(cl, Date(2000,1,4)))     --> 2
     end
         
     context("when method correctly subset") do

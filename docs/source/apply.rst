@@ -9,12 +9,12 @@ lag
 
 The ``lag`` method simply described is putting yesterday's value in today's timestamp. This is the most common use case, though
 there are many times the distance between timestamps is not 1 time unit. An arbitrary integer distance for lagging is supported, 
-with the default equal to 1.  
+with the default equal to 1.
 
 The value of the ``cl`` object on Jan 3, 2000 is 111.94. On Jan 4, 2000 it is 102.50 and on Jan 5, 2000 it's 104.0::
 
     julia> cl[1:3]
-    3x1 TimeSeries.TimeArray{Float64,1,DataType} 2000-01-03 to 2000-01-05
+    3x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-05
 
                 Close     
     2000-01-03 | 111.94    
@@ -24,7 +24,7 @@ The value of the ``cl`` object on Jan 3, 2000 is 111.94. On Jan 4, 2000 it is 10
 The ``lag`` method **moves** values up one day::
 
     julia> lag(cl[1:3])
-    2x1 TimeSeries.TimeArray{Float64,1,DataType} 2000-01-04 to 2000-01-05
+    2x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-04 to 2000-01-05
 
                  Close     
     2000-01-04 | 111.94    
@@ -32,7 +32,16 @@ The ``lag`` method **moves** values up one day::
 
 You will notice that since there is no known value for lagging the first day, the observation on that timestamp is 
 omitted. This behavior is common in TimeSeries. When observations are consumed in a transformation, the artifact dates
-are not preserved with a missingness value.
+are not preserved with a missingness value. To pad the returned TimeArray with ``NaN`` values instead, you can pass
+``padding=true`` as a keyword argument::
+
+    julia> lag(cl[1:3], padding=true)
+    3x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-05
+
+                 Close     
+    2000-01-03 | NaN       
+    2000-01-04 | 111.94    
+    2000-01-05 | 102.5
 
 lead
 ----
@@ -41,7 +50,7 @@ Leading values operates similarly to lagging values, but moves things in the oth
 supported::
 
     julia> lead(cl[1:3])
-    2x1 TimeSeries.TimeArray{Float64,1,DataType} 2000-01-03 to 2000-01-04
+    2x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-04
 
                  Close     
     2000-01-03 | 102.5     
@@ -53,7 +62,7 @@ The ``cl`` object is 500 rows long so if we lead by 499 days, we should put the 
 to be on Dec 31, 2001) into the first date's value slot::
 
     julia> lead(cl, 499)
-    1x1 TimeSeries.TimeArray{Float64,1,DataType} 2000-01-03 to 2000-01-03
+    1x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-03
 
                  Close    
     2000-01-03 | 21.9     
@@ -72,7 +81,7 @@ if that represents too many letters for you to type::
 The ``percentchange`` method includes the option to return a simple return or a log return. The default is set to ``simple``::
 
     julia> percentchange(cl)
-    499x1 TimeSeries.TimeArray{Float64,1,DataType} 2000-01-04 to 2001-12-31
+    499x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-04 to 2001-12-31
 
                  Close   
     2000-01-04 | -0.0843 
@@ -86,10 +95,10 @@ The ``percentchange`` method includes the option to return a simple return or a 
     2001-12-31 | -0.0236 
 
 Log returns are popular for downstream calculations since adding returns is simpler than multiplying them. To create log
-returns, pass the string ``log`` to the method::
+returns, pass the symbol ``:log`` to the method::
 
-    julia> percentchange(cl, method="log")
-    499x1 TimeSeries.TimeArray{Float64,1,DataType} 2000-01-04 to 2001-12-31
+    julia> percentchange(cl, :log)
+    499x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-04 to 2001-12-31
 
                  Close   
     2000-01-04 | -0.0881 
@@ -113,7 +122,7 @@ arguments: the function that you want to use on your window and the size of the 
 In our moving average example, we would pass arguments this way::
 
     julia> moving(cl, mean, 10)
-    491x1 TimeSeries.TimeArray{Float64,1,DataType} 2000-01-14 to 2001-12-31
+    491x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-14 to 2001-12-31
 
                  Close     
     2000-01-14 | 98.782    
@@ -137,7 +146,7 @@ Suppose you want to keep track of the sum of all the values from the beginning t
 ``upto`` method like this::
 
     julia> upto(cl, sum)
-    500x1 TimeSeries.TimeArray{Float64,1,DataType} 2000-01-03 to 2001-12-31
+    500x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
 
                  Close       
     2000-01-03 | 111.94      
@@ -157,7 +166,7 @@ place when one is available. Taking our summation example above, we could instea
 substantial performance improvements::
 
     julia> basecall(cl,cumsum)
-    500x1 TimeSeries.TimeArray{Float64,1,DataType} 2000-01-03 to 2001-12-31
+    500x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
 
                  Close       
     2000-01-03 | 111.94      

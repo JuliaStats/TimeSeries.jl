@@ -1,4 +1,4 @@
-import Base.values
+import Base: values, find
 
 # when ############################
 
@@ -7,15 +7,19 @@ when{T,N}(ta::TimeArray{T,N}, period::Function, t::ASCIIString) = ta[find(period
 
 # from, to ######################
  
-from{T,N}(ta::TimeArray{T,N}, y::Int, m::Int, d::Int) = ta[Date(y,m,d):last(ta.timestamp)]
-to{T,N}(ta::TimeArray{T,N}, y::Int, m::Int, d::Int)   = ta[ta.timestamp[1]:Date(y,m,d)]
+from{T,N,D}(ta::TimeArray{T,N,D}, d::D) =
+    d < ta.timestamp[1] ? ta :
+    d > ta.timestamp[end] ? ta[1:0] :
+    ta[searchsortedfirst(ta.timestamp, d):end]
 
-###### findall ##################
+to{T,N,D}(ta::TimeArray{T,N,D}, d::D) =
+    d < ta.timestamp[1] ? ta[1:0] :
+    d > ta.timestamp[end] ? ta :
+    ta[1:searchsortedlast(ta.timestamp, d)]
 
-import Base.find
+###### find ##################
 
-findall(ta::TimeArray{Bool,1}) = find(ta.values)
-find(ta::TimeArray{Bool,1})    = ta[(findall(ta))]
+find(ta::TimeArray{Bool,1}) = find(ta.values)
 
 ###### findwhen #################
 

@@ -19,13 +19,13 @@ Integers
 Examples in REPL::
 
     julia> ohlc[1]
-    1x4 TimeSeries.TimeArray{Float64,2,DataType} 2000-01-03 to 2000-01-03
+    1x4 TimeSeries.TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-03
 
                  Open      High      Low       Close     
     2000-01-03 | 104.88    112.5     101.69    111.94    
 
     julia> ohlc[1:3]
-    3x4 TimeSeries.TimeArray{Float64,2,DataType} 2000-01-03 to 2000-01-05
+    3x4 TimeSeries.TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-05
     
                  Open      High      Low       Close     
     2000-01-03 | 104.88    112.5     101.69    111.94    
@@ -33,7 +33,7 @@ Examples in REPL::
     2000-01-05 | 103.75    110.56    103.0     104.0     
 
     julia> ohlc[[1:3;8]]
-    4x4 TimeSeries.TimeArray{Float64,2,DataType} 2000-01-03 to 2000-01-12
+    4x4 TimeSeries.TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-12
 
                  Open      High      Low       Close     
     2000-01-03 | 104.88    112.5     101.69    111.94    
@@ -55,9 +55,9 @@ Strings
 Examples in REPL::
 
     julia> ohlc["Open"]
-    500x1 TimeSeries.TimeArray{Float64,1,DataType} 2000-01-03 to 2001-12-31
+    500x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
 
-             Open      
+                 Open      
     2000-01-03 | 104.88    
     2000-01-04 | 108.25    
     2000-01-05 | 103.75    
@@ -69,7 +69,7 @@ Examples in REPL::
     2001-12-31 | 22.51     
 
     julia> ohlc["Open","Close"]
-    500x2 TimeSeries.TimeArray{Float64,2,DataType} 2000-01-03 to 2001-12-31
+    500x2 TimeSeries.TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2001-12-31
 
                  Open      Close     
     2000-01-03 | 104.88    111.94    
@@ -98,20 +98,20 @@ Date and DateTime
 Examples in REPL::
 
     julia> ohlc[Date(2000,1,3)]
-    1x4 TimeSeries.TimeArray{Float64,2,DataType} 2000-01-03 to 2000-01-03
+    1x4 TimeSeries.TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-03
 
              Open      High      Low       Close     
     2000-01-03 | 104.88    112.5     101.69    111.94    
     
     julia> ohlc[[Date(2000,1,3),Date(2000,2,4)]]
-    2x4 TimeSeries.TimeArray{Float64,2,DataType} 2000-01-03 to 2000-02-04
+    2x4 TimeSeries.TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-02-04
 
               Open      High      Low       Close     
     2000-01-03 | 104.88    112.5     101.69    111.94    
     2000-02-04 | 103.94    110.0     103.62    108.0      
 
     julia> ohlc[Date(2000,1,3):Date(2000,2,4)]
-    24x4 TimeSeries.TimeArray{Float64,2,DataType} 2000-01-03 to 2000-02-04
+    24x4 TimeSeries.TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-02-04
 
     Open      High      Low       Close     
     2000-01-03 | 104.88    112.5     101.69    111.94    
@@ -138,7 +138,7 @@ Mixed approach
 Examples in REPL::
 
     julia> ohlc["Open"][1:3]
-    3x1 TimeSeries.TimeArray{Float64,1,DataType} 2000-01-03 to 2000-01-05
+    3x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-05
 
                  Open      
     2000-01-03 | 104.88    
@@ -146,7 +146,7 @@ Examples in REPL::
     2000-01-05 | 103.75    
 
     julia> ohlc["Open"][Date(2000,1,3)]
-    1x1 TimeSeries.TimeArray{Float64,1,DataType} 2000-01-03 to 2000-01-03
+    1x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-03
 
                  Open      
     2000-01-03 | 104.88    

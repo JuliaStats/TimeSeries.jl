@@ -4,17 +4,17 @@ import Base: convert, length, show, getindex, start, next, done, isempty, endof
 
 abstract AbstractTimeSeries
 
-immutable TimeArray{T,N,M} <: AbstractTimeSeries
+immutable TimeArray{T, N, D<:TimeType, A<:AbstractArray} <: AbstractTimeSeries
 
-    timestamp::Union{Vector{Date}, Vector{DateTime}}
-    values::AbstractArray{T,N}
+    timestamp::Vector{D}
+    values::A
     colnames::Vector{UTF8String}
-    meta::M
+    meta::Any
 
-    function TimeArray(timestamp::Union{Vector{Date}, Vector{DateTime}},
+    function TimeArray(timestamp::Vector{D},
                        values::AbstractArray{T,N},
                        colnames::Vector{UTF8String},
-                       meta::M)
+                       meta::Any)
                            nrow, ncol = size(values, 1), size(values, 2)
                            nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
                            ncol != size(colnames,1) ? error("column names must match width of array"):
@@ -26,12 +26,14 @@ immutable TimeArray{T,N,M} <: AbstractTimeSeries
     end
 end
 
-TimeArray{T,N,S<:AbstractString,M}(d::Union{Vector{Date}, Vector{DateTime}}, v::AbstractArray{T,N}, c::Vector{S}, m::M) = TimeArray{T,N,M}(d,v,map(utf8,c),m)
-TimeArray{T,N,S<:AbstractString,M}(d::Union{Date, DateTime}, v::AbstractArray{T,N}, c::Vector{S}, m::M) = TimeArray([d],v,map(utf8,c),m)
+TimeArray{T,N,D<:TimeType,S<:AbstractString}(d::Vector{D}, v::AbstractArray{T,N}, c::Vector{S}, m::Any) =
+        TimeArray{T,N,D,typeof(v)}(d,v,map(utf8,c),m)
+TimeArray{T,N,D<:TimeType,S<:AbstractString}(d::D, v::AbstractArray{T,N}, c::Vector{S}, m::Any) =
+        TimeArray{T,N,D,typeof(v)}([d],v,map(utf8,c),m)
 
 # when no meta is provided
-TimeArray{T,N}(d::Union{Vector{Date}, Vector{DateTime}}, v::AbstractArray{T,N}, c) = TimeArray(d,v,c,nothing)
-TimeArray{T,N}(d::Union{Date, DateTime}, v::AbstractArray{T,N}, c) = TimeArray([d],v,c,nothing)
+TimeArray{T,N,D<:TimeType}(d::Vector{D}, v::AbstractArray{T,N}, c) = TimeArray(d,v,c,nothing)
+TimeArray{T,N,D<:TimeType}(d::D, v::AbstractArray{T,N}, c) = TimeArray([d],v,c,nothing)
 
 ###### conversion ###############
 
@@ -43,9 +45,7 @@ convert(x::TimeArray{Bool,2}) = convert(TimeArray{Float64,2}, x::TimeArray{Bool,
 
 ###### length ###################
 
-function length(ata::AbstractTimeSeries)
-    length(ata.timestamp)
-end
+length(ata::AbstractTimeSeries) = length(ata.timestamp)
 
 ###### iterator protocol #########
 
@@ -137,70 +137,63 @@ end
 ###### getindex #################
 
 # single row
-function getindex{T,N}(ta::TimeArray{T,N}, n::Int)
+function getindex{T,N,D}(ta::TimeArray{T,N,D}, n::Int)
     TimeArray(ta.timestamp[n], ta.values[n,:], ta.colnames, ta.meta)
 end
 
 # single row 1d
-function getindex{T}(ta::TimeArray{T,1}, n::Int)
+function getindex{T,D}(ta::TimeArray{T,1,D}, n::Int)
     TimeArray(ta.timestamp[n], ta.values[[n]], ta.colnames, ta.meta)
 end
 
 # range of rows
-function getindex{T,N}(ta::TimeArray{T,N}, r::UnitRange{Int})
+function getindex{T,N,D}(ta::TimeArray{T,N,D}, r::UnitRange{Int})
     TimeArray(ta.timestamp[r], ta.values[r,:], ta.colnames, ta.meta)
 end
 
 # range of 1d rows
-function getindex{T}(ta::TimeArray{T,1}, r::UnitRange{Int})
+function getindex{T,D}(ta::TimeArray{T,1,D}, r::UnitRange{Int})
     TimeArray(ta.timestamp[r], ta.values[r], ta.colnames, ta.meta)
 end
 
 # array of rows
-function getindex{T,N}(ta::TimeArray{T,N}, a::Array{Int})
+function getindex{T,N,D}(ta::TimeArray{T,N,D}, a::Vector{Int})
     TimeArray(ta.timestamp[a], ta.values[a,:], ta.colnames, ta.meta)
 end
 
 # array of 1d rows
-function getindex{T}(ta::TimeArray{T,1}, a::Array{Int})
+function getindex{T,D}(ta::TimeArray{T,1,D}, a::Vector{Int})
     TimeArray(ta.timestamp[a], ta.values[a], ta.colnames, ta.meta)
 end
 
 # single column by name 
-function getindex{T,N}(ta::TimeArray{T,N}, s::AbstractString)
+function getindex{T,N,D}(ta::TimeArray{T,N,D}, s::AbstractString)
     n = findfirst(ta.colnames, s)
     TimeArray(ta.timestamp, ta.values[:, n], UTF8String[s], ta.meta)
 end
 
 # array of columns by name
-function getindex{T,N}(ta::TimeArray{T,N}, args::AbstractString...)
+function getindex{T,N,D}(ta::TimeArray{T,N,D}, args::AbstractString...)
     ns = [findfirst(ta.colnames, a) for a in args]
     TimeArray(ta.timestamp, ta.values[:,ns], UTF8String[a for a in args], ta.meta)
 end
 
 # single date
-function getindex{T,N}(ta::TimeArray{T,N}, d::Union{Date, DateTime})
-    for i in 1:length(ta)
-        if [d] == ta[i].timestamp 
-            return ta[i] 
-        else 
-            nothing
-       end
-    end
+function getindex{T,N,D}(ta::TimeArray{T,N,D}, d::D)
+    idxs = searchsorted(ta.timestamp, d)
+    length(idxs) == 1 ? ta[idxs[1]] : nothing
 end
  
 # multiple dates
-function getindex{T,N}(ta::TimeArray{T,N}, dates::Union{Vector{Date}, Vector{DateTime}})
+function getindex{T,N,D}(ta::TimeArray{T,N,D}, dates::Vector{D})
     dates = sort(dates)
-    counter, _ = overlaps(ta.timestamp, dates)
-    ta[counter]
+    idxs, _ = overlaps(ta.timestamp, dates)
+    ta[idxs]
 end #getindex
 
-function getindex{T,N}(ta::TimeArray{T,N}, r::Union{StepRange{Date}, StepRange{DateTime}}) 
-    ta[collect(r)]
-end
+getindex{T,N,D}(ta::TimeArray{T,N,D}, r::StepRange{D}) = ta[collect(r)]
 
-getindex{T,N}(ta::TimeArray{T,N}, k::TimeArray{Bool,1}) = ta[findwhen(k)]
+getindex{T,N,D}(ta::TimeArray{T,N,D}, k::TimeArray{Bool,1}) = ta[findwhen(k)]
 
 # day of week
 # getindex{T,N}(ta::TimeArray{T,N}, d::DAYOFWEEK) = ta[dayofweek(ta.timestamp) .== d]

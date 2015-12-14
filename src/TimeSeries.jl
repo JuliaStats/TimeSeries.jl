@@ -7,13 +7,14 @@ module TimeSeries
 using Base.Dates
 
 export TimeArray, AbstractTimeSeries,
-       when, from, to, findwhen, findall, timestamp, values, colnames, meta,
-       lag, lead, percentchange, moving, upto,
+       when, from, to, findwhen, find, timestamp, values, colnames, meta,
+       lag, lead, diff, percentchange, moving, upto,
+       uniformspaced, uniformspace, dropnan,
        basecall,
        merge, collapse,
-       readtimearray,
+       readtimearray, writetimearray,
        # deprecated
-       by
+       by, findall
 
 ###### include ##################
 

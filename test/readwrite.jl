@@ -29,4 +29,16 @@ facts("readwrite parses csv file correctly") do
         tm = readtimearray(Pkg.dir("TimeSeries/test/data/datetime3.csv"), format="yyyy/mm/dd|HH:MM:SS", meta="foo")
         @fact tm.meta --> "foo"
     end
+
+    context("writetimearray output can be round-tripped") do
+        filename = "$(randstring()).csv"
+        uohlc = uniformspace(ohlc)
+        writetimearray(uohlc, filename)
+        readback = readtimearray(filename)
+        @fact uohlc.colnames                         --> readback.colnames
+        @fact uohlc.timestamp                        --> readback.timestamp
+        @fact isequal(uohlc.values, readback.values) --> true
+        rm(filename)
+    end
+
 end
