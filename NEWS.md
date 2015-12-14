@@ -1,3 +1,13 @@
+### 0.7.0
+
+* TimeType replaces Union{Date, DateTime}
+* meta field in Type downgraded from parameterized to Any
+* NaN sentinels added as a kwarg to lag and lead methods
+* merge method now supports left, right and outer joins
+* percentchange takes method argument as a Symbol vs String
+* new methods added including: uniformspaced, uniformspace, dropnan, diff
+* findall added to deprecated list in favor of find
+
 ### 0.6.7
 
 * refactors when() method for 30% performance improvement
