@@ -101,6 +101,8 @@ function show{T,N}(io::IO, ta::TimeArray{T,N})
             print(io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
             intcatcher[j] & SHOWINT ?
             print(io, rpad(round(Integer, ta.values[i,j]), colwidth[j] + 2, " ")) : 
+            isnan(ta.values[i,j]) ?
+            print(io, rpad("NA", colwidth[j] + 2, " ")) :
             print(io, rpad(round(ta.values[i,j], DECIMALS), colwidth[j] + 2, " "))
         end
         println(io, "")
@@ -115,6 +117,8 @@ function show{T,N}(io::IO, ta::TimeArray{T,N})
             print(io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
             intcatcher[j] & SHOWINT ?
             print(io, rpad(round(Integer, ta.values[i,j]), colwidth[j] + 2, " ")) : 
+            isnan(ta.values[i,j]) ?
+            print(io, rpad("NA", colwidth[j] + 2, " ")) :
             print(io, rpad(round(ta.values[i,j], DECIMALS), colwidth[j] + 2, " "))
         end
         println(io, "")
@@ -127,6 +131,8 @@ function show{T,N}(io::IO, ta::TimeArray{T,N})
             print(io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
             intcatcher[j] & SHOWINT ?
             print(io, rpad(round(Integer, ta.values[i,j]), colwidth[j] + 2, " ")) :
+            isnan(ta.values[i,j]) ?
+            print(io, rpad("NA", colwidth[j] + 2, " ")) :
             print(io, rpad(round(ta.values[i,j], DECIMALS), colwidth[j] + 2, " "))
         end
         println(io, "")
