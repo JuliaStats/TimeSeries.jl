@@ -1,6 +1,6 @@
 ###### readtimearray ############
 
-function readtimearray(fname::AbstractString; delim=',', meta=nothing, format::AbstractString="")
+function readtimearray(fname::AbstractString; delim::Char=',', meta=nothing, format::AbstractString="")
     cfile = readdlm(fname, delim)
     
     # remove empty lines if any
