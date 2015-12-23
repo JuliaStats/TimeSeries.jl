@@ -1,7 +1,7 @@
 ###### readtimearray ############
 
-function readtimearray(fname::AbstractString; meta=nothing, format::AbstractString="")
-    cfile = readcsv(fname)
+function readtimearray(fname::AbstractString; delim=',', meta=nothing, format::AbstractString="")
+    cfile = readdlm(fname, delim)
     
     # remove empty lines if any
     inoempty = find(s -> length(s) > 2, cfile[:,1])
