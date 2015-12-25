@@ -1,3 +1,7 @@
+### 0.7.1
+
+* readtimearray method now allows arbitrary delimiters (thanks dourouc05) 
+
 ### 0.7.0
 
 * TimeType replaces Union{Date, DateTime}
