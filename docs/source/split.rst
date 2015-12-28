@@ -103,7 +103,7 @@ to
 
 The ``to`` method truncates a TimeArray after the date passed to the method::
 
-    julia> to(cl, 2000, 1, 5)
+    julia> to(cl, Date(2000, 1, 5))
     3x1 TimeSeries.TimeArray{Float64,1,DataType} 2000-01-03 to 2000-01-05
 
                  Close
