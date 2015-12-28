@@ -93,6 +93,14 @@ function vcat{T,N,D}(TA::TimeArray{T,N,D}...)
       error("metadata doesn't match")
     end
   end
+  
+  # Check column names are identical. 
+  prev_colnames = TA[1].colnames
+  for ta in TA
+    if ta.colnames != prev_colnames
+      error("column names don't match")
+    end
+  end
 
   # Concatenate the contents. 
   timestamps = vcat([ta.timestamp for ta in TA]...)
