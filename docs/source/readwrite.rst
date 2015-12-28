@@ -13,11 +13,11 @@ The ``readtimearray`` method is a wrapper for the ``Base.readcsv`` method that r
 The ``fname`` argument is a string that represents the location and name of the ``csv`` file that you wish to parse into
 a TimeArray object. Optionally, you can add a value to the ``meta`` field.
 
-More generally, this function accepts arbitrary delimiters with ``delim``, just like ``Base.readcsv``. 
+More generally, this function accepts arbitrary delimiters with ``delim``, just like ``Base.readcsv``.
 
 For datetime data that has odd formatting, a ``format`` argument is provided where users can pass the format of their data.
 
-For example:: 
+For example::
 
     tm = readtimearray("close.csv", format="dd/mm/yyyy HH:MM", delim=';')
 
