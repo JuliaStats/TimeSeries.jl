@@ -119,7 +119,7 @@ The ``findwhen`` method test a condition and returns a vector of ``Date`` or ``D
     julia> green = findwhen(ohlc["Close"] .> ohlc["Open"]);
 
     julia> typeof(green)
-    Array{Base.Dates.Date,1}
+    Array{Date,1}
 
     julia> ohlc[green]
     244x4 TimeSeries.TimeArray{Float64,2,DataType} 2000-01-03 to 2001-12-28
