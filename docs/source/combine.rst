@@ -11,7 +11,7 @@ The ``merge`` method performs joins between two TimeArrays. The default behaviou
 TimeArray contains only timestamps that both TimeArrays share, and values that correspond to that timestamp.
 
 The AAPL object from MarketData has 8,336 rows of data from Dec 12, 1980 to Dec 31, 2013. If we merge it with the CAT object, which
-contains 13,090 rows of data from Jan 2, 1962 to Dec 31, 2013 we might expect the resulting TimeArray to have 8,336 rows of 
+contains 13,090 rows of data from Jan 2, 1962 to Dec 31, 2013 we might expect the resulting TimeArray to have 8,336 rows of
 data, corresponding to the length of AAPL. This assumes that every day that Apple Computer, Inc. traded, Caterpillar, Inc likewise
 traded. It turns out that this isn't true. CAT did not trade on Sep 27, 1985 because Hurricane Glorio shut down the New York
 Stock Exchage. Apple Computer trades on the electronic NASDAQ and its trading was not halted on that day. The result of the merge
@@ -28,29 +28,29 @@ for a particular timestamp only exists in one of the series to be merged. For ex
     julia> merge(op[1:3], cl[2:4], :left)
     3x2 TimeSeries.TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-05
 
-                 Open      Close     
-    2000-01-03 | 104.88    NaN       
-    2000-01-04 | 108.25    102.5     
-    2000-01-05 | 103.75    104.0     
+                 Open      Close
+    2000-01-03 | 104.88    NaN
+    2000-01-04 | 108.25    102.5
+    2000-01-05 | 103.75    104.0
 
 
     julia> merge(op[1:3], cl[2:4], :right)
     3x2 TimeSeries.TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-04 to 2000-01-06
 
-                 Open      Close     
-    2000-01-04 | 108.25    102.5     
-    2000-01-05 | 103.75    104.0     
-    2000-01-06 | NaN       95.0      
+                 Open      Close
+    2000-01-04 | 108.25    102.5
+    2000-01-05 | 103.75    104.0
+    2000-01-06 | NaN       95.0
 
 
     julia> merge(op[1:3], cl[2:4], :outer)
     4x2 TimeSeries.TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-06
 
-                 Open      Close     
-    2000-01-03 | 104.88    NaN       
-    2000-01-04 | 108.25    102.5     
-    2000-01-05 | 103.75    104.0     
-    2000-01-06 | NaN       95.0      
+                 Open      Close
+    2000-01-03 | 104.88    NaN
+    2000-01-04 | 108.25    102.5
+    2000-01-05 | 103.75    104.0
+    2000-01-06 | NaN       95.0
 
 Currently, the ``merge`` method will not merge objects that have different values in the ``meta`` field. The APPL and CAT objects
 have ``Void`` in their respective ``meta`` fields.
@@ -67,27 +67,27 @@ time frame is the ``week`` method, which is defined in ``Base.Dates``. A list of
 +--------------+-------------+
 | Dates method | Time length |
 +==============+=============+
-| ``day``      | daily       | 
-+--------------+-------------+ 
-| ``week``     | weekly      | 
-+--------------+-------------+ 
-| ``month``    | monthly     | 
-+--------------+-------------+ 
-| ``year``     | yearly      | 
-+--------------+-------------+ 
+| ``day``      | daily       |
++--------------+-------------+
+| ``week``     | weekly      |
++--------------+-------------+
+| ``month``    | monthly     |
++--------------+-------------+
+| ``year``     | yearly      |
++--------------+-------------+
 
 Showing this code in REPL::
 
     julia> collapse(cl,last,period=month)
     24x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-31 to 2001-12-31
 
-                 Close     
-    2000-01-31 | 103.75    
-    2000-02-29 | 114.62    
-    2000-03-31 | 135.81    
-    2000-04-28 | 124.06    
+                 Close
+    2000-01-31 | 103.75
+    2000-02-29 | 114.62
+    2000-03-31 | 135.81
+    2000-04-28 | 124.06
     ⋮
-    2001-09-28 | 15.51     
-    2001-10-31 | 17.56     
-    2001-11-30 | 21.3      
-    2001-12-31 | 21.9    
+    2001-09-28 | 15.51
+    2001-10-31 | 17.56
+    2001-11-30 | 21.3
+    2001-12-31 | 21.9

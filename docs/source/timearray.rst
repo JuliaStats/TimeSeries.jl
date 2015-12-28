@@ -15,16 +15,16 @@ The TimeArray time series type is defined here (with inner constructor code remo
 
     end
 
-There are four fields for the type. 
+There are four fields for the type.
 
 timestamp
 ---------
 
-The ``timestamp`` field consists of a vector of values of a child type of of ``TimeType`` - in practise either ``Date`` or ``DateTime``. 
+The ``timestamp`` field consists of a vector of values of a child type of of ``TimeType`` - in practise either ``Date`` or ``DateTime``.
 The ``DateTime`` type is similar to the ``Date`` type except it represents time frames smaller than a day. For the construction
 of a TimeArray to work, this vector needs to be sorted. If the vector includes dates that are not sequential, the construction
 of the object will error out. The vector also needs to be ordered from oldest to latest date, but this can be handled by the
-constructor and will not prohibit an object from being created. 
+constructor and will not prohibit an object from being created.
 
 values
 ------
@@ -36,12 +36,12 @@ colnames
 --------
 
 The ``colnames`` field is a vector of type ``UTF8String`` and contains the names of the columns for each column in the ``values``
-field. The length of this vector must match the column count of the ``values`` array, or the construction of an object will fail. 
+field. The length of this vector must match the column count of the ``values`` array, or the constructor will fail.
 
 meta
 ----
 
 The ``meta`` field defaults to holding nothing, which is represented by type ``Void``. This default is designed to allow programmers
-to ignore this field. For those that wish to utilize this field, ``meta`` can hold common types such as ``String`` or more elaborate 
+to ignore this field. For those who wish to utilize this field, ``meta`` can hold common types such as ``String`` or more elaborate
 user-defined types. One might want to assign a name to an object that is immutable versus relying on variable bindings outside of
 the object's type fields.
