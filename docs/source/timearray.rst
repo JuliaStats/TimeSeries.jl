@@ -36,12 +36,12 @@ colnames
 --------
 
 The ``colnames`` field is a vector of type ``UTF8String`` and contains the names of the columns for each column in the ``values``
-field. The length of this vector must match the column count of the ``values`` array, or the construction of an object will fail.
+field. The length of this vector must match the column count of the ``values`` array, or the constructor will fail.
 
 meta
 ----
 
 The ``meta`` field defaults to holding nothing, which is represented by type ``Void``. This default is designed to allow programmers
-to ignore this field. For those that wish to utilize this field, ``meta`` can hold common types such as ``String`` or more elaborate
+to ignore this field. For those who wish to utilize this field, ``meta`` can hold common types such as ``String`` or more elaborate
 user-defined types. One might want to assign a name to an object that is immutable versus relying on variable bindings outside of
 the object's type fields.
