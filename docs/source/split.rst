@@ -90,7 +90,7 @@ from
 
 The ``from`` method truncates a TimeArray starting with the date passed to the method::
 
-    julia> from(cl, 2001, 12, 27)
+    julia> from(cl, Date(2001, 12, 27))
     3x1 TimeSeries.TimeArray{Float64,1,DataType} 2001-12-27 to 2001-12-31
 
                  Close
