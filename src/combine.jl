@@ -1,4 +1,4 @@
-import Base: merge, vcat
+import Base: merge, vcat, map
 
 ###### merge ####################
 
