@@ -91,3 +91,35 @@ Showing this code in REPL::
     2001-10-31 | 17.56
     2001-11-30 | 21.3
     2001-12-31 | 21.9
+
+vcat
+----
+
+The ``vcat`` method is used to concatenate time series: if you have two time series with the same columns, but two distinct 
+periods of time, this function can merge them into a single object. Notably, it can be used to merge data that is split into multiple
+file. Its behaviour is quite different from ``merge``, which does not consider that its arguments are actually the *same* time series. 
+
+For example::
+
+    julia> a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"])
+    2x1 TimeSeries.TimeArray{Int64,1,Date,Array{Int64,1}} 2015-10-01 to 2015-11-01
+    
+                 Number
+    2015-10-01 | 15
+    2015-11-01 | 16
+    
+    
+    julia> b = TimeArray([Date(2015, 12, 01)], [17], ["Number"])
+    1x1 TimeSeries.TimeArray{Int64,1,Date,Array{Int64,1}} 2015-12-01 to 2015-12-01
+    
+                 Number
+    2015-12-01 | 17
+    
+    
+    julia> vcat(a,b)
+    3x1 TimeSeries.TimeArray{Int64,1,Date,Array{Int64,1}} 2015-10-01 to 2015-12-01
+    
+                 Number
+    2015-10-01 | 15
+    2015-11-01 | 16
+    2015-12-01 | 17
