@@ -107,3 +107,16 @@ function vcat{T,N,D}(TA::TimeArray{T,N,D}...)
   values = vcat([ta.values for ta in TA]...)
   return TimeArray(timestamps, values, TA[1].colnames, TA[1].meta)
 end
+
+# map ######################
+
+function map{T,N,D,A}(f::Function, ta::TimeArray{T,N,D,A})
+  timestamps = Array(typeof(ta.timestamp[1]), length(ta))
+  values = Array(typeof(ta.values[1, 1]), length(ta)) # copy(ta.values)
+  
+  for i in 1:length(ta)
+    timestamps[i], values[i, :] = f(ta.timestamp[i], vec(ta.values[i, :]))
+  end
+
+  return TimeArray(timestamps, values, ta.colnames, ta.meta)
+end
