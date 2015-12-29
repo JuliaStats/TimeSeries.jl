@@ -112,7 +112,7 @@ end
 
 function map{T,N,D,A}(f::Function, ta::TimeArray{T,N,D,A})
   timestamps = Array(typeof(ta.timestamp[1]), length(ta))
-  values = Array(typeof(ta.values[1, 1]), length(ta)) # copy(ta.values)
+  values = similar(ta.values)
   
   for i in 1:length(ta)
     timestamps[i], values[i, :] = f(ta.timestamp[i], vec(ta.values[i, :]))

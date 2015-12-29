@@ -99,6 +99,8 @@ The ``vcat`` method is used to concatenate time series: if you have two time ser
 periods of time, this function can merge them into a single object. Notably, it can be used to merge data that is split into multiple
 file. Its behaviour is quite different from ``merge``, which does not consider that its arguments are actually the *same* time series. 
 
+This concatenation is *vertical* (``vcat``) because it does not create columns, it extends existing ones (which are represented vertically). 
+
 For example::
 
     julia> a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"])
@@ -123,3 +125,27 @@ For example::
     2015-10-01 | 15
     2015-11-01 | 16
     2015-12-01 | 17
+
+map
+---
+
+This function allows complete transformation of the data within the time series, with alteration on both the time stamps and the associated values. 
+It works exactly like ``Base.map``: the first argument is a binary function (the time stamp and the values) that returns two values, respectively 
+the new time stamp and the new vector of values. It does not perform any kind of compression like ``collapse``, but rather transformations. 
+
+The simplest example is to postpone all time stamps in the given time series, here by one year:: 
+
+    julia> a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"])
+    2x1 TimeSeries.TimeArray{Int64,1,Date,Array{Int64,1}} 2015-10-01 to 2015-11-01
+    
+                 Number
+    2015-10-01 | 15
+    2015-11-01 | 16
+    
+    
+    julia> map((timestamp, values) -> (timestamp + Dates.Year(1), values), a)
+    2x1 TimeSeries.TimeArray{Int64,1,Date,Array{Int64,1}} 2016-10-01 to 2016-11-01
+    
+                 Number
+    2016-10-01 | 15
+    2016-11-01 | 16
