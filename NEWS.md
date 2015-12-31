@@ -1,3 +1,7 @@
+### 0.7.2
+
+* map and vcat methods added (thanks again dourouc05)
+
 ### 0.7.1
 
 * readtimearray method now allows arbitrary delimiters (thanks dourouc05) 
