@@ -95,3 +95,57 @@ facts("merge works correctly") do
         @fact merge(op[2:5], cl, :outer).colnames  --> ["Open", "Close"]
     end
 end
+
+facts("vcat works correctly") do
+    context("concatenates time series correctly in 1D") do
+        a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"])
+        b = TimeArray([Date(2015, 12, 01)], [17], ["Number"])
+        c = vcat(a, b)
+    
+        @fact length(c)  --> length(a) + length(b)
+        @fact c.colnames --> a.colnames
+        @fact c.colnames --> b.colnames
+        @fact c.values   --> [15, 16, 17]
+    end
+    
+    context("concatenates time series correctly in 2D") do
+        a = TimeArray([Date(2015, 09, 01), Date(2015, 10, 01), Date(2015, 11, 01)], [[15 16]; [17 18]; [19 20]], ["Number 1", "Number 2"])
+        b = TimeArray([Date(2015, 12, 01)], [18 18], ["Number 1", "Number 2"])
+        c = vcat(a, b)
+    
+        @fact length(c)  --> length(a) + length(b)
+        @fact c.colnames --> a.colnames
+        @fact c.colnames --> b.colnames
+        @fact c.values   --> [[15 16]; [17 18]; [19 20]; [18 18]]
+    end
+  
+    context("rejects when column names do not match") do
+        a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"])
+        b = TimeArray([Date(2015, 12, 01)], [17], ["Data does not match number"])
+    
+        @fact_throws vcat(a, b)
+    end
+end
+
+facts("map works correctly") do
+    context("works on both time stamps and 1D values") do
+        a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"])
+        b = map((timestamp, values) -> (timestamp + Dates.Year(1), values - 1), a)
+    
+        @fact length(b)                  --> length(a)
+        @fact b.colnames                 --> a.colnames
+        @fact Dates.year(b.timestamp[1]) --> Dates.year(a.timestamp[1]) + 1
+        @fact b.values[1]                --> a.values[1] - 1
+    end
+    
+    context("works on both time stamps and 2D values") do
+        a = TimeArray([Date(2015, 09, 01), Date(2015, 10, 01), Date(2015, 11, 01)], [[15 16]; [17 18]; [19 20]], ["Number 1", "Number 2"])
+        b = map((timestamp, values) -> (timestamp + Dates.Year(1), [values[1] + 2, values[2] - 1]), a)
+    
+        @fact length(b)                  --> length(a)
+        @fact b.colnames                 --> a.colnames
+        @fact Dates.year(b.timestamp[1]) --> Dates.year(a.timestamp[1]) + 1
+        @fact b.values[1, 1]                --> a.values[1, 1] + 2
+        @fact b.values[1, 2]                --> a.values[1, 2] - 1
+    end
+end

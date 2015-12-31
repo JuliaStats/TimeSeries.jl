@@ -1,4 +1,4 @@
-import Base: merge
+import Base: merge, vcat, map
 
 ###### merge ####################
 
@@ -81,4 +81,42 @@ function collapse{T,N,D}(ta::TimeArray{T,N,D}, f::Function; period::Function=wee
     vals[length(vals)]       = lasttempvalue
 
     TimeArray(tstamps, vals, ta.colnames, ta.meta)
+end
+
+# vcat ######################
+
+function vcat{T,N,D}(TA::TimeArray{T,N,D}...)
+  # Check all meta fields are identical. 
+  prev_meta = TA[1].meta
+  for ta in TA
+    if ta.meta != prev_meta
+      error("metadata doesn't match")
+    end
+  end
+  
+  # Check column names are identical. 
+  prev_colnames = TA[1].colnames
+  for ta in TA
+    if ta.colnames != prev_colnames
+      error("column names don't match")
+    end
+  end
+
+  # Concatenate the contents. 
+  timestamps = vcat([ta.timestamp for ta in TA]...)
+  values = vcat([ta.values for ta in TA]...)
+  return TimeArray(timestamps, values, TA[1].colnames, TA[1].meta)
+end
+
+# map ######################
+
+function map{T,N,D,A}(f::Function, ta::TimeArray{T,N,D,A})
+  timestamps = Array(typeof(ta.timestamp[1]), length(ta))
+  values = similar(ta.values)
+  
+  for i in 1:length(ta)
+    timestamps[i], values[i, :] = f(ta.timestamp[i], vec(ta.values[i, :]))
+  end
+
+  return TimeArray(timestamps, values, ta.colnames, ta.meta)
 end
