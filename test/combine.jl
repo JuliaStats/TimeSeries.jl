@@ -125,17 +125,32 @@ facts("vcat works correctly") do
     
         @fact_throws vcat(a, b)
     end
+  
+    context("rejects when metas do not match") do
+        a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"], :FirstMeta)
+        b = TimeArray([Date(2015, 12, 01)], [17], ["Number"], :SecondMeta)
+    
+        @fact_throws vcat(a, b)
+    end
+  
+    context("rejects when dates overlap") do
+        a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"])
+        b = TimeArray([Date(2015, 11, 01)], [17], ["Number"])
+    
+        @fact_throws vcat(a, b)
+    end
 end
 
 facts("map works correctly") do
     context("works on both time stamps and 1D values") do
-        a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"])
+        a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"], :Something)
         b = map((timestamp, values) -> (timestamp + Dates.Year(1), values - 1), a)
     
         @fact length(b)                  --> length(a)
         @fact b.colnames                 --> a.colnames
         @fact Dates.year(b.timestamp[1]) --> Dates.year(a.timestamp[1]) + 1
         @fact b.values[1]                --> a.values[1] - 1
+        @fact b.meta                     --> a.meta
     end
     
     context("works on both time stamps and 2D values") do
