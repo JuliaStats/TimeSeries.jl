@@ -105,7 +105,13 @@ function vcat{T,N,D}(TA::TimeArray{T,N,D}...)
     # Concatenate the contents. 
     timestamps = vcat([ta.timestamp for ta in TA]...)
     values = vcat([ta.values for ta in TA]...)
-    return TimeArray(timestamps, values, TA[1].colnames, TA[1].meta)
+    
+    order = sortperm(timestamps)
+    if length(TA[1].colnames) == 1 # Check for 1D to ensure values remains a 1D vector. 
+        return TimeArray(timestamps[order], values[order], TA[1].colnames, TA[1].meta)
+    else
+        return TimeArray(timestamps[order], values[order, :], TA[1].colnames, TA[1].meta)
+    end
 end
 
 # map ######################
@@ -118,5 +124,10 @@ function map{T,N,D,A}(f::Function, ta::TimeArray{T,N,D,A})
         timestamps[i], values[i, :] = f(ta.timestamp[i], vec(ta.values[i, :]))
     end
     
-    return TimeArray(timestamps, values, ta.colnames, ta.meta)
+    order = sortperm(timestamps)
+    if length(ta.colnames) == 1 # Check for 1D to ensure values remains a 1D vector. 
+        return TimeArray(timestamps[order], values[order], ta.colnames, ta.meta)
+    else
+        return TimeArray(timestamps[order], values[order, :], ta.colnames, ta.meta)
+    end
 end

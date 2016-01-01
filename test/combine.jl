@@ -139,6 +139,17 @@ facts("vcat works correctly") do
     
         @fact_throws vcat(a, b)
     end
+  
+    context("still works when dates are mixed") do
+        a = TimeArray([Date(2015, 10, 01), Date(2015, 12, 01)], [15, 17], ["Number"])
+        b = TimeArray([Date(2015, 11, 01)], [16], ["Number"])
+        c = vcat(a, b)
+    
+        @fact length(c)  --> length(a) + length(b)
+        @fact c.colnames --> a.colnames
+        @fact c.colnames --> b.colnames
+        @fact c.values   --> [15, 16, 17]
+    end
 end
 
 facts("map works correctly") do
