@@ -86,37 +86,48 @@ end
 # vcat ######################
 
 function vcat{T,N,D}(TA::TimeArray{T,N,D}...)
-  # Check all meta fields are identical. 
-  prev_meta = TA[1].meta
-  for ta in TA
-    if ta.meta != prev_meta
-      error("metadata doesn't match")
+    # Check all meta fields are identical. 
+    prev_meta = TA[1].meta
+    for ta in TA
+        if ta.meta != prev_meta
+            error("metadata doesn't match")
+        end
     end
-  end
-  
-  # Check column names are identical. 
-  prev_colnames = TA[1].colnames
-  for ta in TA
-    if ta.colnames != prev_colnames
-      error("column names don't match")
+    
+    # Check column names are identical. 
+    prev_colnames = TA[1].colnames
+    for ta in TA
+        if ta.colnames != prev_colnames
+            error("column names don't match")
+        end
     end
-  end
-
-  # Concatenate the contents. 
-  timestamps = vcat([ta.timestamp for ta in TA]...)
-  values = vcat([ta.values for ta in TA]...)
-  return TimeArray(timestamps, values, TA[1].colnames, TA[1].meta)
+    
+    # Concatenate the contents. 
+    timestamps = vcat([ta.timestamp for ta in TA]...)
+    values = vcat([ta.values for ta in TA]...)
+    
+    order = sortperm(timestamps)
+    if length(TA[1].colnames) == 1 # Check for 1D to ensure values remains a 1D vector. 
+        return TimeArray(timestamps[order], values[order], TA[1].colnames, TA[1].meta)
+    else
+        return TimeArray(timestamps[order], values[order, :], TA[1].colnames, TA[1].meta)
+    end
 end
 
 # map ######################
 
 function map{T,N,D,A}(f::Function, ta::TimeArray{T,N,D,A})
-  timestamps = Array(typeof(ta.timestamp[1]), length(ta))
-  values = similar(ta.values)
-  
-  for i in 1:length(ta)
-    timestamps[i], values[i, :] = f(ta.timestamp[i], vec(ta.values[i, :]))
-  end
-
-  return TimeArray(timestamps, values, ta.colnames, ta.meta)
+    timestamps = similar(ta.timestamp)
+    values = similar(ta.values)
+    
+    for i in 1:length(ta)
+        timestamps[i], values[i, :] = f(ta.timestamp[i], vec(ta.values[i, :]))
+    end
+    
+    order = sortperm(timestamps)
+    if length(ta.colnames) == 1 # Check for 1D to ensure values remains a 1D vector. 
+        return TimeArray(timestamps[order], values[order], ta.colnames, ta.meta)
+    else
+        return TimeArray(timestamps[order], values[order, :], ta.colnames, ta.meta)
+    end
 end

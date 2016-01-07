@@ -125,17 +125,44 @@ facts("vcat works correctly") do
     
         @fact_throws vcat(a, b)
     end
+  
+    context("rejects when metas do not match") do
+        a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"], :FirstMeta)
+        b = TimeArray([Date(2015, 12, 01)], [17], ["Number"], :SecondMeta)
+    
+        @fact_throws vcat(a, b)
+    end
+  
+    context("rejects when dates overlap") do
+        a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"])
+        b = TimeArray([Date(2015, 11, 01)], [17], ["Number"])
+    
+        @fact_throws vcat(a, b)
+    end
+  
+    context("still works when dates are mixed") do
+        a = TimeArray([Date(2015, 10, 01), Date(2015, 12, 01)], [15, 17], ["Number"])
+        b = TimeArray([Date(2015, 11, 01)], [16], ["Number"])
+        c = vcat(a, b)
+    
+        @fact length(c)    --> length(a) + length(b)
+        @fact c.colnames   --> a.colnames
+        @fact c.colnames   --> b.colnames
+        @fact c.values     --> [15, 16, 17]
+        @fact c.timestamp  --> issorted
+    end
 end
 
 facts("map works correctly") do
     context("works on both time stamps and 1D values") do
-        a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"])
+        a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"], :Something)
         b = map((timestamp, values) -> (timestamp + Dates.Year(1), values - 1), a)
     
         @fact length(b)                  --> length(a)
         @fact b.colnames                 --> a.colnames
         @fact Dates.year(b.timestamp[1]) --> Dates.year(a.timestamp[1]) + 1
         @fact b.values[1]                --> a.values[1] - 1
+        @fact b.meta                     --> a.meta
     end
     
     context("works on both time stamps and 2D values") do
@@ -145,7 +172,15 @@ facts("map works correctly") do
         @fact length(b)                  --> length(a)
         @fact b.colnames                 --> a.colnames
         @fact Dates.year(b.timestamp[1]) --> Dates.year(a.timestamp[1]) + 1
-        @fact b.values[1, 1]                --> a.values[1, 1] + 2
-        @fact b.values[1, 2]                --> a.values[1, 2] - 1
+        @fact b.values[1, 1]             --> a.values[1, 1] + 2
+        @fact b.values[1, 2]             --> a.values[1, 2] - 1
+    end
+    
+    context("works with order of elements that varies after modifications") do
+        a = TimeArray([Date(2015, 10, 01), Date(2015, 12, 01)], [15, 16], ["Number"])
+        b = map((timestamp, values) -> (timestamp + Dates.Year((timestamp >= Date(2015, 11, 01)) ? -1 : 1), values), a)
+    
+        @fact length(b)    --> length(a)
+        @fact b.timestamp  --> issorted
     end
 end
