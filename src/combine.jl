@@ -46,41 +46,38 @@ end
 
 function collapse{T,N,D}(ta::TimeArray{T,N,D}, f::Function; period::Function=week)
 
-    w = [period(ta.timestamp[t]) for t in 1:length(ta)] # get weekly id from entire array
-    z = Int[]; j = 1
-    for i=1:length(ta) - 1 # create unique period ID array
-        if w[i] != w[i+1]
-            push!(z, j)
-            j = j+1
-        else
-            push!(z,j)
-        end         
-    end
-    
-    # account for last row
-    w[length(ta)]  ==  w[length(ta)-1] ? # is the last row the same period as 2nd to last row?
-    push!(z, z[length(z)]) :  
-    push!(z, z[length(z)] + 1)  
-   
-    # pre-allocate timestamp and value arrays
-    tstamps = Array{D}(maximum(z))
-    vals    = zeros(maximum(z)) # number of unique periods
-    #replace their values except for the last row 
-    for i = 1:maximum(z)-1  # iterate over period ID groupings
-        temp       = ta[findfirst(z .== i):findfirst(z .== i+1)-1] # period's worth that will be squished
-        tstamps[i] = temp[length(temp)].timestamp[1]
-        vals[i]    = f(temp.values)
-    end
-    # and once again account for the last temp that isn't looped on above
-    lasttemp = ta[findfirst(z .== maximum(z)):length(ta)]
-    lasttempindex = lasttemp[length(lasttemp)].timestamp
-    lasttempvalue = f(ta.values)
-    
-    # complete the tstamp and vals arrays with the last value
-    tstamps[length(tstamps)] = lasttempindex[1]
-    vals[length(vals)]       = lasttempvalue
+    length(ta) == 0 && return ta
 
-    TimeArray(tstamps, vals, ta.colnames, ta.meta)
+    ncols = length(ta.colnames)
+    collapsed_tstamps = D[]
+    collapsed_values = ta.values[1:0, :]
+
+    tstamp = ta.timestamp[1]
+    mapped_tstamp = period(tstamp)
+    cluster_startrow = 1
+
+    for i in 1:length(ta)-1
+
+        next_tstamp = ta.timestamp[i+1]
+        next_mapped_tstamp = period(next_tstamp)
+
+        if mapped_tstamp != next_mapped_tstamp
+          push!(collapsed_tstamps, tstamp)
+          collapsed_values = [collapsed_values; [f(ta.values[cluster_startrow:i, j]) for j in 1:ncols]']
+          cluster_startrow = i+1
+        end #if
+
+        tstamp = next_tstamp
+        mapped_tstamp = next_mapped_tstamp
+
+    end #for
+
+    push!(collapsed_tstamps, tstamp)
+    collapsed_values = [collapsed_values; [f(ta.values[cluster_startrow:end, j]) for j in 1:ncols]']
+
+    N == 1 && (collapsed_values = vec(collapsed_values))
+    return TimeArray(collapsed_tstamps, collapsed_values, ta.colnames, ta.meta)
+
 end
 
 # vcat ######################

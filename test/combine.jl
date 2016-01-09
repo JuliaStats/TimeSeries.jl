@@ -5,10 +5,17 @@ FactCheck.onlystats(true)
 facts("collapse operations") do
 
     context("collapse squishes correctly") do
+        @fact collapse(ohlc[1:0], last).values              --> ohlc[1:0].values
+
         @fact collapse(cl, last).values[1]                  --> 99.50
         @fact collapse(cl, last).timestamp[1]               --> Date(2000,1,7)
         @fact collapse(cl, last, period=month).values[1]    --> 103.75
         @fact collapse(cl, last, period=month).timestamp[1] --> Date(2000,1,31)
+
+        @fact collapse(ohlc, last).values[1, :]               --> [96.5 101.0 95.5 99.50]
+        @fact collapse(ohlc, last).timestamp[1]               --> Date(2000,1,7)
+        @fact collapse(ohlc, last, period=month).values[1, :] --> [101.0 103.88 94.5 103.75]
+        @fact collapse(ohlc, last, period=month).timestamp[1] --> Date(2000,1,31)
     end
 end
 
