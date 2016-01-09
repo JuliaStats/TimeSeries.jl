@@ -63,7 +63,7 @@ function collapse{T,N,D}(ta::TimeArray{T,N,D}, f::Function; period::Function=wee
 
         if mapped_tstamp != next_mapped_tstamp
           push!(collapsed_tstamps, tstamp)
-          collapsed_values = [collapsed_values; [f(ta.values[cluster_startrow:i, j]) for j in 1:ncols]']
+          collapsed_values = [collapsed_values; T[f(ta.values[cluster_startrow:i, j]) for j in 1:ncols]']
           cluster_startrow = i+1
         end #if
 
@@ -73,7 +73,7 @@ function collapse{T,N,D}(ta::TimeArray{T,N,D}, f::Function; period::Function=wee
     end #for
 
     push!(collapsed_tstamps, tstamp)
-    collapsed_values = [collapsed_values; [f(ta.values[cluster_startrow:end, j]) for j in 1:ncols]']
+    collapsed_values = [collapsed_values; T[f(ta.values[cluster_startrow:end, j]) for j in 1:ncols]']
 
     N == 1 && (collapsed_values = vec(collapsed_values))
     return TimeArray(collapsed_tstamps, collapsed_values, ta.colnames, ta.meta)
