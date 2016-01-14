@@ -44,7 +44,7 @@ end
 
 # collapse ######################
 
-function collapse{T,N,D}(ta::TimeArray{T,N,D}, f::Function; period::Function=week)
+function collapse{T,N,D}(ta::TimeArray{T,N,D}, collapse_valuecluster::Function; period::Function=week, collapse_timestampcluster::Function=last)
 
     length(ta) == 0 && return ta
 
@@ -62,8 +62,8 @@ function collapse{T,N,D}(ta::TimeArray{T,N,D}, f::Function; period::Function=wee
         next_mapped_tstamp = period(next_tstamp)
 
         if mapped_tstamp != next_mapped_tstamp
-          push!(collapsed_tstamps, tstamp)
-          collapsed_values = [collapsed_values; T[f(ta.values[cluster_startrow:i, j]) for j in 1:ncols]']
+          push!(collapsed_tstamps, collapse_timestampcluster(ta.timestamp[cluster_startrow:i]))
+          collapsed_values = [collapsed_values; T[collapse_valuecluster(ta.values[cluster_startrow:i, j]) for j in 1:ncols]']
           cluster_startrow = i+1
         end #if
 
@@ -72,8 +72,8 @@ function collapse{T,N,D}(ta::TimeArray{T,N,D}, f::Function; period::Function=wee
 
     end #for
 
-    push!(collapsed_tstamps, tstamp)
-    collapsed_values = [collapsed_values; T[f(ta.values[cluster_startrow:end, j]) for j in 1:ncols]']
+    push!(collapsed_tstamps, collapse_timestampcluster(ta.timestamp[cluster_startrow:end]))
+    collapsed_values = [collapsed_values; T[collapse_valuecluster(ta.values[cluster_startrow:end, j]) for j in 1:ncols]']
 
     N == 1 && (collapsed_values = vec(collapsed_values))
     return TimeArray(collapsed_tstamps, collapsed_values, ta.colnames, ta.meta)
