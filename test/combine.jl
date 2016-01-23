@@ -17,15 +17,15 @@ facts("collapse operations") do
         @fact collapse(ohlc, last, period=month).values[1, :] --> [101.0 103.88 94.5 103.75]
         @fact collapse(ohlc, last, period=month).timestamp[1] --> Date(2000,1,31)
 
-        @fact collapse(cl, first, collapse_timestampcluster=first).values[2]                  --> 97.75
-        @fact collapse(cl, first, collapse_timestampcluster=first).timestamp[2]               --> Date(2000,1,10)
-        @fact collapse(cl, first, period=month, collapse_timestampcluster=first).values[2]    --> 100.25
-        @fact collapse(cl, first, period=month, collapse_timestampcluster=first).timestamp[2] --> Date(2000,2,1)
+        @fact collapse(cl, first, timestamp=first).values[2]                  --> 97.75
+        @fact collapse(cl, first, timestamp=first).timestamp[2]               --> Date(2000,1,10)
+        @fact collapse(cl, first, period=month, timestamp=first).values[2]    --> 100.25
+        @fact collapse(cl, first, period=month, timestamp=first).timestamp[2] --> Date(2000,2,1)
 
-        @fact collapse(ohlc, first, collapse_timestampcluster=first).values[2, :]               --> [102.0 102.25 94.75 97.75]
-        @fact collapse(ohlc, first, collapse_timestampcluster=first).timestamp[2]               --> Date(2000,1,10)
-        @fact collapse(ohlc, first, period=month, collapse_timestampcluster=first).values[2, :] --> [104.0 105.0 100.0 100.25]
-        @fact collapse(ohlc, first, period=month, collapse_timestampcluster=first).timestamp[2] --> Date(2000,2,1)
+        @fact collapse(ohlc, first, timestamp=first).values[2, :]               --> [102.0 102.25 94.75 97.75]
+        @fact collapse(ohlc, first, timestamp=first).timestamp[2]               --> Date(2000,1,10)
+        @fact collapse(ohlc, first, period=month, timestamp=first).values[2, :] --> [104.0 105.0 100.0 100.25]
+        @fact collapse(ohlc, first, period=month, timestamp=first).timestamp[2] --> Date(2000,2,1)
     end
 end
 
