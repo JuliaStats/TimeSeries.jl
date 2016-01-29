@@ -1,4 +1,4 @@
-Spliting by time constraint or when condition is true
+Splitting by time constraint or when condition is true
 =====================================================
 
 Specific methods for segmenting on time ranges or if condition is met is supported with the following methods.
@@ -40,7 +40,7 @@ such as Mondays or the month of October ::
 by - being deprecated in favor of when
 --------------------------------------
 
-The ``by`` methods allows aggregating elements from a TimeArray into specific time periods,
+The ``by`` method allows aggregating elements from a TimeArray into specific time periods,
 such as Mondays or the month of October - this method is being deprecated ::
 
     julia> by(cl, 1, period=dayofweek)
