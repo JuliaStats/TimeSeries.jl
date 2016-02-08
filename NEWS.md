@@ -1,10 +1,14 @@
+### 0.7.3
+
+* ensure dates are sorted for vcat and map (@dourouc05)
+
 ### 0.7.2
 
-* map and vcat methods added (thanks again dourouc05)
+* map and vcat methods added (thanks again @dourouc05)
 
 ### 0.7.1
 
-* readtimearray method now allows arbitrary delimiters (thanks dourouc05) 
+* readtimearray method now allows arbitrary delimiters (thanks @dourouc05) 
 
 ### 0.7.0
 
