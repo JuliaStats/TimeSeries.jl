@@ -4,44 +4,44 @@ import Base: convert, length, show, getindex, start, next, done, isempty, endof
 
 abstract AbstractTimeSeries
 
-immutable TimeArray{T, N, D<:TimeType, A<:AbstractArray} <: AbstractTimeSeries
+immutable TimeArray{T, N, D, B<:AbstractVector, A<:AbstractArray} <: AbstractTimeSeries
 
-    timestamp::Vector{D}
+    timestamp::B
     values::A
     colnames::Vector{UTF8String}
     meta::Any
 
-    function TimeArray(timestamp::Vector{D},
+    function TimeArray(timestamp::AbstractVector{D},
                        values::AbstractArray{T,N},
                        colnames::Vector{UTF8String},
                        meta::Any)
                            nrow, ncol = size(values, 1), size(values, 2)
                            nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
                            ncol != size(colnames,1) ? error("column names must match width of array"):
-                           timestamp != unique(timestamp) ? error("there are duplicate dates"):
+                           !isa(timestamp,Range) && timestamp != unique(timestamp) ? error("there are duplicate dates"):
                            ~(flipdim(timestamp, 1) == sort(timestamp) || timestamp == sort(timestamp)) ? error("dates are mangled"):
-                           flipdim(timestamp, 1) == sort(timestamp) ? 
+                           flipdim(timestamp, 1) == sort(timestamp) ?
                            new(flipdim(timestamp, 1), flipdim(values, 1), colnames, meta):
                            new(timestamp, values, colnames, meta)
     end
 end
 
-TimeArray{T,N,D<:TimeType,S<:AbstractString}(d::Vector{D}, v::AbstractArray{T,N}, c::Vector{S}, m::Any) =
-        TimeArray{T,N,D,typeof(v)}(d,v,map(utf8,c),m)
-TimeArray{T,N,D<:TimeType,S<:AbstractString}(d::D, v::AbstractArray{T,N}, c::Vector{S}, m::Any) =
-        TimeArray{T,N,D,typeof(v)}([d],v,map(utf8,c),m)
+TimeArray{T,N,D,S<:AbstractString}(d::AbstractVector{D}, v::AbstractArray{T,N}, c::Vector{S}, m::Any) =
+        TimeArray{T,N,D,typeof(d),typeof(v)}(d,v,map(utf8,c),m)
+TimeArray{T,N,D,S<:AbstractString}(d::D, v::AbstractArray{T,N}, c::Vector{S}, m::Any) =
+        TimeArray{T,N,D,Vector{D},typeof(v)}([d],v,map(utf8,c),m)
 
 # when no meta is provided
-TimeArray{T,N,D<:TimeType}(d::Vector{D}, v::AbstractArray{T,N}, c) = TimeArray(d,v,c,nothing)
-TimeArray{T,N,D<:TimeType}(d::D, v::AbstractArray{T,N}, c) = TimeArray([d],v,c,nothing)
+TimeArray{T,N,D}(d::AbstractVector{D}, v::AbstractArray{T,N}, c) = TimeArray(d,v,c,nothing)
+TimeArray{T,N,D}(d::D, v::AbstractArray{T,N}, c) = TimeArray([d],v,c,nothing)
 
 ###### conversion ###############
 
 convert(::Type{TimeArray{Float64,1}}, x::TimeArray{Bool,1}) = TimeArray(x.timestamp, map(Float64, x.values), x.colnames, x.meta)
 convert(::Type{TimeArray{Float64,2}}, x::TimeArray{Bool,2}) = TimeArray(x.timestamp, map(Float64, x.values), x.colnames, x.meta)
 
-convert(x::TimeArray{Bool,1}) = convert(TimeArray{Float64,1}, x::TimeArray{Bool,1}) 
-convert(x::TimeArray{Bool,2}) = convert(TimeArray{Float64,2}, x::TimeArray{Bool,2}) 
+convert(x::TimeArray{Bool,1}) = convert(TimeArray{Float64,1}, x::TimeArray{Bool,1})
+convert(x::TimeArray{Bool,2}) = convert(TimeArray{Float64,2}, x::TimeArray{Bool,2})
 
 ###### length ###################
 
@@ -55,10 +55,10 @@ done(ta::TimeArray,i)  = (i > length(ta))
 isempty(ta::TimeArray) = (length(ta) == 0)
 
 ###### show #####################
- 
+
 function show{T,N}(io::IO, ta::TimeArray{T,N})
 
-    # variables 
+    # variables
     nrow          = size(ta.values, 1)
     ncol          = size(ta.values, 2)
     intcatcher    = falses(ncol)
@@ -76,7 +76,7 @@ function show{T,N}(io::IO, ta::TimeArray{T,N})
         push!(colwidth, max(strwidth(ta.colnames[m]), 5)) :
         push!(colwidth, max(strwidth(ta.colnames[m]), strwidth(@sprintf("%.2f", maximum(ta.values[:,m]))) + DECIMALS - 2))
     end
-  
+
     # summary line
     @printf(io, "%dx%d %s", nrow, ncol, typeof(ta))
     nrow > 0 && @printf(io, " %s to %s", string(ta.timestamp[1]), string(ta.timestamp[end]))
@@ -100,7 +100,7 @@ function show{T,N}(io::IO, ta::TimeArray{T,N})
             T == Bool ?
             print(io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
             intcatcher[j] & SHOWINT ?
-            print(io, rpad(round(Integer, ta.values[i,j]), colwidth[j] + 2, " ")) : 
+            print(io, rpad(round(Integer, ta.values[i,j]), colwidth[j] + 2, " ")) :
             print(io, rpad(round(ta.values[i,j], DECIMALS), colwidth[j] + 2, " "))
         end
         println(io, "")
@@ -114,7 +114,7 @@ function show{T,N}(io::IO, ta::TimeArray{T,N})
             T == Bool ?
             print(io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
             intcatcher[j] & SHOWINT ?
-            print(io, rpad(round(Integer, ta.values[i,j]), colwidth[j] + 2, " ")) : 
+            print(io, rpad(round(Integer, ta.values[i,j]), colwidth[j] + 2, " ")) :
             print(io, rpad(round(ta.values[i,j], DECIMALS), colwidth[j] + 2, " "))
         end
         println(io, "")
@@ -166,7 +166,7 @@ function getindex{T,D}(ta::TimeArray{T,1,D}, a::Vector{Int})
     TimeArray(ta.timestamp[a], ta.values[a], ta.colnames, ta.meta)
 end
 
-# single column by name 
+# single column by name
 function getindex{T,N,D}(ta::TimeArray{T,N,D}, s::AbstractString)
     n = findfirst(ta.colnames, s)
     TimeArray(ta.timestamp, ta.values[:, n], UTF8String[s], ta.meta)
@@ -183,7 +183,7 @@ function getindex{T,N,D}(ta::TimeArray{T,N,D}, d::D)
     idxs = searchsorted(ta.timestamp, d)
     length(idxs) == 1 ? ta[idxs[1]] : nothing
 end
- 
+
 # multiple dates
 function getindex{T,N,D}(ta::TimeArray{T,N,D}, dates::Vector{D})
     dates = sort(dates)
