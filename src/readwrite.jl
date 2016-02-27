@@ -22,7 +22,7 @@ function readtimearray(fname::AbstractString; delim::Char=',', meta=nothing, for
     vals   = insertNaN(cfile[2:end, 2:end])
     cnames = UTF8String[]
     for c in cfile[1, 2:end]
-        push!(cnames, c)
+        push!(cnames, string(c))
     end
     TimeArray(tstamps, vals, cnames, meta)
 end
