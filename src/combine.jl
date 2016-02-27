@@ -3,36 +3,36 @@ import Base: merge, vcat, map
 ###### merge ####################
 
 function merge{T,N,M,D}(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D},
-                              method::Symbol=:inner; colnames::Vector=[])
+                              method::Symbol=:inner; colnames::Vector=[], meta::Any=Void)
 
-    ta1.meta != ta2.meta && error("metadata doesn't match")
+    ta1.meta == ta2.meta && meta == Void && (meta = ta1.meta)
 
     if method == :inner
 
         idx1, idx2 = overlaps(ta1.timestamp, ta2.timestamp)
         vals = [ta1[idx1].values ta2[idx2].values]
-        ta = TimeArray(ta1[idx1].timestamp, vals, [ta1.colnames; ta2.colnames], ta1.meta)
+        ta = TimeArray(ta1[idx1].timestamp, vals, [ta1.colnames; ta2.colnames], meta)
 
     elseif method == :left
 
         new_idx2, old_idx2 = overlaps(ta1.timestamp, ta2.timestamp)
         right_vals = NaN * zeros(length(ta1), length(ta2.colnames))
         right_vals[new_idx2, :]  = ta2.values[old_idx2, :]
-        ta = TimeArray(ta1.timestamp, [ta1.values right_vals], [ta1.colnames; ta2.colnames], ta1.meta)
+        ta = TimeArray(ta1.timestamp, [ta1.values right_vals], [ta1.colnames; ta2.colnames], meta)
 
     elseif method == :right
 
         ta = merge(ta2, ta1, :left)
         ncol2 = length(ta2.colnames)
         vals = [ta.values[:, (ncol2+1):end] ta.values[:, 1:ncol2]]
-        ta = TimeArray(ta.timestamp, vals, [ta1.colnames; ta2.colnames], ta.meta)
+        ta = TimeArray(ta.timestamp, vals, [ta1.colnames; ta2.colnames], meta)
 
     elseif method == :outer
 
         timestamps = sorted_unique_merge(ta1.timestamp, ta2.timestamp)
-        ta = TimeArray(timestamps, zeros(length(timestamps), 0), UTF8String[], ta1.meta)
+        ta = TimeArray(timestamps, zeros(length(timestamps), 0), UTF8String[], Void)
         ta = merge(ta, ta1, :left)
-        ta = merge(ta, ta2, :left)
+        ta = merge(ta, ta2, :left, meta=meta)
 
     else
         error("merge method must be one of :inner, :left, :right, :outer")
