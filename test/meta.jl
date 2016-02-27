@@ -76,10 +76,27 @@ facts("combine operations preserve meta") do
 
     context("merge when both have identical meta") do
         @fact merge(mdata, mdata).meta --> "Apple"
+        @fact merge(mdata, mdata, :left).meta --> "Apple"
+        @fact merge(mdata, mdata, :right).meta --> "Apple"
+        @fact merge(mdata, mdata, :outer).meta --> "Apple"
     end
 
     context("merge when both have different meta") do
-        @fact_throws merge(mdata,cl).meta 
+        @fact merge(mdata, cl).meta --> Void
+        @fact merge(mdata, cl, :left).meta --> Void
+        @fact merge(mdata, cl, :right).meta --> Void
+        @fact merge(mdata, cl, :outer).meta --> Void
+    end
+
+    context("merge when supplied with meta") do
+        @fact merge(mdata, mdata, meta="new meta").meta --> "new meta"
+        @fact merge(mdata, mdata, :left, meta="new meta").meta --> "new meta"
+        @fact merge(mdata, mdata, :right, meta="new meta").meta --> "new meta"
+        @fact merge(mdata, mdata, :outer, meta="new meta").meta --> "new meta"
+        @fact merge(mdata, cl, meta="new meta").meta --> "new meta"
+        @fact merge(mdata, cl, :left, meta="new meta").meta --> "new meta"
+        @fact merge(mdata, cl, :right, meta="new meta").meta --> "new meta"
+        @fact merge(mdata, cl, :outer, meta="new meta").meta --> "new meta"
     end
 
     context("collapse") do
@@ -98,10 +115,12 @@ facts("mathematical and comparison operations preserve meta") do
 
     context(".+") do
         @fact (mdata .+ mdata).meta --> "Apple"
+        @fact (mdata .+ cl).meta --> Void
     end
 
     context(".<") do
         @fact (mdata .< mdata).meta --> "Apple"
+        @fact (mdata .< cl).meta --> Void
     end
 end
 
