@@ -1,3 +1,7 @@
+### 0.7.4 (unreleased)
+
+* allow math operations between different Number subtypes
+
 ### 0.7.3
 
 * ensure dates are sorted for vcat and map (@dourouc05)

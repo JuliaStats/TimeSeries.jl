@@ -56,7 +56,7 @@ end # loop
 # ND TimeArray <--> MD TimeArray
 for op in [MATH_DOTONLY; COMPARE_DOTONLY]
     @eval begin
-        function ($op){T<:Number,N,M}(ta1::TimeArray{T,N}, ta2::TimeArray{T,M})
+        function ($op){S<:Number,T<:Number,N,M}(ta1::TimeArray{S,N}, ta2::TimeArray{T,M})
             # first test metadata matches
             ta1.meta == ta2.meta ? meta = ta1.meta : error("metadata doesn't match")
             # determine array widths and name cols accordingly

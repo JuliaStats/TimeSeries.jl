@@ -188,12 +188,16 @@ facts("base element-wise operators on TimeArray values") do
         @fact (cl ./ op).values[1]      --> roughly(1.067315, atol=0.001)
         @fact (cl .% op).values         --> cl.values .% op.values
         @fact (cl .^ op).values         --> cl.values .^ op.values
+        @fact (cl .* (cl.> 200)).values --> cl.values .* (cl.values .> 200)
+        @fact (basecall(cl, x->round(Int, x)) .* cl).values --> round(Int, cl.values) .* cl.values
         @fact (ohlc .+ ohlc).values     --> ohlc.values .+ ohlc.values
         @fact (ohlc .- ohlc).values     --> ohlc.values .- ohlc.values
         @fact (ohlc .* ohlc).values     --> ohlc.values .* ohlc.values
         @fact (ohlc ./ ohlc).values     --> ohlc.values ./ ohlc.values
         @fact (ohlc .% ohlc).values     --> ohlc.values .% ohlc.values
         @fact (ohlc .^ ohlc).values     --> ohlc.values .^ ohlc.values
+        @fact (ohlc .* (ohlc .> 200)).values --> ohlc.values .* (ohlc.values .> 200)
+        @fact (basecall(ohlc, x->round(Int, x)) .* ohlc).values --> round(Int, ohlc.values) .* ohlc.values
     end
 
     context("correct broadcasted mathematical operations between different-column-count TimeArrays") do
@@ -203,12 +207,16 @@ facts("base element-wise operators on TimeArray values") do
         @fact (ohlc ./ cl).values --> ohlc.values ./ cl.values
         @fact (ohlc .% cl).values --> ohlc.values .% cl.values
         @fact (ohlc .^ cl).values --> ohlc.values .^ cl.values
+        @fact (ohlc .* (cl.> 200)).values --> ohlc.values .* (cl.values .> 200)
+        @fact (basecall(ohlc, x->round(Int, x)) .* cl).values --> round(Int, ohlc.values) .* cl.values
         @fact (cl .+ ohlc).values --> cl.values .+ ohlc.values
         @fact (cl .- ohlc).values --> cl.values .- ohlc.values
         @fact (cl .* ohlc).values --> cl.values .* ohlc.values
         @fact (cl ./ ohlc).values --> cl.values ./ ohlc.values
         @fact (cl .% ohlc).values --> cl.values .% ohlc.values
         @fact (cl .^ ohlc).values --> cl.values .^ ohlc.values
+        @fact (cl .* (ohlc .> 200)).values --> cl.values .* (ohlc.values .> 200)
+        @fact (basecall(cl, x->round(Int, x)) .* ohlc).values --> round(Int, cl.values) .* ohlc.values
         @fact_throws (ohlc["Open", "Close"] .+ ohlc) # One array must have a single column
     end
 
