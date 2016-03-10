@@ -1,6 +1,7 @@
 ### 0.7.4 (unreleased)
 
 * allow math operations between different Number subtypes
+* explicitly convert column names to strings  in `readtimearray`
 
 ### 0.7.3
 
