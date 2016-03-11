@@ -57,8 +57,10 @@ end # loop
 for op in [MATH_DOTONLY; COMPARE_DOTONLY]
     @eval begin
         function ($op){S<:Number,T<:Number,N,M}(ta1::TimeArray{S,N}, ta2::TimeArray{T,M})
+
             # first test metadata matches
-            ta1.meta == ta2.meta ? meta = ta1.meta : error("metadata doesn't match")
+            meta = ta1.meta == ta2.meta ? ta1.meta : Void
+
             # determine array widths and name cols accordingly
             w1, w2  = length(ta1.colnames), length(ta2.colnames)
             if w1 == w2
@@ -70,14 +72,18 @@ for op in [MATH_DOTONLY; COMPARE_DOTONLY]
             else
               error("arrays must have the same number of columns, or one must be a single column")
             end
+
             # obtain shared timestamp
             idx1, idx2 = overlaps(ta1.timestamp, ta2.timestamp)
             tstamp = ta1[idx1].timestamp
+
             # retrieve values that match the Int array matching dates
             vals1, vals2 = ta1[idx1].values, ta2[idx2].values
+
             # compute output values
             vals = ($op)(vals1, vals2)
             TimeArray(tstamp, vals, cnames, meta)
+
         end # function
     end # eval
 end # loop
