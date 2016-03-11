@@ -2,6 +2,7 @@
 
 * allow math operations between different Number subtypes
 * explicitly convert column names to strings  in `readtimearray`
+* operations between TimeArrays with non-matching meta fields now succeed, with a `Void` meta in the result
 
 ### 0.7.3
 
