@@ -1,4 +1,4 @@
-### 0.7.4 (unreleased)
+### 0.7.4
 
 * allow math operations between different Number subtypes
 * explicitly convert column names to strings  in `readtimearray`
