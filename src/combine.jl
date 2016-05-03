@@ -44,7 +44,7 @@ end
 
 # collapse ######################
 
-function collapse{T,N,D}(ta::TimeArray{T,N,D}, period::Function=week, timestamp::Function=last, value::Function=timestamp)
+function collapse{T,N,D}(ta::TimeArray{T,N,D}, period::Function, timestamp::Function, value::Function=timestamp)
 
     length(ta) == 0 && return ta
 

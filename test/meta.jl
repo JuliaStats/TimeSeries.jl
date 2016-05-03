@@ -83,7 +83,7 @@ facts("combine operations preserve meta") do
     end
 
     context("collapse") do
-        @fact collapse(mdata).meta --> "Apple"
+        @fact collapse(mdata, week, first).meta --> "Apple"
     end
 end
 

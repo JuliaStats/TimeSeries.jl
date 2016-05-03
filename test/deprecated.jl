@@ -38,4 +38,11 @@ facts("deprecated methods") do
     context("deprecated findall returns correct indices") do
         @fact findall(cl .> op) --> find(cl .> op)
     end
+
+    context("deprecated collapse squishes correctly") do
+        @fact collapse(cl, last).values[1]                  --> 99.50
+        @fact collapse(cl, last).timestamp[1]               --> Date(2000,1,7)
+        @fact collapse(cl, last, period=month).values[1]    --> 103.75
+        @fact collapse(cl, last, period=month).timestamp[1] --> Date(2000,1,31)
+    end
 end
