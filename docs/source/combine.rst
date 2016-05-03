@@ -61,8 +61,7 @@ collapse
 The ``collapse`` method allows for compressing data into a larger time frame. For example, converting daily data into monthly data.
 When compressing dates, something rational has to be done with the values that lived in the more granular time frame. To define what
 happens, a function call is made. In our example, we want to compress the daily ``cl`` closing prices from daily to monthly. It makes
-sense for us to take the last value known and have that represented with the derived timestamp. The ``collapse`` keyword argument for
-time frame is the ``week`` method, which is defined in ``Base.Dates``. A list of valid time methods is presented below.
+sense for us to take the ``last`` value known and have that represented with the corresponding timestamp. A non-exhaustive list of valid time methods is presented below.
 
 +--------------+-------------+
 | Dates method | Time length |
@@ -78,7 +77,7 @@ time frame is the ``week`` method, which is defined in ``Base.Dates``. A list of
 
 Showing this code in REPL::
 
-    julia> collapse(cl,last,period=month)
+    julia> collapse(cl,month,last)
     24x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-31 to 2001-12-31
 
                  Close
@@ -91,6 +90,23 @@ Showing this code in REPL::
     2001-10-31 | 17.56
     2001-11-30 | 21.3
     2001-12-31 | 21.9
+
+We can also supply the function that chooses the timestamp and the function that determines the corresponding value independently::
+
+    julia> collapse(cl, month, last, mean)
+    24x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-31 to 2001-12-31
+
+		Close     
+    2000-01-31 | 103.3595  
+    2000-02-29 | 111.6375  
+    2000-03-31 | 128.5026  
+    2000-04-28 | 123.1058  
+    ⋮
+    2001-09-28 | 16.602    
+    2001-10-31 | 17.3222   
+    2001-11-30 | 19.649    
+    2001-12-31 | 21.695    
+
 
 vcat
 ----
