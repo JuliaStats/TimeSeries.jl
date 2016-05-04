@@ -1,3 +1,7 @@
+### 0.8.1
+
+* removes using Base.Dates from outside module @tkelman
+
 ### 0.8.0
 
 * deprecated `collapse(ta::TimeArray, f::Function; period::Function=week)` in favour of `collapse(ta::TimeArray, period::Function, timestamp::Function, value::Function=timestamp)` and added support for collapsing 2D TimeArrays
