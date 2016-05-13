@@ -8,14 +8,16 @@ when{T,N}(ta::TimeArray{T,N}, period::Function, t::ASCIIString) = ta[find(period
 # from, to ######################
  
 from{T,N,D}(ta::TimeArray{T,N,D}, d::D) =
-    d < ta.timestamp[1] ? ta :
-    d > ta.timestamp[end] ? ta[1:0] :
-    ta[searchsortedfirst(ta.timestamp, d):end]
+    length(ta) == 0 ? ta : 
+         d < ta.timestamp[1] ? ta :
+         d > ta.timestamp[end] ? ta[1:0] :
+         ta[searchsortedfirst(ta.timestamp, d):end]
 
 to{T,N,D}(ta::TimeArray{T,N,D}, d::D) =
-    d < ta.timestamp[1] ? ta[1:0] :
-    d > ta.timestamp[end] ? ta :
-    ta[1:searchsortedlast(ta.timestamp, d)]
+    length(ta) == 0 ? ta : 
+        d < ta.timestamp[1] ? ta[1:0] :
+        d > ta.timestamp[end] ? ta :
+        ta[1:searchsortedlast(ta.timestamp, d)]
 
 ###### find ##################
 

@@ -17,9 +17,14 @@ end
 
 facts("split date operations") do
 
-    context("from and to correctly subset") do
+    context("from and to correctly subset") do # Including zero-length time series
         @fact length(from(cl, Date(2001,12,28))) --> 2
+        @fact length(from(cl, Date(2002,1,1)))   --> 0
+        @fact length(from(from(cl, Date(2002,1,1)), Date(2012,1,1))) --> 0 
+        
         @fact length(to(cl, Date(2000,1,4)))     --> 2
+        @fact length(to(cl, Date(1999,1,4)))     --> 0 
+        @fact length(to(to(cl, Date(1999,1,4)), Date(1912,1,1))) --> 0 
     end
         
     context("when method correctly subset") do
