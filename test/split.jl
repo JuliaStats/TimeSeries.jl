@@ -17,7 +17,7 @@ end
 
 facts("split date operations") do
 
-    context("from and to correctly subset") do # Including zero-length time series
+    context("from and to correctly subset non-zero and zero-length time arrays") do 
         @fact length(from(cl, Date(2001,12,28))) --> 2
         @fact length(from(cl, Date(2002,1,1)))   --> 0
         @fact length(from(from(cl, Date(2002,1,1)), Date(2012,1,1))) --> 0 

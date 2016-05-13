@@ -1,3 +1,7 @@
+### 0.8.2 (pending)
+
+* makes to() and from() more robust by taking zero-length time arrays (@dourouc05 )
+
 ### 0.8.1
 
 * removes using Base.Dates from outside module @tkelman
