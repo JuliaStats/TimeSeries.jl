@@ -1,4 +1,4 @@
-### 0.8.2 (pending)
+### 0.8.2
 
 * makes to() and from() more robust by taking zero-length time arrays (@dourouc05 )
 
