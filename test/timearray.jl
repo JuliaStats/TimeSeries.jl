@@ -36,6 +36,22 @@ facts("type constructors enforce invariants") do
     end
 end
   
+facts("construction without colnames") do
+
+    no_colnames_one   = TimeArray(cl.timestamp, cl.values)
+    no_colnames_multi = TimeArray(AAPL.timestamp, AAPL.values)
+
+    context("default colnames to empty UTF8String vector") do
+        @fact no_colnames_one.colnames   --> UTF8String[""]
+        @fact no_colnames_multi.colnames --> UTF8String["", "", "", "", "", "", "", "", "", "", "", ""]
+    end
+
+    context("empty colnames forces meta to nothing") do
+        @fact no_colnames_one.meta   --> nothing
+        @fact no_colnames_multi.meta --> nothing
+    end
+end
+
 facts("conversion methods") do
 
     context("convert works ") do
