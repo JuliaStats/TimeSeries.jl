@@ -13,7 +13,7 @@ Throughout this tutorial, we'll be using historical financial data sets, which a
 
 To create dummy data without using the ``MarketData`` package, simply use the following code block::
 
-    dates  = [Date(1999,1,1):Date(2000,12,31)]
+    dates  = collect([Date(1999,1,1):Date(2000,12,31)])
     mytime = TimeArray(dates, rand(length(dates)), ["test"])
 
 
