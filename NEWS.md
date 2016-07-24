@@ -1,4 +1,4 @@
-### 0.8.3 (not implemented)
+### 0.8.3
 
 * provides TimeArray constructor without requiring colnames argument (defaults to empty array)
 
