@@ -1,3 +1,7 @@
+### 0.8.3
+
+* provides TimeArray constructor without requiring colnames argument (defaults to empty array)
+
 ### 0.8.2
 
 * makes to() and from() more robust by taking zero-length time arrays (@dourouc05 )
