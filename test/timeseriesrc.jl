@@ -1,5 +1,5 @@
 # this line because the const objects are not being exported
-include(Pkg.dir("TimeSeries/src/.timeseriesrc.jl"))
+include(joinpath(dirname(@__FILE__), "..", "src/.timeseriesrc.jl"))
 
 facts("const values are set the package defaults") do
 

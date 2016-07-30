@@ -13,11 +13,11 @@ facts("readwrite parses csv file correctly") do
     end
 
     context("Specifying DateTime string format for reading") do
-        tm = readtimearray(Pkg.dir("TimeSeries/test/data/datetime3.csv"), format="yyyy/mm/dd|HH:MM:SS")
+        tm = readtimearray(joinpath(dirname(@__FILE__), "data/datetime3.csv"), format="yyyy/mm/dd|HH:MM:SS")
         @fact length(tm) --> 5
         @fact size(tm.values) --> (5,1)
         @fact tm.timestamp[4] --> DateTime(2010,1,4,9,4)
-        @fact_throws readtimearray(Pkg.dir("TimeSeries/test/data/datetime3.csv"))
+        @fact_throws readtimearray(joinpath(dirname(@__FILE__), "data/datetime3.csv"))
     end
 
     context("timestamp parses to correct type") do
@@ -26,12 +26,12 @@ facts("readwrite parses csv file correctly") do
     end
 
     context("readtimearray accepts meta field") do
-        tm = readtimearray(Pkg.dir("TimeSeries/test/data/datetime3.csv"), format="yyyy/mm/dd|HH:MM:SS", meta="foo")
+        tm = readtimearray(joinpath(dirname(@__FILE__), "data/datetime3.csv"), format="yyyy/mm/dd|HH:MM:SS", meta="foo")
         @fact tm.meta --> "foo"
     end
 
     context("readtimearray works with arbitrary delimiters") do
-        tm = readtimearray(Pkg.dir("TimeSeries/test/data/read_example_delim.csv"), format="dd/mm/yyyy HH:MM", delim=';')
+        tm = readtimearray(joinpath(dirname(@__FILE__), "data/read_example_delim.csv"), format="dd/mm/yyyy HH:MM", delim=';')
         @fact length(tm) --> 2
         @fact size(tm.values) --> (2,2)
         @fact tm.timestamp[2] --> DateTime(2015,1,1,1,0)
