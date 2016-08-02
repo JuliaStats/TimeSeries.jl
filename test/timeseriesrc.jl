@@ -10,4 +10,8 @@ facts("const values are set the package defaults") do
   context("DECIMALS") do
       @fact DECIMALS --> 4
   end
+
+  context("MISSING") do
+      @fact MISSING --> NAN
+  end
 end

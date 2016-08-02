@@ -1,3 +1,7 @@
+### 0.8.4
+
+* allows users to show customizable representations for missing values, which are represented as NaN values in the array.
+
 ### 0.8.3
 
 * provides TimeArray constructor without requiring colnames argument (defaults to empty array)
