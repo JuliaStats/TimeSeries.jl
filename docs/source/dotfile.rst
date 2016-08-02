@@ -1,10 +1,13 @@
 Customize how TimeArray is displayed
 ====================================
 
-A dot file named ``.timeseriesrc`` sets two variables that control how TimeArrays are displayed.
+A dot file named ``.timeseriesrc`` sets three variables that control how TimeArrays are displayed. This doesn't change the 
+underlying TimeArray and only controls how values are printed to REPL.
 
 DECIMALS
 --------
+
+``DECIMALS = 4``
 
 The default setting is 4. It shows values out to four decimal places::
 
@@ -40,6 +43,8 @@ You can change it to whatever value you prefer. If you change it to 6, the same 
 
 SHOWINT
 -------
+
+``SHOWINT = true``
 
 The default setting is ``true``. This will display floats as integers, which is a little trick to make things look nicer.
 
@@ -81,8 +86,18 @@ deception at play, you can assign this varaible to ``false``. The same object wi
 MISSING
 -------
 
-The default setting is ``NaN``, which represent the actual value when ``padding=true`` is selected for certain transformatins. You
-can change it to show differently with the provided ``Const`` values or roll your own. Dot files are often used to customize your
+This output is controlled with ``const`` values to accomodate difficult to remember unicode numbers.::
+
+    const NAN       = "NaN"
+    const NA        = "NA"
+    const BLACKHOLE = "\u2B24"
+    const DOTCIRCLE = "\u25CC"
+    const QUESTION  = "\u003F"
+
+    MISSING = NAN
+
+The default setting is ``NaN``, which represent the actual value when ``padding=true`` is selected for certain transformations. You
+can change it to show differently with the provided ``const`` values or roll your own. Dot files are often used to customize your
 experience, so have at it!
 
 Here is an example in REPL with the default::
