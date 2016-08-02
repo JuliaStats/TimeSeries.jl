@@ -86,7 +86,7 @@ deception at play, you can assign this varaible to ``false``. The same object wi
 MISSING
 -------
 
-This output is controlled with ``const`` values to accomodate difficult to remember unicode numbers.::
+This output is controlled with ``const`` values to accomodate difficult to remember unicode numbers::
 
     const NAN       = "NaN"
     const NA        = "NA"
@@ -96,7 +96,7 @@ This output is controlled with ``const`` values to accomodate difficult to remem
 
     MISSING = NAN
 
-The default setting is ``NaN``, which represent the actual value when ``padding=true`` is selected for certain transformations. You
+The default setting displays ``NaN``, which represent the actual value when ``padding=true`` is selected for certain transformations. You
 can change it to show differently with the provided ``const`` values or roll your own. Dot files are often used to customize your
 experience, so have at it!
 
