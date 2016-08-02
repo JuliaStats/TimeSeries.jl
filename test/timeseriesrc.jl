@@ -15,3 +15,26 @@ facts("const values are set the package defaults") do
       @fact MISSING --> NAN
   end
 end
+
+facts("const values are correct") do
+
+  context("NAN") do
+      @fact NAN --> "NaN"
+  end
+
+  context("NA") do
+      @fact NA --> "NA"
+  end
+
+  context("BLACKHOLE") do
+      @fact BLACKHOLE --> "\u2B24"
+  end
+
+  context("DOTCIRCLE") do
+      @fact DOTCIRCLE --> "\u25CC"
+  end
+
+  context("QUESTION") do
+      @fact QUESTION --> "\u003F"
+  end
+end
