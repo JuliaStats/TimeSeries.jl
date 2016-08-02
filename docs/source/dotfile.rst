@@ -77,3 +77,60 @@ deception at play, you can assign this varaible to ``false``. The same object wi
     2001-12-27 | 21.58     22.25     21.58     22.07     3.4198e6
     2001-12-28 | 21.97     23.0      21.96     22.43     5.3415e6
     2001-12-31 | 22.51     22.66     21.83     21.9      2.4604e6
+
+MISSING
+-------
+
+The default setting is ``NaN``, which represent the actual value when ``padding=true`` is selected for certain transformatins. You
+can change it to show differently with the provided ``Const`` values or roll your own. Dot files are often used to customize your
+experience, so have at it!
+
+Here is an example in REPL with the default::
+
+    julia> lag(cl, padding=true)
+    500x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
+
+    Close     
+    2000-01-03 | NaN       
+    2000-01-04 | 111.94    
+    2000-01-05 | 102.5     
+    2000-01-06 | 104.0     
+    ⋮
+    2001-12-26 | 21.36     
+    2001-12-27 | 21.49     
+    2001-12-28 | 22.07     
+    2001-12-31 | 22.43    
+
+Here is an example in REPL with NA selected::
+
+    julia> lag(cl, padding=true)
+    500x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
+    
+    Close     
+    2000-01-03 | NA        
+    2000-01-04 | 111.94    
+    2000-01-05 | 102.5     
+    2000-01-06 | 104.0     
+    ⋮
+    2001-12-26 | 21.36     
+    2001-12-27 | 21.49     
+    2001-12-28 | 22.07     
+    2001-12-31 | 22.43     
+
+Here is an example in REPL with BLACKHOLE selected::
+
+    julia> lag(cl, padding=true)
+    500x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
+
+    Close     
+    2000-01-03 | ⬤        
+    2000-01-04 | 111.94    
+    2000-01-05 | 102.5     
+    2000-01-06 | 104.0     
+    ⋮
+    2001-12-26 | 21.36     
+    2001-12-27 | 21.49     
+    2001-12-28 | 22.07     
+    2001-12-31 | 22.43   
+
+Other ``Const`` values include DOTCIRCLE and QUESTION. The UNICORN value is a feature request.

@@ -130,6 +130,6 @@ facts("show methods don't throw errors") do
     show(ohlc)
     show(ohlc[1:4])
     show(ohlc[1:0])
+    show(lag(cl[1:2], padding=true))
 
 end
-
