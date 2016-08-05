@@ -14,6 +14,7 @@ Contents
    timearray
    indexing
    split
+   update
    operators
    apply
    combine

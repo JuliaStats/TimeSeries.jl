@@ -52,3 +52,26 @@ facts("element wrappers") do
         @fact isa(colnames(cl), Array{UTF8String, 1}) --> true
     end
 end
+
+facts("head and tail methods") do
+
+    context("head and tail methods work with default n value") do
+        @fact length(head(cl))      --> 1
+        @fact length(head(cl,1))    --> 1
+        @fact head(cl).timestamp[1] --> Date(2000,1,3)
+        @fact head(cl).values[1]    --> 111.94
+        @fact head(cl).meta         --> "AAPL"
+
+        @fact length(tail(cl))      --> 1
+        @fact length(tail(cl,1))    --> 1
+        @fact tail(cl).timestamp[1] --> Date(2001,12,31)
+        @fact tail(cl).values[1]    --> 21.9
+        @fact tail(cl).meta         --> "AAPL"
+    end
+    context("head and tail methods work with custom values") do
+        @fact length(head(cl, 2))   --> 2
+        @fact length(head(cl, 500)) --> length(cl)
+        @fact length(tail(cl, 2))   --> 2
+        @fact length(tail(cl, 500)) --> length(cl)
+    end
+end

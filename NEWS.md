@@ -1,3 +1,8 @@
+### 0.9.0
+
+* introduce update() method that creates new TimeArray from existing one.
+* adds tail() and head() methods
+
 ### 0.8.4
 
 * allows users to show customizable representations for missing values, which are represented as NaN values in the array.
