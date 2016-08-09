@@ -1,6 +1,7 @@
-### 0.9.0
+### 0.8.5
 
-* introduce update() method that creates new TimeArray from existing one.
+* update() method creates new TimeArray from existing one, with new timestamp/value pair.
+* rename() method creates new TimeArray from existing one, with new column name(s).
 * adds tail() and head() methods
 
 ### 0.8.4

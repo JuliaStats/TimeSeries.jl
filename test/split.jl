@@ -55,7 +55,7 @@ end
 
 facts("head and tail methods") do
 
-    context("head and tail methods work with default n value") do
+    context("head and tail methods work with default n value on single column TimeArray") do
         @fact length(head(cl))      --> 1
         @fact length(head(cl,1))    --> 1
         @fact head(cl).timestamp[1] --> Date(2000,1,3)
@@ -68,10 +68,32 @@ facts("head and tail methods") do
         @fact tail(cl).values[1]    --> 21.9
         @fact tail(cl).meta         --> "AAPL"
     end
-    context("head and tail methods work with custom values") do
+
+    context("head and tail methods work with default n value on multi column TimeArray") do
+        @fact length(head(ohlc))      --> 1
+        @fact length(head(ohlc,1))    --> 1
+        @fact head(ohlc).timestamp[1] --> Date(2000,1,3)
+        @fact head(ohlc).values       --> [104.88  112.5  101.69  111.94]
+        @fact head(ohlc).meta         --> "AAPL"
+
+        @fact length(tail(ohlc))      --> 1
+        @fact length(tail(ohlc,1))    --> 1
+        @fact tail(ohlc).timestamp[1] --> Date(2001,12,31)
+        @fact tail(ohlc).values       --> [22.51  22.66  21.83  21.9]
+        @fact tail(ohlc).meta         --> "AAPL"
+    end
+
+    context("head and tail methods work with custom periods on single column TimeArray") do
         @fact length(head(cl, 2))   --> 2
         @fact length(head(cl, 500)) --> length(cl)
         @fact length(tail(cl, 2))   --> 2
         @fact length(tail(cl, 500)) --> length(cl)
+    end
+
+    context("head and tail methods work with custom periods on multi column TimeArray") do
+        @fact length(head(ohlc, 2))   --> 2
+        @fact length(head(ohlc, 500)) --> length(ohlc)
+        @fact length(tail(ohlc, 2))   --> 2
+        @fact length(tail(ohlc, 500)) --> length(ohlc)
     end
 end

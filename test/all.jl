@@ -1,6 +1,7 @@
 include("split.jl")
 include("apply.jl")
 include("combine.jl") 
+include("modify.jl") 
 include("meta.jl") 
 include("timearray.jl")
 include("readwrite.jl")

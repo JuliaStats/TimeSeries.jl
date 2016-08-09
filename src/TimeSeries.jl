@@ -11,7 +11,7 @@ export TimeArray, AbstractTimeSeries,
        basecall,
        merge, collapse,
        readtimearray, writetimearray,
-       update,
+       update, rename,
        # deprecated
        by, findall
 
@@ -24,7 +24,7 @@ include("apply.jl")
 include("combine.jl")
 include("readwrite.jl")
 include("utilities.jl")
-include("update.jl")
+include("modify.jl")
 include("deprecated.jl")
 
 end
