@@ -1,5 +1,5 @@
 Splitting by time constraint or when condition is true
-=====================================================
+======================================================
 
 Specific methods for segmenting on time ranges or if condition is met is supported with the following methods.
 
@@ -136,7 +136,7 @@ The ``findwhen`` method test a condition and returns a vector of ``Date`` or ``D
     2001-12-28 | 21.97     23.0      21.96     22.43
 
 find
--------
+----
 
 The ``find`` method tests a condition and returns a vector of ``Int`` representing the row in the array where the condition
 is ``true``::
@@ -160,4 +160,47 @@ is ``true``::
     2001-12-21 | 21.01     21.54     20.8      21.0
     2001-12-31 | 22.51     22.66     21.83     21.9
 
+Splitting by head and tail
+==========================
 
+head
+----
+
+The ``head`` method defaults to returning only the first value in a TimeArray. By selecting the second positional
+argument to a different value, the user can modify how many from the top are selected::
+
+    julia> head(cl)
+    1x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-03
+
+                 Close     
+    2000-01-03 | 111.94    
+    
+    
+    julia> head(cl,3)
+    3x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-05
+    
+                 Close     
+    2000-01-03 | 111.94    
+    2000-01-04 | 102.5     
+    2000-01-05 | 104.0   
+
+tail
+----
+
+The ``tail`` method defaults to returning only the last value in a TimeArray. By selecting the second positional
+argument to a different value, the user can modify how many from the bottom are selected::
+
+    julia> tail(cl)
+    1x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2001-12-31 to 2001-12-31
+    
+                 Close    
+    2001-12-31 | 21.9     
+    
+    
+    julia> tail(cl,3)
+    3x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2001-12-27 to 2001-12-31
+    
+                 Close    
+    2001-12-27 | 22.07    
+    2001-12-28 | 22.43    
+    2001-12-31 | 21.9     
