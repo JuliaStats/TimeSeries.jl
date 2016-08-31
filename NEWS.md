@@ -1,3 +1,7 @@
+### 0.8.6
+
+* unique column names are enforced (fixes issue #255)
+
 ### 0.8.5
 
 * update() method creates new TimeArray from existing one, with new timestamp/value pair.
