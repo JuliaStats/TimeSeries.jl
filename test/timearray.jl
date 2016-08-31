@@ -14,6 +14,8 @@ end
 
 facts("type constructors enforce invariants") do
 
+    dupe_cnames =  rename(AAPL,  ["a", "b", "c", "a", "a", "b", "d", "e", "e", "e", "e", "f"])
+
     context("unequal length between values and timestamp fails") do
         @fact_throws TimeArray(cl.timestamp, cl.values[2:end], ["Close"])
     end
@@ -34,6 +36,22 @@ facts("type constructors enforce invariants") do
         @fact TimeArray(flipdim(cl.timestamp, 1), flipdim(cl.values, 1),  ["Close"]).timestamp[1] --> Date(2000,1,3)
         @fact TimeArray(flipdim(cl.timestamp, 1), flipdim(cl.values, 1),  ["Close"]).values[1]    --> 111.94
     end
+
+    context("duplicate column names are enumerated by inner constructor") do
+        @fact dupe_cnames.colnames[1]  --> "a"
+        @fact dupe_cnames.colnames[2]  --> "b"
+        @fact dupe_cnames.colnames[3]  --> "c"
+        @fact dupe_cnames.colnames[4]  --> "a_1"
+        @fact dupe_cnames.colnames[5]  --> "a_2"
+        @fact dupe_cnames.colnames[6]  --> "b_1"
+        @fact dupe_cnames.colnames[7]  --> "d"
+        @fact dupe_cnames.colnames[8]  --> "e"
+        @fact dupe_cnames.colnames[9]  --> "e_1"
+        @fact dupe_cnames.colnames[10] --> "e_2"
+        @fact dupe_cnames.colnames[11] --> "e_3"
+        @fact dupe_cnames.colnames[12] --> "f"
+    end
+
 end
   
 facts("construction without colnames") do
@@ -43,7 +61,7 @@ facts("construction without colnames") do
 
     context("default colnames to empty UTF8String vector") do
         @fact no_colnames_one.colnames   --> UTF8String[""]
-        @fact no_colnames_multi.colnames --> UTF8String["", "", "", "", "", "", "", "", "", "", "", ""]
+        @fact no_colnames_multi.colnames --> UTF8String["_1", "_2", "_3", "_4", "_5", "_6", "_7", "_8", "_9", "_10", "_11", "_12"]
     end
 
     context("empty colnames forces meta to nothing") do

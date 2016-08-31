@@ -15,5 +15,3 @@ To create dummy data without using the ``MarketData`` package, simply use the fo
 
     dates  = collect(Date(1999,1,1):Date(2000,12,31))
     mytime = TimeArray(dates, rand(length(dates)))
-
-

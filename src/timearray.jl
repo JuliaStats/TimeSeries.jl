@@ -18,11 +18,14 @@ immutable TimeArray{T, N, D<:TimeType, A<:AbstractArray} <: AbstractTimeSeries
                            nrow, ncol = size(values, 1), size(values, 2)
                            nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
                            ncol != size(colnames,1) ? error("column names must match width of array"):
+                           # length(unique(colnames)) != ncol ? colnames = replace_dupes(colnames):
                            timestamp != unique(timestamp) ? error("there are duplicate dates"):
                            ~(flipdim(timestamp, 1) == sort(timestamp) || timestamp == sort(timestamp)) ? error("dates are mangled"):
                            flipdim(timestamp, 1) == sort(timestamp) ? 
-                           new(flipdim(timestamp, 1), flipdim(values, 1), colnames, meta):
-                           new(timestamp, values, colnames, meta)
+                           new(flipdim(timestamp, 1), flipdim(values, 1), replace_dupes(colnames), meta):
+                           #new(flipdim(timestamp, 1), flipdim(values, 1), colnames, meta):
+                           new(timestamp, values, replace_dupes(colnames), meta)
+                           #new(timestamp, values, colnames, meta)
     end
 end
 
@@ -210,3 +213,31 @@ getindex{T,N,D}(ta::TimeArray{T,N,D}, k::TimeArray{Bool,1}) = ta[findwhen(k)]
 
 # Define end keyword
 endof(ta::TimeArray) = length(ta.timestamp)
+
+# helper methods for inner constructor
+function find_dupes_index(cnames)
+    idx = Int[]
+    for c in 1:length(cnames)
+        if contains(string(cnames[1:c-1]), cnames[c])
+            push!(idx, c)
+        end
+    end
+    idx
+end
+
+function replace_dupes(cnames)
+    n=1
+    while length(unique(cnames)) != length(cnames)
+        ds = find_dupes_index(cnames)
+        for d in ds
+            if n == 1
+                cnames[d] = string(cnames[d], "_$n")
+            else
+                #cnames[d] = string(cnames[d][1:length(cnames[d])-2], "$n")
+                cnames[d] = string(cnames[d][1:length(cnames[d])-length(string(n))-1], "_$n")
+            end
+        end
+    n +=1
+    end
+    cnames
+end

@@ -36,7 +36,9 @@ colnames
 --------
 
 The ``colnames`` field is a vector of type ``UTF8String`` and contains the names of the columns for each column in the ``values``
-field. The length of this vector must match the column count of the ``values`` array, or the constructor will fail.
+field. The length of this vector must match the column count of the ``values`` array, or the constructor will fail. Since TimeArrays are 
+indexable on column names, duplicate names in the ``colnames`` vector will be modified by the inner constructor. Each subsequent duplicate
+name will be appended by ``_n`` where ``n`` enumerates from 1.
 
 meta
 ----
