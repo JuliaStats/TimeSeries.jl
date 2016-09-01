@@ -1,3 +1,7 @@
+### 0.8.7
+
+* reexport Base.Dates methods and DataTypes (fixes issue #277)
+
 ### 0.8.6
 
 * unique column names are enforced (fixes issue #255)
