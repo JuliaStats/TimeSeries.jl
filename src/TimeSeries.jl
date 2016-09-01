@@ -26,5 +26,6 @@ include("readwrite.jl")
 include("utilities.jl")
 include("modify.jl")
 include("deprecated.jl")
+include("Base.Dates.jl")
 
 end
