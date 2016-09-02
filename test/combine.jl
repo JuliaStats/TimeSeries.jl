@@ -26,8 +26,10 @@ end
 
 facts("merge works correctly") do
 
-    cl1 = cl[1:3]
-    op1 = cl[2:4]
+    cl1  = cl[1:3]
+    op1  = cl[2:4]
+    aapl = tail(AAPL)
+    ba   = tail(BA)
 
     context("takes colnames kwarg correctly") do
         @fact merge(cl, ohlc["High", "Low"], colnames=["a","b","c"]).colnames --> ["a", "b", "c"]
@@ -105,6 +107,22 @@ facts("merge works correctly") do
 
         @fact merge(cl, op[2:5], :outer).colnames  --> ["Close", "Open"]
         @fact merge(op[2:5], cl, :outer).colnames  --> ["Open", "Close"]
+    end
+
+    context("merged meta field value uses common meta value") do
+        @fact merge(cl,op).meta --> "AAPL"
+    end
+
+    context("merged meta field value concatenates when both objects' meta field values are strings") do
+        @fact merge(aapl, ba).meta --> "AAPL_BA"
+    end
+
+    context("merged meta field value can be user-specified") do
+        @fact merge(cl,op, meta=12).meta --> 12
+    end
+
+    context("merged meta field value for disparate types in meta field defaults to Void") do
+        @fact merge(cl, merge(cl,op, meta=12)).meta --> Void
     end
 end
 

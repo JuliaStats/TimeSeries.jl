@@ -17,9 +17,9 @@ traded. It turns out that this isn't true. CAT did not trade on Sep 27, 1985 bec
 Stock Exchage. Apple Computer trades on the electronic NASDAQ and its trading was not halted on that day. The result of the merge
 should then be 8,335 rows::
 
-    julia> Caterapple = merge(AAPL,CAT);
+    julia> AppleCat= merge(AAPL,CAT);
 
-    julia> length(Caterapple)
+    julia> length(AppleCat)
     8335
 
 Left, right, and outer joins can also be performed by passing the corresponding symbol. These joins introduce ``NaN`` values when data
@@ -52,8 +52,21 @@ for a particular timestamp only exists in one of the series to be merged. For ex
     2000-01-05 | 103.75    104.0
     2000-01-06 | NaN       95.0
 
-Currently, the ``merge`` method will not merge objects that have different values in the ``meta`` field. The APPL and CAT objects
-have ``Void`` in their respective ``meta`` fields.
+The ``merge`` method allows users to specify the value for the ``meta`` field of the merged object. When that value is not explicity
+provided, ``merge`` will concatenate the ``meta`` field values, assuming these values to be strings. This covers the vast majority of 
+use cases. In edge cases when users do not provide a ``meta`` value and both field values are not strings, the merged object will take
+on ``Void`` as its ``meta`` field value.::
+    
+    julia> AppleCat.meta
+    "AAPL_CAT"
+
+    julia> CatApple = merge(CAT, AAPL, meta=47);
+
+    julia> CatApple.meta
+    47
+
+    julia> merge(AppleCat, CatApple).meta
+    Void
 
 collapse
 --------

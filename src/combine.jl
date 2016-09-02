@@ -5,7 +5,13 @@ import Base: merge, vcat, map
 function merge{T,N,M,D}(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D},
                               method::Symbol=:inner; colnames::Vector=[], meta::Any=Void)
 
-    ta1.meta == ta2.meta && meta == Void && (meta = ta1.meta)
+    if ta1.meta == ta2.meta && meta == Void
+        meta = ta1.meta
+    elseif typeof(ta1.meta) <: AbstractString && typeof(ta2.meta) <: AbstractString && meta == Void
+        meta = string(ta1.meta, "_", ta2.meta)
+    else
+        meta = meta
+    end
 
     if method == :inner
 

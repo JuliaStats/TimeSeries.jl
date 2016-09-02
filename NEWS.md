@@ -1,3 +1,7 @@
+### 0.8.8
+
+* merge method deals with meta field values more robustly (fixes issue #164)
+
 ### 0.8.7
 
 * reexport Base.Dates methods and DataTypes (fixes issue #277)
