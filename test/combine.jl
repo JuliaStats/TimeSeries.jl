@@ -26,8 +26,10 @@ end
 
 facts("merge works correctly") do
 
-    cl1 = cl[1:3]
-    op1 = cl[2:4]
+    cl1  = cl[1:3]
+    op1  = cl[2:4]
+    aapl = tail(AAPL)
+    ba   = tail(BA)
 
     context("takes colnames kwarg correctly") do
         @fact merge(cl, ohlc["High", "Low"], colnames=["a","b","c"]).colnames --> ["a", "b", "c"]

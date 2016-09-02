@@ -75,28 +75,35 @@ end
 facts("combine operations preserve meta") do
 
     context("merge when both have identical meta") do
-        @fact merge(mdata, mdata).meta --> "Apple"
-        @fact merge(mdata, mdata, :left).meta --> "Apple"
-        @fact merge(mdata, mdata, :right).meta --> "Apple"
-        @fact merge(mdata, mdata, :outer).meta --> "Apple"
+        @fact merge(cl, op).meta         --> "AAPL"
+        @fact merge(cl, op, :left).meta  --> "AAPL"
+        @fact merge(cl, op, :right).meta --> "AAPL"
+        @fact merge(cl, op, :outer).meta --> "AAPL"
     end
 
-    context("merge when both have different meta") do
-        @fact merge(mdata, cl).meta --> Void
-        @fact merge(mdata, cl, :left).meta --> Void
-        @fact merge(mdata, cl, :right).meta --> Void
-        @fact merge(mdata, cl, :outer).meta --> Void
+    context("merged meta field value concatenates when both objects' meta field values are strings") do
+        @fact merge(mdata, cl).meta         --> "Apple_AAPL"
+        @fact merge(mdata, cl, :left).meta  --> "Apple_AAPL"
+        @fact merge(mdata, cl, :right).meta --> "Apple_AAPL"
+        @fact merge(mdata, cl, :outer).meta --> "Apple_AAPL"
     end
 
     context("merge when supplied with meta") do
-        @fact merge(mdata, mdata, meta="new meta").meta --> "new meta"
-        @fact merge(mdata, mdata, :left, meta="new meta").meta --> "new meta"
-        @fact merge(mdata, mdata, :right, meta="new meta").meta --> "new meta"
-        @fact merge(mdata, mdata, :outer, meta="new meta").meta --> "new meta"
-        @fact merge(mdata, cl, meta="new meta").meta --> "new meta"
-        @fact merge(mdata, cl, :left, meta="new meta").meta --> "new meta"
-        @fact merge(mdata, cl, :right, meta="new meta").meta --> "new meta"
-        @fact merge(mdata, cl, :outer, meta="new meta").meta --> "new meta"
+        @fact merge(mdata, mdata, meta=47).meta         --> 47
+        @fact merge(mdata, mdata, :left, meta=47).meta  --> 47
+        @fact merge(mdata, mdata, :right, meta=47).meta --> 47
+        @fact merge(mdata, mdata, :outer, meta=47).meta --> 47
+        @fact merge(mdata, cl, meta=47).meta            --> 47
+        @fact merge(mdata, cl, :left, meta=47).meta     --> 47
+        @fact merge(mdata, cl, :right, meta=47).meta    --> 47
+        @fact merge(mdata, cl, :outer, meta=47).meta    --> 47
+    end
+
+    context("merged meta field value for disparate types in meta field defaults to Void") do
+        @fact merge(mdata, merge(cl, op, meta=47)).meta         --> Void
+        @fact merge(mdata, merge(cl, op, meta=47), :left).meta  --> Void
+        @fact merge(mdata, merge(cl, op, meta=47), :right).meta --> Void
+        @fact merge(mdata, merge(cl, op, meta=47), :outer).meta --> Void
     end
 
     context("collapse") do
