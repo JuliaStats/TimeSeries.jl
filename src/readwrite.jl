@@ -20,7 +20,7 @@ function readtimearray(fname::AbstractString; delim::Char=',', meta=nothing, for
     end 
 
     vals   = insertNaN(cfile[2:end, 2:end])
-    cnames = UTF8String[]
+    cnames = String[]
     for c in cfile[1, 2:end]
         push!(cnames, string(c))
     end

@@ -13,11 +13,11 @@ facts("collapse operations") do
         @fact collapse(cl, month, first).values[2]    --> 100.25
         @fact collapse(cl, month, first).timestamp[2] --> Date(2000,2,1)
 
-        @fact collapse(ohlc, week, first).values[2, :]  --> [102.0 102.25 94.75 97.75]
+        @fact collapse(ohlc, week, first).values[2, :]  --> [102.0, 102.25, 94.75, 97.75]
         @fact collapse(ohlc, week, first).timestamp[2]  --> Date(2000,1,10)
-        @fact collapse(ohlc, week, first, last).values[2, :]  --> [100.0 102.25 99.38 100.44]
+        @fact collapse(ohlc, week, first, last).values[2, :]  --> [100.0, 102.25, 99.38, 100.44]
         @fact collapse(ohlc, week, first, last).timestamp[2]  --> Date(2000,1,10)
-        @fact collapse(ohlc, month, first).values[2, :] --> [104.0 105.0 100.0 100.25]
+        @fact collapse(ohlc, month, first).values[2, :] --> [104.0, 105.0, 100.0, 100.25]
         @fact collapse(ohlc, month, first).timestamp[2] --> Date(2000,2,1)
 
 

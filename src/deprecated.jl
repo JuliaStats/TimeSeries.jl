@@ -16,8 +16,8 @@ function by{T,N}(ta::TimeArray{T,N}, t::Int; period::Function=day)
     ta[rownums]
 end 
  
-function by{T,N}(ta::TimeArray{T,N}, t::ASCIIString; period::Function=day) 
-    warn("by(ta::TimeArray, t::ASCIIString; period::Function) is being deprecated.\nPlease use when(ta::TimeArray, period::Function, t::ASCIIString)")
+function by{T,N}(ta::TimeArray{T,N}, t::String; period::Function=day) 
+    warn("by(ta::TimeArray, t::String; period::Function) is being deprecated.\nPlease use when(ta::TimeArray, period::Function, t::String)")
     boolarray = [[period(ta.timestamp[d]) for d in 1:length(ta.timestamp)] .== t;] # odd syntax for t; but just t deprecated
     rownums = round(Int64, zeros(sum(boolarray)))
     j = 1
