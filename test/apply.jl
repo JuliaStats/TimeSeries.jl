@@ -84,7 +84,7 @@ facts("time series methods") do
         @fact isequal(moving(cl, mean, 10, padding=true).values[1], NaN)                       --> true
         @fact moving(cl, mean, 10, padding=true).values[10]                                    --> moving(cl, mean, 10).values[1]
         @fact moving(ohlc, mean, 10).values                                                    --> moving(ohlc, mean, 10, padding=false).values
-        @fact moving(ohlc, mean, 10).values[1, :]                                              --> roughly(mean(ohlc.values[1:10, :], 1))
+        @fact moving(ohlc, mean, 10).values[1, :]'                                             --> roughly(mean(ohlc.values[1:10, :], 1))
         @fact isequal(moving(ohlc, mean, 10, padding=true).values[1, :], [NaN, NaN, NaN, NaN]) --> true
         @fact moving(ohlc, mean, 10, padding=true).values[10, :]                               --> moving(ohlc, mean, 10).values[1, :]
     end
@@ -93,8 +93,9 @@ facts("time series methods") do
         @fact upto(cl, sum).values[10]        --> roughly(sum(cl.values[1:10]))
         @fact upto(cl, mean).values[10]       --> roughly(mean(cl.values[1:10]))
         @fact upto(cl, sum).timestamp[10]     --> Date(2000,1,14)
-        @fact upto(ohlc, sum).values[10, :]   --> roughly(sum(ohlc.values[1:10, :], 1))
-        @fact upto(ohlc, mean).values[10, :]  --> roughly(mean(ohlc.values[1:10, :], 1))
+        # transpose the upto value output from column to row vector but values are identical
+        @fact upto(ohlc, sum).values[10, :]'  --> roughly(sum(ohlc.values[1:10, :], 1))
+        @fact upto(ohlc, mean).values[10, :]' --> roughly(mean(ohlc.values[1:10, :], 1))
     end
 end
 
@@ -327,31 +328,26 @@ facts("basecall works with Base methods") do
     end
 end
 
-facts("adding / removing missing rows works") do
+facts("adding/removing missing rows works") do
 
     uohlc = uniformspace(ohlc[1:8])
 
-    context("uniform spacing") do
+    context("uniform spacing detection works") do
+        @fact datetime1 --> uniformspaced
+        @fact uohlc     --> uniformspaced
+        @fact cl        --> not(uniformspaced)
+        @fact ohlc      --> not(uniformspaced)
+    end
 
-        context("uniform spacing detection works") do
-            @fact datetime1  --> uniformspaced
-            @fact uohlc      --> uniformspaced
-            @fact cl         --> not(uniformspaced)
-            @fact ohlc       --> not(uniformspaced)
-        end
-
-        context("forcing uniform spacing works") do
-            @fact length(uohlc)                               --> 10
-            @fact uohlc[5].values                             --> ohlc[5].values
-            @fact isequal(uohlc[6].values, [NaN NaN NaN NaN]) --> true
-            @fact isequal(uohlc[7].values, [NaN NaN NaN NaN]) --> true
-            @fact uohlc[8].values                             --> ohlc[6].values
-        end
-
+    context("forcing uniform spacing works") do
+        @fact length(uohlc)                               --> 10
+        @fact uohlc[5].values                             --> ohlc[5].values
+        @fact isequal(uohlc[6].values, [NaN NaN NaN NaN]) --> true
+        @fact isequal(uohlc[7].values, [NaN NaN NaN NaN]) --> true
+        @fact uohlc[8].values                             --> ohlc[6].values
     end
 
     context("dropnan works") do
-
         nohlc = TimeArray(ohlc.timestamp, copy(ohlc.values), ohlc.colnames, ohlc.meta)
         nohlc.values[7:12, 2] = NaN
 
@@ -368,7 +364,5 @@ facts("adding / removing missing rows works") do
         @fact dropnan(nohlc, :any).values    --> ohlc.values[[1:6;13:end], :]
         @fact dropnan(uohlc, :any).timestamp --> ohlc[1:8].timestamp
         @fact dropnan(uohlc, :any).values    --> ohlc[1:8].values
-
     end
-
 end

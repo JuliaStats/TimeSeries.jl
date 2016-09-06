@@ -51,7 +51,6 @@ facts("type constructors enforce invariants") do
         @fact dupe_cnames.colnames[11] --> "e_3"
         @fact dupe_cnames.colnames[12] --> "f"
     end
-
 end
   
 facts("construction without colnames") do
@@ -73,42 +72,42 @@ end
 facts("conversion methods") do
 
     context("convert works ") do
-       @fact isa(convert(TimeArray{Float64,1}, (cl.>op)), TimeArray{Float64,1})                --> true
-       @fact isa(convert(TimeArray{Float64,2}, (merge(cl.<op, cl.>op))), TimeArray{Float64,2}) --> true
-       @fact isa(convert(cl.>op), TimeArray{Float64,1})                                        --> true
-       @fact isa(convert(merge(cl.<op, cl.>op)), TimeArray{Float64,2})                         --> true
+        @fact isa(convert(TimeArray{Float64,1}, (cl.>op)), TimeArray{Float64,1})                --> true
+        @fact isa(convert(TimeArray{Float64,2}, (merge(cl.<op, cl.>op))), TimeArray{Float64,2}) --> true
+        @fact isa(convert(cl.>op), TimeArray{Float64,1})                                        --> true
+        @fact isa(convert(merge(cl.<op, cl.>op)), TimeArray{Float64,2})                         --> true
     end
 end
 
 facts("index by integer works with both 1d and 2d time array") do
 
     context("1d time array") do
-      @fact cl[1].timestamp --> [Date(2000,1,3)]
-      @fact cl[1].values    --> [111.94]
-      @fact cl[1].colnames  --> ["Close"]
-      @fact cl[1].meta      --> "AAPL"
+        @fact cl[1].timestamp --> [Date(2000,1,3)]
+        @fact cl[1].values    --> [111.94]
+        @fact cl[1].colnames  --> ["Close"]
+        @fact cl[1].meta      --> "AAPL"
     end
 
     context("2d time array") do
-      @fact ohlc[1].timestamp --> [Date(2000,1,3)]
-      @fact ohlc[1].values    --> [104.88 112.5 101.69 111.94]
-      @fact ohlc[1].colnames  --> ["Open", "High", "Low","Close"]
-      @fact ohlc[1].meta      --> "AAPL"
+        @fact ohlc[1].timestamp --> [Date(2000,1,3)]
+        @fact ohlc[1].values    --> [104.88 112.5 101.69 111.94]
+        @fact ohlc[1].colnames  --> ["Open", "High", "Low","Close"]
+        @fact ohlc[1].meta      --> "AAPL"
     end
 end
 
 facts("ordered collection methods") do
 
     context("iterator protocol is valid") do
-      @fact op                     --> not(isempty)
-      @fact op[op .< 0]            --> isempty
-      @fact start(op)              --> 1
-      @fact next(op, 1)            --> ((op.timestamp[1], op.values[1,:]), 2)
-      @fact done(op, length(op)+1) --> true
+        @fact op                     --> not(isempty)
+        @fact op[op .< 0]            --> isempty
+        @fact start(op)              --> 1
+        @fact next(op, 1)            --> ((op.timestamp[1], op.values[1,:]), 2)
+        @fact done(op, length(op)+1) --> true
     end
 
     context("end keyword returns correct index") do
-      @fact ohlc[end].timestamp[1] --> ohlc.timestamp[end]
+        @fact ohlc[end].timestamp[1] --> ohlc.timestamp[end]
     end
 
     context("getindex on single Int and Date") do
