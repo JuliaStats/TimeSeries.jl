@@ -11,9 +11,7 @@ export TimeArray, AbstractTimeSeries,
        basecall,
        merge, collapse,
        readtimearray, writetimearray,
-       update, rename,
-       # deprecated
-       by, findall
+       update, rename
 
 ###### include ##################
 
