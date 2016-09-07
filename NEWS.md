@@ -1,3 +1,7 @@
+### 0.9.0
+
+* first version to support julia 0.5 release candidates
+
 ### 0.8.8
 
 * merge method deals with meta field values more robustly (fixes issue #164)

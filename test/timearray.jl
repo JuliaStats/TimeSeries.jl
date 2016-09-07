@@ -7,7 +7,7 @@ facts("field extraction methods work") do
     context("timestamp, values, colnames and meta") do
         @fact typeof(timestamp(cl)) --> Array{Date,1}
         @fact typeof(values(cl))    --> Array{Float64,1}
-        @fact typeof(colnames(cl))  --> Array{UTF8String,1}
+        @fact typeof(colnames(cl))  --> Array{String,1}
         @fact meta(mdata)           --> "Apple" 
     end
 end
@@ -25,11 +25,11 @@ facts("type constructors enforce invariants") do
     end
   
     context("duplicate timestamp values fails") do
-        @fact_throws TimeArray(dupestamp, push!(cl.values, cl.values[1]), ["Close"])
+        @fact_throws TimeArray(dupestamp, push(cl.values, cl.values[1]), ["Close"])
     end
   
     context("mangled order of timestamp values fails") do
-        @fact_throws TimeArray(mangstamp,  push!(cl.values, cl.values[1]), ["Close"])
+        @fact_throws TimeArray(mangstamp,  push(cl.values, cl.values[1]), ["Close"])
     end
   
     context("flipping occurs when needed") do
@@ -51,7 +51,6 @@ facts("type constructors enforce invariants") do
         @fact dupe_cnames.colnames[11] --> "e_3"
         @fact dupe_cnames.colnames[12] --> "f"
     end
-
 end
   
 facts("construction without colnames") do
@@ -59,9 +58,9 @@ facts("construction without colnames") do
     no_colnames_one   = TimeArray(cl.timestamp, cl.values)
     no_colnames_multi = TimeArray(AAPL.timestamp, AAPL.values)
 
-    context("default colnames to empty UTF8String vector") do
-        @fact no_colnames_one.colnames   --> UTF8String[""]
-        @fact no_colnames_multi.colnames --> UTF8String["_1", "_2", "_3", "_4", "_5", "_6", "_7", "_8", "_9", "_10", "_11", "_12"]
+    context("default colnames to empty String vector") do
+        @fact no_colnames_one.colnames   --> String[""]
+        @fact no_colnames_multi.colnames --> String["_1", "_2", "_3", "_4", "_5", "_6", "_7", "_8", "_9", "_10", "_11", "_12"]
     end
 
     context("empty colnames forces meta to nothing") do
@@ -73,25 +72,42 @@ end
 facts("conversion methods") do
 
     context("convert works ") do
-       @fact isa(convert(TimeArray{Float64,1}, (cl.>op)), TimeArray{Float64,1})                --> true
-       @fact isa(convert(TimeArray{Float64,2}, (merge(cl.<op, cl.>op))), TimeArray{Float64,2}) --> true
-       @fact isa(convert(cl.>op), TimeArray{Float64,1})                                        --> true
-       @fact isa(convert(merge(cl.<op, cl.>op)), TimeArray{Float64,2})                         --> true
+        @fact isa(convert(TimeArray{Float64,1}, (cl.>op)), TimeArray{Float64,1})                --> true
+        @fact isa(convert(TimeArray{Float64,2}, (merge(cl.<op, cl.>op))), TimeArray{Float64,2}) --> true
+        @fact isa(convert(cl.>op), TimeArray{Float64,1})                                        --> true
+        @fact isa(convert(merge(cl.<op, cl.>op)), TimeArray{Float64,2})                         --> true
+    end
+end
+
+facts("index by integer works with both 1d and 2d time array") do
+
+    context("1d time array") do
+        @fact cl[1].timestamp --> [Date(2000,1,3)]
+        @fact cl[1].values    --> [111.94]
+        @fact cl[1].colnames  --> ["Close"]
+        @fact cl[1].meta      --> "AAPL"
+    end
+
+    context("2d time array") do
+        @fact ohlc[1].timestamp --> [Date(2000,1,3)]
+        @fact ohlc[1].values    --> [104.88 112.5 101.69 111.94]
+        @fact ohlc[1].colnames  --> ["Open", "High", "Low","Close"]
+        @fact ohlc[1].meta      --> "AAPL"
     end
 end
 
 facts("ordered collection methods") do
 
     context("iterator protocol is valid") do
-      @fact op --> not(isempty)
-      @fact op[op .< 0] --> isempty
-      @fact start(op) --> 1
-      @fact next(op, 1) --> ((op.timestamp[1], op.values[1,:]), 2)
-      @fact done(op, length(op)+1) --> true
+        @fact op                     --> not(isempty)
+        @fact op[op .< 0]            --> isempty
+        @fact start(op)              --> 1
+        @fact next(op, 1)            --> ((op.timestamp[1], op.values[1,:]), 2)
+        @fact done(op, length(op)+1) --> true
     end
 
     context("end keyword returns correct index") do
-      @fact ohlc[end].timestamp[1] --> ohlc.timestamp[end]
+        @fact ohlc[end].timestamp[1] --> ohlc.timestamp[end]
     end
 
     context("getindex on single Int and Date") do
@@ -136,7 +152,7 @@ facts("ordered collection methods") do
     end
 
     context("getindex on a 1d Boolean TimeArray returns appropriate rows") do
-        @fact ohlc[op .> cl][2].values --> ohlc[4].values
+        @fact ohlc[op .> cl][2].values             --> ohlc[4].values
         @fact ohlc[op[300:end] .> cl][2].timestamp --> ohlc[303].timestamp
         @fact_throws ohlc[merge(op.>cl, op.<cl)] # MethodError, Bool must be 1D-TimeArray
     end
@@ -149,5 +165,5 @@ facts("show methods don't throw errors") do
     show(ohlc[1:4])
     show(ohlc[1:0])
     show(lag(cl[1:2], padding=true))
-
+ 
 end

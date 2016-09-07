@@ -36,7 +36,7 @@ function merge{T,N,M,D}(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D},
     elseif method == :outer
 
         timestamps = sorted_unique_merge(ta1.timestamp, ta2.timestamp)
-        ta = TimeArray(timestamps, zeros(length(timestamps), 0), UTF8String[], Void)
+        ta = TimeArray(timestamps, zeros(length(timestamps), 0), String[], Void)
         ta = merge(ta, ta1, :left)
         ta = merge(ta, ta2, :left, meta=meta)
 

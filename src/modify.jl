@@ -26,6 +26,6 @@ function rename{T,N,D}(ta::TimeArray{T,N,D}, colnames::Vector)
     TimeArray(ta.timestamp, ta.values, colnames, ta.meta)
 end
 
-function rename{T,N,D}(ta::TimeArray{T,N,D}, colnames::ASCIIString)
+function rename{T,N,D}(ta::TimeArray{T,N,D}, colnames::String)
     TimeArray(ta.timestamp, ta.values, [colnames], ta.meta)
 end

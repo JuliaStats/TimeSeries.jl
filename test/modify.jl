@@ -18,7 +18,8 @@ facts("update method works") do
     end
 
     context("update a multi column time array") do
-        @fact last(new_ohlc).values --> [111.11 222.22 333.33 444.44]
+        #@fact last(new_ohlc).values --> [111.11 222.22 333.33 444.44]
+        @fact tail(new_ohlc).values --> [111.11 222.22 333.33 444.44]
         @fact_throws update(ohlc, today(),  [111.11, 222.22, 333.33])
     end
 
