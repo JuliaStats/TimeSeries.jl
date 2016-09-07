@@ -151,9 +151,10 @@ end
 
 # single row
 function getindex{T,N,D}(ta::TimeArray{T,N,D}, n::Int)
+    # old code for 0.4
     #TimeArray(ta.timestamp[n], ta.values[n,:], ta.colnames, ta.meta)
-    # new behavior for v0.5
-    TimeArray(ta.timestamp[n], ta.values[n,:]', ta.colnames, ta.meta)
+    # new code for v0.5 to avoid conversion to column vector
+    TimeArray(ta.timestamp[n], ta.values[n:n,:], ta.colnames, ta.meta)
 end
 
 # single row 1d
