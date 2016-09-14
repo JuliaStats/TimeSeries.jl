@@ -1,7 +1,10 @@
 ###### update ####################
 
 function update{T,N,D}(ta::TimeArray{T,N,D}, tstamp::D, val::Vector{T})
-    if tstamp < maximum(ta.timestamp)
+    if length(ta) == 0
+        t    = vcat(tstamp)
+        vals = vcat(val')
+    elseif tstamp < maximum(ta.timestamp)
         error("only appending operations supported")
     else
         t    = vcat(ta.timestamp, tstamp)
@@ -11,7 +14,10 @@ function update{T,N,D}(ta::TimeArray{T,N,D}, tstamp::D, val::Vector{T})
 end
 
 function update{T,N,D}(ta::TimeArray{T,N,D}, tstamp::D, val::T)
-    if tstamp < maximum(ta.timestamp)
+    if length(ta) == 0
+        t    = vcat(tstamp)
+        vals = vcat(val)
+    elseif tstamp < maximum(ta.timestamp)
         error("only appending operations supported")
     else
         t    = vcat(ta.timestamp, tstamp)
