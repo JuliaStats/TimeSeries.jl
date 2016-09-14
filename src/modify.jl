@@ -1,29 +1,31 @@
 ###### update ####################
 
-function update{T,N,D}(ta::TimeArray{T,N,D}, tstamp::D, val::Vector{T})
-    if length(ta) == 0
-        t    = vcat(tstamp)
-        vals = vcat(val')
-    elseif tstamp < maximum(ta.timestamp)
-        error("only appending operations supported")
-    else
-        t    = vcat(ta.timestamp, tstamp)
-        vals = vcat(ta.values, val')
-    end
-    TimeArray(t, vals, ta.colnames, ta.meta)
-end
+function update{T,N,D}(ta::TimeArray{T,N,D}, tstamp::D, val::Array{T,N})
 
-function update{T,N,D}(ta::TimeArray{T,N,D}, tstamp::D, val::T)
     if length(ta) == 0
-        t    = vcat(tstamp)
-        vals = vcat(val)
+        uta = TimeArray(tstamp, val, ta.colnames, ta.meta)
     elseif tstamp < maximum(ta.timestamp)
         error("only appending operations supported")
     else
         t    = vcat(ta.timestamp, tstamp)
         vals = vcat(ta.values, val)
+        uta  = TimeArray(t, vals, ta.colnames, ta.meta)
     end
-    TimeArray(t, vals, ta.colnames, ta.meta)
+    uta
+end
+
+function update{T,N,D}(ta::TimeArray{T,N,D}, tstamp::D, val::T)
+
+    if length(ta) == 0
+        uta = TimeArray(tstamp, [val], ta.colnames, ta.meta)
+    elseif tstamp < maximum(ta.timestamp)
+        error("only appending operations supported")
+    else
+        t    = vcat(ta.timestamp, tstamp)
+        vals = vcat(ta.values, val)
+        uta  = TimeArray(t, vals, ta.colnames, ta.meta)
+    end
+    uta
 end
 
 ###### rename ####################
