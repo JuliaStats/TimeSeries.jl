@@ -14,7 +14,9 @@ end
 
 facts("type constructors enforce invariants") do
 
-    dupe_cnames =  rename(AAPL,  ["a", "b", "c", "a", "a", "b", "d", "e", "e", "e", "e", "f"])
+    mangled_stamp = vcat(cl.timestamp[200:end], cl.timestamp[1:199])
+    dupe_stamp    = vcat(cl.timestamp[1:499], cl.timestamp[499])
+    dupe_cnames   = rename(AAPL,  ["a", "b", "c", "a", "a", "b", "d", "e", "e", "e", "e", "f"])
 
     context("unequal length between values and timestamp fails") do
         @fact_throws TimeArray(cl.timestamp, cl.values[2:end], ["Close"])
@@ -25,11 +27,11 @@ facts("type constructors enforce invariants") do
     end
   
     context("duplicate timestamp values fails") do
-        @fact_throws TimeArray(dupestamp, push(cl.values, cl.values[1]), ["Close"])
+        @fact_throws TimeArray(dupe_stamp, cl.values, ["Close"])
     end
   
     context("mangled order of timestamp values fails") do
-        @fact_throws TimeArray(mangstamp,  push(cl.values, cl.values[1]), ["Close"])
+        @fact_throws TimeArray(mangled_stamp, cl.values, ["Close"])
     end
   
     context("flipping occurs when needed") do
