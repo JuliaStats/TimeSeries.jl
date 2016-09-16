@@ -7,25 +7,29 @@ facts("update method works") do
     new_cls  = update(cl, today(), 111.11)
     new_clv  = update(cl, today(), [111.11])
     new_ohlc = update(ohlc, today(), [111.11 222.22 333.33 444.44])
-    empty1   = TimeArray(Vector{Date}(), Array{Int}(0,1), ["foo"], "bar")
-    empty2   = TimeArray(Vector{Date}(), Array{Int}(0,2), ["foo", "bar"], "baz")
-    update1  = update(empty1, Date(2000,1,1), 12)
-    update2  = update(empty2, Date(2000,1,1), [10 11])
+    # empty1   = TimeArray(Vector{Date}(), Array{Int}(0,1), ["foo"], "bar")
+    # empty2   = TimeArray(Vector{Date}(), Array{Int}(0,2), ["foo", "bar"], "baz")
+    empty1   = TimeArray(Vector{Date}(), Array{Int}(0,1))
+    empty2   = TimeArray(Vector{Date}(), Array{Int}(0,2))
 
+    context("empty time arrays can be constructed") do
+        @fact length(empty1) --> 0
+        @fact length(empty2) --> 0
+    end
 
-    context("update an empty time array") do
-        @fact length(empty1)       --> 0
-        @fact length(empty2)       --> 0
-        @fact length(update1)      --> 1
-        @fact length(update2)      --> 1
-        @fact update1.timestamp[1] --> Date(2000,1,1)
-        @fact update2.timestamp[1] --> Date(2000,1,1)
-        @fact update1.values       --> [12]
-        @fact update2.values       --> [10 11]
-        @fact update1.colnames     --> ["foo"]
-        @fact update2.colnames     --> ["foo", "bar"]
-        @fact update1.meta         --> "bar"
-        @fact update2.meta         --> "baz"
+    context("update an empty time array fails") do
+        @fact_throws update(empty1, Date(2000,1,1), 10)
+        @fact_throws update(empty2, Date(2000,1,1), [10 11])
+#         @fact length(update1)      --> 1
+#         @fact length(update2)      --> 1
+#         @fact update1.timestamp[1] --> Date(2000,1,1)
+#         @fact update2.timestamp[1] --> Date(2000,1,1)
+#         @fact update1.values       --> [12]
+#         @fact update2.values       --> [10 11]
+#         @fact update1.colnames     --> ["foo"]
+#         @fact update2.colnames     --> ["foo", "bar"]
+#         @fact update1.meta         --> "bar"
+#         @fact update2.meta         --> "baz"
     end
 
     context("update a single column time array with single value vector") do
