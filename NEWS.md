@@ -1,5 +1,9 @@
 ### 0.9.0
 
+* improve update method and dis-allow updating of empty time arrays (issue #286)
+
+### 0.9.0
+
 * first version to support julia 0.5 release candidates
 
 ### 0.8.8

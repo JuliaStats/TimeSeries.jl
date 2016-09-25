@@ -3,7 +3,6 @@
 function update{T,N,D}(ta::TimeArray{T,N,D}, tstamp::D, val::Array{T,N})
 
     if length(ta) == 0
-        #uta = TimeArray(tstamp, val, ta.colnames, ta.meta)
         error("updating empty time arrays is not supported, please use a scalable approach")
     elseif tstamp < maximum(ta.timestamp)
         error("only appending operations supported")
@@ -18,7 +17,6 @@ end
 function update{T,N,D}(ta::TimeArray{T,N,D}, tstamp::D, val::T)
 
     if length(ta) == 0
-#        uta = TimeArray(tstamp, [val], ta.colnames, ta.meta)
         error("updating empty time arrays is not supported, please use a scalable approach")
     elseif tstamp < maximum(ta.timestamp)
         error("only appending operations supported")
