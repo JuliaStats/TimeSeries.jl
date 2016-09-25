@@ -1,4 +1,4 @@
-### 0.9.0
+### 0.9.1
 
 * improve update method and dis-allow updating of empty time arrays (issue #286)
 
