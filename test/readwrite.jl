@@ -1,6 +1,8 @@
-using TimeSeries, MarketData
+using FactCheck
 FactCheck.setstyle(:compact)
 FactCheck.onlystats(true)
+
+using TimeSeries, MarketData
 
 facts("readwrite parses csv file correctly") do
 
@@ -18,6 +20,19 @@ facts("readwrite parses csv file correctly") do
         @fact size(tm.values) --> (5,1)
         @fact tm.timestamp[4] --> DateTime(2010,1,4,9,4)
         @fact_throws readtimearray(joinpath(dirname(@__FILE__), "data/datetime3.csv"))
+    end
+
+    context("Input as IOBuffer and specifying DateTime string format for reading") do
+        s = "DateTime,Open
+2010/1/4|9:01:00,7300
+2010/1/4|9:02:00,7316
+2010/1/4|9:03:00,7316
+2010/1/4|9:04:00,7316
+2010/1/4|9:05:00,7316"
+        tm = readtimearray(IOBuffer(s), format="yyyy/mm/dd|HH:MM:SS")
+        @fact length(tm) --> 5
+        @fact size(tm.values) --> (5,1)
+        @fact tm.timestamp[4] --> DateTime(2010,1,4,9,4)
     end
 
     context("timestamp parses to correct type") do
