@@ -1,6 +1,10 @@
+### 0.9.2
+
+* improve readtimearray to accept IOBuffer (@femtotrader fixes issue #298)
+
 ### 0.9.1
 
-* improve update method and dis-allow updating of empty time arrays (issue #286)
+* improve update method and dis-allow updating of empty time arrays (fixes issue #286)
 
 ### 0.9.0
 
