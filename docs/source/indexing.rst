@@ -13,7 +13,7 @@ Integers
 +-----------+---------------------------------------+--------------------------------+
 | [1:3]     | First through third row only          | integer range                  |
 +-----------+---------------------------------------+--------------------------------+
-| [[1:3;8]] | First through third row and eight row | integer range & single inteter |
+| [[1:3;8]] | First through third row and eight row | integer range & single integer |
 +-----------+---------------------------------------+--------------------------------+
 
 Examples in REPL::
