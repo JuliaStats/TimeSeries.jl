@@ -4,7 +4,7 @@ import Base: convert, length, show, getindex, start, next, done, isempty, endof
 
 abstract AbstractTimeSeries
 
-immutable TimeArray{T, N, D<:TimeType, A<:AbstractArray} <: AbstractTimeSeries
+immutable TimeArray{T, N, D<:Union{TimeType, Float64}, A<:AbstractArray} <: AbstractTimeSeries
 
     timestamp::Vector{D}
     values::A
@@ -29,18 +29,18 @@ immutable TimeArray{T, N, D<:TimeType, A<:AbstractArray} <: AbstractTimeSeries
     end
 end
 
-TimeArray{T,N,D<:TimeType,S<:AbstractString}(d::Vector{D}, v::AbstractArray{T,N}, c::Vector{S}, m::Any) =
+TimeArray{T,N,D<:Union{TimeType, Float64},S<:AbstractString}(d::Vector{D}, v::AbstractArray{T,N}, c::Vector{S}, m::Any) =
         TimeArray{T,N,D,typeof(v)}(d,v,map(String,c),m)
-TimeArray{T,N,D<:TimeType,S<:AbstractString}(d::D, v::AbstractArray{T,N}, c::Vector{S}, m::Any) =
+TimeArray{T,N,D<:Union{TimeType, Float64},S<:AbstractString}(d::D, v::AbstractArray{T,N}, c::Vector{S}, m::Any) =
         TimeArray{T,N,D,typeof(v)}([d],v,map(String,c),m)
 
 # when no column names are provided - meta is forced to nothing
-TimeArray{T,N,D<:TimeType}(d::Vector{D}, v::AbstractArray{T,N}) = TimeArray(d,v,fill("", size(v,2)),nothing)
-TimeArray{T,N,D<:TimeType}(d::D, v::AbstractArray{T,N}) = TimeArray([d],v,fill("", size(v,2)),nothing)
+TimeArray{T,N,D<:Union{TimeType, Float64}}(d::Vector{D}, v::AbstractArray{T,N}) = TimeArray(d,v,fill("", size(v,2)),nothing)
+TimeArray{T,N,D<:Union{TimeType, Float64}}(d::D, v::AbstractArray{T,N}) = TimeArray([d],v,fill("", size(v,2)),nothing)
 
 # when no meta is provided
-TimeArray{T,N,D<:TimeType}(d::Vector{D}, v::AbstractArray{T,N}, c) = TimeArray(d,v,c,nothing)
-TimeArray{T,N,D<:TimeType}(d::D, v::AbstractArray{T,N}, c) = TimeArray([d],v,c,nothing)
+TimeArray{T,N,D<:Union{TimeType, Float64}}(d::Vector{D}, v::AbstractArray{T,N}, c) = TimeArray(d,v,c,nothing)
+TimeArray{T,N,D<:Union{TimeType, Float64}}(d::D, v::AbstractArray{T,N}, c) = TimeArray([d],v,c,nothing)
 
 ###### conversion ###############
 
