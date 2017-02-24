@@ -14,129 +14,48 @@
         bw == nothing && (bw = 0.8)
         bar_width := bw / 2 * minimum(diff(unique(Int.(cs.time))))
 
-        len = length(cs.open)
-        series = Vector{Int}(len)
-        series[1] = cs.close[1] >= cs.open[1] ? 3 : 1
+        # allow passing alternative colors as a vector
+        cols = get(d, :seriescolor, nothing)
+        cols = (isa(cols, Vector{Symbol}) && length(cols) == 2) ? cols : [:red, :blue]
 
-        # create four series
-        for i in 2:len
-            fil = 2*(cs.close[i] >= cs.open[i])
-            col = 1 + (cs.close[i] >= cs.close[i-1])
-            series[i] = col + fil
-        end
+        attributes = [
+            Dict(:close_open => :<, :close_prev => :<, :bottombox => :(cs.close), :topbox => :(cs.open), :fill => :(:($(cols[1]))), :line => :(:($(cols[1]))), :fillalpha => :(1)),
+            Dict(:close_open => :<, :close_prev => :(>=), :bottombox => :(cs.close), :topbox => :(cs.open), :fill => :(:($(cols[2]))), :line => :(:($(cols[2]))), :fillalpha => :(1)),
+            Dict(:close_open => :(>=), :close_prev => :<, :bottombox => :(cs.close), :topbox => :(cs.open), :fill => :(:white), :line => :($(cols[1])), :fillalpha => :(0)),
+            Dict(:close_open => :(>=), :close_prev => :(>=), :bottombox => :(cs.close), :topbox => :(cs.open), :fill => :(:white), :line => :($(cols[2])), :fillalpha => :(0))
+        ]
 
-        # close low, close < open
-        t = series .== 1
-        if sum(t) > 0
-            @series begin
-                linecolor := :red
-                fillcolor := :red
-                fillto := cs.close[t]
-                seriestype := :bar
-                cs.time[t], cs.open[t]
+
+        for att in attributes
+            ex = quote
+                #cs = $(cs); d = $(d); cols = $(cols)
+                inds = Vector{Int}(length(cs.close))
+                inds[1] = $(att[:close_open])(cs.close[1], cs.open[1]) & $(att[:close_prev])(cs.close[1], cs.close[1])
+                inds[2:end] .= $(att[:close_open]).(cs.close[2:end], cs.open[2:end]) & $(att[:close_prev]).(diff(cs.close), 0)
+                inds = find(inds)
+
+                if length(inds) > 0
+                    @series begin
+                        linecolor := $(att[:line])
+                        fillcolor := $(att[:fill])
+                        fillalpha := $(att[:fillalpha])
+                        fillto := $(att[:bottombox])[inds]
+                        seriestype := :bar
+                        cs.time[inds], $(att[:topbox])[inds]
+                    end
+
+                    for j in 1:2
+                        @series begin
+                            primary := false
+                            linecolor := $(att[:line])
+                            seriestype := :sticks
+                            fillto := j == 1 ? cs.low[inds] : $(att[:topbox])[inds]
+                            cs.time[t], j == 1 ? $(att[:bottombox])[inds] : cs.high[inds]
+                        end
+                    end
+                end
             end
-
-            @series begin
-                primary := false
-                linecolor := :red
-                seriestype := :sticks
-                fillto := cs.low[t]
-                cs.time[t], cs.close[t]
-            end
-
-            @series begin
-                primary := false
-                linecolor := :red
-                seriestype := :sticks
-                fillto := cs.open[t]
-                cs.time[t], cs.high[t]
-            end
-        end
-
-        # close up, close < open
-        t = series .== 2
-        if sum(t) > 0
-            @series begin
-                linecolor := :blue
-                fillcolor := :blue
-                fillto := cs.close[t]
-                seriestype := :bar
-                cs.time[t], cs.open[t]
-            end
-
-            @series begin
-                primary := false
-                linecolor := :blue
-                seriestype := :sticks
-                fillto := cs.low[t]
-                cs.time[t], cs.close[t]
-            end
-
-            @series begin
-                primary := false
-                linecolor := :blue
-                seriestype := :sticks
-                fillto := cs.open[t]
-                cs.time[t], cs.high[t]
-            end
-        end
-
-        # close down, close > open
-        t = series .== 3
-        if sum(t) > 0
-            @series begin
-                linecolor := :red
-                fillalpha := 0
-                linealpha := 1
-                fillto := cs.open[t]
-                seriestype := :bar
-                cs.time[t], cs.close[t]
-            end
-
-            @series begin
-                primary := false
-                linecolor := :red
-                seriestype := :sticks
-                fillto := cs.low[t]
-                cs.time[t], cs.open[t]
-            end
-
-            @series begin
-                primary := false
-                linecolor := :red
-                seriestype := :sticks
-                fillto := cs.close[t]
-                cs.time[t], cs.high[t]
-            end
-        end
-
-        # close down, close > open
-        t = series .== 4
-        if sum(t) > 0
-            @series begin
-                linecolor := :blue
-                fillalpha := 0
-                linealpha := 1
-                fillto := cs.open[t]
-                seriestype := :bar
-                cs.time[t], cs.close[t]
-            end
-
-            @series begin
-                primary := false
-                linecolor := :blue
-                seriestype := :sticks
-                fillto := cs.low[t]
-                cs.time[t], cs.open[t]
-            end
-
-            @series begin
-                primary := false
-                linecolor := :blue
-                seriestype := :sticks
-                fillto := cs.close[t]
-                cs.time[t], cs.high[t]
-            end
+            eval(ex)
         end
 
     elseif st == :ohlc #ohlc is passed on to Plots internal ohlc plot engine
