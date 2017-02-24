@@ -3,13 +3,15 @@
     st = get(d, :seriestype, :path)
     if in(st, [:candlestick, :heikinashi])
         cs = Candlestick(ta)
-        d[:seriestype] == :heikinashi && HeikinAshi!(cs)
+        st == :heikinashi && HeikinAshi!(cs)
+
         seriestype := :candlestick
         legend --> false
-        linewidth --> 0.5
+        linewidth --> 0.7
+        grid --> false
 
         bw = get(d, :bar_width, nothing)
-        bw == nothing && (bw = 0.6)
+        bw == nothing && (bw = 0.8)
         bar_width := bw / 2 * minimum(diff(unique(Int.(cs.time))))
 
         len = length(cs.open)
@@ -24,36 +26,117 @@
         end
 
         # close low, close < open
-        @series begin
-            seriescolor := :red
-            fillcolor := :red
-            t = series .== 1
-            # collect in one vector be able to use a series recipe
-            cs.time[t], [cs.open[t]; cs.high[t]; cs.low[t]; cs.close[t]]
+        t = series .== 1
+        if sum(t) > 0
+            @series begin
+                linecolor := :red
+                fillcolor := :red
+                fillto := cs.close[t]
+                seriestype := :bar
+                cs.time[t], cs.open[t]
+            end
+
+            @series begin
+                primary := false
+                linecolor := :red
+                seriestype := :sticks
+                fillto := cs.low[t]
+                cs.time[t], cs.close[t]
+            end
+
+            @series begin
+                primary := false
+                linecolor := :red
+                seriestype := :sticks
+                fillto := cs.open[t]
+                cs.time[t], cs.high[t]
+            end
         end
 
-            # close up, close < open
-        @series begin
-            seriescolor := :blue
-            fillcolor := :blue
-            t = series .== 2
-            cs.time[t], [cs.open[t]; cs.high[t]; cs.low[t]; cs.close[t]]
+        # close up, close < open
+        t = series .== 2
+        if sum(t) > 0
+            @series begin
+                linecolor := :blue
+                fillcolor := :blue
+                fillto := cs.close[t]
+                seriestype := :bar
+                cs.time[t], cs.open[t]
+            end
+
+            @series begin
+                primary := false
+                linecolor := :blue
+                seriestype := :sticks
+                fillto := cs.low[t]
+                cs.time[t], cs.close[t]
+            end
+
+            @series begin
+                primary := false
+                linecolor := :blue
+                seriestype := :sticks
+                fillto := cs.open[t]
+                cs.time[t], cs.high[t]
+            end
         end
 
-            # close down, close > open
-        @series begin
-            fillalpha := 0
-            seriescolor := :red
-            t = series .== 3
-            cs.time[t], [cs.close[t]; cs.high[t]; cs.low[t]; cs.open[t]]
+        # close down, close > open
+        t = series .== 3
+        if sum(t) > 0
+            @series begin
+                linecolor := :red
+                fillalpha := 0
+                linealpha := 1
+                fillto := cs.open[t]
+                seriestype := :bar
+                cs.time[t], cs.close[t]
+            end
+
+            @series begin
+                primary := false
+                linecolor := :red
+                seriestype := :sticks
+                fillto := cs.low[t]
+                cs.time[t], cs.open[t]
+            end
+
+            @series begin
+                primary := false
+                linecolor := :red
+                seriestype := :sticks
+                fillto := cs.close[t]
+                cs.time[t], cs.high[t]
+            end
         end
 
-            # close down, close > open
-        @series begin
-            fillalpha := 0
-            seriescolor := :blue
-            t = series .== 4
-            cs.time[t], [cs.close[t]; cs.high[t]; cs.low[t]; cs.open[t]]
+        # close down, close > open
+        t = series .== 4
+        if sum(t) > 0
+            @series begin
+                linecolor := :blue
+                fillalpha := 0
+                linealpha := 1
+                fillto := cs.open[t]
+                seriestype := :bar
+                cs.time[t], cs.close[t]
+            end
+
+            @series begin
+                primary := false
+                linecolor := :blue
+                seriestype := :sticks
+                fillto := cs.low[t]
+                cs.time[t], cs.open[t]
+            end
+
+            @series begin
+                primary := false
+                linecolor := :blue
+                seriestype := :sticks
+                fillto := cs.close[t]
+                cs.time[t], cs.high[t]
+            end
         end
 
     elseif st == :ohlc #ohlc is passed on to Plots internal ohlc plot engine
@@ -66,12 +149,12 @@
     end
 end
 
-type Candlestick
-    time::Vector{DateTime}
-    open::Vector{Float64}
-    high::Vector{Float64}
-    low::Vector{Float64}
-    close::Vector{Float64}
+type Candlestick{D <: TimeType}
+    time::Vector{D}
+    open::AbstractVector
+    high::AbstractVector
+    low::AbstractVector
+    close::AbstractVector
 end
 
 Candlestick(ta::TimeArray) = Candlestick(extract_ohlc(ta)...)
@@ -82,15 +165,15 @@ function extract_ohlc(ta::TimeArray)
     (ta.timestamp, [ta.values[:,i] for i in 1:4]...)
 end
 
-function HeikinAshi!(cs::Candlestick)
+function HeikinAshi!(cs::Candlestick) #some values here are made too high!
     cs.close[1] = (cs.open[1] + cs.low[1] + cs.close[1] + cs.high[1]) / 4
     cs.open[1] = (cs.open[1] + cs.close[1])/2
     cs.high[1] = cs.high[1]
     cs.low[1] = cs.low[1]
 
-    for i in 2:length(cs.time)
+    for i in 2:length(cs.open)
         cs.close[i] = (cs.open[i] + cs.low[i] + cs.close[i] + cs.high[i]) / 4
-        cs.open[i] = (cs.open[i-1] + cs.close[i-1])
+        cs.open[i] = (cs.open[i-1] + cs.close[i-1]) / 2
         cs.high[i] = maximum([cs.high[i], cs.open[i], cs.close[i]])
         cs.low[i] = minimum([cs.low[i], cs.open[i], cs.close[i]])
     end
@@ -98,48 +181,4 @@ end
 
 @recipe function f(cs::Candlestick)
     show("line 48")
-end
-
-@recipe function f(::Type{Val{:candlestick}}, x, y, z)
-    # and split them apart again
-    len = Int(length(y)/4)
-    time = x
-    topbox = y[1:len]
-    top = y[(len + 1):(2len)]
-    bottom = y[(2len + 1):(3len)]
-    bottombox = y[(3len + 1):end]
-
-    xsegs, ysegs = Vector{eltype(time)}(), Vector{eltype(top)}()
-    bw = get(d, :bar_width, 1)
-
- #    for (i, ti) in enumerate(time)
- #        l, m, r = ti - bw, ti, ti + bw
- #        t, tb, b, bb = top[i], topbox[i], bottom[i], bottombox[i]
- #
- # # the last m is standin for at NaN value
- #        push!(xsegs, m, m, m)       # upper shadow
- #        push!(xsegs, m, l, m)       # left top of box
- #        push!(xsegs, l, l, m)       # left side
- #        push!(xsegs, l, m, m)       # left bottom
- #        push!(xsegs, m, m, m, m, m) # lower shadow
- #        push!(xsegs, m, r, m)       # right bottom
- #        push!(xsegs, r, r, m)       # right side
- #        push!(xsegs, r, m, m)       # right top of box
- #        #push!(xsegs, m, m, l, l, m, m, r, r, m, m, m, NaN)
- #        #push!(ysegs, t, tb, tb, bb, bb, b, bb, bb, tb, tb, t, NaN, NaN)
- #
- #        push!(ysegs, t, tb, NaN)       # upper shadow
- #        push!(ysegs, tb, tb, NaN)       # left top of box
- #        push!(ysegs, tb, bb, NaN)       # left side
- #        push!(ysegs, bb, bb, NaN)       # left bottom
- #        push!(ysegs, bb, b, b, bb, NaN) # lower shadow
- #        push!(ysegs, bb, bb, NaN)       # right bottom
- #        push!(ysegs, bb, tb, NaN)       # right side
- #        push!(ysegs, tb, tb, NaN)       # right top of box
- #    end
- #
- #    seriestype := :shape
- #    x := xsegs
- #    y := ysegs
- #    ()
 end
