@@ -2,61 +2,10 @@
 @recipe function f{T<:TimeArray}(ta::T)
     st = get(d, :seriestype, :path)
     if in(st, [:candlestick, :heikinashi])
-        cs = Candlestick(ta)
-        st == :heikinashi && HeikinAshi!(cs)
-
-        seriestype := :candlestick
-        legend --> false
-        linewidth --> 0.7
-        grid --> false
-
-        bw = get(d, :bar_width, nothing)
-        bw == nothing && (bw = 0.8)
-        bar_width := bw / 2 * minimum(diff(unique(Int.(cs.time))))
-
-        # allow passing alternative colors as a vector
-        cols = get(d, :seriescolor, nothing)
-        cols = (isa(cols, Vector{Symbol}) && length(cols) == 2) ? cols : [:red, :blue]
-
-        attributes = [
-            Dict(:close_open => <, :close_prev => <, :bottombox => cs.close, :topbox => cs.open, :fill => cols[1], :line => cols[1], :fillalpha => 1),
-            Dict(:close_open => <, :close_prev => >=, :bottombox => cs.close, :topbox => cs.open, :fill => cols[2], :line => cols[2], :fillalpha => 1),
-            Dict(:close_open => >=, :close_prev => <, :bottombox => cs.open, :topbox => cs.close, :fill => :white, :line => cols[1], :fillalpha => 0),
-            Dict(:close_open => >=, :close_prev => >=, :bottombox => cs.open, :topbox => cs.close, :fill => :white, :line => cols[2], :fillalpha => 0)
-        ]
-
-
-        for att in attributes
-            inds = Vector{Int}(length(cs.close))
-            inds[1] = att[:close_open](cs.close[1], cs.open[1]) & att[:close_prev](cs.close[1], cs.close[1])
-            inds[2:end] .= att[:close_open].(cs.close[2:end], cs.open[2:end]) & att[:close_prev].(diff(cs.close), 0)
-            inds = find(inds)
-
-            if length(inds) > 0
-                @series begin
-                    linecolor := att[:line]
-                    fillcolor := att[:fill]
-                    fillalpha := att[:fillalpha]
-                    fillto := att[:bottombox][inds]
-                    seriestype := :bar
-                    cs.time[inds], att[:topbox][inds]
-                end
-
-                for j in 1:2
-                    @series begin
-                        primary := false
-                        linecolor := att[:line]
-                        seriestype := :sticks
-                        fillto := j == 1 ? cs.low[inds] : att[:topbox][inds]
-                        cs.time[inds], j == 1 ? att[:bottombox][inds] : cs.high[inds]
-                    end
-                end
-            end
-        end
-
-    elseif st == :ohlc #ohlc is passed on to Plots internal ohlc plot engine
-        ta, ohlc = extract_ohlc(ta)
-        collect(zip(ohlc)) # the time component is dropped - this is how it is currently implemented in Plots but should be fixed
+        Candlestick(ta)
+    #elseif st == :ohlc #ohlc (meaning sticks with steps on the sides) should be passed on to Plots internal ohlc plot engine
+    #    ta, ohlc = extract_ohlc(ta)
+    #    collect(zip(ohlc)) # But there are currently issues with that
     else
         labels --> reshape(ta.colnames,1,length(ta.colnames))
         seriestype := st
@@ -95,5 +44,55 @@ function HeikinAshi!(cs::Candlestick) #some values here are made too high!
 end
 
 @recipe function f(cs::Candlestick)
-    show("line 48")
+    st = get(d, :seriestype, :candlestick)
+    st == :heikinashi && HeikinAshi!(cs)
+
+    seriestype := :candlestick
+    legend --> false
+    linewidth --> 0.7
+    grid --> false
+
+    bw = get(d, :bar_width, nothing)
+    bw == nothing && (bw = 0.8)
+    bar_width := bw / 2 * minimum(diff(unique(Int.(cs.time))))
+
+    # allow passing alternative colors as a vector
+    cols = get(d, :seriescolor, nothing)
+    cols = (isa(cols, Vector{Symbol}) && length(cols) == 2) ? cols : [:red, :blue]
+
+    attributes = [
+        Dict(:close_open => <, :close_prev => <, :bottombox => cs.close, :topbox => cs.open, :fill => cols[1], :line => cols[1], :fillalpha => 1),
+        Dict(:close_open => <, :close_prev => >=, :bottombox => cs.close, :topbox => cs.open, :fill => cols[2], :line => cols[2], :fillalpha => 1),
+        Dict(:close_open => >=, :close_prev => <, :bottombox => cs.open, :topbox => cs.close, :fill => :white, :line => cols[1], :fillalpha => 0),
+        Dict(:close_open => >=, :close_prev => >=, :bottombox => cs.open, :topbox => cs.close, :fill => :white, :line => cols[2], :fillalpha => 0)
+    ]
+
+
+    for att in attributes
+        inds = Vector{Int}(length(cs.close))
+        inds[1] = att[:close_open](cs.close[1], cs.open[1]) & att[:close_prev](cs.close[1], cs.close[1])
+        inds[2:end] .= att[:close_open].(cs.close[2:end], cs.open[2:end]) & att[:close_prev].(diff(cs.close), 0)
+        inds = find(inds)
+
+        if length(inds) > 0
+            @series begin
+                linecolor := att[:line]
+                fillcolor := att[:fill]
+                fillalpha := att[:fillalpha]
+                fillto := att[:bottombox][inds]
+                seriestype := :bar
+                cs.time[inds], att[:topbox][inds]
+            end
+
+            for j in 1:2
+                @series begin
+                    primary := false
+                    linecolor := att[:line]
+                    seriestype := :sticks
+                    fillto := j == 1 ? cs.low[inds] : att[:topbox][inds]
+                    cs.time[inds], j == 1 ? att[:bottombox][inds] : cs.high[inds]
+                end
+            end
+        end
+    end
 end
