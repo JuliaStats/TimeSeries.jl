@@ -19,43 +19,39 @@
         cols = (isa(cols, Vector{Symbol}) && length(cols) == 2) ? cols : [:red, :blue]
 
         attributes = [
-            Dict(:close_open => :<, :close_prev => :<, :bottombox => :(cs.close), :topbox => :(cs.open), :fill => :(:($(cols[1]))), :line => :(:($(cols[1]))), :fillalpha => :(1)),
-            Dict(:close_open => :<, :close_prev => :(>=), :bottombox => :(cs.close), :topbox => :(cs.open), :fill => :(:($(cols[2]))), :line => :(:($(cols[2]))), :fillalpha => :(1)),
-            Dict(:close_open => :(>=), :close_prev => :<, :bottombox => :(cs.close), :topbox => :(cs.open), :fill => :(:white), :line => :($(cols[1])), :fillalpha => :(0)),
-            Dict(:close_open => :(>=), :close_prev => :(>=), :bottombox => :(cs.close), :topbox => :(cs.open), :fill => :(:white), :line => :($(cols[2])), :fillalpha => :(0))
+            Dict(:close_open => <, :close_prev => <, :bottombox => cs.close, :topbox => cs.open, :fill => cols[1], :line => cols[1], :fillalpha => 1),
+            Dict(:close_open => <, :close_prev => >=, :bottombox => cs.close, :topbox => cs.open, :fill => cols[2], :line => cols[2], :fillalpha => 1),
+            Dict(:close_open => >=, :close_prev => <, :bottombox => cs.open, :topbox => cs.close, :fill => :white, :line => cols[1], :fillalpha => 0),
+            Dict(:close_open => >=, :close_prev => >=, :bottombox => cs.open, :topbox => cs.close, :fill => :white, :line => cols[2], :fillalpha => 0)
         ]
 
 
         for att in attributes
-            ex = quote
-                #cs = $(cs); d = $(d); cols = $(cols)
-                inds = Vector{Int}(length(cs.close))
-                inds[1] = $(att[:close_open])(cs.close[1], cs.open[1]) & $(att[:close_prev])(cs.close[1], cs.close[1])
-                inds[2:end] .= $(att[:close_open]).(cs.close[2:end], cs.open[2:end]) & $(att[:close_prev]).(diff(cs.close), 0)
-                inds = find(inds)
+            inds = Vector{Int}(length(cs.close))
+            inds[1] = att[:close_open](cs.close[1], cs.open[1]) & att[:close_prev](cs.close[1], cs.close[1])
+            inds[2:end] .= att[:close_open].(cs.close[2:end], cs.open[2:end]) & att[:close_prev].(diff(cs.close), 0)
+            inds = find(inds)
 
-                if length(inds) > 0
+            if length(inds) > 0
+                @series begin
+                    linecolor := att[:line]
+                    fillcolor := att[:fill]
+                    fillalpha := att[:fillalpha]
+                    fillto := att[:bottombox][inds]
+                    seriestype := :bar
+                    cs.time[inds], att[:topbox][inds]
+                end
+
+                for j in 1:2
                     @series begin
-                        linecolor := $(att[:line])
-                        fillcolor := $(att[:fill])
-                        fillalpha := $(att[:fillalpha])
-                        fillto := $(att[:bottombox])[inds]
-                        seriestype := :bar
-                        cs.time[inds], $(att[:topbox])[inds]
-                    end
-
-                    for j in 1:2
-                        @series begin
-                            primary := false
-                            linecolor := $(att[:line])
-                            seriestype := :sticks
-                            fillto := j == 1 ? cs.low[inds] : $(att[:topbox])[inds]
-                            cs.time[t], j == 1 ? $(att[:bottombox])[inds] : cs.high[inds]
-                        end
+                        primary := false
+                        linecolor := att[:line]
+                        seriestype := :sticks
+                        fillto := j == 1 ? cs.low[inds] : att[:topbox][inds]
+                        cs.time[inds], j == 1 ? att[:bottombox][inds] : cs.high[inds]
                     end
                 end
             end
-            eval(ex)
         end
 
     elseif st == :ohlc #ohlc is passed on to Plots internal ohlc plot engine
