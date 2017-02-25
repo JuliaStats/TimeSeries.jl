@@ -1,3 +1,7 @@
+### 0.10.0
+
+* add support for time series plotting via RecipesBase dependency (thank you @mkborregaard) 
+
 ### 0.9.2
 
 * improve readtimearray to accept IOBuffer (@femtotrader fixes issue #298)
