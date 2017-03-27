@@ -47,7 +47,7 @@ end
     st = get(d, :seriestype, :candlestick)
     st == :heikinashi && HeikinAshi!(cs)
 
-    seriestype := :candlestick
+    seriestype := :scatter #ignored
     legend --> false
     linewidth --> 0.7
     grid --> false
