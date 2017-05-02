@@ -207,7 +207,11 @@ function getindex{T,N,D}(ta::TimeArray{T,N,D}, dates::Vector{D})
     ta[idxs]
 end #getindex
 
+# StepRange{Date,...}
 getindex{T,N,D}(ta::TimeArray{T,N,D}, r::StepRange{D}) = ta[collect(r)]
+
+# StepRange{Int,Int}
+getindex{T,N}(ta::TimeArray{T,N}, r::StepRange{Int,Int}) = ta[collect(r)]
 
 getindex{T,N,D}(ta::TimeArray{T,N,D}, k::TimeArray{Bool,1}) = ta[findwhen(k)]
 

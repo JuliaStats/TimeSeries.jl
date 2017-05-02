@@ -124,6 +124,7 @@ facts("ordered collection methods") do
 
     context("getindex on range of Int and Date") do
         @fact ohlc[1:2].timestamp                                  --> [Date(2000,1,3), Date(2000,1,4)]
+        @fact ohlc[1:2:4].timestamp                                --> [Date(2000,1,3), Date(2000,1,5)]
         @fact ohlc[Date(2000,1,3):Day(1):Date(2000,1,4)].timestamp --> [Date(2000,1,3), Date(2000,1,4)]
     end
 
