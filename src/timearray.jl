@@ -173,12 +173,12 @@ function getindex{T,D}(ta::TimeArray{T,1,D}, r::UnitRange{Int})
 end
 
 # array of rows
-function getindex{T,N,D}(ta::TimeArray{T,N,D}, a::Vector{Int})
+function getindex{T,N,D}(ta::TimeArray{T,N,D}, a::AbstractVector{Int})
     TimeArray(ta.timestamp[a], ta.values[a,:], ta.colnames, ta.meta)
 end
 
 # array of 1d rows
-function getindex{T,D}(ta::TimeArray{T,1,D}, a::Vector{Int})
+function getindex{T,D}(ta::TimeArray{T,1,D}, a::AbstractVector{Int})
     TimeArray(ta.timestamp[a], ta.values[a], ta.colnames, ta.meta)
 end
 
@@ -209,9 +209,6 @@ end #getindex
 
 # StepRange{Date,...}
 getindex{T,N,D}(ta::TimeArray{T,N,D}, r::StepRange{D}) = ta[collect(r)]
-
-# StepRange{Int,Int}
-getindex{T,N}(ta::TimeArray{T,N}, r::StepRange{Int,Int}) = ta[collect(r)]
 
 getindex{T,N,D}(ta::TimeArray{T,N,D}, k::TimeArray{Bool,1}) = ta[findwhen(k)]
 
