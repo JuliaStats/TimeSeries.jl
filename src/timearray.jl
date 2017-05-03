@@ -173,12 +173,12 @@ function getindex{T,D}(ta::TimeArray{T,1,D}, r::UnitRange{Int})
 end
 
 # array of rows
-function getindex{T,N,D}(ta::TimeArray{T,N,D}, a::AbstractVector{Int})
+function getindex{T,N,D,S<:Integer}(ta::TimeArray{T,N,D}, a::AbstractVector{S})
     TimeArray(ta.timestamp[a], ta.values[a,:], ta.colnames, ta.meta)
 end
 
 # array of 1d rows
-function getindex{T,D}(ta::TimeArray{T,1,D}, a::AbstractVector{Int})
+function getindex{T,D,S<:Integer}(ta::TimeArray{T,1,D}, a::AbstractVector{S})
     TimeArray(ta.timestamp[a], ta.values[a], ta.colnames, ta.meta)
 end
 
