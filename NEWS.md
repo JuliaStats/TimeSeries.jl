@@ -1,6 +1,7 @@
 ### 0.10.0
 
 * add support for time series plotting via RecipesBase dependency (thank you @mkborregaard) 
+* add StepRange indexing support (issue #311)
 
 ### 0.9.2
 
