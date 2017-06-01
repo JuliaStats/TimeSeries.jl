@@ -55,6 +55,16 @@ facts("type constructors enforce invariants") do
     end
 end
 
+facts("type constructors allow views") do    
+    items = 101:121
+    cols = 1:size(AAPL.values)[2]
+    tstamps = view(AAPL.timestamp, items)
+    tvalues = view(AAPL.values, items, cols)
+    APPL2 = TimeArray(tstamps, tvalues, AAPL.colnames, AAPL.meta)
+    
+    @test AAPL[101:121] == AAPL2[1:end]
+ nd    
+
 facts("construction without colnames") do
 
     no_colnames_one   = TimeArray(cl.timestamp, cl.values)
