@@ -59,9 +59,12 @@ facts("type constructors allow views") do
     
     source_rows = 101:121
     source_cols = 1:size(AAPL.values)[2]    
+    
     AAPL1 = TimeArray(AAPL.timestamp[source_rows], AAPL.values[source_rows, source_cols], AAPL.colnames, AAPL.meta)
+    
     tstamps = view(AAPL.timestamp, source_rows)
     tvalues = view(AAPL.values, source_rows, source_cols)
+    
     APPL2 = TimeArray(tstamps, tvalues, AAPL.colnames, AAPL.meta)
 
     @fact length(AAPL1) --> length(AAPL2)
