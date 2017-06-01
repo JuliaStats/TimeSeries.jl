@@ -11,7 +11,7 @@ immutable TimeArray{T, N, D<:TimeType, A<:AbstractArray} <: AbstractTimeSeries
     colnames::Vector{String}
     meta::Any
 
-    function TimeArray(timestamp::Vector{D},
+    function TimeArray(timestamp::AbstractVector{D},
                        values::AbstractArray{T,N},
                        colnames::Vector{String},
                        meta::Any)
@@ -29,18 +29,19 @@ immutable TimeArray{T, N, D<:TimeType, A<:AbstractArray} <: AbstractTimeSeries
     end
 end
 
-TimeArray{T,N,D<:TimeType,S<:AbstractString}(d::Vector{D}, v::AbstractArray{T,N}, c::Vector{S}, m::Any) =
+TimeArray{T,N,D<:TimeType,S<:AbstractString}(d::AbstractVector{D}, v::AbstractArray{T,N}, c::Vector{S}, m::Any) =
         TimeArray{T,N,D,typeof(v)}(d,v,map(String,c),m)
 TimeArray{T,N,D<:TimeType,S<:AbstractString}(d::D, v::AbstractArray{T,N}, c::Vector{S}, m::Any) =
         TimeArray{T,N,D,typeof(v)}([d],v,map(String,c),m)
 
 # when no column names are provided - meta is forced to nothing
-TimeArray{T,N,D<:TimeType}(d::Vector{D}, v::AbstractArray{T,N}) = TimeArray(d,v,fill("", size(v,2)),nothing)
+TimeArray{T,N,D<:TimeType}(d::AbstractVector{D}, v::AbstractArray{T,N}) = TimeArray(d,v,fill("", size(v,2)),nothing)
 TimeArray{T,N,D<:TimeType}(d::D, v::AbstractArray{T,N}) = TimeArray([d],v,fill("", size(v,2)),nothing)
 
 # when no meta is provided
-TimeArray{T,N,D<:TimeType}(d::Vector{D}, v::AbstractArray{T,N}, c) = TimeArray(d,v,c,nothing)
+TimeArray{T,N,D<:TimeType}(d::AbstractVector{D}, v::AbstractArray{T,N}, c) = TimeArray(d,v,c,nothing)
 TimeArray{T,N,D<:TimeType}(d::D, v::AbstractArray{T,N}, c) = TimeArray([d],v,c,nothing)
+
 
 ###### conversion ###############
 
