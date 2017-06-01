@@ -62,12 +62,15 @@ facts("type constructors allow views") do
     tstamps = view(AAPL.timestamp, items)
     tvalues = view(AAPL.values, items, ncols)
     APPL2 = TimeArray(tstamps, tvalues, AAPL.colnames, AAPL.meta)
-    
-    context("match first date") do
-        @fact AAPL[101].timestamp - AAPL2[1].timestamp --> Base.Dates.Day(0)
+
+    context("timestamp, values, colnames and meta") do
+        @fact typeof(AAPL[1].timestamp) --> Array{Date,1}
     end
-    context("match all values") do
-        @fact all((AAPL[items].values .- AAPL2.values) .== 0.0) --> true
+    context("match first date") do
+        @fact AAPL[101].timestamp --> APL2[1].timestamp
+    end
+    context("match final values") do
+        @fact AAPL[121].values --> AAPL2[end].values)
     end    
 end    
 
