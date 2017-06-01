@@ -66,7 +66,7 @@ facts("type constructors allow views") do
     context("match first date") do
         @fact AAPL[101].timestamp - AAPL2[1].timestamp --> Base.Dates.Day(0)
     end
-    context("match all values")
+    context("match all values") do
         @fact all((AAPL[items].values .- AAPL2.values) .== 0.0) --> true
     end    
 end    
