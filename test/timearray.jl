@@ -73,7 +73,7 @@ facts("type constructors allow views") do
         @fact AAPL[101].timestamp --> APL2[1].timestamp
     end
     context("match final values") do
-        @fact AAPL[121].values --> AAPL2[end].values)
+        @fact AAPL[121].values --> AAPL2[end].values
     end
 end
 
