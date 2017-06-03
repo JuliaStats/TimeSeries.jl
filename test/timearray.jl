@@ -30,7 +30,10 @@ facts("type constructors allow views") do
         @fact AAPL1[1].timestamp --> AAPL2[1].timestamp
     end
     context("match first values") do
-        @fact AAPL1[1].values --> AAPL[1].values
+        @fact AAPL1[1].values --> AAPL2[1].values
+    end
+    context("match all values") do
+        @fact AAPL1.values --> AAPL2.values
     end
 end
 
