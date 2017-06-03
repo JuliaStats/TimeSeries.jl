@@ -69,16 +69,12 @@ facts("type constructors allow views") do
 
     AAPL2 = TimeArray(tstamps, tvalues, AAPL.colnames, AAPL.meta)
 
-    @fact length(AAPL1) --> length(AAPL2)
-    @fact AAPL1[5].values[3] --> AAPL2[5].values[3]
-#=
     context("match first date") do
         @fact AAPL[101].timestamp --> APL2[1].timestamp
     end
     context("match final values") do
         @fact AAPL[121].values --> AAPL2[end].values)
     end
-=#
 end
 
 facts("construction without colnames") do
