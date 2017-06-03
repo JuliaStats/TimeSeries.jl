@@ -23,6 +23,7 @@ facts("type constructors allow views") do
     AAPL1 = TimeArray(AAPL.timestamp[source_rows],
                       AAPL.values[source_rows, source_cols],
                       AAPL.colnames, AAPL.meta)
+
     AAPL2 = TimeArray(tstamps, tvalues, AAPL.colnames, AAPL.meta)
 
     context("match first date") do
