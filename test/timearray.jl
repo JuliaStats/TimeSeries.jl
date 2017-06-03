@@ -12,6 +12,28 @@ facts("field extraction methods work") do
     end
 end
 
+
+facts("type constructors allow views") do
+
+    source_rows = 101:121
+    source_cols = 1:size(AAPL.values)[2]
+    tstamps = view(AAPL.timestamp, source_rows)
+    tvalues = view(AAPL.values, source_rows, source_cols)
+
+    AAPL1 = TimeArray(AAPL.timestamp[source_rows],
+                      AAPL.values[source_rows, source_cols],
+                      AAPL.colnames, AAPL.meta)
+    AAPL2 = TimeArray(tstamps, tvalues, AAPL.colnames, AAPL.meta)
+
+    context("match first date") do
+        @fact AAPL1[1].timestamp --> AAPL2[1].timestamp
+    end
+    context("match first values") do
+        @fact AAPL1[1].values --> AAPL[1].values
+    end
+end
+
+
 facts("type constructors enforce invariants") do
 
     mangled_stamp = vcat(cl.timestamp[200:end], cl.timestamp[1:199])
@@ -52,28 +74,6 @@ facts("type constructors enforce invariants") do
         @fact dupe_cnames.colnames[10] --> "e_2"
         @fact dupe_cnames.colnames[11] --> "e_3"
         @fact dupe_cnames.colnames[12] --> "f"
-    end
-end
-
-facts("type constructors allow views") do
-
-    source_rows = 101:121
-    source_cols = 1:size(AAPL.values)[2]
-
-    AAPL1 = TimeArray(AAPL.timestamp[source_rows],
-                      AAPL.values[source_rows, source_cols],
-                      AAPL.colnames, AAPL.meta)
-
-    tstamps = view(AAPL.timestamp, source_rows)
-    tvalues = view(AAPL.values, source_rows, source_cols)
-
-    AAPL2 = TimeArray(tstamps, tvalues, AAPL.colnames, AAPL.meta)
-
-    context("match first date") do
-        @fact AAPL1[1].timestamp --> AAPL2[1].timestamp
-    end
-    context("match all values") do
-        @fact AAPL1.values --> AAPL2.values
     end
 end
 
