@@ -20,3 +20,4 @@ Contents
    combine
    readwrite
    dotfile
+   plotting

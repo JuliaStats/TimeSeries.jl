@@ -16,12 +16,12 @@ line, aligning all variables to the same y axis (here shown using PlotlyJS as a 
     plotlyjs()
     plot(ohlc)
 
-.. image: ../images/basicplot.png
+.. image:: ../images/basicplot.png
 
 More sophisticated plots can be created by using keyword attributes and subsets::
 
     plot(MarketData.ohlc["Low"], seriestype = :scatter, markersize = 3, color = :red, markeralpha = 0.4, grid = true)
 
-.. image: ../images/complexplot.png
+.. image:: ../images/complexplot.png
 
 A complete list of all attributes and plotting possibilities can be found in the Plots `documentation <https://juliaplots.github.io/attributes/>`_
