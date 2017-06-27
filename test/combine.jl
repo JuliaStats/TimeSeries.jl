@@ -1,200 +1,211 @@
-using TimeSeries,  MarketData, Base.Dates
-FactCheck.setstyle(:compact)
-FactCheck.onlystats(true)
+using Base.Dates
+using Base.Test
 
-facts("collapse operations") do
+using MarketData
 
-    context("collapse squishes correctly") do
-
-        @fact collapse(cl, week, first).values[2]     --> 97.75
-        @fact collapse(cl, week, first).timestamp[2]  --> Date(2000,1,10)
-        @fact collapse(cl, week, first, last).values[2]     --> 100.44
-        @fact collapse(cl, week, first, last).timestamp[2]  --> Date(2000,1,10)
-        @fact collapse(cl, month, first).values[2]    --> 100.25
-        @fact collapse(cl, month, first).timestamp[2] --> Date(2000,2,1)
-
-        @fact collapse(ohlc, week, first).values[2, :]  --> [102.0, 102.25, 94.75, 97.75]
-        @fact collapse(ohlc, week, first).timestamp[2]  --> Date(2000,1,10)
-        @fact collapse(ohlc, week, first, last).values[2, :]  --> [100.0, 102.25, 99.38, 100.44]
-        @fact collapse(ohlc, week, first, last).timestamp[2]  --> Date(2000,1,10)
-        @fact collapse(ohlc, month, first).values[2, :] --> [104.0, 105.0, 100.0, 100.25]
-        @fact collapse(ohlc, month, first).timestamp[2] --> Date(2000,2,1)
+using TimeSeries
 
 
+@testset "combine" begin
+
+
+@testset "collapse operations" begin
+    @testset "collapse squishes correctly" begin
+        @test collapse(cl, week, first).values[2]    == 97.75
+        @test collapse(cl, week, first).timestamp[2] == Date(2000,1,10)
+
+        @test collapse(cl, week, first, last).values[2]    == 100.44
+        @test collapse(cl, week, first, last).timestamp[2] == Date(2000,1,10)
+
+        @test collapse(cl, month, first).values[2]    == 100.25
+        @test collapse(cl, month, first).timestamp[2] == Date(2000,2,1)
+
+        @test collapse(ohlc, week, first).values[2, :] == [102.0, 102.25, 94.75, 97.75]
+        @test collapse(ohlc, week, first).timestamp[2] == Date(2000,1,10)
+
+        @test collapse(ohlc, week, first, last).values[2, :] == [100.0, 102.25, 99.38, 100.44]
+        @test collapse(ohlc, week, first, last).timestamp[2] == Date(2000,1,10)
+
+        @test collapse(ohlc, month, first).values[2, :] == [104.0, 105.0, 100.0, 100.25]
+        @test collapse(ohlc, month, first).timestamp[2] == Date(2000,2,1)
     end
 end
 
-facts("merge works correctly") do
 
+@testset "merge works correctly" begin
     cl1  = cl[1:3]
     op1  = cl[2:4]
     aapl = tail(AAPL)
     ba   = tail(BA)
 
-    context("takes colnames kwarg correctly") do
-        @fact merge(cl, ohlc["High", "Low"], colnames=["a","b","c"]).colnames --> ["a", "b", "c"]
-        @fact merge(cl, op, colnames=["a","b"]).colnames                      --> ["a", "b"]
-        @fact_throws merge(cl, op, colnames=["a"])
-        @fact_throws merge(cl, op, colnames=["a","b","c"])
+    @testset "takes colnames kwarg correctly" begin
+        @test merge(cl, ohlc["High", "Low"], colnames=["a","b","c"]).colnames == ["a", "b", "c"]
+        @test merge(cl, op, colnames=["a","b"]).colnames                      == ["a", "b"]
+        @test_throws ErrorException merge(cl, op, colnames=["a"])
+        @test_throws ErrorException merge(cl, op, colnames=["a","b","c"])
 
-        @fact merge(cl, ohlc["High", "Low"], :inner, colnames=["a","b","c"]).colnames --> ["a", "b", "c"]
-        @fact merge(cl, op, :inner, colnames=["a","b"]).colnames         --> ["a", "b"]
-        @fact_throws merge(cl, op, :inner, colnames=["a"])
-        @fact_throws merge(cl, op, :inner, colnames=["a","b","c"])
+        @test merge(cl, ohlc["High", "Low"], :inner, colnames=["a","b","c"]).colnames == ["a", "b", "c"]
+        @test merge(cl, op, :inner, colnames=["a","b"]).colnames == ["a", "b"]
+        @test_throws ErrorException merge(cl, op, :inner, colnames=["a"])
+        @test_throws ErrorException merge(cl, op, :inner, colnames=["a","b","c"])
 
-        @fact merge(cl, ohlc["High", "Low"], :left, colnames=["a","b","c"]).colnames --> ["a", "b", "c"]
-        @fact merge(cl, op, :left, colnames=["a","b"]).colnames          --> ["a", "b"]
-        @fact_throws merge(cl, op, :left, colnames=["a"])
-        @fact_throws merge(cl, op, :left, colnames=["a","b","c"])
+        @test merge(cl, ohlc["High", "Low"], :left, colnames=["a","b","c"]).colnames == ["a", "b", "c"]
+        @test merge(cl, op, :left, colnames=["a","b"]).colnames          == ["a", "b"]
+        @test_throws ErrorException merge(cl, op, :left, colnames=["a"])
+        @test_throws ErrorException merge(cl, op, :left, colnames=["a","b","c"])
 
-        @fact merge(cl, ohlc["High", "Low"], :right, colnames=["a","b","c"]).colnames --> ["a", "b", "c"]
-        @fact merge(cl, op, :right, colnames=["a","b"]).colnames         --> ["a", "b"]
-        @fact_throws merge(cl, op, :right, colnames=["a"])
-        @fact_throws merge(cl, op, :right, colnames=["a","b","c"])
+        @test merge(cl, ohlc["High", "Low"], :right, colnames=["a","b","c"]).colnames == ["a", "b", "c"]
+        @test merge(cl, op, :right, colnames=["a","b"]).colnames == ["a", "b"]
+        @test_throws ErrorException merge(cl, op, :right, colnames=["a"])
+        @test_throws ErrorException merge(cl, op, :right, colnames=["a","b","c"])
 
-        @fact merge(cl, ohlc["High", "Low"], :outer, colnames=["a","b","c"]).colnames --> ["a", "b", "c"]
-        @fact merge(cl, op, :outer, colnames=["a","b"]).colnames         --> ["a", "b"]
-        @fact_throws merge(cl, op, :outer, colnames=["a"])
-        @fact_throws merge(cl, op, :outer, colnames=["a","b","c"])
-    end
-  
-    context("returns correct alignment with Dates and values") do
-        @fact merge(cl,op).values --> merge(cl,op, :inner).values
-        @fact merge(cl,op).values[2,1] --> cl.values[2,1]
-        @fact merge(cl,op).values[2,2] --> op.values[2,1]
-
-    end
-    
-    context("aligns with disparate sized objects") do
-        @fact merge(cl, op[2:5]).values[1,1]  --> cl.values[2,1]
-        @fact merge(cl, op[2:5]).values[1,2]  --> op.values[2,1]
-        @fact merge(cl, op[2:5]).timestamp[1] --> Date(2000,1,4)
-        @fact length(merge(cl, op[2:5]))      --> 4
-
-        @fact length(merge(cl1, op1, :inner))    --> 2
-        @fact merge(cl1,op1, :inner).values[2,1] --> cl1.values[3,1]
-        @fact merge(cl1,op1, :inner).values[2,2] --> op1.values[2,1]
-
-        @fact length(merge(cl1, op1, :left))     --> 3
-        @fact merge(cl1,op1, :left).values[1,2]  --> isnan
-        @fact merge(cl1,op1, :left).values[2,1]  --> cl1.values[2,1]
-        @fact merge(cl1,op1, :left).values[2,2]  --> op1.values[1,1]
-
-        @fact length(merge(cl1, op1, :right))    --> 3
-        @fact merge(cl1,op1, :right).values[2,1] --> cl1.values[3,1]
-        @fact merge(cl1,op1, :right).values[2,2] --> op1.values[2,1]
-        @fact merge(cl1,op1, :right).values[3,1] --> isnan
-
-        @fact length(merge(cl1, op1, :outer))    --> 4
-        @fact merge(cl1,op1, :outer).values[1,2] --> isnan
-        @fact merge(cl1,op1, :outer).values[2,1] --> cl1.values[2,1]
-        @fact merge(cl1,op1, :outer).values[2,2] --> op1.values[1,1]
-        @fact merge(cl1,op1, :outer).values[4,1] --> isnan
+        @test merge(cl, ohlc["High", "Low"], :outer, colnames=["a","b","c"]).colnames == ["a", "b", "c"]
+        @test merge(cl, op, :outer, colnames=["a","b"]).colnames == ["a", "b"]
+        @test_throws ErrorException merge(cl, op, :outer, colnames=["a"])
+        @test_throws ErrorException merge(cl, op, :outer, colnames=["a","b","c"])
     end
 
-    context("column names match the correct values") do
-        @fact merge(cl, op[2:5]).colnames               --> ["Close", "Open"]
-        @fact merge(op[2:5], cl).colnames               --> ["Open", "Close"]
+    @testset "returns correct alignment with Dates and values" begin
+        @test merge(cl,op).values == merge(cl,op, :inner).values
+        @test merge(cl,op).values[2,1] == cl.values[2,1]
+        @test merge(cl,op).values[2,2] == op.values[2,1]
+    end
 
-        @fact merge(cl, op[2:5], :inner).colnames  --> ["Close", "Open"]
-        @fact merge(op[2:5], cl, :inner).colnames  --> ["Open", "Close"]
+    @testset "aligns with disparate sized objects" begin
+        @test merge(cl, op[2:5]).values[1,1]  == cl.values[2,1]
+        @test merge(cl, op[2:5]).values[1,2]  == op.values[2,1]
+        @test merge(cl, op[2:5]).timestamp[1] == Date(2000,1,4)
+        @test length(merge(cl, op[2:5]))      == 4
 
-        @fact merge(cl, op[2:5], :left).colnames   --> ["Close", "Open"]
-        @fact merge(op[2:5], cl, :left).colnames   --> ["Open", "Close"]
+        @test length(merge(cl1, op1, :inner))     == 2
+        @test merge(cl1, op1, :inner).values[2,1] == cl1.values[3,1]
+        @test merge(cl1, op1, :inner).values[2,2] == op1.values[2,1]
 
-        @fact merge(cl, op[2:5], :right).colnames  --> ["Close", "Open"]
-        @fact merge(op[2:5], cl, :right).colnames  --> ["Open", "Close"]
+        @test length(merge(cl1, op1, :left))     == 3
+        @test merge(cl1, op1, :left).values[2,1] == cl1.values[2,1]
+        @test merge(cl1, op1, :left).values[2,2] == op1.values[1,1]
+        @test isnan(merge(cl1,op1, :left).values[1,2])
 
-        @fact merge(cl, op[2:5], :outer).colnames  --> ["Close", "Open"]
-        @fact merge(op[2:5], cl, :outer).colnames  --> ["Open", "Close"]
+        @test length(merge(cl1, op1, :right))     == 3
+        @test merge(cl1, op1, :right).values[2,1] == cl1.values[3,1]
+        @test merge(cl1, op1, :right).values[2,2] == op1.values[2,1]
+        @test isnan(merge(cl1, op1, :right).values[3,1])
+
+        @test length(merge(cl1, op1, :outer))     == 4
+        @test merge(cl1, op1, :outer).values[2,1] == cl1.values[2,1]
+        @test merge(cl1, op1, :outer).values[2,2] == op1.values[1,1]
+        @test isnan(merge(cl1, op1, :outer).values[1,2])
+        @test isnan(merge(cl1, op1, :outer).values[4,1])
+    end
+
+    @testset "column names match the correct values" begin
+        @test merge(cl, op[2:5]).colnames         == ["Close", "Open"]
+        @test merge(op[2:5], cl).colnames         == ["Open", "Close"]
+
+        @test merge(cl, op[2:5], :inner).colnames == ["Close", "Open"]
+        @test merge(op[2:5], cl, :inner).colnames == ["Open", "Close"]
+
+        @test merge(cl, op[2:5], :left).colnames  == ["Close", "Open"]
+        @test merge(op[2:5], cl, :left).colnames  == ["Open", "Close"]
+
+        @test merge(cl, op[2:5], :right).colnames == ["Close", "Open"]
+        @test merge(op[2:5], cl, :right).colnames == ["Open", "Close"]
+
+        @test merge(cl, op[2:5], :outer).colnames == ["Close", "Open"]
+        @test merge(op[2:5], cl, :outer).colnames == ["Open", "Close"]
     end
 end
 
-facts("vcat works correctly") do
-    context("concatenates time series correctly in 1D") do
+
+@testset "vcat works correctly" begin
+    @testset "concatenates time series correctly in 1D" begin
         a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"])
         b = TimeArray([Date(2015, 12, 01)], [17], ["Number"])
         c = vcat(a, b)
-    
-        @fact length(c)  --> length(a) + length(b)
-        @fact c.colnames --> a.colnames
-        @fact c.colnames --> b.colnames
-        @fact c.values   --> [15, 16, 17]
+
+        @test length(c)  == (length(a) + length(b))
+        @test c.colnames == a.colnames
+        @test c.colnames == b.colnames
+        @test c.values   == [15, 16, 17]
     end
-    
-    context("concatenates time series correctly in 2D") do
+
+    @testset "concatenates time series correctly in 2D" begin
         a = TimeArray([Date(2015, 09, 01), Date(2015, 10, 01), Date(2015, 11, 01)], [[15 16]; [17 18]; [19 20]], ["Number 1", "Number 2"])
         b = TimeArray([Date(2015, 12, 01)], [18 18], ["Number 1", "Number 2"])
         c = vcat(a, b)
-    
-        @fact length(c)  --> length(a) + length(b)
-        @fact c.colnames --> a.colnames
-        @fact c.colnames --> b.colnames
-        @fact c.values   --> [[15 16]; [17 18]; [19 20]; [18 18]]
+
+        @test length(c)  == length(a) + length(b)
+        @test c.colnames == a.colnames
+        @test c.colnames == b.colnames
+        @test c.values   == [[15 16]; [17 18]; [19 20]; [18 18]]
     end
-  
-    context("rejects when column names do not match") do
+
+    @testset "rejects when column names do not match" begin
         a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"])
         b = TimeArray([Date(2015, 12, 01)], [17], ["Data does not match number"])
-    
-        @fact_throws vcat(a, b)
+
+        @test_throws ErrorException vcat(a, b)
     end
-  
-    context("rejects when metas do not match") do
+
+    @testset "rejects when metas do not match" begin
         a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"], :FirstMeta)
         b = TimeArray([Date(2015, 12, 01)], [17], ["Number"], :SecondMeta)
-    
-        @fact_throws vcat(a, b)
+
+        @test_throws ErrorException vcat(a, b)
     end
-  
-    context("rejects when dates overlap") do
+
+    @testset "rejects when dates overlap" begin
         a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"])
         b = TimeArray([Date(2015, 11, 01)], [17], ["Number"])
-    
-        @fact_throws vcat(a, b)
+
+        @test_throws ErrorException vcat(a, b)
     end
-  
-    context("still works when dates are mixed") do
+
+    @testset "still works when dates are mixed" begin
         a = TimeArray([Date(2015, 10, 01), Date(2015, 12, 01)], [15, 17], ["Number"])
         b = TimeArray([Date(2015, 11, 01)], [16], ["Number"])
         c = vcat(a, b)
-    
-        @fact length(c)    --> length(a) + length(b)
-        @fact c.colnames   --> a.colnames
-        @fact c.colnames   --> b.colnames
-        @fact c.values     --> [15, 16, 17]
-        @fact c.timestamp  --> issorted
+
+        @test length(c)  == length(a) + length(b)
+        @test c.colnames == a.colnames
+        @test c.colnames == b.colnames
+        @test c.values   == [15, 16, 17]
+        @test issorted(c.timestamp)
     end
 end
 
-facts("map works correctly") do
-    context("works on both time stamps and 1D values") do
+
+@testset "map works correctly" begin
+    @testset "works on both time stamps and 1D values" begin
         a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"], :Something)
         b = map((timestamp, values) -> (timestamp + Dates.Year(1), values - 1), a)
-    
-        @fact length(b)                  --> length(a)
-        @fact b.colnames                 --> a.colnames
-        @fact Dates.year(b.timestamp[1]) --> Dates.year(a.timestamp[1]) + 1
-        @fact b.values[1]                --> a.values[1] - 1
-        @fact b.meta                     --> a.meta
+
+        @test length(b)                  == length(a)
+        @test b.colnames                 == a.colnames
+        @test Dates.year(b.timestamp[1]) == Dates.year(a.timestamp[1]) + 1
+        @test b.values[1]                == a.values[1] - 1
+        @test b.meta                     == a.meta
     end
-    
-    context("works on both time stamps and 2D values") do
+
+    @testset "works on both time stamps and 2D values" begin
         a = TimeArray([Date(2015, 09, 01), Date(2015, 10, 01), Date(2015, 11, 01)], [[15 16]; [17 18]; [19 20]], ["Number 1", "Number 2"])
         b = map((timestamp, values) -> (timestamp + Dates.Year(1), [values[1] + 2, values[2] - 1]), a)
-    
-        @fact length(b)                  --> length(a)
-        @fact b.colnames                 --> a.colnames
-        @fact Dates.year(b.timestamp[1]) --> Dates.year(a.timestamp[1]) + 1
-        @fact b.values[1, 1]             --> a.values[1, 1] + 2
-        @fact b.values[1, 2]             --> a.values[1, 2] - 1
+
+        @test length(b)                  == length(a)
+        @test b.colnames                 == a.colnames
+        @test Dates.year(b.timestamp[1]) == Dates.year(a.timestamp[1]) + 1
+        @test b.values[1, 1]             == a.values[1, 1] + 2
+        @test b.values[1, 2]             == a.values[1, 2] - 1
     end
-    
-    context("works with order of elements that varies after modifications") do
+
+    @testset "works with order of elements that varies after modifications" begin
         a = TimeArray([Date(2015, 10, 01), Date(2015, 12, 01)], [15, 16], ["Number"])
         b = map((timestamp, values) -> (timestamp + Dates.Year((timestamp >= Date(2015, 11, 01)) ? -1 : 1), values), a)
-    
-        @fact length(b)    --> length(a)
-        @fact b.timestamp  --> issorted
+
+        @test length(b) == length(a)
+        @test issorted(b.timestamp)
     end
 end
+
+
+end  # @testset "combine"
