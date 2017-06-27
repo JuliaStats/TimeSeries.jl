@@ -1,40 +1,48 @@
+using Base.Test
+
 # this line because the const objects are not being exported
 include(joinpath(dirname(@__FILE__), "..", "src/.timeseriesrc.jl"))
 
-facts("const values are set the package defaults") do
 
-    context("SHOWINT") do
-        @fact SHOWINT --> true
+@testset "timeseriesrc" begin
+
+
+@testset "const values are set the package defaults" begin
+    @testset "SHOWINT" begin
+        @test SHOWINT == true
     end
 
-    context("DECIMALS") do
-        @fact DECIMALS --> 4
+    @testset "DECIMALS" begin
+        @test DECIMALS == 4
     end
 
-    context("MISSING") do
-        @fact MISSING --> NAN
+    @testset "MISSING" begin
+        @test MISSING == NAN
+    end
+end
+
+
+@testset "const values are correct" begin
+    @testset "NAN" begin
+        @test NAN == "NaN"
+    end
+
+    @testset "NA" begin
+        @test NA == "NA"
+    end
+
+    @testset "BLACKHOLE" begin
+        @test BLACKHOLE == "\u2B24"
+    end
+
+    @testset "DOTCIRCLE" begin
+        @test DOTCIRCLE == "\u25CC"
+    end
+
+    @testset "QUESTION" begin
+        @test QUESTION == "\u003F"
     end
 end
 
-facts("const values are correct") do
 
-    context("NAN") do
-        @fact NAN --> "NaN"
-    end
-
-    context("NA") do
-        @fact NA --> "NA"
-    end
-
-    context("BLACKHOLE") do
-        @fact BLACKHOLE --> "\u2B24"
-    end
-
-    context("DOTCIRCLE") do
-        @fact DOTCIRCLE --> "\u25CC"
-    end
-
-    context("QUESTION") do
-        @fact QUESTION --> "\u003F"
-    end
-end
+end  # @testset "timeseriesrc"
