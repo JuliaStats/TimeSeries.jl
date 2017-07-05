@@ -1,20 +1,25 @@
-using Base.Dates, TimeSeries, MarketData
-FactCheck.setstyle(:compact)
-FactCheck.onlystats(true)
+using Base.Dates
+using Base.Test
 
-facts("field extraction methods work") do
+using MarketData
 
-    context("timestamp, values, colnames and meta") do
-        @fact typeof(timestamp(cl)) --> Array{Date,1}
-        @fact typeof(values(cl))    --> Array{Float64,1}
-        @fact typeof(colnames(cl))  --> Array{String,1}
-        @fact meta(mdata)           --> "Apple"
+using TimeSeries
+
+
+@testset "timearray" begin
+
+
+@testset "field extraction methods work" begin
+    @testset "timestamp, values, colnames and meta" begin
+        @test typeof(timestamp(cl)) == Array{Date,1}
+        @test typeof(values(cl))    == Array{Float64,1}
+        @test typeof(colnames(cl))  == Array{String,1}
+        @test meta(mdata)           == "Apple"
     end
 end
 
 
-facts("type constructors allow views") do
-
+@testset "type constructors allow views" begin
     source_rows = 101:121
     source_cols = 1:size(AAPL.values)[2]
     tstamps = view(AAPL.timestamp, source_rows)
@@ -26,174 +31,191 @@ facts("type constructors allow views") do
 
     AAPL2 = TimeArray(tstamps, tvalues, AAPL.colnames, AAPL.meta)
 
-    context("match first date") do
-        @fact AAPL1[1].timestamp --> AAPL2[1].timestamp
+    @testset "match first date" begin
+        @test AAPL1[1].timestamp == AAPL2[1].timestamp
     end
-    context("match first values") do
-        @fact AAPL1[1].values --> AAPL2[1].values
+
+    @testset "match first values" begin
+        @test AAPL1[1].values == AAPL2[1].values
     end
-    context("match all values") do
-        @fact AAPL1.values --> AAPL2.values
+
+    @testset "match all values" begin
+        @test AAPL1.values == AAPL2.values
     end
 end
 
 
-facts("type constructors enforce invariants") do
-
+@testset "type constructors enforce invariants" begin
     mangled_stamp = vcat(cl.timestamp[200:end], cl.timestamp[1:199])
     dupe_stamp    = vcat(cl.timestamp[1:499], cl.timestamp[499])
-    dupe_cnames   = rename(AAPL,  ["a", "b", "c", "a", "a", "b", "d", "e", "e", "e", "e", "f"])
+    dupe_cnames   = rename(AAPL, ["a", "b", "c", "a", "a", "b", "d", "e", "e", "e", "e", "f"])
 
-    context("unequal length between values and timestamp fails") do
-        @fact_throws TimeArray(cl.timestamp, cl.values[2:end], ["Close"])
+    @testset "unequal length between values and timestamp fails" begin
+        @test_throws(
+            ErrorException,
+            TimeArray(cl.timestamp, cl.values[2:end], ["Close"]))
     end
 
-    context("unequal length between colnames and array width fails") do
-        @fact_throws TimeArray(cl.timestamp, cl.values, ["Close", "Open"])
+    @testset "unequal length between colnames and array width fails" begin
+        @test_throws(
+            ErrorException,
+            TimeArray(cl.timestamp, cl.values, ["Close", "Open"]))
     end
 
-    context("duplicate timestamp values fails") do
-        @fact_throws TimeArray(dupe_stamp, cl.values, ["Close"])
+    @testset "duplicate timestamp values fails" begin
+        @test_throws(
+            ErrorException,
+            TimeArray(dupe_stamp, cl.values, ["Close"]))
     end
 
-    context("mangled order of timestamp values fails") do
-        @fact_throws TimeArray(mangled_stamp, cl.values, ["Close"])
+    @testset "mangled order of timestamp values fails" begin
+        @test_throws(
+            ErrorException,
+            TimeArray(mangled_stamp, cl.values, ["Close"]))
     end
 
-    context("flipping occurs when needed") do
-        @fact TimeArray(flipdim(cl.timestamp, 1), flipdim(cl.values, 1),  ["Close"]).timestamp[1] --> Date(2000,1,3)
-        @fact TimeArray(flipdim(cl.timestamp, 1), flipdim(cl.values, 1),  ["Close"]).values[1]    --> 111.94
+    @testset "flipping occurs when needed" begin
+        @test TimeArray(flipdim(cl.timestamp, 1), flipdim(cl.values, 1),  ["Close"]).timestamp[1] == Date(2000,1,3)
+        @test TimeArray(flipdim(cl.timestamp, 1), flipdim(cl.values, 1),  ["Close"]).values[1]    == 111.94
     end
 
-    context("duplicate column names are enumerated by inner constructor") do
-        @fact dupe_cnames.colnames[1]  --> "a"
-        @fact dupe_cnames.colnames[2]  --> "b"
-        @fact dupe_cnames.colnames[3]  --> "c"
-        @fact dupe_cnames.colnames[4]  --> "a_1"
-        @fact dupe_cnames.colnames[5]  --> "a_2"
-        @fact dupe_cnames.colnames[6]  --> "b_1"
-        @fact dupe_cnames.colnames[7]  --> "d"
-        @fact dupe_cnames.colnames[8]  --> "e"
-        @fact dupe_cnames.colnames[9]  --> "e_1"
-        @fact dupe_cnames.colnames[10] --> "e_2"
-        @fact dupe_cnames.colnames[11] --> "e_3"
-        @fact dupe_cnames.colnames[12] --> "f"
+    @testset "duplicate column names are enumerated by inner constructor" begin
+        @test dupe_cnames.colnames[1]  == "a"
+        @test dupe_cnames.colnames[2]  == "b"
+        @test dupe_cnames.colnames[3]  == "c"
+        @test dupe_cnames.colnames[4]  == "a_1"
+        @test dupe_cnames.colnames[5]  == "a_2"
+        @test dupe_cnames.colnames[6]  == "b_1"
+        @test dupe_cnames.colnames[7]  == "d"
+        @test dupe_cnames.colnames[8]  == "e"
+        @test dupe_cnames.colnames[9]  == "e_1"
+        @test dupe_cnames.colnames[10] == "e_2"
+        @test dupe_cnames.colnames[11] == "e_3"
+        @test dupe_cnames.colnames[12] == "f"
     end
 end
 
-facts("construction without colnames") do
 
+@testset "construction without colnames" begin
     no_colnames_one   = TimeArray(cl.timestamp, cl.values)
     no_colnames_multi = TimeArray(AAPL.timestamp, AAPL.values)
 
-    context("default colnames to empty String vector") do
-        @fact no_colnames_one.colnames   --> String[""]
-        @fact no_colnames_multi.colnames --> String["_1", "_2", "_3", "_4", "_5", "_6", "_7", "_8", "_9", "_10", "_11", "_12"]
+    @testset "default colnames to empty String vector" begin
+        @test no_colnames_one.colnames   == String[""]
+        @test no_colnames_multi.colnames == String["_1", "_2", "_3", "_4", "_5", "_6", "_7", "_8", "_9", "_10", "_11", "_12"]
     end
 
-    context("empty colnames forces meta to nothing") do
-        @fact no_colnames_one.meta   --> nothing
-        @fact no_colnames_multi.meta --> nothing
-    end
-end
-
-facts("conversion methods") do
-
-    context("convert works ") do
-        @fact isa(convert(TimeArray{Float64,1}, (cl.>op)), TimeArray{Float64,1})                --> true
-        @fact isa(convert(TimeArray{Float64,2}, (merge(cl.<op, cl.>op))), TimeArray{Float64,2}) --> true
-        @fact isa(convert(cl.>op), TimeArray{Float64,1})                                        --> true
-        @fact isa(convert(merge(cl.<op, cl.>op)), TimeArray{Float64,2})                         --> true
+    @testset "empty colnames forces meta to nothing" begin
+        @test no_colnames_one.meta   == nothing
+        @test no_colnames_multi.meta == nothing
     end
 end
 
-facts("index by integer works with both 1d and 2d time array") do
 
-    context("1d time array") do
-        @fact cl[1].timestamp --> [Date(2000,1,3)]
-        @fact cl[1].values    --> [111.94]
-        @fact cl[1].colnames  --> ["Close"]
-        @fact cl[1].meta      --> "AAPL"
-    end
-
-    context("2d time array") do
-        @fact ohlc[1].timestamp --> [Date(2000,1,3)]
-        @fact ohlc[1].values    --> [104.88 112.5 101.69 111.94]
-        @fact ohlc[1].colnames  --> ["Open", "High", "Low","Close"]
-        @fact ohlc[1].meta      --> "AAPL"
+@testset "conversion methods" begin
+    @testset "convert works " begin
+        @test isa(convert(TimeArray{Float64,1}, (cl.>op)), TimeArray{Float64,1})                == true
+        @test isa(convert(TimeArray{Float64,2}, (merge(cl.<op, cl.>op))), TimeArray{Float64,2}) == true
+        @test isa(convert(cl.>op), TimeArray{Float64,1})                                        == true
+        @test isa(convert(merge(cl.<op, cl.>op)), TimeArray{Float64,2})                         == true
     end
 end
 
-facts("ordered collection methods") do
 
-    context("iterator protocol is valid") do
-        @fact op                     --> not(isempty)
-        @fact op[op .< 0]            --> isempty
-        @fact start(op)              --> 1
-        @fact next(op, 1)            --> ((op.timestamp[1], op.values[1,:]), 2)
-        @fact done(op, length(op)+1) --> true
+@testset "index by integer works with both 1d and 2d time array" begin
+    @testset "1d time array" begin
+        @test cl[1].timestamp == [Date(2000,1,3)]
+        @test cl[1].values    == [111.94]
+        @test cl[1].colnames  == ["Close"]
+        @test cl[1].meta      == "AAPL"
     end
 
-    context("end keyword returns correct index") do
-        @fact ohlc[end].timestamp[1] --> ohlc.timestamp[end]
+    @testset "2d time array" begin
+        @test ohlc[1].timestamp == [Date(2000,1,3)]
+        @test ohlc[1].values    == [104.88 112.5 101.69 111.94]
+        @test ohlc[1].colnames  == ["Open", "High", "Low","Close"]
+        @test ohlc[1].meta      == "AAPL"
     end
-
-    context("getindex on single Int and Date") do
-        @fact ohlc[1].timestamp              --> [Date(2000,1,3)]
-        @fact ohlc[Date(2000,1,3)].timestamp --> [Date(2000,1,3)]
-    end
-
-    context("getindex on array of Int and Date") do
-        @fact ohlc[[1,10]].timestamp                           --> [Date(2000,1,3), Date(2000,1,14)]
-        @fact ohlc[[Date(2000,1,3),Date(2000,1,14)]].timestamp --> [Date(2000,1,3), Date(2000,1,14)]
-    end
-
-    context("getindex on range of Int and Date") do
-        @fact ohlc[1:2].timestamp                                  --> [Date(2000,1,3), Date(2000,1,4)]
-        @fact ohlc[1:2:4].timestamp                                --> [Date(2000,1,3), Date(2000,1,5)]
-        @fact ohlc[Int8(1):Int8(2):Int8(4)].timestamp              --> [Date(2000,1,3), Date(2000,1,5)]
-        @fact ohlc[Date(2000,1,3):Day(1):Date(2000,1,4)].timestamp --> [Date(2000,1,3), Date(2000,1,4)]
-    end
-
-    context("getindex on range of DateTime when only Date is in timestamp") do
-        @fact_throws ohlc[DateTime(2000,1,3,0,0,0)]
-        @fact_throws ohlc[[DateTime(2000,1,3,0,0,0),DateTime(2000,1,14,0,0,0)]]
-        @fact_throws ohlc[DateTime(2000,1,3,0,0,0):Day(1):DateTime(2000,1,4,0,0,0)]
-    end
-
-    context("getindex on range of Date") do
-        @fact length(cl[Date(2000,1,1):Date(2001,12,31)]) --> 500
-    end
-
-    context("getindex on single column name") do
-        @fact size(ohlc["Open"].values, 2)                                        --> 1
-        @fact size(ohlc["Open"][Date(2000,1,3):Day(1):Date(2000,1,14)].values, 1) --> 10
-    end
-
-    context("getindex on multiple column name") do
-        @fact ohlc["Open", "Close"].values[1]   --> 104.88
-        @fact ohlc["Open", "Close"].values[2]   --> 108.25
-        @fact ohlc["Open", "Close"].values[501] --> 111.94
-    end
-
-    context("getindex on 1d returns 1d object") do
-        @fact isa(cl[1], TimeArray{Float64,1})   --> true
-        @fact isa(cl[1:2], TimeArray{Float64,1}) --> true
-    end
-
-    context("getindex on a 1d Boolean TimeArray returns appropriate rows") do
-        @fact ohlc[op .> cl][2].values             --> ohlc[4].values
-        @fact ohlc[op[300:end] .> cl][2].timestamp --> ohlc[303].timestamp
-        @fact_throws ohlc[merge(op.>cl, op.<cl)] # MethodError, Bool must be 1D-TimeArray
-    end
-
 end
 
-facts("show methods don't throw errors") do
 
+@testset "ordered collection methods" begin
+    @testset "iterator protocol is valid" begin
+        @test !isempty(op)
+        @test isempty(op[op .< 0])
+        @test start(op)              == 1
+        @test next(op, 1)            == ((op.timestamp[1], op.values[1,:]), 2)
+        @test done(op, length(op)+1) == true
+    end
+
+    @testset "end keyword returns correct index" begin
+        @test ohlc[end].timestamp[1] == ohlc.timestamp[end]
+    end
+
+    @testset "getindex on single Int and Date" begin
+        @test ohlc[1].timestamp              == [Date(2000,1,3)]
+        @test ohlc[Date(2000,1,3)].timestamp == [Date(2000,1,3)]
+    end
+
+    @testset "getindex on array of Int and Date" begin
+        @test ohlc[[1,10]].timestamp                           == [Date(2000,1,3), Date(2000,1,14)]
+        @test ohlc[[Date(2000,1,3),Date(2000,1,14)]].timestamp == [Date(2000,1,3), Date(2000,1,14)]
+    end
+
+    @testset "getindex on range of Int and Date" begin
+        @test ohlc[1:2].timestamp                                  == [Date(2000,1,3), Date(2000,1,4)]
+        @test ohlc[1:2:4].timestamp                                == [Date(2000,1,3), Date(2000,1,5)]
+        @test ohlc[Int8(1):Int8(2):Int8(4)].timestamp              == [Date(2000,1,3), Date(2000,1,5)]
+        @test ohlc[Date(2000,1,3):Day(1):Date(2000,1,4)].timestamp == [Date(2000,1,3), Date(2000,1,4)]
+    end
+
+    @testset "getindex on range of DateTime when only Date is in timestamp" begin
+        @test_throws(
+            MethodError,
+            ohlc[DateTime(2000,1,3,0,0,0)])
+        @test_throws(
+            MethodError,
+            ohlc[[DateTime(2000,1,3,0,0,0),DateTime(2000,1,14,0,0,0)]])
+        @test_throws(
+            MethodError,
+            ohlc[DateTime(2000,1,3,0,0,0):Day(1):DateTime(2000,1,4,0,0,0)])
+    end
+
+    @testset "getindex on range of Date" begin
+        @test length(cl[Date(2000,1,1):Date(2001,12,31)]) == 500
+    end
+
+    @testset "getindex on single column name" begin
+        @test size(ohlc["Open"].values, 2)                                        == 1
+        @test size(ohlc["Open"][Date(2000,1,3):Day(1):Date(2000,1,14)].values, 1) == 10
+    end
+
+    @testset "getindex on multiple column name" begin
+        @test ohlc["Open", "Close"].values[1]   == 104.88
+        @test ohlc["Open", "Close"].values[2]   == 108.25
+        @test ohlc["Open", "Close"].values[501] == 111.94
+    end
+
+    @testset "getindex on 1d returns 1d object" begin
+        @test isa(cl[1], TimeArray{Float64,1})   == true
+        @test isa(cl[1:2], TimeArray{Float64,1}) == true
+    end
+
+    @testset "getindex on a 1d Boolean TimeArray returns appropriate rows" begin
+        @test ohlc[op .> cl][2].values             == ohlc[4].values
+        @test ohlc[op[300:end] .> cl][2].timestamp == ohlc[303].timestamp
+        # MethodError, Bool must be 1D-TimeArray
+        @test_throws MethodError ohlc[merge(op.>cl, op.<cl)]
+    end
+end
+
+
+@testset "show methods don't throw errors" begin
     show(ohlc)
     show(ohlc[1:4])
     show(ohlc[1:0])
     show(lag(cl[1:2], padding=true))
-
 end
+
+
+end  # @testset "timearray"

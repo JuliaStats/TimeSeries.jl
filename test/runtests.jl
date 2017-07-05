@@ -1,15 +1,23 @@
-using FactCheck
-using TimeSeries
-using Base.Dates
+using Base.Test
 
-include("timearray.jl")
-include("split.jl") 
-include("apply.jl")
-include("combine.jl")
-include("modify.jl")
-include("meta.jl")
-include("readwrite.jl")
-include("timeseriesrc.jl")
-include("deprecated.jl")
+tests = [
+    "timearray",
+    "split",
+    "apply",
+    "combine",
+    "modify",
+    "meta",
+    "readwrite",
+    "timeseriesrc",
+    "deprecated",
+]
 
-exitstatus()
+
+@testset "TimeSeries" begin
+    println("Running tests:")
+
+    for test ∈ tests
+        println("\t* $test ...")
+        include("$test.jl")
+    end
+end
