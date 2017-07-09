@@ -24,7 +24,7 @@ struct TimeArray{T, N, D <: TimeType, A <: AbstractArray{T, N}} <: AbstractTimeS
             error("column names must match width of array")
         elseif timestamp != unique(timestamp)
             error("there are duplicate dates")
-        elseif !(flipdim(timestamp, 1) == sort(timestamp) || timestamp == sort(timestamp))
+        elseif !(flipdim(timestamp, 1) == sort(timestamp) || issorted(timestamp))
             error("dates are mangled")
         elseif flipdim(timestamp, 1) == sort(timestamp)
             new(flipdim(timestamp, 1), flipdim(values, 1),
