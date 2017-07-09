@@ -17,14 +17,21 @@ struct TimeArray{T, N, D <: TimeType, A <: AbstractArray{T, N}} <: AbstractTimeS
             colnames::Vector{String},
             meta::Any) where {T, N, D <: TimeType, A <: AbstractArray{T, N}}
         nrow, ncol = size(values, 1, 2)
-        nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
-        ncol != size(colnames,1) ? error("column names must match width of array"):
-        # length(unique(colnames)) != ncol ? colnames = replace_dupes(colnames):
-        timestamp != unique(timestamp) ? error("there are duplicate dates"):
-        ~(flipdim(timestamp, 1) == sort(timestamp) || timestamp == sort(timestamp)) ? error("dates are mangled"):
-        flipdim(timestamp, 1) == sort(timestamp) ?
-        new(flipdim(timestamp, 1), flipdim(values, 1), replace_dupes(colnames), meta):
-        new(timestamp, values, replace_dupes(colnames), meta)
+
+        if nrow != size(timestamp, 1)
+            error("values must match length of timestamp")
+        elseif ncol != size(colnames, 1)
+            error("column names must match width of array")
+        elseif timestamp != unique(timestamp)
+            error("there are duplicate dates")
+        elseif !(flipdim(timestamp, 1) == sort(timestamp) || timestamp == sort(timestamp))
+            error("dates are mangled")
+        elseif flipdim(timestamp, 1) == sort(timestamp)
+            new(flipdim(timestamp, 1), flipdim(values, 1),
+                replace_dupes(colnames), meta)
+        else
+            new(timestamp, values, replace_dupes(colnames), meta)
+        end
     end
 end
 
