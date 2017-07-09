@@ -11,11 +11,12 @@ struct TimeArray{T, N, D <: TimeType, A <: AbstractArray{T, N}} <: AbstractTimeS
     colnames::Vector{String}
     meta::Any
 
-    function TimeArray(timestamp::AbstractVector{D},
-                       values::AbstractArray{T,N},
-                       colnames::Vector{String},
-                       meta::Any)
-        nrow, ncol = size(values, 1), size(values, 2)
+    function TimeArray{T, N, D, A}(
+            timestamp::AbstractVector{D},
+            values::A,
+            colnames::Vector{String},
+            meta::Any) where {T, N, D <: TimeType, A <: AbstractArray{T, N}}
+        nrow, ncol = size(values, 1, 2)
         nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
         ncol != size(colnames,1) ? error("column names must match width of array"):
         # length(unique(colnames)) != ncol ? colnames = replace_dupes(colnames):
