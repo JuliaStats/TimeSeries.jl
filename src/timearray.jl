@@ -4,7 +4,7 @@ import Base: convert, length, show, getindex, start, next, done, isempty, endof
 
 abstract type AbstractTimeSeries end
 
-immutable TimeArray{T, N, D<:TimeType, A<:AbstractArray} <: AbstractTimeSeries
+struct TimeArray{T, N, D <: TimeType, A <: AbstractArray{T, N}} <: AbstractTimeSeries
 
     timestamp::Vector{D}
     values::A
