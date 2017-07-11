@@ -5,9 +5,9 @@ UNARY = [:+, :-, :~, :!, :abs, :sign, :sqrt, :cbrt,
           :acos, :asin, :atan, :acosd, :asind, :atand,
           :isnan, :isinf
         ]
-MATH_DOTONLY    = [:.+, :.-, :.*, :./, :.%, :.^]
+MATH_DOTONLY    = [:^]
 MATH_ALL        = [MATH_DOTONLY; [:+, :-, :*, :/, :%]]
-COMPARE_DOTONLY = [:.>, :.<, :.==, :.>=, :.<=, :.!=]
+COMPARE_DOTONLY = [:>, :<, :(==), :>=, :<=, :(!=)]
 BOOLEAN_OPS     = [:&; :|; :$; COMPARE_DOTONLY]
 
 for op in [UNARY; MATH_ALL; BOOLEAN_OPS]
@@ -39,22 +39,36 @@ end # loop
 # TimeArray <--> Scalar
 for op in [MATH_ALL; COMPARE_DOTONLY]
     @eval begin
-        function ($op){T<:Number,N}(ta::TimeArray{T,N}, var::Number)
+        function broadcast(::typeof($op), ta::TimeArray{T, N},
+                           var::Number) where {T <: Number, N}
             cnames  = [name * string($op) * string(var) for name in ta.colnames]
-            vals = ($op)(ta.values, var)
+            vals = broadcast($op, ta.values, var)
             TimeArray(ta.timestamp, vals, cnames, ta.meta)
         end # function
+
+        # FIXME: make some function allowed dot version only
+        # e.g. `ta > 42` is not allowed, but `ta .> 42` does
+        if Symbol($op) ∉ [$MATH_DOTONLY; $COMPARE_DOTONLY]
+            ($op)(ta::TimeArray{T, N}, var::Number) where {T <: Number, N} =
+                broadcast($op, ta, var)
+        end
     end # eval
 end # loop
 
 # Scalar <--> TimeArray
 for op in [MATH_ALL; COMPARE_DOTONLY]
     @eval begin
-        function ($op){T<:Number,N}(var::Number, ta::TimeArray{T,N})
+        function broadcast(::typeof($op), var::Number,
+                           ta::TimeArray{T, N}) where {T <: Number, N}
             cnames  = [string(var) * string($op) * name for name in ta.colnames]
-            vals = ($op)(var, ta.values)
+            vals = broadcast($op, var, ta.values)
             TimeArray(ta.timestamp, vals, cnames, ta.meta)
         end # function
+
+        if Symbol($op) ∉ [$MATH_DOTONLY; $COMPARE_DOTONLY]
+            ($op)(var::Number, ta::TimeArray{T, N}) where {T <: Number, N} =
+                broadcast($op, var, ta)
+        end
     end # eval
 end # loop
 
