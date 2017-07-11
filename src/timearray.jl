@@ -18,9 +18,9 @@ struct TimeArray{T, N, D <: TimeType, A <: AbstractArray{T, N}} <: AbstractTimeS
             meta::Any) where {T, N, D <: TimeType, A <: AbstractArray{T, N}}
         nrow, ncol = size(values, 1, 2)
 
-        if nrow != size(timestamp, 1)
+        if nrow != length(timestamp)
             error("values must match length of timestamp")
-        elseif ncol != size(colnames, 1)
+        elseif ncol != length(colnames)
             error("column names must match width of array")
         elseif !allunique(timestamp)
             error("there are duplicate dates")
