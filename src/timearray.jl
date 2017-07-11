@@ -22,7 +22,7 @@ struct TimeArray{T, N, D <: TimeType, A <: AbstractArray{T, N}} <: AbstractTimeS
             error("values must match length of timestamp")
         elseif ncol != size(colnames, 1)
             error("column names must match width of array")
-        elseif timestamp != unique(timestamp)
+        elseif !allunique(timestamp)
             error("there are duplicate dates")
         elseif !(flipdim(timestamp, 1) == sort(timestamp) || issorted(timestamp))
             error("dates are mangled")
