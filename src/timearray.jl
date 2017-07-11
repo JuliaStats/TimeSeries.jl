@@ -24,10 +24,10 @@ struct TimeArray{T, N, D <: TimeType, A <: AbstractArray{T, N}} <: AbstractTimeS
             error("column names must match width of array")
         elseif !allunique(timestamp)
             error("there are duplicate dates")
-        elseif !(flipdim(timestamp, 1) == sort(timestamp) || issorted(timestamp))
+        elseif !(issorted(timestamp) || issorted(timestamp, rev=true))
             error("dates are mangled")
-        elseif flipdim(timestamp, 1) == sort(timestamp)
-            new(flipdim(timestamp, 1), flipdim(values, 1),
+        elseif issorted(timestamp, rev=true)
+            new(reverse(timestamp), flipdim(values, 1),
                 replace_dupes(colnames), meta)
         else
             new(timestamp, values, replace_dupes(colnames), meta)
