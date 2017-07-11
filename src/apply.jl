@@ -14,6 +14,7 @@ for op in [UNARY; MATH_ALL; BOOLEAN_OPS]
     eval(Expr(:import, :Base, op))
 end # for
 
+import Base.broadcast
 import Base.diff
 
 ###### Unary operators and functions ################
@@ -21,13 +22,17 @@ import Base.diff
 # TimeArray
 for op in UNARY
     @eval begin
-        function ($op){T,N}(ta::TimeArray{T,N})
-            cnames  = [string($op) * name for name in ta.colnames]
-            vals = ($op)(ta.values)
+        function broadcast(::typeof($op), ta::TimeArray{T, N}) where {T, N}
+            cnames = [string($op) * name for name in ta.colnames]
+            vals = broadcast($op, ta.values)
             TimeArray(ta.timestamp, vals, cnames, ta.meta)
         end # function
     end # eval
 end # loop
+
+# without dot prefix unary
+(+)(ta::TimeArray{T, N}) where {T, N} = broadcast(+, ta)
+(-)(ta::TimeArray{T, N}) where {T, N} = broadcast(-, ta)
 
 ###### Numerical operations and comparisons #########
 
