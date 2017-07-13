@@ -70,14 +70,14 @@ isempty(ta::TimeArray) = (length(ta) == 0)
 
 ###### show #####################
 
-function show{T,N}(io::IO, ta::TimeArray{T,N})
+function show(io::IO, ta::TimeArray{T}) where {T}
 
     # variables
     nrow          = size(ta.values, 1)
     ncol          = size(ta.values, 2)
     intcatcher    = falses(ncol)
     for c in 1:ncol
-        rowcheck =  trunc(ta.values[:,c]) - ta.values[:,c] .== 0
+        rowcheck = @. trunc(ta.values[:, c]) - ta.values[:, c] == 0
         if sum(rowcheck) == length(rowcheck)
             intcatcher[c] = true
         end
