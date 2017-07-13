@@ -266,31 +266,33 @@ end
     end
 
     @testset "bitwise elementwise operations between bool and TimeArrays' values" begin
-        @test ((cl .> 100) & true).values[1]      == true
-        @test ((cl .> 100) | true).values[1]      == true
-        @test ((cl .> 100) $ true).values[1]      == false
-        @test (false & (cl .> 100)).values[1]     == false
-        @test (false | (cl .> 100)).values[1]     == true
-        @test (false $ (cl .> 100)).values[1]     == true
-        @test ((ohlc .> 100) & true).values[4,:]  == [true, true, false, false]
-        @test ((ohlc .> 100) | true).values[4,:]  == [true, true, true, true]
-        @test ((ohlc .> 100) $ true).values[4,:]  == [false, false, true, true]
-        @test (false & (ohlc .> 100)).values[4,:] == [false, false, false, false]
-        @test (false | (ohlc .> 100)).values[4,:] == [true, true, false, false]
-        @test (false $ (ohlc .> 100)).values[4,:] == [true, true, false, false]
+        @test ((cl .> 100) .& true).values[1]      == true
+        @test ((cl .> 100) .| true).values[1]      == true
+        @test ((cl .> 100) .⊻ true).values[1]      == false
+        @test (false .& (cl .> 100)).values[1]     == false
+        @test (false .| (cl .> 100)).values[1]     == true
+        @test (false .⊻ (cl .> 100)).values[1]     == true
+        @test ((ohlc .> 100) .& true).values[4,:]  == [true, true, false, false]
+        @test ((ohlc .> 100) .| true).values[4,:]  == [true, true, true, true]
+        @test ((ohlc .> 100) .⊻ true).values[4,:]  == [false, false, true, true]
+        @test (false .& (ohlc .> 100)).values[4,:] == [false, false, false, false]
+        @test (false .| (ohlc .> 100)).values[4,:] == [true, true, false, false]
+        @test (false .⊻ (ohlc .> 100)).values[4,:] == [true, true, false, false]
       end
 
     @testset "bitwise elementwise operations between same-column-count TimeArrays' boolean values" begin
-        @test ((cl .> 100) & (cl .< 120)).values[1]       == true
-        @test ((cl .> 100) | (cl .< 120)).values[1]       == true
-        @test ((cl .> 100) $ (cl .< 120)).values[1]       == false
-        @test ((ohlc .> 100) & (ohlc .< 120)).values[4,:] == [true, true, false, false]
-        @test ((ohlc .> 100) | (ohlc .< 120)).values[4,:] == [true, true, true, true]
-        @test ((ohlc .> 100) $ (ohlc .< 120)).values[4,:] == [false, false, true, true]
-        # Bitwise broadcasting not supported by Base
-        @test_throws MethodError ((ohlc .> 100) $ (cl.< 120))
+        @test ((cl .> 100) .& (cl .< 120)).values[1]       == true
+        @test ((cl .> 100) .| (cl .< 120)).values[1]       == true
+        @test ((cl .> 100) .⊻ (cl .< 120)).values[1]       == false
+        @test ((ohlc .> 100) .& (ohlc .< 120)).values[4,:] == [true, true, false, false]
+        @test ((ohlc .> 100) .| (ohlc .< 120)).values[4,:] == [true, true, true, true]
+        @test ((ohlc .> 100) .⊻ (ohlc .< 120)).values[4,:] == [false, false, true, true]
+        @test ((ohlc .> 100) .⊻ (cl .< 120)).values[4,:]   == [false, false, true, true]
     end
 end
+
+
+#TODO: add test cases of non-standard function on dot-call
 
 
 @testset "basecall works with Base methods" begin
