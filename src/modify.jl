@@ -1,6 +1,6 @@
 ###### update ####################
 
-function update{T,N,D}(ta::TimeArray{T,N,D}, tstamp::D, val::Array{T,N})
+function update(ta::TimeArray{T, N, D}, tstamp::D, val::Array{T, N}) where {T, N, D}
 
     if length(ta) == 0
         error("updating empty time arrays is not supported, please use a scalable approach")
@@ -14,7 +14,7 @@ function update{T,N,D}(ta::TimeArray{T,N,D}, tstamp::D, val::Array{T,N})
     uta
 end
 
-function update{T,N,D}(ta::TimeArray{T,N,D}, tstamp::D, val::T)
+function update(ta::TimeArray{T, N, D}, tstamp::D, val::T) where {T, N, D}
 
     if length(ta) == 0
         error("updating empty time arrays is not supported, please use a scalable approach")
@@ -30,10 +30,10 @@ end
 
 ###### rename ####################
 
-function rename{T,N,D}(ta::TimeArray{T,N,D}, colnames::Vector)
+function rename(ta::TimeArray, colnames::Vector)
     TimeArray(ta.timestamp, ta.values, colnames, ta.meta)
 end
 
-function rename{T,N,D}(ta::TimeArray{T,N,D}, colnames::String)
+function rename(ta::TimeArray, colnames::String)
     TimeArray(ta.timestamp, ta.values, [colnames], ta.meta)
 end
