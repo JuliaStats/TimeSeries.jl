@@ -155,39 +155,6 @@ end
         @test (2 .% ohlc).values[1,:]   == 2 .% ohlc.values[1,:]
     end
 
-    @testset "non-dot operation between TimeArray values and Int/Float and viceversa" begin
-        @test isapprox((cl - 100).values[1], 11.94, atol=0.1)
-        @test isapprox((cl + 100).values[1], 211.94, atol=0.1)
-        @test isapprox((cl * 100).values[1], 11194, atol=0.1)
-        @test isapprox((cl / 100).values[1], 1.1194, atol=0.001)
-        @test (cl % 2).values[1] == cl.values[1] % 2
-        # not supported by Base - reserved for square matrix multiplication
-        @test_throws MethodError (cl ^ 2).values[1]
-        @test isapprox((100 - cl).values[1], -11.94, atol=0.1)
-        @test isapprox((100 + cl).values[1], 211.94, atol=0.1)
-        @test isapprox((100 * cl).values[1], 11194, atol=0.1)
-        # not supported by Base - confusion with matrix inverse
-        @test_throws MethodError (100 / cl).values
-        # not supported by Base
-        @test_throws MethodError (2 ^ cl).values
-        @test (2 % cl).values[1]       == 2 % cl.values[1]
-        @test (ohlc - 100).values[1,:] == ohlc.values[1,:] - 100
-        @test (ohlc + 100).values[1,:] == ohlc.values[1,:] + 100
-        @test (ohlc * 100).values[1,:] == ohlc.values[1,:] * 100
-        @test (ohlc / 100).values[1,:] == ohlc.values[1,:] / 100
-        # not supported by Base - reserved for square matrix multiplication
-        @test_throws MethodError (ohlc ^ 2).values[1,:]
-        @test (ohlc % 2).values[1,:]   == ohlc.values[1,:] % 2
-        @test (100 - ohlc).values[1,:] == 100 - ohlc.values[1,:]
-        @test (100 + ohlc).values[1,:] == 100 + ohlc.values[1,:]
-        @test (100 * ohlc).values[1,:] == 100 * ohlc.values[1,:]
-        # not supported by Base - confusion with matrix inverse
-        @test_throws MethodError (100 / ohlc).values[1,:]
-        # not supported by Base
-        @test_throws MethodError (2 ^ ohlc).values[1,:]
-        @test (2 % ohlc).values[1,:] == 2 % ohlc.values[1,:]
-    end
-
     @testset "mathematical operations between two same-column-count TimeArrays" begin
         @test isapprox((cl .+ op).values[1], 216.82, atol=.01)
         @test isapprox((cl .- op).values[1], 7.06, atol=.01)
