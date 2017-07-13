@@ -102,7 +102,7 @@ function percentchange(ta::TimeArray, returns::Symbol=:simple; padding::Bool=fal
 
     if method != ""
         warn("the method kwarg is deprecated, use percentchange(ta, :methodname) instead")
-        returns = symbol(method)
+        returns = Symbol(method)
     end #if
 
     cols = ta.colnames
