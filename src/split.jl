@@ -6,15 +6,15 @@ when{T,N}(ta::TimeArray{T,N}, period::Function, t::Int)         = ta[find(period
 when{T,N}(ta::TimeArray{T,N}, period::Function, t::String) = ta[find(period(ta.timestamp) .== t)]
 
 # from, to ######################
- 
+
 from{T,N,D}(ta::TimeArray{T,N,D}, d::D) =
-    length(ta) == 0 ? ta : 
+    length(ta) == 0 ? ta :
          d < ta.timestamp[1] ? ta :
          d > ta.timestamp[end] ? ta[1:0] :
          ta[searchsortedfirst(ta.timestamp, d):end]
 
 to{T,N,D}(ta::TimeArray{T,N,D}, d::D) =
-    length(ta) == 0 ? ta : 
+    length(ta) == 0 ? ta :
         d < ta.timestamp[1] ? ta[1:0] :
         d > ta.timestamp[end] ? ta :
         ta[1:searchsortedlast(ta.timestamp, d)]
