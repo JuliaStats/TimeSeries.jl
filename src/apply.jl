@@ -189,6 +189,6 @@ end  # uniformspace
 ###### dropnan ####################
 
 dropnan(ta::TimeArray, method::Symbol=:all) =
-    method == :all ? ta[find(any(!isnan(ta.values), 2))] :
-    method == :any ? ta[find(all(!isnan(ta.values), 2))] :
+    method == :all ? ta[find(any(.!isnan.(ta.values), 2))] :
+    method == :any ? ta[find(all(.!isnan.(ta.values), 2))] :
     error("dropnan method must be :all or :any")
