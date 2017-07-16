@@ -2,11 +2,11 @@
 
 function readtimearray(source; delim::Char=',', meta=nothing, format::AbstractString="")
     cfile = readdlm(source, delim)
-    
+
     # remove empty lines if any
     inoempty = find(s -> length(s) > 2, cfile[:,1])
     cfile = cfile[inoempty,:]
-    
+
     time  = cfile[2:end,1]
     if length(time[1]) < 11
         # assuming Date not DateTime
@@ -17,7 +17,7 @@ function readtimearray(source; delim::Char=',', meta=nothing, format::AbstractSt
         format == "" ?
         tstamps = DateTime[DateTime(t) for t in time] :
         tstamps = DateTime[DateTime(t, format) for t in time]
-    end 
+    end
 
     vals   = insertNaN(cfile[2:end, 2:end])
     cnames = String[]
