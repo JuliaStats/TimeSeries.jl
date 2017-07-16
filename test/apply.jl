@@ -67,7 +67,7 @@ using TimeSeries
         @test percentchange(cl).values          == percentchange(cl, padding=false).values
         @test isapprox(percentchange(cl).values[1]                   , (102.5-111.94)/111.94, atol=.01)
         @test isapprox(percentchange(ohlc).values[1, :]              , (ohlc.values[2,:] - ohlc.values[1,:]) ./ ohlc.values[1,:])
-        @test isnan(percentchange(cl, padding=true).values[1])
+        @test isnan.(percentchange(cl, padding=true).values[1])
         @test isapprox(percentchange(cl, padding=true).values[2]     , (102.5-111.94)/111.94, atol=.01)
         @test isapprox(percentchange(ohlc, padding=true).values[2, :], (ohlc.values[2,:] - ohlc.values[1,:]) ./ ohlc.values[1,:])
     end
@@ -75,10 +75,10 @@ using TimeSeries
     @testset "log return value" begin
         @test percentchange(cl, :log).values == percentchange(cl, :log, padding=false).values
         @test isapprox(percentchange(cl, :log).values[1]                   , log(102.5) - log(111.94), atol=.01)
-        @test isapprox(percentchange(ohlc, :log).values[1, :]              , log(ohlc.values[2,:]) - log(ohlc.values[1,:]), atol=.01)
-        @test isnan(percentchange(cl, :log, padding=true).values[1])
+        @test isapprox(percentchange(ohlc, :log).values[1, :]              , log.(ohlc.values[2,:]) .- log.(ohlc.values[1,:]), atol=.01)
+        @test isnan.(percentchange(cl, :log, padding=true).values[1])
         @test isapprox(percentchange(cl, :log, padding=true).values[2]     , log(102.5) - log(111.94))
-        @test isapprox(percentchange(ohlc, :log, padding=true).values[2, :], log(ohlc.values[2,:]) - log(ohlc.values[1,:]))
+        @test isapprox(percentchange(ohlc, :log, padding=true).values[2, :], log.(ohlc.values[2,:]) .- log.(ohlc.values[1,:]))
     end
 
     @testset "moving supplies correct window length" begin
@@ -115,17 +115,17 @@ end
     end
 
     @testset "unary operation on TimeArray values" begin
-        @test (+cl).values[1]                == cl.values[1]
-        @test (-cl).values[1]                == -cl.values[1]
-        @test (!(cl .== op)).values[1]       == true
-        @test log(cl).values[1]              == log(cl.values[1])
-        @test sqrt(cl).values[1]             == sqrt(cl.values[1])
-        @test (+ohlc).values[1,:]            == ohlc.values[1,:]
-        @test (-ohlc).values[1,:]            == -(ohlc.values[1,:])
-        @test (!(ohlc .== ohlc)).values[1,1] == false
-        @test log(ohlc).values[1, :]         == log(ohlc.values[1, :])
-        @test sqrt(ohlc).values[1, :]        == sqrt(ohlc.values[1, :])
-        @test_throws DomainError sqrt(-ohlc)
+        @test (+cl).values[1]                  == cl.values[1]
+        @test (-cl).values[1]                  == -cl.values[1]
+        @test (.!(cl .== op)).values[1]        == true
+        @test log.(cl).values[1]               == log.(cl.values[1])
+        @test sqrt.(cl).values[1]              == sqrt.(cl.values[1])
+        @test (+ohlc).values[1,:]              == ohlc.values[1,:]
+        @test (-ohlc).values[1,:]              == -(ohlc.values[1,:])
+        @test (.!(ohlc .== ohlc)).values[1, 1] == false
+        @test log.(ohlc).values[1, :]          == log.(ohlc.values[1, :])
+        @test sqrt.(ohlc).values[1, :]         == sqrt.(ohlc.values[1, :])
+        @test_throws DomainError sqrt.(-ohlc)
     end
 
     @testset "dot operation between TimeArray values and Int/Float and viceversa" begin
@@ -163,7 +163,7 @@ end
         @test (cl .% op).values                                 == cl.values .% op.values
         @test (cl .^ op).values                                 == cl.values .^ op.values
         @test (cl .* (cl.> 200)).values                         == cl.values .* (cl.values .> 200)
-        @test (basecall(cl, x->round(Int, x)) .* cl).values     == round(Int, cl.values) .* cl.values
+        @test (round.(cl) .* cl).values                         == round.(Int, cl.values) .* cl.values
         @test (ohlc .+ ohlc).values                             == ohlc.values .+ ohlc.values
         @test (ohlc .- ohlc).values                             == ohlc.values .- ohlc.values
         @test (ohlc .* ohlc).values                             == ohlc.values .* ohlc.values
@@ -171,7 +171,7 @@ end
         @test (ohlc .% ohlc).values                             == ohlc.values .% ohlc.values
         @test (ohlc .^ ohlc).values                             == ohlc.values .^ ohlc.values
         @test (ohlc .* (ohlc .> 200)).values                    == ohlc.values .* (ohlc.values .> 200)
-        @test (basecall(ohlc, x->round(Int, x)) .* ohlc).values == round(Int, ohlc.values) .* ohlc.values
+        @test (round.(ohlc) .* ohlc).values                     == round.(Int, ohlc.values) .* ohlc.values
     end
 
     @testset "broadcasted mathematical operations between different-column-count TimeArrays" begin
@@ -182,7 +182,7 @@ end
         @test (ohlc .% cl).values                             == ohlc.values .% cl.values
         @test (ohlc .^ cl).values                             == ohlc.values .^ cl.values
         @test (ohlc .* (cl.> 200)).values                     == ohlc.values .* (cl.values .> 200)
-        @test (basecall(ohlc, x->round(Int, x)) .* cl).values == round(Int, ohlc.values) .* cl.values
+        @test (round.(ohlc) .* cl).values                     == round.(Int, ohlc.values) .* cl.values
         @test (cl .+ ohlc).values                             == cl.values .+ ohlc.values
         @test (cl .- ohlc).values                             == cl.values .- ohlc.values
         @test (cl .* ohlc).values                             == cl.values .* ohlc.values
@@ -190,7 +190,7 @@ end
         @test (cl .% ohlc).values                             == cl.values .% ohlc.values
         @test (cl .^ ohlc).values                             == cl.values .^ ohlc.values
         @test (cl .* (ohlc .> 200)).values                    == cl.values .* (ohlc.values .> 200)
-        @test (basecall(cl, x->round(Int, x)) .* ohlc).values == round(Int, cl.values) .* ohlc.values
+        @test (round.(cl) .* ohlc).values                     == round.(Int, cl.values) .* ohlc.values
         # One array must have a single column
         @test_throws ErrorException (ohlc["Open", "Close"] .+ ohlc)
     end
@@ -298,10 +298,6 @@ end
 @testset "basecall works with Base methods" begin
     @testset "cumsum works" begin
         @test basecall(cl, cumsum).values[2] == cl.values[1] + cl.values[2]
-    end
-
-    @testset "log works" begin
-        @test basecall(cl, log).values[2] == log(cl.values[2])
     end
 end
 
