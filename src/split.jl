@@ -3,9 +3,9 @@ import Base: values, find
 # when ############################
 
 when(ta::TimeArray, period::Function, t::Int) =
-    ta[find(period(ta.timestamp) .== t)]
+    ta[find(period.(ta.timestamp) .== t)]
 when(ta::TimeArray, period::Function, t::String) =
-    ta[find(period(ta.timestamp) .== t)]
+    ta[find(period.(ta.timestamp) .== t)]
 
 # from, to ######################
 
@@ -48,7 +48,7 @@ end
 
 ###### element wrapers ###########
 
-timestamp{T,N}(ta::TimeArray{T,N}) = ta.timestamp
-values{T,N}(ta::TimeArray{T,N})    = ta.values
-colnames{T,N}(ta::TimeArray{T,N})  = ta.colnames
-meta{T,N}(ta::TimeArray{T,N})      = ta.meta
+timestamp(ta::TimeArray) = ta.timestamp
+values(ta::TimeArray)    = ta.values
+colnames(ta::TimeArray)  = ta.colnames
+meta(ta::TimeArray)      = ta.meta
