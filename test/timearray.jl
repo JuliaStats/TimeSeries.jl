@@ -52,25 +52,25 @@ end
 
     @testset "unequal length between values and timestamp fails" begin
         @test_throws(
-            ErrorException,
+            DimensionMismatch,
             TimeArray(cl.timestamp, cl.values[2:end], ["Close"]))
     end
 
     @testset "unequal length between colnames and array width fails" begin
         @test_throws(
-            ErrorException,
+            DimensionMismatch,
             TimeArray(cl.timestamp, cl.values, ["Close", "Open"]))
     end
 
     @testset "duplicate timestamp values fails" begin
         @test_throws(
-            ErrorException,
+            ArgumentError,
             TimeArray(dupe_stamp, cl.values, ["Close"]))
     end
 
     @testset "mangled order of timestamp values fails" begin
         @test_throws(
-            ErrorException,
+            ArgumentError,
             TimeArray(mangled_stamp, cl.values, ["Close"]))
     end
 
