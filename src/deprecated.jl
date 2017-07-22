@@ -33,9 +33,9 @@ end
 # non-dot operators
 import Base: $, !, ~
 
-@deprecate ($)(ta1::TimeArray, ta2::TimeArray) xor(ta1, ta2)
-@deprecate ($)(n::Integer, ta::TimeArray) xor(n, ta)
-@deprecate ($)(ta::TimeArray, n::Integer) xor(ta, n)
+@deprecate ($)(ta1::TimeArray, ta2::TimeArray) xor.(ta1, ta2)
+@deprecate ($)(n::Integer, ta::TimeArray) xor.(n, ta)
+@deprecate ($)(ta::TimeArray, n::Integer) xor.(ta, n)
 
 @deprecate ~(ta::TimeArray) .~(ta)
 @deprecate !(ta::TimeArray) .!(ta)
