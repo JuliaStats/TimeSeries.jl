@@ -62,23 +62,23 @@ using TimeSeries
         @test diff(op, padding=true).values[2]                == op[2].values[1] .- op[1].values[1]
     end
 
-    @testset "correct simple return value" begin
+    @testset "simple return value" begin
         @test percentchange(cl, :simple).values == percentchange(cl).values
         @test percentchange(cl).values          == percentchange(cl, padding=false).values
         @test isapprox(percentchange(cl).values[1]                   , (102.5-111.94)/111.94, atol=.01)
         @test isapprox(percentchange(ohlc).values[1, :]              , (ohlc.values[2,:] - ohlc.values[1,:]) ./ ohlc.values[1,:])
-        @test isnan(percentchange(cl, padding=true).values[1])
+        @test isnan.(percentchange(cl, padding=true).values[1])
         @test isapprox(percentchange(cl, padding=true).values[2]     , (102.5-111.94)/111.94, atol=.01)
         @test isapprox(percentchange(ohlc, padding=true).values[2, :], (ohlc.values[2,:] - ohlc.values[1,:]) ./ ohlc.values[1,:])
     end
 
-    @testset "correct log return value" begin
+    @testset "log return value" begin
         @test percentchange(cl, :log).values == percentchange(cl, :log, padding=false).values
         @test isapprox(percentchange(cl, :log).values[1]                   , log(102.5) - log(111.94), atol=.01)
-        @test isapprox(percentchange(ohlc, :log).values[1, :]              , log(ohlc.values[2,:]) - log(ohlc.values[1,:]), atol=.01)
-        @test isnan(percentchange(cl, :log, padding=true).values[1])
+        @test isapprox(percentchange(ohlc, :log).values[1, :]              , log.(ohlc.values[2,:]) .- log.(ohlc.values[1,:]), atol=.01)
+        @test isnan.(percentchange(cl, :log, padding=true).values[1])
         @test isapprox(percentchange(cl, :log, padding=true).values[2]     , log(102.5) - log(111.94))
-        @test isapprox(percentchange(ohlc, :log, padding=true).values[2, :], log(ohlc.values[2,:]) - log(ohlc.values[1,:]))
+        @test isapprox(percentchange(ohlc, :log, padding=true).values[2, :], log.(ohlc.values[2,:]) .- log.(ohlc.values[1,:]))
     end
 
     @testset "moving supplies correct window length" begin
@@ -114,21 +114,21 @@ end
         @test length(cl[1:4] .+ op[4:7]) == 1
     end
 
-    @testset "correct unary operation on TimeArray values" begin
-        @test (+cl).values[1]                == cl.values[1]
-        @test (-cl).values[1]                == -cl.values[1]
-        @test (!(cl .== op)).values[1]       == true
-        @test log(cl).values[1]              == log(cl.values[1])
-        @test sqrt(cl).values[1]             == sqrt(cl.values[1])
-        @test (+ohlc).values[1,:]            == ohlc.values[1,:]
-        @test (-ohlc).values[1,:]            == -(ohlc.values[1,:])
-        @test (!(ohlc .== ohlc)).values[1,1] == false
-        @test log(ohlc).values[1, :]         == log(ohlc.values[1, :])
-        @test sqrt(ohlc).values[1, :]        == sqrt(ohlc.values[1, :])
-        @test_throws DomainError sqrt(-ohlc)
+    @testset "unary operation on TimeArray values" begin
+        @test (+cl).values[1]                  == cl.values[1]
+        @test (-cl).values[1]                  == -cl.values[1]
+        @test (.!(cl .== op)).values[1]        == true
+        @test log.(cl).values[1]               == log.(cl.values[1])
+        @test sqrt.(cl).values[1]              == sqrt.(cl.values[1])
+        @test (+ohlc).values[1,:]              == ohlc.values[1,:]
+        @test (-ohlc).values[1,:]              == -(ohlc.values[1,:])
+        @test (.!(ohlc .== ohlc)).values[1, 1] == false
+        @test log.(ohlc).values[1, :]          == log.(ohlc.values[1, :])
+        @test sqrt.(ohlc).values[1, :]         == sqrt.(ohlc.values[1, :])
+        @test_throws DomainError sqrt.(-ohlc)
     end
 
-    @testset "correct dot operation between TimeArray values and Int/Float and viceversa" begin
+    @testset "dot operation between TimeArray values and Int/Float and viceversa" begin
         @test isapprox((cl .- 100).values[1]    , 11.94, atol=.01)
         @test isapprox((cl .+ 100).values[1]    , 211.94, atol=.01)
         @test isapprox((cl .* 100).values[1]    , 11194, atol=1)
@@ -155,40 +155,7 @@ end
         @test (2 .% ohlc).values[1,:]   == 2 .% ohlc.values[1,:]
     end
 
-    @testset "correct non-dot operation between TimeArray values and Int/Float and viceversa" begin
-        @test isapprox((cl - 100).values[1], 11.94, atol=0.1)
-        @test isapprox((cl + 100).values[1], 211.94, atol=0.1)
-        @test isapprox((cl * 100).values[1], 11194, atol=0.1)
-        @test isapprox((cl / 100).values[1], 1.1194, atol=0.001)
-        @test (cl % 2).values[1] == cl.values[1] % 2
-        # not supported by Base - reserved for square matrix multiplication
-        @test_throws MethodError (cl ^ 2).values[1]
-        @test isapprox((100 - cl).values[1], -11.94, atol=0.1)
-        @test isapprox((100 + cl).values[1], 211.94, atol=0.1)
-        @test isapprox((100 * cl).values[1], 11194, atol=0.1)
-        # not supported by Base - confusion with matrix inverse
-        @test_throws MethodError (100 / cl).values
-        # not supported by Base
-        @test_throws MethodError (2 ^ cl).values
-        @test (2 % cl).values[1]       == 2 % cl.values[1]
-        @test (ohlc - 100).values[1,:] == ohlc.values[1,:] - 100
-        @test (ohlc + 100).values[1,:] == ohlc.values[1,:] + 100
-        @test (ohlc * 100).values[1,:] == ohlc.values[1,:] * 100
-        @test (ohlc / 100).values[1,:] == ohlc.values[1,:] / 100
-        # not supported by Base - reserved for square matrix multiplication
-        @test_throws MethodError (ohlc ^ 2).values[1,:]
-        @test (ohlc % 2).values[1,:]   == ohlc.values[1,:] % 2
-        @test (100 - ohlc).values[1,:] == 100 - ohlc.values[1,:]
-        @test (100 + ohlc).values[1,:] == 100 + ohlc.values[1,:]
-        @test (100 * ohlc).values[1,:] == 100 * ohlc.values[1,:]
-        # not supported by Base - confusion with matrix inverse
-        @test_throws MethodError (100 / ohlc).values[1,:]
-        # not supported by Base
-        @test_throws MethodError (2 ^ ohlc).values[1,:]
-        @test (2 % ohlc).values[1,:] == 2 % ohlc.values[1,:]
-    end
-
-    @testset "correct mathematical operations between two same-column-count TimeArrays" begin
+    @testset "mathematical operations between two same-column-count TimeArrays" begin
         @test isapprox((cl .+ op).values[1], 216.82, atol=.01)
         @test isapprox((cl .- op).values[1], 7.06, atol=.01)
         @test isapprox((cl .* op).values[1], 11740.2672, atol=0.0001)
@@ -196,7 +163,7 @@ end
         @test (cl .% op).values                                 == cl.values .% op.values
         @test (cl .^ op).values                                 == cl.values .^ op.values
         @test (cl .* (cl.> 200)).values                         == cl.values .* (cl.values .> 200)
-        @test (basecall(cl, x->round(Int, x)) .* cl).values     == round(Int, cl.values) .* cl.values
+        @test (round.(cl) .* cl).values                         == round.(Int, cl.values) .* cl.values
         @test (ohlc .+ ohlc).values                             == ohlc.values .+ ohlc.values
         @test (ohlc .- ohlc).values                             == ohlc.values .- ohlc.values
         @test (ohlc .* ohlc).values                             == ohlc.values .* ohlc.values
@@ -204,10 +171,10 @@ end
         @test (ohlc .% ohlc).values                             == ohlc.values .% ohlc.values
         @test (ohlc .^ ohlc).values                             == ohlc.values .^ ohlc.values
         @test (ohlc .* (ohlc .> 200)).values                    == ohlc.values .* (ohlc.values .> 200)
-        @test (basecall(ohlc, x->round(Int, x)) .* ohlc).values == round(Int, ohlc.values) .* ohlc.values
+        @test (round.(ohlc) .* ohlc).values                     == round.(Int, ohlc.values) .* ohlc.values
     end
 
-    @testset "correct broadcasted mathematical operations between different-column-count TimeArrays" begin
+    @testset "broadcasted mathematical operations between different-column-count TimeArrays" begin
         @test (ohlc .+ cl).values                             == ohlc.values .+ cl.values
         @test (ohlc .- cl).values                             == ohlc.values .- cl.values
         @test (ohlc .* cl).values                             == ohlc.values .* cl.values
@@ -215,7 +182,7 @@ end
         @test (ohlc .% cl).values                             == ohlc.values .% cl.values
         @test (ohlc .^ cl).values                             == ohlc.values .^ cl.values
         @test (ohlc .* (cl.> 200)).values                     == ohlc.values .* (cl.values .> 200)
-        @test (basecall(ohlc, x->round(Int, x)) .* cl).values == round(Int, ohlc.values) .* cl.values
+        @test (round.(ohlc) .* cl).values                     == round.(Int, ohlc.values) .* cl.values
         @test (cl .+ ohlc).values                             == cl.values .+ ohlc.values
         @test (cl .- ohlc).values                             == cl.values .- ohlc.values
         @test (cl .* ohlc).values                             == cl.values .* ohlc.values
@@ -223,12 +190,12 @@ end
         @test (cl .% ohlc).values                             == cl.values .% ohlc.values
         @test (cl .^ ohlc).values                             == cl.values .^ ohlc.values
         @test (cl .* (ohlc .> 200)).values                    == cl.values .* (ohlc.values .> 200)
-        @test (basecall(cl, x->round(Int, x)) .* ohlc).values == round(Int, cl.values) .* ohlc.values
+        @test (round.(cl) .* ohlc).values                     == round.(Int, cl.values) .* ohlc.values
         # One array must have a single column
         @test_throws ErrorException (ohlc["Open", "Close"] .+ ohlc)
     end
 
-    @testset "correct comparison operations between TimeArray values and Int/Float (and viceversa)" begin
+    @testset "comparison operations between TimeArray values and Int/Float (and viceversa)" begin
         @test (cl .> 111.94).values[1]      == false
         @test (cl .< 111.94).values[1]      == false
         @test (cl .>= 111.94).values[1]     == true
@@ -255,7 +222,7 @@ end
         @test (111.94 .!= ohlc).values[1,:] == [true, true, true, false]
     end
 
-    @testset "correct comparison operations between TimeArray values and Bool (and viceversa)" begin
+    @testset "comparison operations between TimeArray values and Bool (and viceversa)" begin
         @test ((cl .> 111.94) .== true).values[1]     == false
         @test ((cl .> 111.94) .!= true).values[1]     == true
         @test (true .== (cl .> 111.94)).values[1]     == false
@@ -266,7 +233,7 @@ end
         @test (true .!= (ohlc .> 111.94)).values[1,:] == [true, false, true, true]
     end
 
-    @testset "correct comparison operations between same-column-count TimeArrays" begin
+    @testset "comparison operations between same-column-count TimeArrays" begin
         @test (cl .> op).values[1]        == true
         @test (cl .< op).values[1]        == false
         @test (cl .<= op).values[1]       == false
@@ -281,7 +248,7 @@ end
         @test (ohlc .!= ohlc).values[1,:] == [false, false, false, false]
     end
 
-    @testset "correct comparison operations between different-column-count TimeArrays" begin
+    @testset "comparison operations between different-column-count TimeArrays" begin
         @test (ohlc .> cl).values  == (ohlc.values .> cl.values)
         @test (ohlc .< cl).values  == (ohlc.values .< cl.values)
         @test (ohlc .>= cl).values == (ohlc.values .>= cl.values)
@@ -298,41 +265,39 @@ end
         @test_throws ErrorException (ohlc["Open", "Close"] .== ohlc)
     end
 
-    @testset "correct bitwise elementwise operations between bool and TimeArrays' values" begin
-        @test ((cl .> 100) & true).values[1]      == true
-        @test ((cl .> 100) | true).values[1]      == true
-        @test ((cl .> 100) $ true).values[1]      == false
-        @test (false & (cl .> 100)).values[1]     == false
-        @test (false | (cl .> 100)).values[1]     == true
-        @test (false $ (cl .> 100)).values[1]     == true
-        @test ((ohlc .> 100) & true).values[4,:]  == [true, true, false, false]
-        @test ((ohlc .> 100) | true).values[4,:]  == [true, true, true, true]
-        @test ((ohlc .> 100) $ true).values[4,:]  == [false, false, true, true]
-        @test (false & (ohlc .> 100)).values[4,:] == [false, false, false, false]
-        @test (false | (ohlc .> 100)).values[4,:] == [true, true, false, false]
-        @test (false $ (ohlc .> 100)).values[4,:] == [true, true, false, false]
+    @testset "bitwise elementwise operations between bool and TimeArrays' values" begin
+        @test ((cl .> 100) .& true).values[1]      == true
+        @test ((cl .> 100) .| true).values[1]      == true
+        @test ((cl .> 100) .⊻ true).values[1]      == false
+        @test (false .& (cl .> 100)).values[1]     == false
+        @test (false .| (cl .> 100)).values[1]     == true
+        @test (false .⊻ (cl .> 100)).values[1]     == true
+        @test ((ohlc .> 100) .& true).values[4,:]  == [true, true, false, false]
+        @test ((ohlc .> 100) .| true).values[4,:]  == [true, true, true, true]
+        @test ((ohlc .> 100) .⊻ true).values[4,:]  == [false, false, true, true]
+        @test (false .& (ohlc .> 100)).values[4,:] == [false, false, false, false]
+        @test (false .| (ohlc .> 100)).values[4,:] == [true, true, false, false]
+        @test (false .⊻ (ohlc .> 100)).values[4,:] == [true, true, false, false]
       end
 
-    @testset "correct bitwise elementwise operations between same-column-count TimeArrays' boolean values" begin
-        @test ((cl .> 100) & (cl .< 120)).values[1]       == true
-        @test ((cl .> 100) | (cl .< 120)).values[1]       == true
-        @test ((cl .> 100) $ (cl .< 120)).values[1]       == false
-        @test ((ohlc .> 100) & (ohlc .< 120)).values[4,:] == [true, true, false, false]
-        @test ((ohlc .> 100) | (ohlc .< 120)).values[4,:] == [true, true, true, true]
-        @test ((ohlc .> 100) $ (ohlc .< 120)).values[4,:] == [false, false, true, true]
-        # Bitwise broadcasting not supported by Base
-        @test_throws MethodError ((ohlc .> 100) $ (cl.< 120))
+    @testset "bitwise elementwise operations between same-column-count TimeArrays' boolean values" begin
+        @test ((cl .> 100) .& (cl .< 120)).values[1]       == true
+        @test ((cl .> 100) .| (cl .< 120)).values[1]       == true
+        @test ((cl .> 100) .⊻ (cl .< 120)).values[1]       == false
+        @test ((ohlc .> 100) .& (ohlc .< 120)).values[4,:] == [true, true, false, false]
+        @test ((ohlc .> 100) .| (ohlc .< 120)).values[4,:] == [true, true, true, true]
+        @test ((ohlc .> 100) .⊻ (ohlc .< 120)).values[4,:] == [false, false, true, true]
+        @test ((ohlc .> 100) .⊻ (cl .< 120)).values[4,:]   == [false, false, true, true]
     end
 end
+
+
+#TODO: add test cases of non-standard function on dot-call
 
 
 @testset "basecall works with Base methods" begin
     @testset "cumsum works" begin
         @test basecall(cl, cumsum).values[2] == cl.values[1] + cl.values[2]
-    end
-
-    @testset "log works" begin
-        @test basecall(cl, log).values[2] == log(cl.values[2])
     end
 end
 

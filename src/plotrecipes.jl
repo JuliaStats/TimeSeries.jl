@@ -1,4 +1,5 @@
 
+# FIXME: @recipe do not support where syntax yet{T<:TimeArray}
 @recipe function f{T<:TimeArray}(ta::T)
     st = get(d, :seriestype, :path)
     if in(st, [:candlestick, :heikinashi])
@@ -13,7 +14,7 @@
     end
 end
 
-type Candlestick{D <: TimeType}
+mutable struct Candlestick{D <: TimeType}
     time::Vector{D}
     open::AbstractVector
     high::AbstractVector
@@ -61,10 +62,34 @@ end
     cols = (isa(cols, Vector{Symbol}) && length(cols) == 2) ? cols : [:red, :blue]
 
     attributes = [
-        Dict(:close_open => <, :close_prev => <, :bottombox => cs.close, :topbox => cs.open, :fill => cols[1], :line => cols[1], :fillalpha => 1),
-        Dict(:close_open => <, :close_prev => >=, :bottombox => cs.close, :topbox => cs.open, :fill => cols[2], :line => cols[2], :fillalpha => 1),
-        Dict(:close_open => >=, :close_prev => <, :bottombox => cs.open, :topbox => cs.close, :fill => :white, :line => cols[1], :fillalpha => 0),
-        Dict(:close_open => >=, :close_prev => >=, :bottombox => cs.open, :topbox => cs.close, :fill => :white, :line => cols[2], :fillalpha => 0)
+        Dict(:close_open => <,
+             :close_prev => <,
+             :bottombox => cs.close,
+             :topbox => cs.open,
+             :fill => cols[1],
+             :line => cols[1],
+             :fillalpha => 1),
+        Dict(:close_open =>
+             <, :close_prev => >=,
+             :bottombox => cs.close,
+             :topbox => cs.open,
+             :fill => cols[2],
+             :line => cols[2],
+             :fillalpha => 1),
+        Dict(:close_open => >=,
+             :close_prev => <,
+             :bottombox => cs.open,
+             :topbox => cs.close,
+             :fill => :white,
+             :line => cols[1],
+             :fillalpha => 0),
+        Dict(:close_open => >=,
+             :close_prev => >=,
+             :bottombox => cs.open,
+             :topbox => cs.close,
+             :fill => :white,
+             :line => cols[2],
+             :fillalpha => 0)
     ]
 
 

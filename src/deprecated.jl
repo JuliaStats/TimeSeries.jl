@@ -10,3 +10,32 @@ using Base: @deprecate
 
 @deprecate collapse{T,N,D}(ta::TimeArray{T,N,D}, timestamp::Function; period::Function=week) collapse(ta, period, timestamp)
 
+# since julia 0.6
+
+# deprecate non-dot function due to 0.6 syntactic loop fusion
+for f ∈ (:^, :/, :abs, :sign, :sqrt, :cbrt,
+         :log, :log2, :log10, :log1p,
+         :exp, :exp2, :exp10, :expm1,
+         :cos, :sin, :tan, :cosd, :sind, :tand,
+         :acos, :asin, :atan, :acosd, :asind, :atand,
+         :isnan, :isinf)
+    @eval import Base: $f
+    @eval @deprecate $f(ta::TimeArray, args...) $f.(ta, args...)
+end
+
+for f ∈ (:+, :-, :*, :%,
+         :|, :&, :<, :>, :(==), :(!=), :>=, :<=)
+    @eval import Base: $f
+    @eval @deprecate $f(ta::TimeArray, args...) $f.(ta, args...)
+    @eval @deprecate $f(n::Number, ta::TimeArray) $f.(n, ta)
+end
+
+# non-dot operators
+import Base: $, !, ~
+
+@deprecate ($)(ta1::TimeArray, ta2::TimeArray) xor.(ta1, ta2)
+@deprecate ($)(n::Integer, ta::TimeArray) xor.(n, ta)
+@deprecate ($)(ta::TimeArray, n::Integer) xor.(ta, n)
+
+@deprecate ~(ta::TimeArray) .~(ta)
+@deprecate !(ta::TimeArray) .!(ta)

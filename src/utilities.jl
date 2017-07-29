@@ -14,7 +14,7 @@ function overlaps(t1::Vector, t2::Vector)
             j += 1
         end
     end
-    (idx1, idx2)        
+    (idx1, idx2)
 end
 
 function sorted_unique_merge(a::Vector, b::Vector)
@@ -26,7 +26,7 @@ function sorted_unique_merge(a::Vector, b::Vector)
 				if a[i] < b[j]
 						push!(c, a[i])
 						i += 1
-				elseif a[i] > b[j] 
+				elseif a[i] > b[j]
 						push!(c, b[j])
 						j += 1
 				else
@@ -41,11 +41,11 @@ function sorted_unique_merge(a::Vector, b::Vector)
 
     return c
 
-end #sorted_unique_merge
+end  # sorted_unique_merge
 
 function setcolnames!(ta::TimeArray, colnames::Vector)
     length(colnames) == length(ta.colnames) ? ta.colnames[:] = colnames :
     length(colnames) > 0 && error("colnames supplied is not correct size")
     return ta
-end #setcolnames!
+end  # setcolnames!
 

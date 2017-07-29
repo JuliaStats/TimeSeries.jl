@@ -2,54 +2,69 @@
 
 import Base: convert, length, show, getindex, start, next, done, isempty, endof
 
-abstract AbstractTimeSeries
+abstract type AbstractTimeSeries end
 
-immutable TimeArray{T, N, D<:TimeType, A<:AbstractArray} <: AbstractTimeSeries
+struct TimeArray{T, N, D <: TimeType, A <: AbstractArray{T, N}} <: AbstractTimeSeries
 
     timestamp::Vector{D}
     values::A
     colnames::Vector{String}
     meta::Any
 
-    function TimeArray(timestamp::AbstractVector{D},
-                       values::AbstractArray{T,N},
-                       colnames::Vector{String},
-                       meta::Any)
-                           nrow, ncol = size(values, 1), size(values, 2)
-                           nrow != size(timestamp, 1) ? error("values must match length of timestamp"):
-                           ncol != size(colnames,1) ? error("column names must match width of array"):
-                           # length(unique(colnames)) != ncol ? colnames = replace_dupes(colnames):
-                           timestamp != unique(timestamp) ? error("there are duplicate dates"):
-                           ~(flipdim(timestamp, 1) == sort(timestamp) || timestamp == sort(timestamp)) ? error("dates are mangled"):
-                           flipdim(timestamp, 1) == sort(timestamp) ?
-                           new(flipdim(timestamp, 1), flipdim(values, 1), replace_dupes(colnames), meta):
-                           #new(flipdim(timestamp, 1), flipdim(values, 1), colnames, meta):
-                           new(timestamp, values, replace_dupes(colnames), meta)
-                           #new(timestamp, values, colnames, meta)
+    function TimeArray{T, N, D, A}(
+            timestamp::AbstractVector{D},
+            values::A,
+            colnames::Vector{String},
+            meta::Any) where {T, N, D <: TimeType, A <: AbstractArray{T, N}}
+        nrow, ncol = size(values, 1, 2)
+
+        if nrow != length(timestamp)
+            error("values must match length of timestamp")
+        elseif ncol != length(colnames)
+            error("column names must match width of array")
+        elseif !allunique(timestamp)
+            error("there are duplicate dates")
+        elseif !(issorted(timestamp) || issorted(timestamp, rev=true))
+            error("dates are mangled")
+        elseif issorted(timestamp, rev=true)
+            new(reverse(timestamp), flipdim(values, 1),
+                replace_dupes(colnames), meta)
+        else
+            new(timestamp, values, replace_dupes(colnames), meta)
+        end
     end
 end
 
-TimeArray{T,N,D<:TimeType,S<:AbstractString}(d::AbstractVector{D}, v::AbstractArray{T,N}, c::Vector{S}, m::Any) =
-        TimeArray{T,N,D,typeof(v)}(d,v,map(String,c),m)
-TimeArray{T,N,D<:TimeType,S<:AbstractString}(d::D, v::AbstractArray{T,N}, c::Vector{S}, m::Any) =
-        TimeArray{T,N,D,typeof(v)}([d],v,map(String,c),m)
+###### outer constructor ########
+
+TimeArray(d::AbstractVector{D}, v::AbstractArray{T, N}, c::Vector{S},
+          m::Any) where {T, N, D <: TimeType, S <: AbstractString} =
+    TimeArray{T, N, D, typeof(v)}(d, v, map(String, c), m)
+TimeArray(d::D, v::AbstractArray{T, N}, c::Vector{S},
+          m::Any) where {T, N, D <: TimeType, S <: AbstractString} =
+    TimeArray{T, N, D, typeof(v)}([d], v, map(String, c), m)
 
 # when no column names are provided - meta is forced to nothing
-TimeArray{T,N,D<:TimeType}(d::AbstractVector{D}, v::AbstractArray{T,N}) = TimeArray(d,v,fill("", size(v,2)),nothing)
-TimeArray{T,N,D<:TimeType}(d::D, v::AbstractArray{T,N}) = TimeArray([d],v,fill("", size(v,2)),nothing)
+TimeArray(d::AbstractVector{D}, v::AbstractArray) where {D <: TimeType} =
+    TimeArray(d, v, fill("", size(v, 2)), nothing)
+TimeArray(d::D, v::AbstractArray) where {D <: TimeType} =
+    TimeArray([d], v, fill("", size(v, 2)), nothing)
 
 # when no meta is provided
-TimeArray{T,N,D<:TimeType}(d::AbstractVector{D}, v::AbstractArray{T,N}, c) = TimeArray(d,v,c,nothing)
-TimeArray{T,N,D<:TimeType}(d::D, v::AbstractArray{T,N}, c) = TimeArray([d],v,c,nothing)
-
+TimeArray(d::AbstractVector{D}, v::AbstractArray, c) where {D <: TimeType} =
+    TimeArray(d, v, c, nothing)
+TimeArray(d::D, v::AbstractArray, c) where {D <: TimeType} =
+    TimeArray([d], v, c, nothing)
 
 ###### conversion ###############
 
-convert(::Type{TimeArray{Float64,1}}, x::TimeArray{Bool,1}) = TimeArray(x.timestamp, map(Float64, x.values), x.colnames, x.meta)
-convert(::Type{TimeArray{Float64,2}}, x::TimeArray{Bool,2}) = TimeArray(x.timestamp, map(Float64, x.values), x.colnames, x.meta)
+convert(::Type{TimeArray{Float64, 1}}, x::TimeArray{Bool, 1}) =
+    TimeArray(x.timestamp, map(Float64, x.values), x.colnames, x.meta)
+convert(::Type{TimeArray{Float64, 2}}, x::TimeArray{Bool, 2}) =
+    TimeArray(x.timestamp, map(Float64, x.values), x.colnames, x.meta)
 
-convert(x::TimeArray{Bool,1}) = convert(TimeArray{Float64,1}, x::TimeArray{Bool,1})
-convert(x::TimeArray{Bool,2}) = convert(TimeArray{Float64,2}, x::TimeArray{Bool,2})
+convert(x::TimeArray{Bool, 1}) = convert(TimeArray{Float64, 1}, x::TimeArray{Bool, 1})
+convert(x::TimeArray{Bool, 2}) = convert(TimeArray{Float64, 2}, x::TimeArray{Bool, 2})
 
 ###### length ###################
 
@@ -58,20 +73,20 @@ length(ata::AbstractTimeSeries) = length(ata.timestamp)
 ###### iterator protocol #########
 
 start(ta::TimeArray)   = 1
-next(ta::TimeArray,i)  = ((ta.timestamp[i],ta.values[i,:]),i+1)
-done(ta::TimeArray,i)  = (i > length(ta))
+next(ta::TimeArray, i) = ((ta.timestamp[i], ta.values[i, :]), i + 1)
+done(ta::TimeArray, i) = (i > length(ta))
 isempty(ta::TimeArray) = (length(ta) == 0)
 
 ###### show #####################
 
-function show{T,N}(io::IO, ta::TimeArray{T,N})
+function show(io::IO, ta::TimeArray{T}) where {T}
 
     # variables
     nrow          = size(ta.values, 1)
     ncol          = size(ta.values, 2)
     intcatcher    = falses(ncol)
     for c in 1:ncol
-        rowcheck =  trunc(ta.values[:,c]) - ta.values[:,c] .== 0
+        rowcheck = @. trunc(ta.values[:, c]) - ta.values[:, c] == 0
         if sum(rowcheck) == length(rowcheck)
             intcatcher[c] = true
         end
@@ -151,67 +166,66 @@ end
 ###### getindex #################
 
 # single row
-function getindex{T,N,D}(ta::TimeArray{T,N,D}, n::Int)
-    # old code for 0.4
-    #TimeArray(ta.timestamp[n], ta.values[n,:], ta.colnames, ta.meta)
-    # new code for v0.5 to avoid conversion to column vector
-    TimeArray(ta.timestamp[n], ta.values[n:n,:], ta.colnames, ta.meta)
+function getindex(ta::TimeArray, n::Int)
+    # avoid conversion to column vector
+    TimeArray(ta.timestamp[n], ta.values[n:n, :], ta.colnames, ta.meta)
 end
 
 # single row 1d
-function getindex{T,D}(ta::TimeArray{T,1,D}, n::Int)
+function getindex(ta::TimeArray{T, 1}, n::Int) where {T}
     TimeArray(ta.timestamp[n], ta.values[[n]], ta.colnames, ta.meta)
 end
 
 # range of rows
-function getindex{T,N,D}(ta::TimeArray{T,N,D}, r::UnitRange{Int})
-    TimeArray(ta.timestamp[r], ta.values[r,:], ta.colnames, ta.meta)
+function getindex(ta::TimeArray, r::UnitRange{Int})
+    TimeArray(ta.timestamp[r], ta.values[r, :], ta.colnames, ta.meta)
 end
 
 # range of 1d rows
-function getindex{T,D}(ta::TimeArray{T,1,D}, r::UnitRange{Int})
+function getindex(ta::TimeArray{T, 1}, r::UnitRange{Int}) where {T}
     TimeArray(ta.timestamp[r], ta.values[r], ta.colnames, ta.meta)
 end
 
 # array of rows
-function getindex{T,N,D,S<:Integer}(ta::TimeArray{T,N,D}, a::AbstractVector{S})
-    TimeArray(ta.timestamp[a], ta.values[a,:], ta.colnames, ta.meta)
+function getindex(ta::TimeArray, a::AbstractVector{S}) where {S <: Integer}
+    TimeArray(ta.timestamp[a], ta.values[a, :], ta.colnames, ta.meta)
 end
 
 # array of 1d rows
-function getindex{T,D,S<:Integer}(ta::TimeArray{T,1,D}, a::AbstractVector{S})
+function getindex(ta::TimeArray{T, 1}, a::AbstractVector{S}) where {T, S <: Integer}
     TimeArray(ta.timestamp[a], ta.values[a], ta.colnames, ta.meta)
 end
 
 # single column by name
-function getindex{T,N,D}(ta::TimeArray{T,N,D}, s::AbstractString)
+function getindex(ta::TimeArray, s::AbstractString)
     n = findfirst(ta.colnames, s)
     TimeArray(ta.timestamp, ta.values[:, n], String[s], ta.meta)
 end
 
 # array of columns by name
-function getindex{T,N,D}(ta::TimeArray{T,N,D}, args::AbstractString...)
+function getindex(ta::TimeArray, args::AbstractString...)
     ns = [findfirst(ta.colnames, a) for a in args]
-    TimeArray(ta.timestamp, ta.values[:,ns], String[a for a in args], ta.meta)
+    TimeArray(ta.timestamp, ta.values[:, ns], String[a for a in args], ta.meta)
 end
 
 # single date
-function getindex{T,N,D}(ta::TimeArray{T,N,D}, d::D)
+function getindex(ta::TimeArray{T, N, D}, d::D) where {T, N, D}
     idxs = searchsorted(ta.timestamp, d)
     length(idxs) == 1 ? ta[idxs[1]] : nothing
 end
 
 # multiple dates
-function getindex{T,N,D}(ta::TimeArray{T,N,D}, dates::Vector{D})
+function getindex(ta::TimeArray{T, N, D}, dates::Vector{D}) where {T, N, D}
     dates = sort(dates)
     idxs, _ = overlaps(ta.timestamp, dates)
     ta[idxs]
-end #getindex
+end
 
 # StepRange{Date,...}
-getindex{T,N,D}(ta::TimeArray{T,N,D}, r::StepRange{D}) = ta[collect(r)]
+getindex(ta::TimeArray{T, N, D}, r::StepRange{D}) where {T, N, D} =
+    ta[collect(r)]
 
-getindex{T,N,D}(ta::TimeArray{T,N,D}, k::TimeArray{Bool,1}) = ta[findwhen(k)]
+getindex(ta::TimeArray, k::TimeArray{Bool, 1}) = ta[findwhen(k)]
 
 # day of week
 # getindex{T,N}(ta::TimeArray{T,N}, d::DAYOFWEEK) = ta[dayofweek(ta.timestamp) .== d]
@@ -238,7 +252,6 @@ function replace_dupes(cnames)
             if n == 1
                 cnames[d] = string(cnames[d], "_$n")
             else
-                #cnames[d] = string(cnames[d][1:length(cnames[d])-2], "$n")
                 cnames[d] = string(cnames[d][1:length(cnames[d])-length(string(n))-1], "_$n")
             end
         end

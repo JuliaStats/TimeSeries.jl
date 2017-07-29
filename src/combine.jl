@@ -2,8 +2,8 @@ import Base: merge, vcat, map
 
 ###### merge ####################
 
-function merge{T,N,M,D}(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D},
-                              method::Symbol=:inner; colnames::Vector=[], meta::Any=Void)
+function merge(ta1::TimeArray{T, N, D}, ta2::TimeArray{T, M, D}, method::Symbol=:inner;
+               colnames::Vector=[], meta::Any=Void) where {T, N, M, D}
 
     if ta1.meta == ta2.meta && meta == Void
         meta = ta1.meta
@@ -50,7 +50,8 @@ end
 
 # collapse ######################
 
-function collapse{T,N,D}(ta::TimeArray{T,N,D}, period::Function, timestamp::Function, value::Function=timestamp)
+function collapse(ta::TimeArray{T, N, D}, period::Function, timestamp::Function,
+                  value::Function=timestamp) where {T, N, D}
 
     length(ta) == 0 && return ta
 
@@ -88,29 +89,29 @@ end
 
 # vcat ######################
 
-function vcat{T,N,D}(TA::TimeArray{T,N,D}...)
-    # Check all meta fields are identical. 
+function vcat(TA::TimeArray...)
+    # Check all meta fields are identical.
     prev_meta = TA[1].meta
     for ta in TA
         if ta.meta != prev_meta
             error("metadata doesn't match")
         end
     end
-    
-    # Check column names are identical. 
+
+    # Check column names are identical.
     prev_colnames = TA[1].colnames
     for ta in TA
         if ta.colnames != prev_colnames
             error("column names don't match")
         end
     end
-    
-    # Concatenate the contents. 
+
+    # Concatenate the contents.
     timestamps = vcat([ta.timestamp for ta in TA]...)
     values = vcat([ta.values for ta in TA]...)
-    
+
     order = sortperm(timestamps)
-    if length(TA[1].colnames) == 1 # Check for 1D to ensure values remains a 1D vector. 
+    if length(TA[1].colnames) == 1 # Check for 1D to ensure values remains a 1D vector.
         return TimeArray(timestamps[order], values[order], TA[1].colnames, TA[1].meta)
     else
         return TimeArray(timestamps[order], values[order, :], TA[1].colnames, TA[1].meta)
@@ -119,16 +120,16 @@ end
 
 # map ######################
 
-function map{T,N,D,A}(f::Function, ta::TimeArray{T,N,D,A})
+function map(f::Function, ta::TimeArray)
     timestamps = similar(ta.timestamp)
     values = similar(ta.values)
-    
+
     for i in 1:length(ta)
         timestamps[i], values[i, :] = f(ta.timestamp[i], vec(ta.values[i, :]))
     end
-    
+
     order = sortperm(timestamps)
-    if length(ta.colnames) == 1 # Check for 1D to ensure values remains a 1D vector. 
+    if length(ta.colnames) == 1 # Check for 1D to ensure values remains a 1D vector.
         return TimeArray(timestamps[order], values[order], ta.colnames, ta.meta)
     else
         return TimeArray(timestamps[order], values[order, :], ta.colnames, ta.meta)

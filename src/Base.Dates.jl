@@ -1,4 +1,4 @@
-# Base.Dates reexports      
+# Base.Dates reexports
 
 export Period, DatePeriod, TimePeriod,
        Year, Month, Week, Day, Hour, Minute, Second, Millisecond,

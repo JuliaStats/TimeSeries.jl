@@ -1,8 +1,9 @@
-VERSION >= v"0.4.0-dev+6521" && __precompile__(true)
+__precompile__(true)
 
 module TimeSeries
 
 using Base.Dates
+
 using RecipesBase
 
 export TimeArray, AbstractTimeSeries,
@@ -28,4 +29,4 @@ include("deprecated.jl")
 include("Base.Dates.jl")
 include("plotrecipes.jl")
 
-end
+end  # module TimeSeries
