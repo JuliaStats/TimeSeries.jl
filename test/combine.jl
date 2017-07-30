@@ -144,21 +144,21 @@ end
         a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"])
         b = TimeArray([Date(2015, 12, 01)], [17], ["Data does not match number"])
 
-        @test_throws ErrorException vcat(a, b)
+        @test_throws ArgumentError vcat(a, b)
     end
 
     @testset "rejects when metas do not match" begin
         a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"], :FirstMeta)
         b = TimeArray([Date(2015, 12, 01)], [17], ["Number"], :SecondMeta)
 
-        @test_throws ErrorException vcat(a, b)
+        @test_throws ArgumentError vcat(a, b)
     end
 
     @testset "rejects when dates overlap" begin
         a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"])
         b = TimeArray([Date(2015, 11, 01)], [17], ["Number"])
 
-        @test_throws ErrorException vcat(a, b)
+        @test_throws ArgumentError vcat(a, b)
     end
 
     @testset "still works when dates are mixed" begin
