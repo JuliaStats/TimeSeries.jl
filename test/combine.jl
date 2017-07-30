@@ -114,6 +114,10 @@ end
         @test merge(cl, op[2:5], :outer).colnames == ["Close", "Open"]
         @test merge(op[2:5], cl, :outer).colnames == ["Open", "Close"]
     end
+
+    @testset "unknown method" begin
+        @test_throws ArgumentError merge(cl, op, :unknown)
+    end
 end
 
 

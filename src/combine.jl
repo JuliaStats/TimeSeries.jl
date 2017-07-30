@@ -41,7 +41,8 @@ function merge(ta1::TimeArray{T, N, D}, ta2::TimeArray{T, M, D}, method::Symbol=
         ta = merge(ta, ta2, :left, meta=meta)
 
     else
-        error("merge method must be one of :inner, :left, :right, :outer")
+        throw(ArgumentError(
+            "merge method must be one of :inner, :left, :right, :outer"))
     end
 
     return setcolnames!(ta, colnames)
