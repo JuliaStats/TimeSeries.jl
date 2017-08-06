@@ -72,12 +72,12 @@ end
 
     @testset "change colnames with multi-member vector" begin
         @test colnames(re_ohlc) == ["a","b","c","d"]
-        @test_throws ErrorException rename(ohlc, ["a"])
+        @test_throws DimensionMismatch rename(ohlc, ["a"])
     end
 
     @testset "change colnames with single-member vector" begin
         @test colnames(re_cl) == ["vector"]
-        @test_throws ErrorException rename(cl, ["a", "b"])
+        @test_throws DimensionMismatch rename(cl, ["a", "b"])
     end
 
     @testset "change colnames with string" begin
