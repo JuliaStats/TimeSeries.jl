@@ -1,6 +1,6 @@
 
 # FIXME: @recipe do not support where syntax yet{T<:TimeArray}
-@recipe function f{T<:TimeArray}(ta::T)
+@recipe function f(ta::T) where T<:TimeArray
     st = get(d, :seriestype, :path)
     if in(st, [:candlestick, :heikinashi])
         Candlestick(ta)
