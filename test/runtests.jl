@@ -4,6 +4,7 @@ tests = [
     "timearray",
     "split",
     "apply",
+    "broadcast",
     "combine",
     "modify",
     "meta",
