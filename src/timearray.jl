@@ -1,6 +1,7 @@
 ###### type definition ##########
 
-import Base: convert, length, show, getindex, start, next, done, isempty, endof
+import Base: convert, length, show, getindex, start, next, done, isempty, endof,
+             size
 
 abstract type AbstractTimeSeries end
 
@@ -69,6 +70,10 @@ convert(x::TimeArray{Bool, 2}) = convert(TimeArray{Float64, 2}, x::TimeArray{Boo
 ###### length ###################
 
 length(ata::AbstractTimeSeries) = length(ata.timestamp)
+
+###### size #####################
+
+size(ta::TimeArray, dim...) = size(ta.values, dim...)
 
 ###### iterator protocol #########
 
