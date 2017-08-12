@@ -210,6 +210,17 @@ end
 end
 
 
+@testset "Base.size" begin
+    @test size(ohlc) == (500, 4)
+    @test size(ohlc, 1) == 500
+    @test size(ohlc, 2) == 4
+
+    @test size(cl) == (500,)
+    @test size(cl, 1) == 500
+    @test size(cl, 2) == 1
+end
+
+
 @testset "show methods don't throw errors" begin
     show(ohlc)
     show(ohlc[1:4])
