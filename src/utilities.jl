@@ -17,6 +17,28 @@ function overlaps(t1::Vector, t2::Vector)
     (idx1, idx2)
 end
 
+noverlaps(ts::Vararg{Vector, 1}) = (Base.OneTo(length(ts[1])),)
+
+function noverlaps(ts::Vararg{Vector, N}) where {N}
+    iter = ones(Int, N)
+    len = length.(ts)
+    idx = ntuple(_ -> Int[], N)
+
+    while all(iter .<= len)
+        val = getindex.(ts, iter)  # get the timestamps values
+
+        if length(unique(val)) == 1
+            push!.(idx, iter)
+            iter .+= 1
+        else
+            m = maximum(val)
+            iter .+= (val .< m)
+        end
+    end
+
+    idx
+end
+
 function sorted_unique_merge(a::Vector, b::Vector)
 
 		i, na, j, nb = 1, length(a), 1, length(b)
