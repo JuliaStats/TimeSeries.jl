@@ -1,42 +1,59 @@
-import Base.broadcast
+import Base.Broadcast:
+    _containertype, promote_containertype, broadcast_c
+
+# make TimeArray as new resulting container type of Base.Broadcast
+_containertype(::Type{<:AbstractTimeSeries}) = TimeArray
+
+promote_containertype(::Type{TimeArray}, ::Type{TimeArray}) = TimeArray
+promote_containertype(ct, ::Type{TimeArray}) = TimeArray
+promote_containertype(::Type{TimeArray}, ct) = TimeArray
 
 
-# ND TimeArray <--> MD TimeArray
-function broadcast(f, ta1::TimeArray, ta2::TimeArray)
-    # first test metadata matches
-    meta = ta1.meta == ta2.meta ? ta1.meta : Void
+@inline function broadcast_c(f, ::Type{TimeArray}, args::Vararg{<:Any, N}) where {N}
+    idx, timearrays = _collect_timearrays(args)
 
-    # determine array widths and name cols accordingly
-    w1, w2  = length(ta1.colnames), length(ta2.colnames)
-    if w1 == w2
-        cnames = [ta1.colnames[i] * "_" * ta2.colnames[i] for i = 1:w1]
-    elseif w1 == 1
-        cnames = [ta1.colnames[1] * "_" * ta2.colnames[i] for i = 1:w2]
-    elseif w2 == 1
-        cnames = [ta1.colnames[i] * "_" * ta2.colnames[1] for i = 1:w1]
-    else
-        error("arrays must have the same number of columns, or one must be a single column")
+    # retain meta if all of TimeArray contain the same one
+    meta_ = length(unique(meta.(timearrays))) == 1 ? timearrays[1].meta : Void
+
+    # check column length. all of non-single column should have same length
+    cnames = colnames.(timearrays)
+    w_ = 1
+    for w ∈ length.(cnames)
+        if w == 1
+            continue
+        elseif w_ == 1
+            w_ = w
+            continue
+        elseif w_ != w
+            throw(DimensionMismatch(
+                "arrays must have the same number of columns, " *
+                "or one must be a single column"))
+        end
     end
 
+    # contruct new column names
+    # TODO: maybe generated function can help for performance
+    new_cnames = foldl((x, y) -> x .* "_" .* y, cnames)
+
     # obtain shared timestamp
-    idx1, idx2 = overlaps(ta1.timestamp, ta2.timestamp)
-    tstamp = ta1[idx1].timestamp
+    tstamp_idx = noverlaps(timestamp.(timearrays)...)
+    tstamp = (timestamp(timearrays[1]))[tstamp_idx[1]]
 
     # retrieve values that match the Int array matching dates
-    vals1, vals2 = ta1[idx1].values, ta2[idx2].values
+    arr_vals = collect(values.(getindex.(timearrays, tstamp_idx)))
 
-    # compute output values
-    vals = broadcast(f, vals1, vals2)
-    TimeArray(tstamp, vals, cnames, meta)
+    # compute output values, broadcast through Array
+    arr_args = collect(Any, args)
+    arr_args[collect(idx)] = arr_vals
+    vals = broadcast(f, arr_args...)
+
+    TimeArray(tstamp, vals, new_cnames, meta_)
 end
 
-function broadcast(f, ta::TimeArray, args...)
-    vals = broadcast(f, ta.values, args...)
-    TimeArray(ta.timestamp, vals, ta.colnames, ta.meta)
+
+function _collect_timearrays(args)
+    zip(Iterators.filter(x -> isa(x[2], TimeArray), enumerate(args))...)
 end
 
-# FIXME: How to deal with f(Number, Number, ..., TimeArray)?
-function broadcast(f, n::Number, ta::TimeArray, args...)
-    vals = broadcast(f, n, ta.values, args...)
-    TimeArray(ta.timestamp, vals, ta.colnames, ta.meta)
-end
+
+#TODO: support broadcast_getindex

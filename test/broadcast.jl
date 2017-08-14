@@ -94,7 +94,7 @@ using TimeSeries
         @test (cl .* (ohlc .> 200)).values                    == cl.values .* (ohlc.values .> 200)
         @test (round.(cl) .* ohlc).values                     == round.(Int, cl.values) .* ohlc.values
         # One array must have a single column
-        @test_throws ErrorException (ohlc["Open", "Close"] .+ ohlc)
+        @test_throws DimensionMismatch (ohlc["Open", "Close"] .+ ohlc)
     end
 
     @testset "comparison operations between TimeArray values and Int/Float (and viceversa)" begin
@@ -164,7 +164,7 @@ using TimeSeries
         @test (cl .== ohlc).values == (cl.values .== ohlc.values)
         @test (cl .!= ohlc).values == (cl.values .!= ohlc.values)
         # One array must have a single column
-        @test_throws ErrorException (ohlc["Open", "Close"] .== ohlc)
+        @test_throws DimensionMismatch (ohlc["Open", "Close"] .== ohlc)
     end
 
     @testset "bitwise elementwise operations between bool and TimeArrays' values" begin
