@@ -19,24 +19,48 @@ end
 
 noverlaps(ts::Vararg{Vector, 1}) = (Base.OneTo(length(ts[1])),)
 
-function noverlaps(ts::Vararg{Vector, N}) where {N}
-    iter = ones(Int, N)
-    len = length.(ts)
-    idx = ntuple(_ -> Int[], N)
+@generated function noverlaps(ts::Vararg{Vector, N}) where {N}
+    cond = :(iter[1] <= len[1])
+    idx = Expr(:tuple, :(Int[]))
+    val = Expr(:vect, :(ts[1][iter[1]]))
+    val_comp = Expr(:comparison, :(val[1]))
+    iter = Expr(:vect, 1)
+    len = Expr(:vect, :(length(ts[1])))
 
-    while all(iter .<= len)
-        val = getindex.(ts, iter)  # get the timestamps values
-
-        if length(unique(val)) == 1
-            push!.(idx, iter)
-            iter .+= 1
-        else
-            m = maximum(val)
-            iter .+= (val .< m)
-        end
+    for i ∈ 2:N
+        cond = :($cond && iter[$i] <= len[$i])
+        push!(idx.args, :(Int[]))
+        push!(val.args, :(ts[$i][iter[$i]]))
+        push!(val_comp.args, :(==), :(val[$i]))
+        push!(iter.args, 1)
+        push!(len.args, :(length(ts[$i])))
     end
 
-    idx
+    quote
+        iter = $iter
+        len = $len
+        idx = $idx
+
+        while $cond
+            val = $val
+
+            if $val_comp
+                for i ∈ 1:$N
+                    push!(idx[i], iter[i])
+                    iter[i] += 1
+                end
+            else
+                m = maximum(val)
+                for i ∈ 1:$N
+                    if val < m
+                        iter[i] += 1
+                    end
+                end
+            end
+        end
+
+        idx
+    end
 end
 
 function sorted_unique_merge(a::Vector, b::Vector)
