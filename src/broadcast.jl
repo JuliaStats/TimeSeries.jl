@@ -79,7 +79,11 @@ promote_containertype(::Type{TimeArray}, ::Type{Any}) = TimeArray
     j = 1
     for i ∈ 1:N
         if args[i] <: TimeArray
-            push!(broadcast_expr.args, :(view(args[$i].values, tstamp_idx[$j], :)))
+            if args[i].parameters[2] == 1
+                push!(broadcast_expr.args, :(view(args[$i].values, tstamp_idx[$j])))
+            else
+                push!(broadcast_expr.args, :(view(args[$i].values, tstamp_idx[$j], :)))
+            end
             j += 1
         else
             push!(broadcast_expr.args, :(args[$i]))
