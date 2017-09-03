@@ -52,7 +52,7 @@ noverlaps(ts::Vararg{Vector, 1}) = (Base.OneTo(length(ts[1])),)
             else
                 m = maximum(val)
                 for i ∈ 1:$N
-                    if val < m
+                    if val[i] < m
                         iter[i] += 1
                     end
                 end
