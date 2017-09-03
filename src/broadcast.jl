@@ -14,50 +14,96 @@ promote_containertype(::Type{TimeArray}, ::Type{Array}) = TimeArray
 promote_containertype(::Type{Any}, ::Type{TimeArray}) = TimeArray
 promote_containertype(::Type{TimeArray}, ::Type{Any}) = TimeArray
 
-@inline function broadcast_c(f, ::Type{TimeArray}, args::Vararg{<:Any, N}) where {N}
-    idx, timearrays = _collect_timearrays(args)
 
-    # retain meta if all of TimeArray contain the same one
-    meta_ = length(unique(meta.(timearrays))) == 1 ? timearrays[1].meta : Void
+@generated function broadcast_c(f, ::Type{TimeArray}, args::Vararg{Any, N}) where {N}
+    idx = Int[]
+    timearrays = :(TimeArray[])
+    colwidth = Expr(:comparison)
+    noverlaps_expr = :(noverlaps())
 
-    # check column length. all of non-single column should have same length
-    cnames = colnames.(timearrays)
-    w_ = 1
-    for w ∈ length.(cnames)
-        if w == 1
+    for i in 1:N
+        if !(args[i] <: TimeArray)
             continue
-        elseif w_ == 1
-            w_ = w
-            continue
-        elseif w_ != w
-            throw(DimensionMismatch(
-                "arrays must have the same number of columns, " *
-                "or one must be a single column"))
+        end
+
+        # unroll
+        push!(idx, i)
+        push!(timearrays.args, :(args[$i]))
+        push!(noverlaps_expr.args, :(args[$i].timestamp))
+
+        if args[i].parameters[2] == 2  # 2D array
+            if !isempty(colwidth.args)
+                push!(colwidth.args, :(==))
+            end
+            push!(colwidth.args, :(length(args[$i].colnames)))
         end
     end
 
-    # contruct new column names
-    # TODO: maybe generated function can help for performance
-    new_cnames = foldl((x, y) -> x .* "_" .* y, cnames)
+    n = length(idx)
 
-    # obtain shared timestamp
-    tstamp_idx = noverlaps(timestamp.(timearrays)...)
-    tstamp = (timestamp(timearrays[1]))[tstamp_idx[1]]
+    # retain meta if all of TimeArray contain the same one
+    meta_expr = if n == 1
+        :(args[$(idx[1])].meta)
+    else
+        _e = Expr(:comparison, :(args[$(idx[1])].meta))
+        for i ∈ 2:n
+            push!(_e.args, :(==), :(args[$(idx[i])].meta))
+        end
+        :($(_e) ? args[$(idx[1])].meta : Void)
+    end
 
-    # retrieve values that match the Int array matching dates
-    arr_vals = collect(values.(getindex.(timearrays, tstamp_idx)))
+    # check column length. all of non-single column should have same length
+    # and contruct new column names
+    col_expr = if length(colwidth.args) > 1
+        quote
+            if !($colwidth)
+                throw(DimensionMismatch(
+                    "arrays must have the same number of columns, " *
+                    "or one must be a single column"))
+            end
+        end
+    else
+        if n == 1
+            :(args[$(idx[1])].colnames)
+        else
+            _e = :(broadcast(_new_cnames))
+            for i ∈ 1:n
+                push!(_e.args, :(args[$(idx[i])].colnames))
+            end
+            _e
+        end
+    end
 
     # compute output values, broadcast through Array
-    arr_args = collect(Any, args)
-    arr_args[collect(idx)] = arr_vals
-    vals = broadcast(f, arr_args...)
+    broadcast_expr = :(broadcast(f))
+    j = 1
+    for i ∈ 1:N
+        if args[i] <: TimeArray
+            push!(broadcast_expr.args, :(view(args[$i].values, tstamp_idx[$j], :)))
+            j += 1
+        else
+            push!(broadcast_expr.args, :(args[$i]))
+        end
+    end
 
-    TimeArray(tstamp, vals, new_cnames, meta_)
+    quote
+        # obtain shared timestamp
+        tstamp_idx = $noverlaps_expr
+
+        TimeArray((args[$(idx[1])].timestamp)[tstamp_idx[1]],
+                  $broadcast_expr,
+                  $col_expr,
+                  $meta_expr)
+    end
 end
 
 
-function _collect_timearrays(args)
-    zip(Iterators.filter(x -> isa(x[2], TimeArray), enumerate(args))...)
+@generated function _new_cnames(args::Vararg{String, N}) where N
+    expr = :(string(args[1]))
+    for i ∈ 2:N
+        push!(expr.args, "_", :(args[$i]))
+    end
+    expr
 end
 
 
