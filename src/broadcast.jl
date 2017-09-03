@@ -4,10 +4,15 @@ import Base.Broadcast:
 # make TimeArray as new resulting container type of Base.Broadcast
 _containertype(::Type{<:AbstractTimeSeries}) = TimeArray
 
-promote_containertype(::Type{TimeArray}, ::Type{TimeArray}) = TimeArray
-promote_containertype(ct, ::Type{TimeArray}) = TimeArray
-promote_containertype(::Type{TimeArray}, ct) = TimeArray
+# From the default rule of promote_containertype:
+#     TimeArray, TimeArray -> TimeArray
+# And we add following to prevent ambiguous:
+#     Array, TimeArray -> TimeArray
+promote_containertype(::Type{Array}, ::Type{TimeArray}) = TimeArray
+promote_containertype(::Type{TimeArray}, ::Type{Array}) = TimeArray
 
+promote_containertype(::Type{Any}, ::Type{TimeArray}) = TimeArray
+promote_containertype(::Type{TimeArray}, ::Type{Any}) = TimeArray
 
 @inline function broadcast_c(f, ::Type{TimeArray}, args::Vararg{<:Any, N}) where {N}
     idx, timearrays = _collect_timearrays(args)
