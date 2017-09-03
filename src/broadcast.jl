@@ -92,7 +92,7 @@ promote_containertype(::Type{TimeArray}, ::Type{Any}) = TimeArray
         # obtain shared timestamp
         tstamp_idx = $noverlaps_expr
 
-        TimeArray((args[$(idx[1])].timestamp)[tstamp_idx[1]],
+        TimeArray(view(args[$(idx[1])].timestamp, tstamp_idx[1]),
                   $broadcast_expr,
                   $col_expr,
                   $meta_expr)
