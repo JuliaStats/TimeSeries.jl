@@ -1,67 +1,30 @@
-function overlaps(t1::Vector, t2::Vector)
-    i = j = 1
-    idx1 = Int[]
-    idx2 = Int[]
-    while i <= length(t1) && j <= length(t2)
-        if t1[i] > t2[j]
-            j += 1
-        elseif t1[i] < t2[j]
-            i += 1
-        else
-            push!(idx1, i)
-            push!(idx2, j)
-            i += 1
-            j += 1
-        end
-    end
-    (idx1, idx2)
-end
+overlaps(ts::Vararg{Vector, 1}) = (Base.OneTo(length(ts[1])),)
 
-noverlaps(ts::Vararg{Vector, 1}) = (Base.OneTo(length(ts[1])),)
 
-@generated function noverlaps(ts::Vararg{Vector, N}) where {N}
-    idx = Expr(:tuple, map(i -> :(similar(ts[$i], Int)), 1:N)...)
-    val = Expr(:vect, map(i -> :(ts[$i][iter[$i]]), 1:N)...)
-    iter = Expr(:vect, ones(Int, N)...)
-    len = Expr(:vect, map(i -> :(length(ts[$i])), 1:N)...)
-    resize_exprs = Expr(:block, map(i -> :(resize!(idx[$i], j - 1)), 1:N)...)
+function overlaps(ts::Vararg{Vector, N}) where {N}
+    ret = ntuple(_ -> Int[], N)
+    t1 = ts[1]
 
-    cond = :(iter[1] <= len[1])
-    val_comp = Expr(:comparison, :(val[1]))
-    for i ∈ 2:N
-        cond = :($cond && iter[$i] <= len[$i])
-        push!(val_comp.args, :(==), :(val[$i]))
-    end
-
-    quote
-        iter = $iter
-        len = $len
-        idx = $idx
-        j = 1
-
-        while $cond
-            val = $val
-
-            if $val_comp
-                for i ∈ 1:$N
-                    idx[i][j] = iter[i]
-                    iter[i] += 1
-                end
+    for tidx in 2:N
+        i = j = 1
+        resize!(ret[1], 0)
+        t2 = ts[tidx]
+        while i <= length(t1) && j <= length(t2)
+            if t1[i] > t2[j]
                 j += 1
+            elseif t1[i] < t2[j]
+                i += 1
             else
-                m = maximum(val)
-                for i ∈ 1:$N
-                    if val[i] < m
-                        iter[i] += 1
-                    end
-                end
+                push!(ret[1], i)
+                push!(ret[tidx], j)
+                i += 1
+                j += 1
             end
         end
-
-        $resize_exprs
-        idx
     end
+    ret
 end
+
 
 function sorted_unique_merge(a::Vector, b::Vector)
 

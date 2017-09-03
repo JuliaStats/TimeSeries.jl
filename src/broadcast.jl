@@ -18,7 +18,7 @@ promote_containertype(::Type{TimeArray}, ::Type{Any}) = TimeArray
 @generated function broadcast_c(f, ::Type{TimeArray}, args::Vararg{Any, N}) where {N}
     idx = Int[]
     colwidth = Expr(:comparison)
-    noverlaps_expr = :(noverlaps())
+    overlaps_expr = :(overlaps())
 
     for i in 1:N
         if !(args[i] <: TimeArray)
@@ -27,7 +27,7 @@ promote_containertype(::Type{TimeArray}, ::Type{Any}) = TimeArray
 
         # unroll
         push!(idx, i)
-        push!(noverlaps_expr.args, :(args[$i].timestamp))
+        push!(overlaps_expr.args, :(args[$i].timestamp))
 
         if args[i].parameters[2] == 2  # 2D array
             if !isempty(colwidth.args)
@@ -90,7 +90,7 @@ promote_containertype(::Type{TimeArray}, ::Type{Any}) = TimeArray
         $col_check_expr
 
         # obtain shared timestamp
-        tstamp_idx = $noverlaps_expr
+        tstamp_idx = $overlaps_expr
 
         TimeArray(view(args[$(idx[1])].timestamp, tstamp_idx[1]),
                   $broadcast_expr,
