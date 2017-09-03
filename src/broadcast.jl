@@ -17,7 +17,6 @@ promote_containertype(::Type{TimeArray}, ::Type{Any}) = TimeArray
 
 @generated function broadcast_c(f, ::Type{TimeArray}, args::Vararg{Any, N}) where {N}
     idx = Int[]
-    timearrays = :(TimeArray[])
     colwidth = Expr(:comparison)
     noverlaps_expr = :(noverlaps())
 
@@ -28,7 +27,6 @@ promote_containertype(::Type{TimeArray}, ::Type{Any}) = TimeArray
 
         # unroll
         push!(idx, i)
-        push!(timearrays.args, :(args[$i]))
         push!(noverlaps_expr.args, :(args[$i].timestamp))
 
         if args[i].parameters[2] == 2  # 2D array
@@ -54,7 +52,7 @@ promote_containertype(::Type{TimeArray}, ::Type{Any}) = TimeArray
 
     # check column length. all of non-single column should have same length
     # and contruct new column names
-    col_expr = if length(colwidth.args) > 1
+    col_check_expr = if length(colwidth.args) > 1
         quote
             if !($colwidth)
                 throw(DimensionMismatch(
@@ -62,16 +60,14 @@ promote_containertype(::Type{TimeArray}, ::Type{Any}) = TimeArray
                     "or one must be a single column"))
             end
         end
+    end
+
+    col_expr = if n == 1
+        :(args[$(idx[1])].colnames)
     else
-        if n == 1
-            :(args[$(idx[1])].colnames)
-        else
-            _e = :(broadcast(_new_cnames))
-            for i ∈ 1:n
-                push!(_e.args, :(args[$(idx[i])].colnames))
-            end
-            _e
-        end
+        _e = :(broadcast(_new_cnames))
+        append!(_e.args, map(i -> :(args[$i].colnames), idx))
+        _e
     end
 
     # compute output values, broadcast through Array
@@ -79,9 +75,9 @@ promote_containertype(::Type{TimeArray}, ::Type{Any}) = TimeArray
     j = 1
     for i ∈ 1:N
         if args[i] <: TimeArray
-            if args[i].parameters[2] == 1
+            if args[i].parameters[2] == 1  # 1D array
                 push!(broadcast_expr.args, :(view(args[$i].values, tstamp_idx[$j])))
-            else
+            else  # 2D array
                 push!(broadcast_expr.args, :(view(args[$i].values, tstamp_idx[$j], :)))
             end
             j += 1
@@ -91,6 +87,8 @@ promote_containertype(::Type{TimeArray}, ::Type{Any}) = TimeArray
     end
 
     quote
+        $col_check_expr
+
         # obtain shared timestamp
         tstamp_idx = $noverlaps_expr
 
