@@ -20,35 +20,34 @@ end
 noverlaps(ts::Vararg{Vector, 1}) = (Base.OneTo(length(ts[1])),)
 
 @generated function noverlaps(ts::Vararg{Vector, N}) where {N}
-    cond = :(iter[1] <= len[1])
-    idx = Expr(:tuple, :(Int[]))
-    val = Expr(:vect, :(ts[1][iter[1]]))
-    val_comp = Expr(:comparison, :(val[1]))
-    iter = Expr(:vect, 1)
-    len = Expr(:vect, :(length(ts[1])))
+    idx = Expr(:tuple, map(i -> :(similar(ts[$i], Int)), 1:N)...)
+    val = Expr(:vect, map(i -> :(ts[$i][iter[$i]]), 1:N)...)
+    iter = Expr(:vect, ones(Int, N)...)
+    len = Expr(:vect, map(i -> :(length(ts[$i])), 1:N)...)
+    resize_exprs = Expr(:block, map(i -> :(resize!(idx[$i], j - 1)), 1:N)...)
 
+    cond = :(iter[1] <= len[1])
+    val_comp = Expr(:comparison, :(val[1]))
     for i ∈ 2:N
         cond = :($cond && iter[$i] <= len[$i])
-        push!(idx.args, :(Int[]))
-        push!(val.args, :(ts[$i][iter[$i]]))
         push!(val_comp.args, :(==), :(val[$i]))
-        push!(iter.args, 1)
-        push!(len.args, :(length(ts[$i])))
     end
 
     quote
         iter = $iter
         len = $len
         idx = $idx
+        j = 1
 
         while $cond
             val = $val
 
             if $val_comp
                 for i ∈ 1:$N
-                    push!(idx[i], iter[i])
+                    idx[i][j] = iter[i]
                     iter[i] += 1
                 end
+                j += 1
             else
                 m = maximum(val)
                 for i ∈ 1:$N
@@ -59,6 +58,7 @@ noverlaps(ts::Vararg{Vector, 1}) = (Base.OneTo(length(ts[1])),)
             end
         end
 
+        $resize_exprs
         idx
     end
 end
