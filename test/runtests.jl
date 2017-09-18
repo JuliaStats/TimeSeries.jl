@@ -15,10 +15,10 @@ tests = [
 
 
 @testset "TimeSeries" begin
-    println("Running tests:")
+    info("Running tests:")
 
     for test ∈ tests
-        println("\t* $test ...")
+        info("\t* $test ...")
         include("$test.jl")
     end
 end

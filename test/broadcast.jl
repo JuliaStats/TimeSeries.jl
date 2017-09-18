@@ -194,7 +194,81 @@ using TimeSeries
 end
 
 
-#TODO: add test cases of non-standard function on dot-call
+@testset "dot call auto-fusion" begin
+    @testset "single TimeArray" begin
+        let ta = sin.(log.(2, op))
+            @test ta.colnames == ["Open"]
+            @test ta.timestamp == op.timestamp
+            @test ta.meta == op.meta
+            @test ta.values[1] == sin(log(2, op.values[1]))
+            @test ta.values[end] == sin(log(2, op.values[end]))
+        end
+
+        f(x, c) = x + c
+        let ta = f.(cl, 42)
+            @test ta.colnames == ["Close"]
+            @test ta.timestamp == cl.timestamp
+            @test ta.meta == cl.meta
+            @test ta.values[1] == cl.values[1] + 42
+            @test ta.values[end] == cl.values[end] + 42
+        end
+
+        let ta = sin.(log.(2, ohlc))
+            @test ta.colnames == ["Open", "High", "Low", "Close"]
+            @test ta.timestamp == ohlc.timestamp
+            @test ta.meta == ohlc.meta
+
+            @test ta.values[1, 1] == sin(log(2, ohlc.values[1, 1]))
+            @test ta.values[1, 2] == sin(log(2, ohlc.values[1, 2]))
+            @test ta.values[1, 3] == sin(log(2, ohlc.values[1, 3]))
+            @test ta.values[1, 4] == sin(log(2, ohlc.values[1, 4]))
+
+            @test ta.values[end, 1] == sin(log(2, ohlc.values[end, 1]))
+            @test ta.values[end, 2] == sin(log(2, ohlc.values[end, 2]))
+            @test ta.values[end, 3] == sin(log(2, ohlc.values[end, 3]))
+            @test ta.values[end, 4] == sin(log(2, ohlc.values[end, 4]))
+        end
+    end
+
+    @testset "TimeArray and Array" begin
+        let ta = cl[1:4] .+ [1, 2, 3, 4]
+            @test ta.colnames == ["Close"]
+            @test ta.timestamp == cl.timestamp[1:4]
+            @test ta.meta == cl.meta
+
+            @test ta.values[1] == cl.values[1] + 1
+            @test ta.values[2] == cl.values[2] + 2
+            @test ta.values[3] == cl.values[3] + 3
+            @test ta.values[4] == cl.values[4] + 4
+        end
+
+        let ta = ohlc[1:4] .+ [1, 2, 3, 4]
+            @test ta.colnames == ["Open", "High", "Low", "Close"]
+            @test ta.timestamp == ohlc.timestamp[1:4]
+            @test ta.meta == ohlc.meta
+
+            @test ta.values[1, 1] == ohlc.values[1, 1] + 1
+            @test ta.values[1, 2] == ohlc.values[1, 2] + 1
+            @test ta.values[1, 3] == ohlc.values[1, 3] + 1
+            @test ta.values[1, 4] == ohlc.values[1, 4] + 1
+        end
+
+        let arr = [1, 2, 3, 4]
+            @test_throws DimensionMismatch cl .+ arr
+        end
+    end
+
+    @testset "custom function" begin
+        let f(x, y, c) = x - y + c, ta = f.(op, cl, 42)
+            @test ta.colnames == ["Open_Close"]
+            @test ta.timestamp == cl.timestamp
+            @test ta.timestamp == op.timestamp
+            @test ta.meta == op.meta
+            @test ta.values[1] == op.values[1] - cl.values[1] + 42
+            @test ta.values[end] == op.values[end] - cl.values[end] + 42
+        end
+    end
+end  # @testset "dot call auto-fusion"
 
 
 end  # @testset "broadcast"

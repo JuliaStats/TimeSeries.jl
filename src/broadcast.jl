@@ -52,7 +52,7 @@ promote_containertype(::Type{TimeArray}, ::Type{Any}) = TimeArray
 
     # check column length. all of non-single column should have same length
     # and contruct new column names
-    col_check_expr = if length(colwidth.args) > 1
+    col_check_expr = if length(colwidth.args) > 1  # if we have more than one TimeArray
         quote
             if !($colwidth)
                 throw(DimensionMismatch(
