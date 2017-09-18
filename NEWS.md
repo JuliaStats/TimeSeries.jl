@@ -1,3 +1,8 @@
+### 0.11.0
+
+* `TimeArray` constructor, `merge`, `update`, `vcat` and `rename`
+  will throw typed exceptions. (issue 322)
+
 ### 0.10.0
 
 * add support for time series plotting via RecipesBase dependency (thank you @mkborregaard) 

@@ -20,13 +20,13 @@ struct TimeArray{T, N, D <: TimeType, A <: AbstractArray{T, N}} <: AbstractTimeS
         nrow, ncol = size(values, 1, 2)
 
         if nrow != length(timestamp)
-            error("values must match length of timestamp")
+            throw(DimensionMismatch("values must match length of timestamp"))
         elseif ncol != length(colnames)
-            error("column names must match width of array")
+            throw(DimensionMismatch("column names must match width of array"))
         elseif !allunique(timestamp)
-            error("there are duplicate dates")
+            throw(ArgumentError("there are duplicate dates"))
         elseif !(issorted(timestamp) || issorted(timestamp, rev=true))
-            error("dates are mangled")
+            throw(ArgumentError("dates are mangled"))
         elseif issorted(timestamp, rev=true)
             new(reverse(timestamp), flipdim(values, 1),
                 replace_dupes(colnames), meta)

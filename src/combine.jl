@@ -41,7 +41,8 @@ function merge(ta1::TimeArray{T, N, D}, ta2::TimeArray{T, M, D}, method::Symbol=
         ta = merge(ta, ta2, :left, meta=meta)
 
     else
-        error("merge method must be one of :inner, :left, :right, :outer")
+        throw(ArgumentError(
+            "merge method must be one of :inner, :left, :right, :outer"))
     end
 
     return setcolnames!(ta, colnames)
@@ -94,7 +95,7 @@ function vcat(TA::TimeArray...)
     prev_meta = TA[1].meta
     for ta in TA
         if ta.meta != prev_meta
-            error("metadata doesn't match")
+            throw(ArgumentError("metadata doesn't match"))
         end
     end
 
@@ -102,7 +103,7 @@ function vcat(TA::TimeArray...)
     prev_colnames = TA[1].colnames
     for ta in TA
         if ta.colnames != prev_colnames
-            error("column names don't match")
+            throw(ArgumentError("column names don't match"))
         end
     end
 

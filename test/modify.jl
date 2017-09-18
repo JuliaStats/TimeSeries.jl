@@ -13,8 +13,6 @@ using TimeSeries
     new_cls  = update(cl, today(), 111.11)
     new_clv  = update(cl, today(), [111.11])
     new_ohlc = update(ohlc, today(), [111.11 222.22 333.33 444.44])
-    # empty1   = TimeArray(Vector{Date}(), Array{Int}(0,1), ["foo"], "bar")
-    # empty2   = TimeArray(Vector{Date}(), Array{Int}(0,2), ["foo", "bar"], "baz")
     empty1   = TimeArray(Vector{Date}(), Array{Int}(0,1))
     empty2   = TimeArray(Vector{Date}(), Array{Int}(0,2))
 
@@ -24,8 +22,8 @@ using TimeSeries
     end
 
     @testset "update an empty time array fails" begin
-        @test_throws ErrorException update(empty1, Date(2000,1,1), 10)
-        @test_throws ErrorException update(empty2, Date(2000,1,1), [10 11])
+        @test_throws ArgumentError update(empty1, Date(2000,1,1), 10)
+        @test_throws ArgumentError update(empty2, Date(2000,1,1), [10 11])
         # @test length(update1)      == 1
         # @test length(update2)      == 1
         # @test update1.timestamp[1] == Date(2000,1,1)
@@ -40,7 +38,7 @@ using TimeSeries
 
     @testset "update a single column time array with single value vector" begin
         @test last(new_clv.values) == 111.11
-        @test_throws ErrorException update(cl, today(), [111.11, 222.22])
+        @test_throws DimensionMismatch update(cl, today(), [111.11, 222.22])
     end
 
     @testset "update a multi column time array" begin
@@ -56,13 +54,13 @@ using TimeSeries
     end
 
     @testset "cannot update oldest observations" begin
-        @test_throws ErrorException update(cl, Date(1999,1,1), [111.11])
-        @test_throws ErrorException update(cl, Date(1999,1,1), 111.11)
+        @test_throws ArgumentError update(cl, Date(1999,1,1), [111.11])
+        @test_throws ArgumentError update(cl, Date(1999,1,1), 111.11)
     end
 
     @testset "cannot update in-between observations" begin
-        @test_throws ErrorException update(cl, Date(2000,1,8), [111.11])
-        @test_throws ErrorException update(cl, Date(2000,1,8), 111.11)
+        @test_throws ArgumentError update(cl, Date(2000,1,8), [111.11])
+        @test_throws ArgumentError update(cl, Date(2000,1,8), 111.11)
     end
 end
 
@@ -74,12 +72,12 @@ end
 
     @testset "change colnames with multi-member vector" begin
         @test colnames(re_ohlc) == ["a","b","c","d"]
-        @test_throws ErrorException rename(ohlc, ["a"])
+        @test_throws DimensionMismatch rename(ohlc, ["a"])
     end
 
     @testset "change colnames with single-member vector" begin
         @test colnames(re_cl) == ["vector"]
-        @test_throws ErrorException rename(cl, ["a", "b"])
+        @test_throws DimensionMismatch rename(cl, ["a", "b"])
     end
 
     @testset "change colnames with string" begin

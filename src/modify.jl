@@ -3,9 +3,11 @@
 function update(ta::TimeArray{T, N, D}, tstamp::D, val::Array{T, N}) where {T, N, D}
 
     if length(ta) == 0
-        error("updating empty time arrays is not supported, please use a scalable approach")
+        throw(ArgumentError(
+            "updating empty time arrays is not supported, " *
+            "please use a scalable approach"))
     elseif tstamp < maximum(ta.timestamp)
-        error("only appending operations supported")
+        throw(ArgumentError("only appending operations supported"))
     else
         t    = vcat(ta.timestamp, tstamp)
         vals = vcat(ta.values, val)
@@ -17,9 +19,11 @@ end
 function update(ta::TimeArray{T, N, D}, tstamp::D, val::T) where {T, N, D}
 
     if length(ta) == 0
-        error("updating empty time arrays is not supported, please use a scalable approach")
+        throw(ArgumentError(
+            "updating empty time arrays is not supported, " *
+            "please use a scalable approach"))
     elseif tstamp < maximum(ta.timestamp)
-        error("only appending operations supported")
+        throw(ArgumentError("only appending operations supported"))
     else
         t    = vcat(ta.timestamp, tstamp)
         vals = vcat(ta.values, val)
