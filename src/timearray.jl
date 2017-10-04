@@ -79,88 +79,132 @@ isempty(ta::TimeArray) = (length(ta) == 0)
 
 ###### show #####################
 
+@inline _showval(v::Any) = repr(v)
+@inline _showval(v::Number) = string(v)
+@inline _showval(v::AbstractFloat) =
+    ifelse(isnan(v), MISSING, string(round(v, DECIMALS)))
+
+"""
+calculate the paging
+
+```
+> using MarketData
+> AAPL  # this function will return `UnitRange{Int64}[1:9, 10:12]`
+```
+"""
+@inline function _showpages(dcol::Int, timewidth::Int, colwidth::Array{Int})
+    ret = UnitRange{Int}[]
+    c = dcol - timewidth - 4
+    last_i = 1
+    for i in eachindex(colwidth)
+        w = colwidth[i] + 3
+        if c - w < 0
+            push!(ret, last_i:i-1)
+            # next page
+            c = dcol - timewidth - 4 - w
+            last_i = i
+        elseif i == length(colwidth)
+            push!(ret, last_i:i)
+        else
+            c -= w
+        end
+    end
+    ret
+end
+
 function show(io::IO, ta::TimeArray{T}) where {T}
 
-    # variables
-    nrow          = size(ta.values, 1)
-    ncol          = size(ta.values, 2)
-    intcatcher    = falses(ncol)
-    for c in 1:ncol
-        rowcheck = @. trunc(ta.values[:, c]) - ta.values[:, c] == 0
-        if sum(rowcheck) == length(rowcheck)
-            intcatcher[c] = true
-        end
-    end
-    spacetime     = nrow > 0 ? strwidth(string(ta.timestamp[1])) + 3 : 3
-    firstcolwidth = strwidth(ta.colnames[1])
-    colwidth      = Int[]
-    for m in 1:ncol
-        (T == Bool) || (nrow == 0) ?
-        push!(colwidth, max(strwidth(ta.colnames[m]), 5)) :
-        push!(colwidth, max(strwidth(ta.colnames[m]), strwidth(@sprintf("%.2f", maximum(ta.values[:,m]))) + DECIMALS - 2))
-    end
-
     # summary line
+    nrow, ncol = size(ta.values, 1, 2)
+
     @printf(io, "%dx%d %s", nrow, ncol, typeof(ta))
-    nrow > 0 && @printf(io, " %s to %s", string(ta.timestamp[1]), string(ta.timestamp[end]))
-    println(io, "")
-    println(io, "")
-
-   # row label line
-
-    print(io, ^(" ", spacetime), ta.colnames[1], ^(" ", colwidth[1] + 2 -firstcolwidth))
-
-   for p in 2:length(colwidth)
-       print(io, ta.colnames[p], ^(" ", colwidth[p] - strwidth(ta.colnames[p]) + 2))
-   end
-   println(io, "")
-
-  # timestamp and values line
-    if nrow > 7
-        for i in 1:4
-            print(io, ta.timestamp[i], " | ")
-        for j in 1:ncol
-            T == Bool ?
-            print(io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
-            intcatcher[j] & SHOWINT ?
-            print(io, rpad(round(Integer, ta.values[i,j]), colwidth[j] + 2, " ")) :
-            isnan(ta.values[i,j]) ?
-            print(io, rpad(MISSING, colwidth[j] + 2, " ")) :
-            print(io, rpad(round(ta.values[i,j], DECIMALS), colwidth[j] + 2, " "))
-        end
-        println(io, "")
-        end
-
-        println(io, '\u22EE')
-
-        for i in nrow-3:nrow
-            print(io, ta.timestamp[i], " | ")
-        for j in 1:ncol
-            T == Bool ?
-            print(io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
-            intcatcher[j] & SHOWINT ?
-            print(io, rpad(round(Integer, ta.values[i,j]), colwidth[j] + 2, " ")) :
-            isnan(ta.values[i,j]) ?
-            print(io, rpad(MISSING, colwidth[j] + 2, " ")) :
-            print(io, rpad(round(ta.values[i,j], DECIMALS), colwidth[j] + 2, " "))
-        end
-        println(io, "")
-        end
-    elseif nrow > 0
-        for i in 1:nrow
-            print(io, ta.timestamp[i], " | ")
-        for j in 1:ncol
-            T == Bool ?
-            print(io, rpad(ta.values[i,j], colwidth[j] + 2, " ")) :
-            intcatcher[j] & SHOWINT ?
-            print(io, rpad(round(Integer, ta.values[i,j]), colwidth[j] + 2, " ")) :
-            isnan(ta.values[i,j]) ?
-            print(io, rpad(MISSING, colwidth[j] + 2, " ")) :
-            print(io, rpad(round(ta.values[i,j], DECIMALS), colwidth[j] + 2, " "))
-        end
-        println(io, "")
-        end
+    if nrow != 0
+        @printf(io, " %s to %s\n", ta.timestamp[1], ta.timestamp[end])
+    else # e.g. TimeArray(Date[], [])
+        return
     end
+
+    # calculate column withs
+    drow, dcol = displaysize(io)
+    res_row    = 7  # number of reserved rows: summary line, lable line ... etc
+    half_row   = floor(Int, (drow - res_row) / 2)
+    add_row    = (drow - res_row) % 2
+
+    if nrow > (drow - res_row)
+        tophalf = 1:(half_row + add_row)
+        bothalf = (nrow - half_row + 1):nrow
+        strs = _showval.(@view ta.values[[tophalf; bothalf], :])
+        ts   = @view ta.timestamp[[tophalf; bothalf]]
+    else
+        strs = _showval.(ta.values)
+        ts   = ta.timestamp
+    end
+
+    # NOTE: reshaping is a workaround in julia 0.6
+    #       in 0.7, it can be:
+    #         [strwidth.(ta.colnames)'; strwidth.(strs); fill(5, ncol)']
+    colwidth = maximum([
+        reshape(strwidth.(ta.colnames), 1, :);
+        strwidth.(strs);
+        reshape(fill(5, ncol), 1, :)], 1)
+
+    # paging
+    spacetime = strwidth(string(ts[1]))
+    pages = _showpages(dcol, spacetime, colwidth)
+
+    for p ∈ pages
+        # row label line
+        ## e.g. | Open  | High  | Low   | Close  |
+        print(io, "│", " "^(spacetime + 2))
+        for (name, w) in zip(ta.colnames[p], colwidth[p])
+            print(io, "│ ", rpad(name, w + 1))
+        end
+        println(io, "│")
+        ## e.g. ├───────┼───────┼───────┼────────┤
+        print(io, "├", "─"^(spacetime + 2))
+        for w in colwidth[p]
+            print(io, "┼", "─"^(w + 2))
+        end
+        print(io, "┤")
+
+        # timestamp and values line
+        if nrow > (drow - res_row)
+            for i in tophalf
+                println(io)
+                print(io, "│ ", ts[i], " ")
+                for j in p
+                    print(io, "│ ", rpad(strs[i, j], colwidth[j] + 1))
+                end
+                print(io, "│")
+            end
+
+            print(io, "\n   \u22EE")
+
+            for i in (length(bothalf) - 1):-1:0
+                i = size(strs, 1) - i
+                println(io)
+                print(io, "│ ", ts[i], " ")
+                for j in p
+                    print(io, "│ ", rpad(strs[i, j], colwidth[j] + 1))
+                end
+                print(io, "│")
+            end
+
+        else
+            for i in 1:nrow
+                println(io)
+                print(io, "│ ", ts[i], " ")
+                for j in p
+                    print(io, "│ ", rpad(strs[i, j], colwidth[j] + 1))
+                end
+                print(io, "│")
+            end
+        end
+
+        if length(pages) > 1 && p != pages[end]
+            print(io, "\n\n")
+        end
+    end  # for p ∈ pages
 end
 
 ###### getindex #################
