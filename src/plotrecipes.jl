@@ -1,7 +1,7 @@
 
 # FIXME: @recipe do not support where syntax yet{T<:TimeArray}
 @recipe function f{T<:TimeArray}(ta::T)
-    st = get(d, :seriestype, :path)
+    st = get(plotattributes, :seriestype, :path)
     if in(st, [:candlestick, :heikinashi])
         Candlestick(ta)
     #elseif st == :ohlc #ohlc (meaning sticks with steps on the sides) should be passed on to Plots internal ohlc plot engine
@@ -45,7 +45,7 @@ function HeikinAshi!(cs::Candlestick) #some values here are made too high!
 end
 
 @recipe function f(cs::Candlestick)
-    st = get(d, :seriestype, :candlestick)
+    st = get(plotattributes, :seriestype, :candlestick)
     st == :heikinashi && HeikinAshi!(cs)
 
     seriestype := :scatter #ignored
@@ -53,12 +53,12 @@ end
     linewidth --> 0.7
     grid --> false
 
-    bw = get(d, :bar_width, nothing)
+    bw = get(plotattributes, :bar_width, nothing)
     bw == nothing && (bw = 0.8)
     bar_width := bw / 2 * minimum(diff(unique(Int.(cs.time))))
 
     # allow passing alternative colors as a vector
-    cols = get(d, :seriescolor, nothing)
+    cols = get(plotattributes, :seriescolor, nothing)
     cols = (isa(cols, Vector{Symbol}) && length(cols) == 2) ? cols : [:red, :blue]
 
     attributes = [
