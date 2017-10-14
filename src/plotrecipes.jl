@@ -1,6 +1,5 @@
 
-# FIXME: @recipe do not support where syntax yet{T<:TimeArray}
-@recipe function f{T<:TimeArray}(ta::T)
+@recipe function f(ta::T) where {T<:TimeArray}
     st = get(plotattributes, :seriestype, :path)
     if in(st, [:candlestick, :heikinashi])
         Candlestick(ta)
@@ -30,9 +29,9 @@ function extract_ohlc(ta::TimeArray)
     (ta.timestamp, [ta.values[:,i] for i in 1:4]...)
 end
 
-function HeikinAshi!(cs::Candlestick) #some values here are made too high!
+function HeikinAshi!(cs::Candlestick) # some values here are made too high!
     cs.close[1] = (cs.open[1] + cs.low[1] + cs.close[1] + cs.high[1]) / 4
-    cs.open[1] = (cs.open[1] + cs.close[1])/2
+    cs.open[1] = (cs.open[1] + cs.close[1]) / 2
     cs.high[1] = cs.high[1]
     cs.low[1] = cs.low[1]
 
@@ -55,7 +54,7 @@ end
 
     bw = get(plotattributes, :bar_width, nothing)
     bw == nothing && (bw = 0.8)
-    bar_width := bw / 2 * minimum(diff(unique(Int.(cs.time))))
+    bar_width := bw / 2 * minimum(diff(unique(Dates.value.(cs.time))))
 
     # allow passing alternative colors as a vector
     cols = get(plotattributes, :seriescolor, nothing)
@@ -96,7 +95,7 @@ end
     for att in attributes
         inds = Vector{Int}(length(cs.close))
         inds[1] = att[:close_open](cs.close[1], cs.open[1]) & att[:close_prev](cs.close[1], cs.close[1])
-        inds[2:end] .= att[:close_open].(cs.close[2:end], cs.open[2:end]) & att[:close_prev].(diff(cs.close), 0)
+        @. inds[2:end] = att[:close_open](cs.close[2:end], cs.open[2:end]) & att[:close_prev]($diff(cs.close), 0)
         inds = find(inds)
 
         if length(inds) > 0
