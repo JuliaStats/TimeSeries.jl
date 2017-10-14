@@ -24,4 +24,4 @@ More sophisticated plots can be created by using keyword attributes and subsets:
 
 .. image:: ../images/complexplot.png
 
-A complete list of all attributes and plotting possibilities can be found in the Plots `documentation <https://juliaplots.github.io/attributes/>`_
+A complete list of all attributes and plotting possibilities can be found in the Plots `documentation <http://docs.juliaplots.org/latest/supported/>`_.
