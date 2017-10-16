@@ -8,10 +8,6 @@ include(joinpath(dirname(@__FILE__), "..", "src/.timeseriesrc.jl"))
 
 
 @testset "const values are set the package defaults" begin
-    @testset "SHOWINT" begin
-        @test SHOWINT == true
-    end
-
     @testset "DECIMALS" begin
         @test DECIMALS == 4
     end
