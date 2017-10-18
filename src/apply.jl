@@ -120,8 +120,8 @@ end  # percentchange
 
 ###### moving ###################
 
-function moving(ta::TimeArray{T, 1}, f::Function, window::Int;
-                padding::Bool=false) where {T}
+function moving(f::Function, ta::TimeArray{T, 1}, window::Int;
+                padding::Bool = false) where {T}
     tstamps = padding ? ta.timestamp : ta.timestamp[window:end]
     vals    = zeros(ta.values[window:end])
     for i=1:length(vals)
@@ -131,8 +131,8 @@ function moving(ta::TimeArray{T, 1}, f::Function, window::Int;
     TimeArray(tstamps, vals, ta.colnames, ta.meta)
 end
 
-function moving(ta::TimeArray{T, 2}, f::Function, window::Int;
-                padding::Bool=false) where {T}
+function moving(f::Function, ta::TimeArray{T, 2}, window::Int;
+                padding::Bool = false) where {T}
     tstamps = padding ? ta.timestamp : ta.timestamp[window:end]
     vals    = zeros(ta.values[window:end, :])
     for i=1:size(vals, 1), j=1:size(vals, 2)

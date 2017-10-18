@@ -82,17 +82,29 @@ using TimeSeries
     end
 
     @testset "moving supplies correct window length" begin
-        @test moving(cl, mean, 10).values                                == moving(cl, mean, 10, padding=false).values
-        @test moving(cl, mean, 10).timestamp[1]                          == Date(2000,1,14)
-        @test isapprox(moving(cl, mean, 10).values[1], mean(cl.values[1:10]))
-        @test moving(cl, mean, 10, padding=true).timestamp[1]            == Date(2000,1, 3)
-        @test moving(cl, mean, 10, padding=true).timestamp[10]           == Date(2000,1,14)
-        @test isequal(moving(cl, mean, 10, padding=true).values[1], NaN) == true
-        @test moving(cl, mean, 10, padding=true).values[10]              == moving(cl, mean, 10).values[1]
-        @test moving(ohlc, mean, 10).values                              == moving(ohlc, mean, 10, padding=false).values
-        @test isapprox(moving(ohlc, mean, 10).values[1, :]', mean(ohlc.values[1:10, :], 1))
-        @test isequal(moving(ohlc, mean, 10, padding=true).values[1, :], [NaN, NaN, NaN, NaN]) == true
-        @test moving(ohlc, mean, 10, padding=true).values[10, :]         == moving(ohlc, mean, 10).values[1, :]
+        @test moving(mean, cl, 10).values                                == moving(mean, cl, 10, padding=false).values
+        @test moving(mean, cl, 10).timestamp[1]                          == Date(2000,1,14)
+        @test isapprox(moving(mean, cl, 10).values[1], mean(cl.values[1:10]))
+        @test moving(mean, cl, 10, padding=true).timestamp[1]            == Date(2000,1, 3)
+        @test moving(mean, cl, 10, padding=true).timestamp[10]           == Date(2000,1,14)
+        @test isequal(moving(mean, cl, 10, padding=true).values[1], NaN) == true
+        @test moving(mean, cl, 10, padding=true).values[10]              == moving(mean, cl, 10).values[1]
+        @test moving(mean, ohlc, 10).values                              == moving(mean, ohlc, 10, padding=false).values
+        @test isapprox(moving(mean, ohlc, 10).values[1, :]', mean(ohlc.values[1:10, :], 1))
+        @test isequal(moving(mean, ohlc, 10, padding=true).values[1, :], [NaN, NaN, NaN, NaN]) == true
+        @test moving(mean, ohlc, 10, padding=true).values[10, :]         == moving(mean, ohlc, 10).values[1, :]
+
+        @testset "moving with do syntax" begin
+            moving(cl, 10) do x
+                @test isa(x, Array{Float64, 1})
+                x[1]
+            end
+
+            moving(ohlc, 10) do x
+                @test isa(x, Array{Float64, 1})
+                x[1]
+            end
+        end
     end
 
     @testset "upto method accumulates" begin
