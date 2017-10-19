@@ -152,6 +152,11 @@ end
         @test ohlc[end].timestamp[1] == ohlc.timestamp[end]
     end
 
+    @testset "getindex first" begin
+        @test cl[].timestamp   == [Date(2000, 1, 3)]
+        @test ohlc[].timestamp == [Date(2000, 1, 3)]
+    end
+
     @testset "getindex on single Int and Date" begin
         @test ohlc[1].timestamp              == [Date(2000,1,3)]
         @test ohlc[Date(2000,1,3)].timestamp == [Date(2000,1,3)]

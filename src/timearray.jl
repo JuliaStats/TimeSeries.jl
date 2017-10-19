@@ -215,7 +215,7 @@ end
 ###### getindex #################
 
 # single row
-function getindex(ta::TimeArray, n::Int)
+function getindex(ta::TimeArray, n::Int = 1)
     # avoid conversion to column vector
     TimeArray(ta.timestamp[n], ta.values[n:n, :], ta.colnames, ta.meta)
 end
