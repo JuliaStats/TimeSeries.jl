@@ -10,6 +10,7 @@ tests = [
     "readwrite",
     "timeseriesrc",
     "deprecated",
+    "basemisc",
 ]
 
 
