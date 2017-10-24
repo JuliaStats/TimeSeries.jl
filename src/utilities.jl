@@ -1,21 +1,30 @@
-function overlaps(t1::Vector, t2::Vector)
-    i = j = 1
-    idx1 = Int[]
-    idx2 = Int[]
-    while i <= length(t1) && j <= length(t2)
-        if t1[i] > t2[j]
-            j += 1
-        elseif t1[i] < t2[j]
-            i += 1
-        else
-            push!(idx1, i)
-            push!(idx2, j)
-            i += 1
-            j += 1
+overlaps(ts::Vararg{Vector, 1}) = (Base.OneTo(length(ts[1])),)
+
+
+function overlaps(ts::Vararg{Vector, N}) where {N}
+    ret = ntuple(_ -> Int[], N)
+    t1 = ts[1]
+
+    for tidx in 2:N
+        i = j = 1
+        resize!(ret[1], 0)
+        t2 = ts[tidx]
+        while i <= length(t1) && j <= length(t2)
+            if t1[i] > t2[j]
+                j += 1
+            elseif t1[i] < t2[j]
+                i += 1
+            else
+                push!(ret[1], i)
+                push!(ret[tidx], j)
+                i += 1
+                j += 1
+            end
         end
     end
-    (idx1, idx2)
+    ret
 end
+
 
 function sorted_unique_merge(a::Vector, b::Vector)
 
