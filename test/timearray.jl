@@ -207,6 +207,11 @@ end
         # MethodError, Bool must be 1D-TimeArray
         @test_throws MethodError ohlc[merge(op.>cl, op.<cl)]
     end
+
+    @testset "Base.eachindex" begin
+        @test collect(eachindex(cl))   == collect(1:length(cl))
+        @test collect(eachindex(ohlc)) == collect(1:length(ohlc))
+    end
 end
 
 

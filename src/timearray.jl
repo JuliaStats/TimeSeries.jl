@@ -1,7 +1,7 @@
 ###### type definition ##########
 
 import Base: convert, length, show, getindex, start, next, done, isempty, endof,
-             size
+             size, eachindex
 
 abstract type AbstractTimeSeries end
 
@@ -281,6 +281,8 @@ getindex(ta::TimeArray, k::TimeArray{Bool, 1}) = ta[findwhen(k)]
 
 # Define end keyword
 endof(ta::TimeArray) = length(ta.timestamp)
+
+eachindex(ta::TimeArray) = Base.OneTo(length(ta.timestamp))
 
 # helper methods for inner constructor
 function find_dupes_index(cnames)
