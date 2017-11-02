@@ -3,6 +3,14 @@
 * `TimeArray` constructor, `merge`, `update`, `vcat` and `rename`
   will throw typed exceptions. (issue 322)
 
+* Signature of `moving` becomes
+
+  ```julia
+    moving(f::Function, ta::TimeArray, window; padding=false)
+  ```
+
+  , in order to support do-syntax. The original one is deprecated. (issue #TBD)
+
 ### 0.10.0
 
 * add support for time series plotting via RecipesBase dependency (thank you @mkborregaard) 

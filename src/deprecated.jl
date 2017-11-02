@@ -39,3 +39,7 @@ import Base: $, !, ~
 
 @deprecate ~(ta::TimeArray) .~(ta)
 @deprecate !(ta::TimeArray) .!(ta)
+
+# apply.jl
+
+@deprecate moving(ta::TimeArray, f::Function, window; padding=false) moving(f, ta, window; padding=padding)

@@ -112,7 +112,14 @@ returns, pass the symbol ``:log`` to the method::
     2001-12-31 | -0.0239
 
 moving
------
+------
+
+Function signature::
+
+    moving(f, ta::TimeArray, window; padding=false)
+    moving(ta, window; padding=false) do x
+        ...
+    end
 
 Often when working with time series, you want to take a sliding window view of the data and perform a calculation on it. The
 simplest example of this is the moving average. For a 10-period moving average, you take the first ten values, sum then and
@@ -121,7 +128,7 @@ arguments: the function that you want to use on your window and the size of the 
 
 In our moving average example, we would pass arguments this way::
 
-    julia> moving(cl, mean, 10)
+    julia> moving(mean, cl, 10)
     491x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-14 to 2001-12-31
 
                  Close
