@@ -74,7 +74,7 @@ end
     end
 
     @testset "upto" begin
-        @test upto(mdata,sum).meta == "Apple"
+        @test upto(sum, mdata).meta == "Apple"
     end
 end
 

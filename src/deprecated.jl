@@ -42,4 +42,5 @@ import Base: $, !, ~
 
 # apply.jl
 
-@deprecate moving(ta::TimeArray, f::Function, window; padding=false) moving(f, ta, window; padding=padding)
+@deprecate moving(ta::TimeArray, f, window; padding=false) moving(f, ta, window; padding=padding)
+@deprecate upto(ta::TimeArray, f, window; padding=false) upto(f, ta, window; padding=padding)

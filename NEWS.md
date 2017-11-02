@@ -6,7 +6,15 @@
 * Signature of `moving` becomes
 
   ```julia
-    moving(f::Function, ta::TimeArray, window; padding=false)
+    moving(f, ta::TimeArray, window; padding=false)
+  ```
+
+  , in order to support do-syntax. The original one is deprecated. (issue #TBD)
+
+* Signature of `upto` becomes
+
+  ```julia
+    moving(f, ta::TimeArray, window; padding=false)
   ```
 
   , in order to support do-syntax. The original one is deprecated. (issue #TBD)

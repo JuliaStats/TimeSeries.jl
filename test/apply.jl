@@ -108,12 +108,12 @@ using TimeSeries
     end
 
     @testset "upto method accumulates" begin
-        @test isapprox(upto(cl, sum).values[10]       , sum(cl.values[1:10]))
-        @test isapprox(upto(cl, mean).values[10]      , mean(cl.values[1:10]))
-        @test upto(cl, sum).timestamp[10] == Date(2000,1,14)
+        @test isapprox(upto(sum, cl).values[10]       , sum(cl.values[1:10]))
+        @test isapprox(upto(mean, cl).values[10]      , mean(cl.values[1:10]))
+        @test upto(sum, cl).timestamp[10] == Date(2000,1,14)
         # transpose the upto value output from column to row vector but values are identical
-        @test isapprox(upto(ohlc, sum).values[10, :]' , sum(ohlc.values[1:10, :], 1))
-        @test isapprox(upto(ohlc, mean).values[10, :]', mean(ohlc.values[1:10, :], 1))
+        @test isapprox(upto(sum, ohlc).values[10, :]' , sum(ohlc.values[1:10, :], 1))
+        @test isapprox(upto(mean, ohlc).values[10, :]', mean(ohlc.values[1:10, :], 1))
     end
 end
 
