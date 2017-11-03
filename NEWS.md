@@ -37,10 +37,23 @@
   ```
 
   can perform faster than ```merge(ta1, ta2)``` in this case. (issue #TBD)
+* Support more reduction functions of Base. (issue #TBD)
+    * `sum`
+    * `mean`
+    * `std`
+    * `var`
+
+  e.g.
+  ```julia
+    sum(ta)  # same as sum(ta, 1), and it's equivalent to moving(sum, ta, length(ta))
+    sum(ta, 2)
+  ```
+
+* Support cumulative prod `cumprod`. (issue #TBD)
 
 ### 0.10.0
 
-* add support for time series plotting via RecipesBase dependency (thank you @mkborregaard) 
+* add support for time series plotting via RecipesBase dependency (thank you @mkborregaard)
 * add StepRange indexing support (issue #311)
 
 ### 0.9.2
@@ -109,7 +122,7 @@
 
 ### 0.7.1
 
-* readtimearray method now allows arbitrary delimiters (thanks @dourouc05) 
+* readtimearray method now allows arbitrary delimiters (thanks @dourouc05)
 
 ### 0.7.0
 
@@ -146,7 +159,7 @@
 ### 0.6.3
 
 * precompile support added
-* test/combine.jl and test/split.jl now imports Base.Dates explicity 
+* test/combine.jl and test/split.jl now imports Base.Dates explicity
 
 ### 0.6.2
 
@@ -184,7 +197,7 @@
 
 ### 0.5.9
 
-* added kwarg argument `format` to the `readtimearray` method to allow parsing datetime formats that are not 
+* added kwarg argument `format` to the `readtimearray` method to allow parsing datetime formats that are not
 currently supported.
 * changed two references to `Range1` to `UnitRange`
 * added import of Base.values. I had defined it first and I guess they like it so much they co-opted it. :)
