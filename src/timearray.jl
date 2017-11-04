@@ -38,24 +38,13 @@ end
 
 ###### outer constructor ########
 
-TimeArray(d::AbstractVector{D}, v::AbstractArray{T, N}, c::Vector{S},
-          m::Any) where {T, N, D <: TimeType, S <: AbstractString} =
+TimeArray(d::AbstractVector{D}, v::AbstractArray{T, N},
+          c::Vector{S}=fill("", size(v,2)),
+          m::Any=nothing) where {T, N, D <: TimeType, S <: AbstractString} =
     TimeArray{T, N, D, typeof(v)}(d, v, map(String, c), m)
-TimeArray(d::D, v::AbstractArray{T, N}, c::Vector{S},
-          m::Any) where {T, N, D <: TimeType, S <: AbstractString} =
+TimeArray(d::D, v::AbstractArray{T, N}, c::Vector{S}=fill("", size(v, 2)),
+          m::Any=nothing) where {T, N, D <: TimeType, S <: AbstractString} =
     TimeArray{T, N, D, typeof(v)}([d], v, map(String, c), m)
-
-# when no column names are provided - meta is forced to nothing
-TimeArray(d::AbstractVector{D}, v::AbstractArray) where {D <: TimeType} =
-    TimeArray(d, v, fill("", size(v, 2)), nothing)
-TimeArray(d::D, v::AbstractArray) where {D <: TimeType} =
-    TimeArray([d], v, fill("", size(v, 2)), nothing)
-
-# when no meta is provided
-TimeArray(d::AbstractVector{D}, v::AbstractArray, c) where {D <: TimeType} =
-    TimeArray(d, v, c, nothing)
-TimeArray(d::D, v::AbstractArray, c) where {D <: TimeType} =
-    TimeArray([d], v, c, nothing)
 
 ###### conversion ###############
 
