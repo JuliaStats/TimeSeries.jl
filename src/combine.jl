@@ -121,7 +121,7 @@ end
 
 # map ######################
 
-function map(f::Function, ta::TimeArray)
+function map(f, ta::TimeArray)
     timestamps = similar(ta.timestamp)
     values = similar(ta.values)
 
@@ -131,8 +131,8 @@ function map(f::Function, ta::TimeArray)
 
     order = sortperm(timestamps)
     if length(ta.colnames) == 1 # Check for 1D to ensure values remains a 1D vector.
-        return TimeArray(timestamps[order], values[order], ta.colnames, ta.meta)
+        TimeArray(timestamps[order], values[order], ta.colnames, ta.meta)
     else
-        return TimeArray(timestamps[order], values[order, :], ta.colnames, ta.meta)
+        TimeArray(timestamps[order], values[order, :], ta.colnames, ta.meta)
     end
 end

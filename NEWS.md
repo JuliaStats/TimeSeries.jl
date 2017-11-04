@@ -11,6 +11,17 @@
 
   , in order to support do-syntax. The original one is deprecated. (issue #TBD)
 
+* `map` supports callable object. (issue #TBD)
+
+  ```julia
+  struct T end
+  (::T)(timestamp, x) = (timestamp, x + 42)
+
+  t = T()
+
+  map(t, ta)
+  ```
+
 ### 0.10.0
 
 * add support for time series plotting via RecipesBase dependency (thank you @mkborregaard) 
