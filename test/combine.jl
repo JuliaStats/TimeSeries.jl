@@ -125,6 +125,28 @@ end
 end
 
 
+@testset "hcat" begin
+    let ta = [cl op cl]
+        @test ta.meta == cl.meta
+        @test length(ta.colnames) == 3
+        @test ta.colnames[1] != ta.colnames[3]
+        @test ta.colnames[1] == "Close"
+        @test ta.colnames[2] == "Open"
+        @test ta.values == [cl.values op.values cl.values]
+    end
+
+    let ta = [cl ohlc]
+        @test ta.meta == ta.meta
+        @test length(ta.colnames) == 5
+        @test ta.colnames[1] == "Close"
+        @test ta.colnames[1] != ta.colnames[end]
+        @test ta.values == [cl.values ohlc.values]
+    end
+
+    @test_throws DimensionMismatch [cl[1:3] cl]
+end
+
+
 @testset "vcat works correctly" begin
     @testset "concatenates time series correctly in 1D" begin
         a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"])
