@@ -152,7 +152,7 @@ Another operation common in time series analysis is an aggregation function. Tim
 Suppose you want to keep track of the sum of all the values from the beginning to the present timestamp. You would use the
 ``upto`` method like this::
 
-    julia> upto(cl, sum)
+    julia> upto(sum, cl)
     500x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
 
                  Close

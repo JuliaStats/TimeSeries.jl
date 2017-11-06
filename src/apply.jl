@@ -78,7 +78,7 @@ end  # percentchange
 
 ###### moving ###################
 
-function moving(f::Function, ta::TimeArray{T, 1}, window::Int;
+function moving(f, ta::TimeArray{T, 1}, window::Int;
                 padding::Bool = false) where {T}
     tstamps = padding ? ta.timestamp : ta.timestamp[window:end]
     vals    = zeros(ta.values[window:end])
@@ -89,7 +89,7 @@ function moving(f::Function, ta::TimeArray{T, 1}, window::Int;
     TimeArray(tstamps, vals, ta.colnames, ta.meta)
 end
 
-function moving(f::Function, ta::TimeArray{T, 2}, window::Int;
+function moving(f, ta::TimeArray{T, 2}, window::Int;
                 padding::Bool = false) where {T}
     tstamps = padding ? ta.timestamp : ta.timestamp[window:end]
     vals    = zeros(ta.values[window:end, :])
@@ -102,7 +102,7 @@ end
 
 ###### upto #####################
 
-function upto(ta::TimeArray{T, 1}, f::Function) where {T}
+function upto(f, ta::TimeArray{T, 1}) where {T}
     vals = zeros(ta.values)
     for i=1:length(vals)
         vals[i] = f(ta.values[1:i])
@@ -110,7 +110,7 @@ function upto(ta::TimeArray{T, 1}, f::Function) where {T}
     TimeArray(ta.timestamp, vals, ta.colnames, ta.meta)
 end
 
-function upto(ta::TimeArray{T, 2}, f::Function) where {T}
+function upto(f, ta::TimeArray{T, 2}) where {T}
     vals = zeros(ta.values)
     for i=1:size(vals, 1), j=1:size(vals, 2)
         vals[i, j] = f(ta.values[1:i, j])
