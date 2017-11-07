@@ -3,6 +3,8 @@ os:
   - linux
 julia:
   - 0.6
+env:
+  - PYTHON=""
 notifications:
   email: false
 sudo: false
@@ -11,3 +13,11 @@ script:
   - julia -e 'Pkg.clone(pwd()); Pkg.build("TimeSeries"); Pkg.test("TimeSeries", coverage=true)'
 after_success:
   - julia -e 'cd(Pkg.dir("TimeSeries")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(process_folder())'
+
+  # Documenter auto-deploy
+  # following `using` instruction is for triggering precompilation
+  - julia -e 'Pkg.add("Documenter")'
+  - julia -e 'Pkg.add("MarketData")'
+  - julia -e 'Pkg.add("Plots"); Pkg.add("PlotlyJS")'
+  - julia -e 'using Plots; plotlyjs()'
+  - julia -e 'cd(Pkg.dir("TimeSeries", "docs")); include("make.jl")'

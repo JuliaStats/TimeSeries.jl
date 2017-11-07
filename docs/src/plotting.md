@@ -9,27 +9,25 @@ different plotting packages using the
 
 The recipe allows `TimeArray` objects to be passed as input to `plot`. The
 recipe will plot each variable as an individual line, aligning all
-variables to the same y axis (here shown using PyPlot as a plotting
+variables to the same y axis (here shown using `PyPlot` as a plotting
 backend).
 
-```@example plot
+```julia
 using Plots, MarketData, TimeSeries
 pyplot()
 plot(MarketData.ohlc)
-savefig("basicplot.svg"); nothing  # hide
 ```
 
-![image](basicplot.svg)
+![image](images/basicplot.svg)
 
 More sophisticated plots can be created by using keyword attributes and
 subsets:
 
-```@example plot
+```julia
 plot(MarketData.ohlc["Low"], seriestype = :scatter, markersize = 3, color = :red, markeralpha = 0.4, grid = true)
-savefig("complexplot.svg"); nothing  # hide
 ```
 
-![image](complexplot.svg)
+![image](images/complexplot.svg)
 
 A complete list of all attributes and plotting possibilities can be
 found in the Plots
@@ -38,9 +36,8 @@ found in the Plots
 
 Plotting candlestick:
 
-```@example plot
+```julia
 plot(TimeSeries.Candlestick(MarketData.ohlc))
-savefig("candlestick.svg"); nothing  # hide
 ```
 
-![image](candlestick.svg)
+![image](images/candlestick.svg)
