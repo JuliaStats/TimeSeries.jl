@@ -6,6 +6,10 @@ using MarketData
 using TimeSeries
 
 
+struct _TestType
+end
+
+
 @testset "combine" begin
 
 
@@ -208,6 +212,15 @@ end
 
         @test length(b) == length(a)
         @test issorted(b.timestamp)
+    end
+
+    @testset "map callable object" begin
+        (::_TestType)(ts, x) = (ts, x + 42)
+
+        ta = map(_TestType(), cl)
+        @test ta.timestamp == cl.timestamp
+        @test ta.values == cl.values .+ 42
+        @test ta.meta == cl.meta
     end
 end
 
