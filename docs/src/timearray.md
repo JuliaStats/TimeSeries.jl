@@ -7,7 +7,7 @@ The `TimeArray` time series type is defined here
 struct TimeArray{T,N,D<:TimeType,A<:AbstractArray} <: AbstractTimeSeries
     timestamp::Vector{D}
     values::A # some kind of AbstractArray{T,N}
-    colnames::Vector{tring}
+    colnames::Vector{String}
     meta::Any
 
     # inner constructor code enforcing invariants
