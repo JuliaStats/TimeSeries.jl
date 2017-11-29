@@ -30,6 +30,14 @@
   map(t, ta)
   ```
 
+* `hcat` support. Given two `TimeArray` which have same timestamp,
+
+  ```julia
+    [ta1 ta2]
+  ```
+
+  can perform faster than ```merge(ta1, ta2)``` in this case. (issue #TBD)
+
 ### 0.10.0
 
 * add support for time series plotting via RecipesBase dependency (thank you @mkborregaard) 

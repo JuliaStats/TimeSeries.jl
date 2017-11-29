@@ -1,4 +1,4 @@
-import Base: merge, vcat, map
+import Base: merge, hcat, vcat, map
 
 ###### merge ####################
 
@@ -48,6 +48,25 @@ function merge(ta1::TimeArray{T, N, D}, ta2::TimeArray{T, M, D}, method::Symbol=
     return setcolnames!(ta, colnames)
 
 end
+
+# hcat ##########################
+
+function hcat(x::TimeArray, y::TimeArray)
+    tsx = x.timestamp
+    tsy = y.timestamp
+
+    if length(tsx) != length(tsx) || tsx != tsy
+        throw(DimensionMismatch(
+            "timestamps not consistent, please checkout `merge`."))
+    end
+
+    meta = ifelse(x.meta == y.meta, x.meta, nothing)
+
+    TimeArray(tsx, [x.values y.values], [x.colnames; y.colnames], meta)
+end
+
+hcat(x::TimeArray, y::TimeArray, zs::Vararg{TimeArray}) =
+    hcat(hcat(x, y), zs...)
 
 # collapse ######################
 
