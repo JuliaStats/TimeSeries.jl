@@ -1,7 +1,9 @@
 ### 0.11.0
 
+* Dropping 0.5 support. (issue [#327])
+
 * `TimeArray` constructor, `merge`, `update`, `vcat` and `rename`
-  will throw typed exceptions. (issue 322)
+  will throw typed exceptions. (issue [#322])
 
 * Signature of `moving` becomes
 
@@ -9,7 +11,7 @@
     moving(f, ta::TimeArray, window; padding=false)
   ```
 
-  , in order to support do-syntax. The original one is deprecated. (issue #TBD)
+  , in order to support do-syntax. The original one is deprecated. (issue [#334])
 
 * Signature of `upto` becomes
 
@@ -17,9 +19,9 @@
     moving(f, ta::TimeArray, window; padding=false)
   ```
 
-  , in order to support do-syntax. The original one is deprecated. (issue #TBD)
+  , in order to support do-syntax. The original one is deprecated. (issue [#337])
 
-* `map` supports callable object. (issue #TBD)
+* `map` supports callable object. (issue [#339])
 
   ```julia
   struct T end
@@ -36,8 +38,10 @@
     [ta1 ta2]
   ```
 
-  can perform faster than ```merge(ta1, ta2)``` in this case. (issue #TBD)
-* Support more reduction functions of Base. (issue #TBD)
+  can perform faster than ```merge(ta1, ta2)``` in this case.
+  (issue [#341])
+
+* Support more reduction functions of Base. (issue [#338])
     * `sum`
     * `mean`
     * `std`
@@ -49,7 +53,18 @@
     sum(ta, 2)
   ```
 
-* Support cumulative prod `cumprod`. (issue #TBD)
+* Support cumulative prod `cumprod`. (issue [#338])
+
+* Support `eachindex(ta)`. (issue [#336])
+
+[#322]: https://github.com/JuliaStats/TimeSeries.jl/pull/322
+[#327]: https://github.com/JuliaStats/TimeSeries.jl/pull/327
+[#334]: https://github.com/JuliaStats/TimeSeries.jl/pull/334
+[#336]: https://github.com/JuliaStats/TimeSeries.jl/pull/336
+[#337]: https://github.com/JuliaStats/TimeSeries.jl/pull/337
+[#338]: https://github.com/JuliaStats/TimeSeries.jl/pull/338
+[#339]: https://github.com/JuliaStats/TimeSeries.jl/pull/339
+[#341]: https://github.com/JuliaStats/TimeSeries.jl/pull/341
 
 ### 0.10.0
 
