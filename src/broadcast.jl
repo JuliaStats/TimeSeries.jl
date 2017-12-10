@@ -17,7 +17,7 @@ promote_containertype(::Type{TimeArray}, ::Type{Any}) = TimeArray
 
 @generated function broadcast_c(f, ::Type{TimeArray}, args::Vararg{Any, N}) where {N}
     idx = Int[]
-    colwidth = Expr(:comparison)
+    colwidths = :[]
     overlaps_expr = :(overlaps())
 
     for i in 1:N
@@ -30,10 +30,7 @@ promote_containertype(::Type{TimeArray}, ::Type{Any}) = TimeArray
         push!(overlaps_expr.args, :(args[$i].timestamp))
 
         if args[i].parameters[2] == 2  # 2D array
-            if !isempty(colwidth.args)
-                push!(colwidth.args, :(==))
-            end
-            push!(colwidth.args, :(length(args[$i].colnames)))
+            push!(colwidths.args, :(length(args[$i].colnames)))
         end
     end
 
@@ -52,9 +49,14 @@ promote_containertype(::Type{TimeArray}, ::Type{Any}) = TimeArray
 
     # check column length. all of non-single column should have same length
     # and contruct new column names
-    col_check_expr = if length(colwidth.args) > 1  # if we have more than one TimeArray
+    col_check_expr = if length(colwidths.args) > 1  # if we have more than one TimeArray
         quote
-            if !($colwidth)
+            colwidth = Set{Int}()
+            for n ∈ $colwidths
+                n == 1 && continue
+                push!(colwidth, n)
+            end
+            if length(colwidth) > 1
                 throw(DimensionMismatch(
                     "arrays must have the same number of columns, " *
                     "or one must be a single column"))

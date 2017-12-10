@@ -268,6 +268,14 @@ end
             @test ta.values[end] == op.values[end] - cl.values[end] + 42
         end
     end
+
+    @testset "broadcast 2D TimeArray" begin
+        let A = reshape(cl.values, 500, 1)  # 2D, dim -> 500×1
+          ta = TimeArray(cl.timestamp, A, ["A"]) .+ ohlc
+          @test length(ta.colnames) == 4
+          @test ta.timestamp == cl.timestamp
+        end
+    end
 end  # @testset "dot call auto-fusion"
 
 
