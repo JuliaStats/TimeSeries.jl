@@ -7,4 +7,4 @@ TimeSeries.jl
 [![Stable Documentation](https://img.shields.io/badge/docs-stable-blue.svg)](https://JuliaStats.github.io/TimeSeries.jl/stable)
 
 TimeSeries aims to provide a lightweight framework for working with time series data in Julia.
-Documentation is provided [here](http://timeseriesjl.readthedocs.org/en/latest/).
+Documentation is provided [here](http://juliastats.github.io/TimeSeries.jl/latest/).
