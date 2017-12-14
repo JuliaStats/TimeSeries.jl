@@ -62,6 +62,22 @@ using TimeSeries
         @test diff(op, padding=true).values[2]                == op[2].values[1] .- op[1].values[1]
     end
 
+    @testset "diff calculates 2nd-order differences" begin
+        @test diff(op, differences=2).timestamp               == diff(op, padding=false, differences=2).timestamp
+        @test diff(op, differences=2).values                  == diff(op, padding=false, differences=2).values
+        @test diff(diff(op)).timestamp                        == diff(op, padding=false, differences=2).timestamp
+        @test diff(diff(op)).values                           == diff(op, padding=false, differences=2).values
+        @test diff(op, padding=true, differences=2).values[3] == diff(op, differences=2).values[1]
+    end
+
+    @testset "diff calculates 3rd-order differences" begin
+        @test diff(op, differences=3).timestamp               == diff(op, padding=false, differences=3).timestamp
+        @test diff(op, differences=3).values                  == diff(op, padding=false, differences=3).values
+        @test diff(diff(diff(op))).timestamp                  == diff(op, padding=false, differences=3).timestamp
+        @test diff(diff(diff(op))).values                     == diff(op, padding=false, differences=3).values
+        @test diff(op, padding=true, differences=3).values[4] == diff(op, differences=3).values[1]
+    end
+
     @testset "simple return value" begin
         @test percentchange(cl, :simple).values == percentchange(cl).values
         @test percentchange(cl).values          == percentchange(cl, padding=false).values

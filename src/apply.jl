@@ -48,10 +48,11 @@ end  # lead
 
 ###### diff #####################
 
-# TODO: Support higher-order differencing?
-function diff(ta::TimeArray; padding::Bool=false)
+function diff(ta::TimeArray; padding::Bool=false, differences::Int=1)
     cols = ta.colnames
-    ta = ta .- lag(ta, padding=padding)
+    for d in 1:differences
+        ta = ta .- lag(ta, padding=padding)
+    end
     ta.colnames[:] = cols
     return ta
 end  # diff

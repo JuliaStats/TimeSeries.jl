@@ -60,6 +60,22 @@ put the last observation in the object (which happens to be on Dec 31,
 lead(cl, 499)
 ```
 
+## `diff`
+
+Differentiating a time series calculates the finite difference between
+two consecutive points in the time series. The resulting time series
+will have less points than the original. Those points are filled with
+`NaN` values if `padding=true`.
+
+```@repl diff
+diff(cl)
+```
+
+You can calculate higher order differences by using the keyword
+parameter `differences`, accepting a positive integer. The default
+value is `differences=1`. For instance, passing `differences=2` is
+equivalent to doing `diff(diff(cl)`. 
+
 ## `percentchange`
 
 Calculating change between timestamps is a very common time series
