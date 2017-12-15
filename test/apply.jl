@@ -77,8 +77,8 @@ using TimeSeries
         @test diff(diff(op)).timestamp                        == diff(op, padding=false, differences=2).timestamp
         @test diff(diff(op)).values                           == diff(op, padding=false, differences=2).values
         @test diff(op, padding=true, differences=2).values[3] == diff(op, differences=2).values[1]
-        @test isequal(diff(op, padding=true, differences[2]).values[2], NaN)  == true
-        @test isequal(diff(op, padding=true, differences[2]).values[1], NaN)  == true
+        @test isequal(diff(op, padding=true, differences=2).values[2], NaN)  == true
+        @test isequal(diff(op, padding=true, differences=2).values[1], NaN)  == true
     end
 
     @testset "diff calculates 2nd-order differences for multi-column ts" begin
@@ -97,9 +97,9 @@ using TimeSeries
         @test diff(diff(diff(op))).timestamp                  == diff(op, padding=false, differences=3).timestamp
         @test diff(diff(diff(op))).values                     == diff(op, padding=false, differences=3).values
         @test diff(op, padding=true, differences=3).values[4] == diff(op, differences=3).values[1]
-        @test isequal(diff(op, padding=true, differences[2]).values[3], NaN)  == true
-        @test isequal(diff(op, padding=true, differences[2]).values[2], NaN)  == true
-        @test isequal(diff(op, padding=true, differences[2]).values[1], NaN)  == true
+        @test isequal(diff(op, padding=true, differences=3).values[3], NaN)  == true
+        @test isequal(diff(op, padding=true, differences=3).values[2], NaN)  == true
+        @test isequal(diff(op, padding=true, differences=3).values[1], NaN)  == true
     end
 
     @testset "diff calculates 3rd-order differences for multi-column ts" begin
