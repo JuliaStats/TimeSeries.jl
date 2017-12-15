@@ -68,6 +68,8 @@ will have less points than the original. Those points are filled with
 `NaN` values if `padding=true`.
 
 ```@repl diff
+using TimeSeries
+using MarketData
 diff(cl)
 ```
 
