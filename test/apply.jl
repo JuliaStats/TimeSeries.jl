@@ -83,7 +83,7 @@ using TimeSeries
 
     @testset "diff calculates 2nd-order differences for multi-column ts" begin
         @test diff(ohlc, differences=2).timestamp                      == diff(ohlc, padding=false, differences=2).timestamp
-        @test diff(ohlc, differences=2).values                         == diff(ohlc, padding=false, differenes=2).values
+        @test diff(ohlc, differences=2).values                         == diff(ohlc, padding=false, differences=2).values
         @test diff(diff(ohlc)).timestamp                               == diff(ohlc, padding=false, differences=2).timestamp
         @test diff(diff(ohlc)).values                                  == diff(ohlc, padding=false, differences=2).values
         @test diff(ohlc, padding=true, differences=2).values[2,:]       == diff(ohlc, differences=2).values[1,:]
