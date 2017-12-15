@@ -74,7 +74,7 @@ diff(cl)
 You can calculate higher order differences by using the keyword
 parameter `differences`, accepting a positive integer. The default
 value is `differences=1`. For instance, passing `differences=2` is
-equivalent to doing `diff(diff(cl)`. 
+equivalent to doing `diff(diff(cl)`.
 
 ## `percentchange`
 
