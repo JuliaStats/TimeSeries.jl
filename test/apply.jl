@@ -86,7 +86,7 @@ using TimeSeries
         @test diff(ohlc, differences=2).values                         == diff(ohlc, padding=false, differences=2).values
         @test diff(diff(ohlc)).timestamp                               == diff(ohlc, padding=false, differences=2).timestamp
         @test diff(diff(ohlc)).values                                  == diff(ohlc, padding=false, differences=2).values
-        @test diff(ohlc, padding=true, differences=2).values[2,:]       == diff(ohlc, differences=2).values[1,:]
+        @test diff(ohlc, padding=true, differences=2).values[3,:]       == diff(ohlc, differences=2).values[1,:]
         @test all(x -> isnan(x), diff(ohlc, padding=true, differences=2).values[2,:]) == true
         @test all(x -> isnan(x), diff(ohlc, padding=true, differences=2).values[1,:]) == true
     end
@@ -107,7 +107,7 @@ using TimeSeries
         @test diff(ohlc, differences=3).values                         == diff(ohlc, padding=false, differences=3).values
         @test diff(diff(diff(ohlc))).timestamp                         == diff(ohlc, padding=false, differences=3).timestamp
         @test diff(diff(diff(ohlc))).values                            == diff(ohlc, padding=false, differences=3).values
-        @test diff(ohlc, padding=true, differences=3).values[3,:]      == diff(ohlc, differences=3).values[1,:]
+        @test diff(ohlc, padding=true, differences=3).values[4,:]      == diff(ohlc, differences=3).values[1,:]
         @test all(x -> isnan(x), diff(ohlc, padding=true, differences=3).values[3,:]) == true
         @test all(x -> isnan(x), diff(ohlc, padding=true, differences=3).values[2,:]) == true
         @test all(x -> isnan(x), diff(ohlc, padding=true, differences=3).values[1,:]) == true
