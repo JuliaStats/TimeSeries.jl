@@ -62,12 +62,33 @@ using TimeSeries
         @test diff(op, padding=true).values[2]                == op[2].values[1] .- op[1].values[1]
     end
 
+    @testset "diff calculates 1st-order differences for multi-column ts" begin
+        @test diff(ohlc).timestamp                                     == diff(ohlc, padding=false).timestamp
+        @test diff(ohlc).values                                        == diff(ohlc, padding=false).values
+        @test diff(ohlc, padding=false).values[1,:]                    == ohlc.values[2,:] .- ohlc.values[1,:]
+        @test all(x -> isnan(x), diff(ohlc, padding=true).values[1,:]) == true
+        @test diff(ohlc, padding=true).values[2,:]                     == diff(ohlc).values[1,:]
+        @test diff(ohlc, padding=true).values[2,:]                     == ohlc.values[2,:] .- ohlc.values[1,:]
+    end
+
     @testset "diff calculates 2nd-order differences" begin
         @test diff(op, differences=2).timestamp               == diff(op, padding=false, differences=2).timestamp
         @test diff(op, differences=2).values                  == diff(op, padding=false, differences=2).values
         @test diff(diff(op)).timestamp                        == diff(op, padding=false, differences=2).timestamp
         @test diff(diff(op)).values                           == diff(op, padding=false, differences=2).values
         @test diff(op, padding=true, differences=2).values[3] == diff(op, differences=2).values[1]
+        @test isequal(diff(op, padding=true, differences[2]).values[2], NaN)  == true
+        @test isequal(diff(op, padding=true, differences[2]).values[1], NaN)  == true
+    end
+
+    @testset "diff calculates 2nd-order differences for multi-column ts" begin
+        @test diff(ohlc, differences=2).timestamp                      == diff(ohlc, padding=false, differences=2).timestamp
+        @test diff(ohlc, differences=2).values                         == diff(ohlc, padding=false, differenes=2).values
+        @test diff(diff(ohlc)).timestamp                               == diff(ohlc, padding=false, differences=2).timestamp
+        @test diff(diff(ohlc)).values                                  == diff(ohlc, padding=false, differences=2).values
+        @test diff(ohlc, padding=true, differences=2).values[2,:]       == diff(ohlc, differences=2).values[1,:]
+        @test all(x -> isnan(x), diff(ohlc, padding=true, differences=2).values[2,:]) == true
+        @test all(x -> isnan(x), diff(ohlc, padding=true, differences=2).values[1,:]) == true
     end
 
     @testset "diff calculates 3rd-order differences" begin
@@ -76,6 +97,20 @@ using TimeSeries
         @test diff(diff(diff(op))).timestamp                  == diff(op, padding=false, differences=3).timestamp
         @test diff(diff(diff(op))).values                     == diff(op, padding=false, differences=3).values
         @test diff(op, padding=true, differences=3).values[4] == diff(op, differences=3).values[1]
+        @test isequal(diff(op, padding=true, differences[2]).values[3], NaN)  == true
+        @test isequal(diff(op, padding=true, differences[2]).values[2], NaN)  == true
+        @test isequal(diff(op, padding=true, differences[2]).values[1], NaN)  == true
+    end
+
+    @testset "diff calculates 3rd-order differences for multi-column ts" begin
+        @test diff(ohlc, differences=3).timestamp                      == diff(ohlc, padding=false, differences=3).timestamp
+        @test diff(ohlc, differences=3).values                         == diff(ohlc, padding=false, differenes=3).values
+        @test diff(diff(diff(ohlc))).timestamp                         == diff(ohlc, padding=false, differences=3).timestamp
+        @test diff(diff(diff(ohlc))).values                            == diff(ohlc, padding=false, differences=3).values
+        @test diff(ohlc, padding=true, differences=3).values[3,:]      == diff(ohlc, differences=2).values[1,:]
+        @test all(x -> isnan(x), diff(ohlc, padding=true, differences=3).values[3,:]) == true
+        @test all(x -> isnan(x), diff(ohlc, padding=true, differences=3).values[2,:]) == true
+        @test all(x -> isnan(x), diff(ohlc, padding=true, differences=3).values[1,:]) == true
     end
 
     @testset "simple return value" begin
