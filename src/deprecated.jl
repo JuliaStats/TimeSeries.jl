@@ -13,7 +13,7 @@ using Base: @deprecate
 # since julia 0.6
 
 # deprecate non-dot function due to 0.6 syntactic loop fusion
-for f ∈ (:^, :/, :abs, :sign, :sqrt, :cbrt,
+for f ∈ (:abs, :sign, :sqrt, :cbrt,
          :log, :log2, :log10, :log1p,
          :exp, :exp2, :exp10, :expm1,
          :cos, :sin, :tan, :cosd, :sind, :tand,
@@ -23,11 +23,16 @@ for f ∈ (:^, :/, :abs, :sign, :sqrt, :cbrt,
     @eval @deprecate $f(ta::TimeArray, args...) $f.(ta, args...)
 end
 
+for f ∈ (:^, :/)
+    @eval import Base: $f
+    @eval @deprecate $f(ta::TimeArray, args...) Symbol(".", $f)(ta, args...)
+end
+
 for f ∈ (:+, :-, :*, :%,
          :|, :&, :<, :>, :(==), :(!=), :>=, :<=)
     @eval import Base: $f
-    @eval @deprecate $f(ta::TimeArray, args...) $f.(ta, args...)
-    @eval @deprecate $f(n::Number, ta::TimeArray) $f.(n, ta)
+    @eval @deprecate $f(ta::TimeArray, args...) Symbol(".", $f)(ta, args...)
+    @eval @deprecate $f(n::Number, ta::TimeArray) Symbol(".", $f)(n, ta)
 end
 
 # non-dot operators
