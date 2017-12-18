@@ -25,14 +25,14 @@ end
 
 for f ∈ (:^, :/)
     @eval import Base: $f
-    @eval @deprecate $f(ta::TimeArray, args...) Symbol(".", $f)(ta, args...)
+    @eval @deprecate $f(ta::TimeArray, args...) Symbol(".", f)(ta, args...)
 end
 
 for f ∈ (:+, :-, :*, :%,
          :|, :&, :<, :>, :(==), :(!=), :>=, :<=)
     @eval import Base: $f
-    @eval @deprecate $f(ta::TimeArray, args...) Symbol(".", $f)(ta, args...)
-    @eval @deprecate $f(n::Number, ta::TimeArray) Symbol(".", $f)(n, ta)
+    @eval @deprecate $f(ta::TimeArray, args...) Symbol(".", f)(ta, args...)
+    @eval @deprecate $f(n::Number, ta::TimeArray) Symbol(".", f)(n, ta)
 end
 
 # non-dot operators
