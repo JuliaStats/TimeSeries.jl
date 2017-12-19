@@ -1,7 +1,7 @@
 ###### type definition ##########
 
-import Base: convert, length, show, getindex, start, next, done, isempty, endof,
-             size, eachindex
+import Base: convert, copy, length, show, getindex, start, next, done, isempty,
+             endof, size, eachindex
 
 abstract type AbstractTimeSeries end
 
@@ -55,6 +55,11 @@ convert(::Type{TimeArray{Float64, 2}}, x::TimeArray{Bool, 2}) =
 
 convert(x::TimeArray{Bool, 1}) = convert(TimeArray{Float64, 1}, x::TimeArray{Bool, 1})
 convert(x::TimeArray{Bool, 2}) = convert(TimeArray{Float64, 2}, x::TimeArray{Bool, 2})
+
+###### copy ###############
+
+copy(ta::TimeArray)::TimeArray =
+         TimeArray(ta.timestamp, ta.values, ta.colnames, ta.meta)
 
 ###### length ###################
 
