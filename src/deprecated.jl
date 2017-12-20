@@ -24,14 +24,14 @@ for f ∈ (:abs, :sign, :sqrt, :cbrt,
 end
 
 for f ∈ (:^, :/)
-    g = Symbol("." * string(f))
+    g = Symbol(".", string(f))
     @eval import Base: $f
     @eval @deprecate $f(ta::TimeArray, args...) $g(ta, args...)
 end
 
 for f ∈ (:+, :-, :*, :%,
          :|, :&, :<, :>, :(==), :(!=), :>=, :<=)
-    g = Symbol("." * string(f))
+    g = Symbol(".", string(f))
     @eval import Base: $f
     @eval @deprecate $f(ta::TimeArray, args...) $g(ta, args...)
     @eval @deprecate $f(n::Number, ta::TimeArray) $g(n, ta)
