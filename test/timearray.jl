@@ -121,6 +121,20 @@ end
     end
 end
 
+@testset "copy methods" begin
+    cop = copy(op)
+    cohlc = copy(ohlc)
+    @testset "copy works" begin
+        @test cop.timestamp == op.timestamp
+        @test cop.values == op.values
+        @test cop.colnames == op.colnames
+        @test cop.meta == op.meta
+        @test cohlc.timestamp == ohlc.timestamp
+        @test cohlc.values == ohlc.values
+        @test cohlc.colnames == ohlc.colnames
+        @test cohlc.meta == ohlc.meta
+    end
+end
 
 @testset "index by integer works with both 1d and 2d time array" begin
     @testset "1d time array" begin
