@@ -59,7 +59,7 @@ convert(x::TimeArray{Bool, 2}) = convert(TimeArray{Float64, 2}, x::TimeArray{Boo
 ###### copy ###############
 
 copy(ta::TimeArray)::TimeArray =
-         TimeArray(ta.timestamp, ta.values, ta.colnames, ta.meta)
+    TimeArray(ta.timestamp, ta.values, ta.colnames, ta.meta)
 
 ###### length ###################
 
