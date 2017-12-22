@@ -290,8 +290,8 @@ function find_dupes_index(cnames)
 end
 
 function replace_dupes(cnames)
-    n=1
-    while length(unique(cnames)) != length(cnames)
+    n = 1
+    while !allunique(cnames)
         ds = find_dupes_index(cnames)
         for d in ds
             if n == 1
@@ -300,7 +300,7 @@ function replace_dupes(cnames)
                 cnames[d] = string(cnames[d][1:length(cnames[d])-length(string(n))-1], "_$n")
             end
         end
-    n +=1
+        n += 1
     end
     cnames
 end
