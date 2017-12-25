@@ -95,20 +95,20 @@ x.meta      == y.meta
 ```
 """
 @generated function ==(x::TimeArray{T,N}, y::TimeArray{S,M}) where {T,S,N,M}
-  if N != M
-    return :false
-    # Other type info is not helpful for assertion.
-    # e.g.
-    #      1.0 == 1
-    #      Date(2111, 1, 1) == DateTime(2111, 1, 1)
-  end
-
-  quote
-    for f ∈ fieldnames(TimeArray)
-      getfield(x, f) != getfield(y, f) && return :false
+    if N != M
+        return :false
+        # Other type info is not helpful for assertion.
+        # e.g.
+        #      1.0 == 1
+        #      Date(2111, 1, 1) == DateTime(2111, 1, 1)
     end
-    :true
-  end
+
+    quote
+        for f ∈ fieldnames(TimeArray)
+            getfield(x, f) != getfield(y, f) && return :false
+        end
+        :true
+    end
 end
 
 ###### show #####################

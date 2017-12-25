@@ -248,21 +248,21 @@ end
     ds = DateTime(2017, 12, 25):DateTime(2017, 12, 31) |> collect
 
     let  # diff colnames
-      x = TimeArray(ds, 1:7, ["foo"])
-      y = TimeArray(ds, 1:7, ["bar"])
-      @test x != y
+        x = TimeArray(ds, 1:7, ["foo"])
+        y = TimeArray(ds, 1:7, ["bar"])
+        @test x != y
     end
 
     let  # Float vs Int
-      x = TimeArray(ds, 1:7)
-      y = TimeArray(ds, 1.0:7)
-      @test x == y
+        x = TimeArray(ds, 1:7)
+        y = TimeArray(ds, 1.0:7)
+        @test x == y
     end
 
     let  # Date vs DateTime
-      ds2 = Date(2017, 12, 25):Date(2017, 12, 31) |> collect
-      x = TimeArray(ds,  1:7, ["foo"], "bar")
-      y = TimeArray(ds2, 1:7, ["foo"], "bar")
+        ds2 = Date(2017, 12, 25):Date(2017, 12, 31) |> collect
+        x = TimeArray(ds,  1:7, ["foo"], "bar")
+        y = TimeArray(ds2, 1:7, ["foo"], "bar")
     end
 end
 
