@@ -1,3 +1,13 @@
+### 0.12.0
+
+* Revoking deprecation warning of `==` and redefining its meaning as
+  'comparing all fields of two TimeArray'. (#356, #TBD)
+
+  ```julia
+  julia> cl == copy(cl)
+  true
+  ```
+
 ### 0.11.0
 
 * Dropping 0.5 support. (issue [#327])

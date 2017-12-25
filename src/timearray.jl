@@ -1,7 +1,7 @@
 ###### type definition ##########
 
 import Base: convert, copy, length, show, getindex, start, next, done, isempty,
-             endof, size, eachindex
+             endof, size, eachindex, ==
 
 abstract type AbstractTimeSeries end
 
@@ -69,12 +69,31 @@ length(ata::AbstractTimeSeries) = length(ata.timestamp)
 
 size(ta::TimeArray, dim...) = size(ta.values, dim...)
 
-###### iterator protocol #########
+###### iterator protocol ########
 
 start(ta::TimeArray)   = 1
 next(ta::TimeArray, i) = ((ta.timestamp[i], ta.values[i, :]), i + 1)
 done(ta::TimeArray, i) = (i > length(ta))
 isempty(ta::TimeArray) = (length(ta) == 0)
+
+###### equal ####################
+
+@generated function ==(x::TimeArray{T,N}, y::TimeArray{S,M}) where {T,S,N,M}
+  if N != M
+    return :false
+    # Other type info is not helpful for assertion
+    # e.g.
+    #      1.0 == 1
+    #      Date(2111, 1, 1) == DateTime(2111, 1, 1)
+  end
+
+  quote
+    for f ∈ fieldnames(TimeArray)
+      getfield(x, f) != getfield(y, f) && return :false
+    end
+    :true
+  end
+end
 
 ###### show #####################
 

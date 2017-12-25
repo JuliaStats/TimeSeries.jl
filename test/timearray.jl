@@ -240,6 +240,33 @@ end
 end
 
 
+@testset "equal" begin
+    @test cl == copy(cl)
+    @test cl != ohlc  # rely on fallback definition
+    @test cl != lag(cl)
+
+    ds = DateTime(2017, 12, 25):DateTime(2017, 12, 31) |> collect
+
+    let  # diff colnames
+      x = TimeArray(ds, 1:7, ["foo"])
+      y = TimeArray(ds, 1:7, ["bar"])
+      @test x != y
+    end
+
+    let  # Float vs Int
+      x = TimeArray(ds, 1:7)
+      y = TimeArray(ds, 1.0:7)
+      @test x == y
+    end
+
+    let  # Date vs DateTime
+      ds2 = Date(2017, 12, 25):Date(2017, 12, 31) |> collect
+      x = TimeArray(ds,  1:7, ["foo"], "bar")
+      y = TimeArray(ds2, 1:7, ["foo"], "bar")
+    end
+end
+
+
 @testset "show methods don't throw errors" begin
     let str = sprint(show, cl)
         out = """500x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
