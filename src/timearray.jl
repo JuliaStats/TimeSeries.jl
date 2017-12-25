@@ -1,7 +1,7 @@
 ###### type definition ##########
 
 import Base: convert, copy, length, show, getindex, start, next, done, isempty,
-             endof, size, eachindex, ==
+             endof, size, eachindex, ==, isequal, hash
 
 abstract type AbstractTimeSeries end
 
@@ -110,6 +110,25 @@ x.meta      == y.meta
         :true
     end
 end
+
+@generated function isequal(x::TimeArray{T,N}, y::TimeArray{S,M}) where {T,S,N,M}
+    if N != M
+      return :false
+    end
+
+    quote
+        for f ∈ fieldnames(TimeArray)
+          !isequal(getfield(x, f), getfield(y, f)) && return :false
+        end
+        :true
+    end
+end
+
+# support for Dict
+hash(x::TimeArray, h::UInt) =
+    mapreduce(+, fieldnames(TimeArray)) do f
+        hash(getfield(x, f), h)
+    end
 
 ###### show #####################
 

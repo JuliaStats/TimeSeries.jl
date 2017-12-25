@@ -1,12 +1,24 @@
 ### 0.12.0
 
 * Revoking deprecation warning of `==` and redefining its meaning as
-  'comparing all fields of two TimeArray'. (#356, #TBD)
+  'comparing all fields of two TimeArray'. (#356, #357)
 
   ```julia
   julia> cl == copy(cl)
   true
   ```
+
+  * Also, `isequal` and `hash` is supported now.
+
+    ```julia
+    julia> d = Dict(cl => 42);
+
+    julia> d[cl]
+    42
+
+    julia> d[copy(cl)]
+    42
+    ```
 
 ### 0.11.0
 

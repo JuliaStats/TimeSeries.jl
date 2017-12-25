@@ -242,8 +242,12 @@ end
 
 @testset "equal" begin
     @test cl == copy(cl)
-    @test cl != ohlc  # rely on fallback definition
-    @test cl != lag(cl)
+    @test cl ≠ ohlc  # rely on fallback definition
+    @test cl ≠ lag(cl)
+
+    @test isequal(cl, copy(cl))
+    @test !isequal(cl, ohlc)
+    @test !isequal(cl, lag(cl))
 
     ds = DateTime(2017, 12, 25):DateTime(2017, 12, 31) |> collect
 
@@ -263,6 +267,15 @@ end
         ds2 = Date(2017, 12, 25):Date(2017, 12, 31) |> collect
         x = TimeArray(ds,  1:7, ["foo"], "bar")
         y = TimeArray(ds2, 1:7, ["foo"], "bar")
+        @test x == y
+    end
+
+    @testset "hash" begin
+        @test hash(cl) == hash(copy(cl))
+
+        d = Dict(cl => 42)
+        @test d[cl] == 42
+        @test d[copy(cl)] == 42
     end
 end
 
