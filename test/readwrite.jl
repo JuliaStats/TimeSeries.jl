@@ -28,14 +28,17 @@ end
 
 @testset "readwrite parses csv correctly" begin
     tm1 = readtimearray(
-        joinpath(dirname(@__FILE__), "data/datetime3.csv"),
+        joinpath(@__DIR__, "data/datetime3.csv"),
         format="yyyy/mm/dd|HH:MM:SS")
     tm2 = readtimearray(
-        joinpath(dirname(@__FILE__), "data/datetime3.csv"),
+        joinpath(@__DIR__, "data/datetime3.csv"),
         format="yyyy/mm/dd|HH:MM:SS", meta="foo")
     tm3 = readtimearray(
-        joinpath(dirname(@__FILE__), "data/read_example_delim.csv"),
+        joinpath(@__DIR__, "data/read_example_delim.csv"),
         format="dd/mm/yyyy HH:MM", delim=';')
+    tm4 = readtimearray(
+        joinpath(@__DIR__, "data/headless.csv"),
+        format="yyyy-mm-dd HH:MM:SS", header=false)
 
     @testset "Specifying DateTime string format for reading" begin
         @test length(tm1)      == 5
@@ -55,6 +58,12 @@ end
         @test size(tm3.values) == (2,2)
         @test tm3.timestamp[2] == DateTime(2015,1,1,1,0)
         @test tm3.values[1,1]  == 10.42
+    end
+
+    @testset "headless csv" begin
+        @test length(tm4)      == 2
+        @test size(tm4.values) == (2, 4)
+        @test tm4.values       == [1 2 3 4; 5 6 7 8]
     end
 end
 

@@ -1,13 +1,17 @@
 ###### readtimearray ############
 
-function readtimearray(source; delim::Char=',', meta=nothing, format::AbstractString="")
-    cfile = readdlm(source, delim)
+function readtimearray(source; delim::Char=',', meta=nothing, format::AbstractString="",
+                       header::Bool=true)
+    cfile = readdlm(source, delim, header=header)
+    if header
+        cfile, hd = cfile
+    end
 
     # remove empty lines if any
     inoempty = find(s -> length(s) > 2, cfile[:, 1])
     cfile = cfile[inoempty, :]
 
-    time  = cfile[2:end, 1]
+    time = cfile[1:end, 1]
     if length(time[1]) < 11
         # assuming Date not DateTime
         format == "" ?
@@ -19,11 +23,8 @@ function readtimearray(source; delim::Char=',', meta=nothing, format::AbstractSt
         tstamps = DateTime[DateTime(t, format) for t in time]
     end
 
-    vals   = insertNaN(cfile[2:end, 2:end])
-    cnames = String[]
-    for c in cfile[1, 2:end]
-        push!(cnames, string(c))
-    end
+    vals   = insertNaN(cfile[1:end, 2:end])
+    cnames = header ? string.(hd[2:end]) : fill("", size(cfile, 2) - 1)
     TimeArray(tstamps, vals, cnames, meta)
 end  # readtimearray
 
