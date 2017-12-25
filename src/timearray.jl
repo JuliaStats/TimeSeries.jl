@@ -78,6 +78,20 @@ isempty(ta::TimeArray) = (length(ta) == 0)
 
 ###### equal ####################
 
+"""
+    ==(x::TimeArray, y::TimeArray)
+
+If true, all fields of x and y should be equal.
+
+Implies
+
+```julia
+x.timestamp == y.timestamp &&
+x.values    == y.values    &&
+x.colnames  == y.colnames  &&
+x.meta      == y.meta
+```
+"""
 @generated function ==(x::TimeArray{T,N}, y::TimeArray{S,M}) where {T,S,N,M}
   if N != M
     return :false
