@@ -81,7 +81,9 @@ isempty(ta::TimeArray) = (length(ta) == 0)
 """
     ==(x::TimeArray, y::TimeArray)
 
-If true, all fields of x and y should be equal.
+If `true`, all fields of `x` and `y` should be equal,
+meaning that the two `TimeArray`s have the same values at the same points in time,
+the same colnames and the same metadata.
 
 Implies
 
@@ -95,7 +97,7 @@ x.meta      == y.meta
 @generated function ==(x::TimeArray{T,N}, y::TimeArray{S,M}) where {T,S,N,M}
   if N != M
     return :false
-    # Other type info is not helpful for assertion
+    # Other type info is not helpful for assertion.
     # e.g.
     #      1.0 == 1
     #      Date(2111, 1, 1) == DateTime(2111, 1, 1)
