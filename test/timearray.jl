@@ -270,12 +270,23 @@ end
         @test x == y
     end
 
+    let  # diff meta
+        x = TimeArray(ds, 1:7, ["foo"], "bar")
+        y = TimeArray(ds, 1:7, ["foo"], "baz")
+        @test x != y
+    end
+
     @testset "hash" begin
-        @test hash(cl) == hash(copy(cl))
+        @test hash(cl)   == hash(copy(cl))
+        @test hash(ohlc) == hash(copy(ohlc))
 
         d = Dict(cl => 42)
         @test d[cl] == 42
         @test d[copy(cl)] == 42
+
+        d = Dict(ohlc => 24)
+        @test d[ohlc] == 24
+        @test d[copy(ohlc)] == 24
     end
 end
 
