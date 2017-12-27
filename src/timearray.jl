@@ -125,10 +125,7 @@ end
 end
 
 # support for Dict
-hash(x::TimeArray, h::UInt) =
-    mapreduce(+, fieldnames(TimeArray)) do f
-        hash(getfield(x, f), h)
-    end
+hash(x::TimeArray, h::UInt) = sum(f -> hash(getfield(x, f), h), fieldnames(TimeArray))
 
 ###### show #####################
 
