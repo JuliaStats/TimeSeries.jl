@@ -94,38 +94,21 @@ x.colnames  == y.colnames  &&
 x.meta      == y.meta
 ```
 """
-@generated function ==(x::TimeArray{T,N}, y::TimeArray{S,M}) where {T,S,N,M}
-    if N != M
-        return :false
-        # Other type info is not helpful for assertion.
-        # e.g.
-        #      1.0 == 1
-        #      Date(2111, 1, 1) == DateTime(2111, 1, 1)
-    end
+# Other type info is not helpful for assertion.
+# e.g.
+#      1.0 == 1
+#      Date(2111, 1, 1) == DateTime(2111, 1, 1)
+==(x::TimeArray{T,N}, y::TimeArray{S,M}) where {T,S,N,M} = false
+==(x::TimeArray{T,N}, y::TimeArray{S,N}) where {T,S,N} =
+    all(f -> getfield(x, f) == getfield(y, f), fieldnames(TimeArray))
 
-    quote
-        for f ∈ fieldnames(TimeArray)
-            getfield(x, f) != getfield(y, f) && return :false
-        end
-        :true
-    end
-end
-
-@generated function isequal(x::TimeArray{T,N}, y::TimeArray{S,M}) where {T,S,N,M}
-    if N != M
-      return :false
-    end
-
-    quote
-        for f ∈ fieldnames(TimeArray)
-          !isequal(getfield(x, f), getfield(y, f)) && return :false
-        end
-        :true
-    end
-end
+isequal(x::TimeArray{T,N}, y::TimeArray{S,M}) where {T,S,N,M} = false
+isequal(x::TimeArray{T,N}, y::TimeArray{S,N}) where {T,S,N} =
+    all(f -> isequal(getfield(x, f), getfield(y, f)), fieldnames(TimeArray))
 
 # support for Dict
-hash(x::TimeArray, h::UInt) = sum(f -> hash(getfield(x, f), h), fieldnames(TimeArray))
+hash(x::TimeArray, h::UInt) =
+    sum(f -> hash(getfield(x, f), h), fieldnames(TimeArray))
 
 ###### show #####################
 
