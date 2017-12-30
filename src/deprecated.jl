@@ -30,7 +30,7 @@ for f ∈ (:^, :/)
 end
 
 for f ∈ (:+, :-, :*, :%,
-         :|, :&, :<, :>, :(==), :(!=), :>=, :<=)
+         :|, :&, :<, :>, :>=, :<=)
     g = Symbol(".", string(f))
     @eval import Base: $f
     @eval @deprecate $f(ta::TimeArray, args...) $g(ta, args...)

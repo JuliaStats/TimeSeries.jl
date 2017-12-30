@@ -1,3 +1,28 @@
+### 0.12.0
+
+* Revoking deprecation warning of `==` and redefining its meaning as
+  'comparing all fields of two `TimeArray`s'.
+  Note that if two `TimeArray`s have different dimension, we consider that is
+  unequal.
+  (#356, #357)
+
+  ```julia
+  julia> cl == copy(cl)
+  true
+  ```
+
+  * Also, `isequal` and `hash` is supported now.
+
+    ```julia
+    julia> d = Dict(cl => 42);
+
+    julia> d[cl]
+    42
+
+    julia> d[copy(cl)]
+    42
+    ```
+
 ### 0.11.0
 
 * Dropping 0.5 support. (issue [#327])
