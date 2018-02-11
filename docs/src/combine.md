@@ -126,5 +126,4 @@ series, here by one year:
 using TimeSeries
 a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"])
 map((timestamp, values) -> (timestamp + Dates.Year(1), values), a)
-end
 ```
