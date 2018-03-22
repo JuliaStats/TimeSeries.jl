@@ -5,6 +5,13 @@ import Base: convert, copy, length, show, getindex, start, next, done, isempty,
 
 abstract type AbstractTimeSeries end
 
+function _issorted_and_unique(x)
+    for i in 1:length(x)-1
+        @inbounds !(x[i] < x[i + 1]) && return false
+    end
+    true
+end
+
 struct TimeArray{T, N, D <: TimeType, A <: AbstractArray{T, N}} <: AbstractTimeSeries
 
     timestamp::Vector{D}
@@ -19,20 +26,15 @@ struct TimeArray{T, N, D <: TimeType, A <: AbstractArray{T, N}} <: AbstractTimeS
             meta::Any) where {T, N, D <: TimeType, A <: AbstractArray{T, N}}
         nrow, ncol = size(values, 1, 2)
 
-        if nrow != length(timestamp)
-            throw(DimensionMismatch("values must match length of timestamp"))
-        elseif ncol != length(colnames)
-            throw(DimensionMismatch("column names must match width of array"))
-        elseif !allunique(timestamp)
-            throw(ArgumentError("there are duplicate dates"))
-        elseif !(issorted(timestamp) || issorted(timestamp, rev=true))
-            throw(ArgumentError("dates are mangled"))
-        elseif issorted(timestamp, rev=true)
-            new(reverse(timestamp), flipdim(values, 1),
-                replace_dupes(colnames), meta)
-        else
-            new(timestamp, values, replace_dupes(colnames), meta)
-        end
+        nrow != length(timestamp) && throw(DimensionMismatch("values must match length of timestamp"))
+        ncol != length(colnames) && throw(DimensionMismatch("column names must match width of array"))
+
+        _issorted_and_unique(timestamp) && return new(timestamp, values, replace_dupes(colnames), meta)
+
+        timestamp_r = reverse(timestamp)
+        _issorted_and_unique(timestamp_r) && return new(timestamp_r, flipdim(values, 1), replace_dupes(colnames), meta)
+
+        throw(ArgumentError("timestamps must be strictly monotonic"))
     end
 end
 
