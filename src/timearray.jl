@@ -23,8 +23,11 @@ struct TimeArray{T, N, D <: TimeType, A <: AbstractArray{T, N}} <: AbstractTimeS
             timestamp::AbstractVector{D},
             values::A,
             colnames::Vector{String},
-            meta::Any) where {T, N, D <: TimeType, A <: AbstractArray{T, N}}
+            meta::Any;
+            unchecked = false) where {T, N, D <: TimeType, A <: AbstractArray{T, N}}
         nrow, ncol = size(values, 1, 2)
+
+        unchecked && return new(timestamp, values, replace_dupes(colnames), meta)
 
         nrow != length(timestamp) && throw(DimensionMismatch("values must match length of timestamp"))
         ncol != length(colnames) && throw(DimensionMismatch("column names must match width of array"))
@@ -42,11 +45,13 @@ end
 
 TimeArray(d::AbstractVector{D}, v::AbstractArray{T, N},
           c::Vector{S}=fill("", size(v,2)),
-          m::Any=nothing) where {T, N, D <: TimeType, S <: AbstractString} =
-    TimeArray{T, N, D, typeof(v)}(d, v, map(String, c), m)
+          m::Any=nothing;
+          args...) where {T, N, D <: TimeType, S <: AbstractString} =
+    TimeArray{T, N, D, typeof(v)}(d, v, map(String, c), m; args...)
 TimeArray(d::D, v::AbstractArray{T, N}, c::Vector{S}=fill("", size(v, 2)),
-          m::Any=nothing) where {T, N, D <: TimeType, S <: AbstractString} =
-    TimeArray{T, N, D, typeof(v)}([d], v, map(String, c), m)
+          m::Any=nothing;
+          args...) where {T, N, D <: TimeType, S <: AbstractString} =
+    TimeArray{T, N, D, typeof(v)}([d], v, map(String, c), m; args...)
 
 ###### conversion ###############
 
