@@ -25,57 +25,50 @@ function overlaps(ts::Vararg{Vector, N}) where {N}
     ret
 end
 
+"""
+    sorted_unique_merge(a, b) -> (c, idx_a, idx_b)
+
+Merge two arrays of sorted unique elements a and b to new array c,
+and calculate the indexes idx_a and idx_b mapping each element in a and b to their new locations in c.
+"""
 function sorted_unique_merge(a::Vector, b::Vector)
     i, na, j, nb = 1, length(a), 1, length(b)
     c = similar(a, length(a) + length(b))
+    idx_a = Vector{Int32}(length(a))
+    idx_b = Vector{Int32}(length(b))
     k = 1
     @inbounds while (i <= na) && (j <= nb)
 		if a[i] < b[j]
             c[k] = a[i]
+            idx_a[i] = k
 			i += 1
 		elseif a[i] > b[j]
             c[k] = b[j]
+            idx_b[j] = k
 			j += 1
 		else
             c[k] = a[i]
+            idx_a[i] = k
+            idx_b[j] = k
 			i += 1
 			j += 1
 		end
         k += 1
     end
-    while i <= na
-        @inbounds c[k] = a[i]
+    @inbounds while i <= na
+        c[k] = a[i]
+        idx_a[i] = k
         i += 1
         k += 1
     end
-    while j <= nb
-        @inbounds c[k] = b[j]
+    @inbounds while j <= nb
+        c[k] = b[j]
+        idx_b[j] = k
         j += 1
         k += 1
     end
     resize!(c, k - 1)
-    return c
-end
-
-"""
-    sorted_subset_idx(superset, subset) -> indices
-
-Get indices in superset for elements in subset.
-"""
-function sorted_subset_idx(superset, subset)
-    subset_len = length(subset)
-    result = Vector{Int32}(subset_len)
-    new_i = 1
-    for i in 1:length(superset)
-        @inbounds if superset[i] == subset[new_i]
-            result[new_i] = i
-            new_i += 1
-            if new_i > subset_len
-                break
-            end
-        end
-    end
-    result
+    return c, idx_a, idx_b
 end
 
 """
@@ -106,7 +99,6 @@ function insertbyidx!(dst::AbstractArray, src::AbstractArray, dstidx::Vector, sr
     end
     nothing
 end
-
 
 function setcolnames!(ta::TimeArray, colnames::Vector)
     length(colnames) == length(ta.colnames) ? ta.colnames[:] = colnames :

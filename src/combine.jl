@@ -35,10 +35,8 @@ function merge(ta1::TimeArray{T, N, D}, ta2::TimeArray{T, M, D}, method::Symbol=
 
     elseif method == :outer
 
-        timestamps = sorted_unique_merge(ta1.timestamp, ta2.timestamp)
+        timestamps, new_idx1, new_idx2 = sorted_unique_merge(ta1.timestamp, ta2.timestamp)
         vals = fill(convert(T, missingvalue), (length(timestamps), length(ta1.colnames) + length(ta2.colnames)))
-        new_idx1 = sorted_subset_idx(timestamps, ta1.timestamp)
-        new_idx2 = sorted_subset_idx(timestamps, ta2.timestamp)
         insertbyidx!(vals, ta1.values, new_idx1)
         insertbyidx!(vals, ta2.values, new_idx2, size(ta1.values, 2))
         ta = TimeArray(timestamps, vals, [ta1.colnames; ta2.colnames], meta; unchecked = true)
