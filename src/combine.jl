@@ -2,6 +2,14 @@ import Base: merge, hcat, vcat, map
 
 ###### merge ####################
 
+function _merge_outer(::Type{IndexType}, ta1::TimeArray{T, N, D}, ta2::TimeArray{T, M, D}, missingvalue, meta) where {IndexType, T, N, M, D}
+    timestamps, new_idx1, new_idx2 = sorted_unique_merge(IndexType, ta1.timestamp, ta2.timestamp)
+    vals = fill(convert(T, missingvalue), (length(timestamps), length(ta1.colnames) + length(ta2.colnames)))
+    insertbyidx!(vals, ta1.values, new_idx1)
+    insertbyidx!(vals, ta2.values, new_idx2, size(ta1.values, 2))
+    TimeArray(timestamps, vals, [ta1.colnames; ta2.colnames], meta; unchecked = true)
+end
+
 function merge(ta1::TimeArray{T, N, D}, ta2::TimeArray{T, M, D}, method::Symbol=:inner;
                colnames::Vector=[], meta::Any=Void, missingvalue=NaN) where {T, N, M, D}
 
@@ -35,11 +43,11 @@ function merge(ta1::TimeArray{T, N, D}, ta2::TimeArray{T, M, D}, method::Symbol=
 
     elseif method == :outer
 
-        timestamps, new_idx1, new_idx2 = sorted_unique_merge(ta1.timestamp, ta2.timestamp)
-        vals = fill(convert(T, missingvalue), (length(timestamps), length(ta1.colnames) + length(ta2.colnames)))
-        insertbyidx!(vals, ta1.values, new_idx1)
-        insertbyidx!(vals, ta2.values, new_idx2, size(ta1.values, 2))
-        ta = TimeArray(timestamps, vals, [ta1.colnames; ta2.colnames], meta; unchecked = true)
+        ta = if (length(ta1.timestamp) + length(ta2.timestamp)) > typemax(Int32)
+            _merge_outer(Int64, ta1, ta2, missingvalue, meta)
+        else
+            _merge_outer(Int32, ta1, ta2, missingvalue, meta)
+        end
 
     else
         throw(ArgumentError(
