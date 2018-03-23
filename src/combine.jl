@@ -3,7 +3,7 @@ import Base: merge, hcat, vcat, map
 ###### merge ####################
 
 function merge(ta1::TimeArray{T, N, D}, ta2::TimeArray{T, M, D}, method::Symbol=:inner;
-               colnames::Vector=[], meta::Any=Void) where {T, N, M, D}
+               colnames::Vector=[], meta::Any=Void, missingvalue=NaN) where {T, N, M, D}
 
     if ta1.meta == ta2.meta && meta == Void
         meta = ta1.meta
@@ -17,28 +17,31 @@ function merge(ta1::TimeArray{T, N, D}, ta2::TimeArray{T, M, D}, method::Symbol=
 
         idx1, idx2 = overlaps(ta1.timestamp, ta2.timestamp)
         vals = [ta1[idx1].values ta2[idx2].values]
-        ta = TimeArray(ta1[idx1].timestamp, vals, [ta1.colnames; ta2.colnames], meta)
+        ta = TimeArray(ta1[idx1].timestamp, vals, [ta1.colnames; ta2.colnames], meta; unchecked = true)
 
     elseif method == :left
 
         new_idx2, old_idx2 = overlaps(ta1.timestamp, ta2.timestamp)
-        right_vals = NaN * zeros(length(ta1), length(ta2.colnames))
-        right_vals[new_idx2, :]  = ta2.values[old_idx2, :]
-        ta = TimeArray(ta1.timestamp, [ta1.values right_vals], [ta1.colnames; ta2.colnames], meta)
+        right_vals = fill(convert(T, missingvalue), (length(ta1), length(ta2.colnames)))
+        insertbyidx!(right_vals, ta2.values, new_idx2, old_idx2)
+        ta = TimeArray(ta1.timestamp, [ta1.values right_vals], [ta1.colnames; ta2.colnames], meta; unchecked = true)
 
     elseif method == :right
 
-        ta = merge(ta2, ta1, :left)
+        ta = merge(ta2, ta1, :left; missingvalue = missingvalue)
         ncol2 = length(ta2.colnames)
         vals = [ta.values[:, (ncol2+1):end] ta.values[:, 1:ncol2]]
-        ta = TimeArray(ta.timestamp, vals, [ta1.colnames; ta2.colnames], meta)
+        ta = TimeArray(ta.timestamp, vals, [ta1.colnames; ta2.colnames], meta; unchecked = true)
 
     elseif method == :outer
 
         timestamps = sorted_unique_merge(ta1.timestamp, ta2.timestamp)
-        ta = TimeArray(timestamps, zeros(length(timestamps), 0), String[], Void)
-        ta = merge(ta, ta1, :left)
-        ta = merge(ta, ta2, :left, meta=meta)
+        vals = fill(convert(T, missingvalue), (length(timestamps), length(ta1.colnames) + length(ta2.colnames)))
+        new_idx1 = sorted_subset_idx(timestamps, ta1.timestamp)
+        new_idx2 = sorted_subset_idx(timestamps, ta2.timestamp)
+        insertbyidx!(vals, ta1.values, new_idx1)
+        insertbyidx!(vals, ta2.values, new_idx2, size(ta1.values, 2))
+        ta = TimeArray(timestamps, vals, [ta1.colnames; ta2.colnames], meta; unchecked = true)
 
     else
         throw(ArgumentError(
