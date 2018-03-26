@@ -126,13 +126,13 @@ end
     @testset "custom missing values" begin
         ts1 = TimeArray([Date(2018, 1, 1), Date(2018, 1, 2)], [1, 2])
         ts2 = TimeArray([Date(2018, 1, 2), Date(2018, 1, 3)], [3, 4])
-        m1 = merge(ts1, ts2, :left, missingvalue = 0)
+        m1 = merge(ts1, ts2, :left, padvalue = 0)
         @test m1.timestamp == [Date(2018, 1, 1), Date(2018, 1, 2)]
         @test m1.values == [1 0; 2 3]
-        m2 = merge(ts1, ts2, :right, missingvalue = 0)
+        m2 = merge(ts1, ts2, :right, padvalue = 0)
         @test m2.timestamp == [Date(2018, 1, 2), Date(2018, 1, 3)]
         @test m2.values == [2 3; 0 4]
-        m3 = merge(ts1, ts2, :outer, missingvalue = 0)
+        m3 = merge(ts1, ts2, :outer, padvalue = 0)
         @test m3.timestamp == [Date(2018, 1, 1), Date(2018, 1, 2), Date(2018, 1, 3)]
         @test m3.values == [1 0; 2 3; 0 4]
     end
