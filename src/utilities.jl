@@ -40,21 +40,21 @@ function sorted_unique_merge(::Type{IndexType}, a::Vector, b::Vector) where {Ind
     idx_b = Vector{IndexType}(length(b))
     k = 1
     @inbounds while (i <= na) && (j <= nb)
-		if a[i] < b[j]
+        if a[i] < b[j]
             c[k] = a[i]
             idx_a[i] = k
-			i += 1
-		elseif a[i] > b[j]
+            i += 1
+        elseif a[i] > b[j]
             c[k] = b[j]
             idx_b[j] = k
-			j += 1
-		else
+            j += 1
+        else
             c[k] = a[i]
             idx_a[i] = k
             idx_b[j] = k
-			i += 1
-			j += 1
-		end
+            i += 1
+            j += 1
+        end
         k += 1
     end
     @inbounds while i <= na
