@@ -32,8 +32,6 @@ Merge two arrays of sorted unique elements a and b to new array c,
 and calculate the indexes idx_a and idx_b mapping each element in a and b to their new locations in c.
 """
 function sorted_unique_merge(::Type{IndexType}, a::Vector, b::Vector) where {IndexType}
-    # NOTE: Since merge is mostly load/store bound, the lower memory pressure from 32 bit indexing does help.
-    #       Would need to be reconsidered if datasets are larger, or branch the algorithm
     i, na, j, nb = 1, length(a), 1, length(b)
     c = similar(a, length(a) + length(b))
     idx_a = Vector{IndexType}(length(a))
