@@ -23,6 +23,22 @@
     42
     ```
 
+* `diff` support `n` time steps lag. (#TBD)
+
+  ```julia
+  julia> diff(cl, 5)
+  495x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-10 to 2001-12-31
+  │            │ Close  │
+  ├────────────┼────────┤
+  │ 2000-01-10 │ -14.19 │
+  │ 2000-01-11 │ -9.75  │
+  │ 2000-01-12 │ -16.81 │
+     ⋮
+  │ 2001-12-27 │ 0.45   │
+  │ 2001-12-28 │ 1.76   │
+  │ 2001-12-31 │ 0.9    │
+  ```
+
 ### 0.11.0
 
 * Dropping 0.5 support. (issue [#327])

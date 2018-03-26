@@ -82,11 +82,11 @@ using TimeSeries
     end
 
     @testset "diff calculates 2nd-order differences for multi-column ts" begin
-        @test diff(ohlc, differences=2).timestamp                      == diff(ohlc, padding=false, differences=2).timestamp
-        @test diff(ohlc, differences=2).values                         == diff(ohlc, padding=false, differences=2).values
-        @test diff(diff(ohlc)).timestamp                               == diff(ohlc, padding=false, differences=2).timestamp
-        @test diff(diff(ohlc)).values                                  == diff(ohlc, padding=false, differences=2).values
-        @test diff(ohlc, padding=true, differences=2).values[3,:]       == diff(ohlc, differences=2).values[1,:]
+        @test diff(ohlc, differences=2).timestamp                 == diff(ohlc, padding=false, differences=2).timestamp
+        @test diff(ohlc, differences=2).values                    == diff(ohlc, padding=false, differences=2).values
+        @test diff(diff(ohlc)).timestamp                          == diff(ohlc, padding=false, differences=2).timestamp
+        @test diff(diff(ohlc)).values                             == diff(ohlc, padding=false, differences=2).values
+        @test diff(ohlc, padding=true, differences=2).values[3,:] == diff(ohlc, differences=2).values[1,:]
         @test all(x -> isnan(x), diff(ohlc, padding=true, differences=2).values[2,:]) == true
         @test all(x -> isnan(x), diff(ohlc, padding=true, differences=2).values[1,:]) == true
     end
@@ -103,15 +103,31 @@ using TimeSeries
     end
 
     @testset "diff calculates 3rd-order differences for multi-column ts" begin
-        @test diff(ohlc, differences=3).timestamp                      == diff(ohlc, padding=false, differences=3).timestamp
-        @test diff(ohlc, differences=3).values                         == diff(ohlc, padding=false, differences=3).values
-        @test diff(diff(diff(ohlc))).timestamp                         == diff(ohlc, padding=false, differences=3).timestamp
-        @test diff(diff(diff(ohlc))).values                            == diff(ohlc, padding=false, differences=3).values
-        @test diff(ohlc, padding=true, differences=3).values[4,:]      == diff(ohlc, differences=3).values[1,:]
+        @test diff(ohlc, differences=3).timestamp                 == diff(ohlc, padding=false, differences=3).timestamp
+        @test diff(ohlc, differences=3).values                    == diff(ohlc, padding=false, differences=3).values
+        @test diff(diff(diff(ohlc))).timestamp                    == diff(ohlc, padding=false, differences=3).timestamp
+        @test diff(diff(diff(ohlc))).values                       == diff(ohlc, padding=false, differences=3).values
+        @test diff(ohlc, padding=true, differences=3).values[4,:] == diff(ohlc, differences=3).values[1,:]
         @test all(x -> isnan(x), diff(ohlc, padding=true, differences=3).values[3,:]) == true
         @test all(x -> isnan(x), diff(ohlc, padding=true, differences=3).values[2,:]) == true
         @test all(x -> isnan(x), diff(ohlc, padding=true, differences=3).values[1,:]) == true
     end
+
+    @testset "diff n lag" begin
+        let ta = diff(cl, 5)
+          ans = cl .- lag(cl, 5)
+
+          @test ta.values == ans.values
+          @test ta.timestamp == ans.timestamp
+        end
+
+        let ta = diff(ohlc, 5)
+          ans = ohlc .- lag(ohlc, 5)
+
+          @test ta.values == ans.values
+          @test ta.timestamp == ans.timestamp
+        end
+    end  # @testset "diff n lag"
 
     @testset "simple return value" begin
         @test percentchange(cl, :simple).values == percentchange(cl).values

@@ -93,8 +93,13 @@ end
         @test dupe_cnames.colnames[11] == "e_3"
         @test dupe_cnames.colnames[12] == "f"
     end
-end
 
+    @testset "and doesn't when unchecked" begin
+        @test TimeArray(mangled_stamp, cl.values; unchecked = true).values === cl.values
+        @test TimeArray(mangled_stamp, cl.values; unchecked = true).timestamp === mangled_stamp
+        @test TimeArray(dupe_stamp, cl.values; unchecked = true).timestamp === dupe_stamp
+    end
+end
 
 @testset "construction without colnames" begin
     no_colnames_one   = TimeArray(cl.timestamp, cl.values)

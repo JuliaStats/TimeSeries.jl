@@ -48,10 +48,10 @@ end  # lead
 
 ###### diff #####################
 
-function diff(ta::TimeArray; padding::Bool=false, differences::Int=1)
+function diff(ta::TimeArray, n::Int=1; padding::Bool=false, differences::Int=1)
     cols = ta.colnames
     for d in 1:differences
-        ta = ta .- lag(ta, padding=padding)
+        ta = ta .- lag(ta, n, padding=padding)
     end
     ta.colnames[:] = cols
     return ta
