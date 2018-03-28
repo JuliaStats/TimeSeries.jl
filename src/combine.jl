@@ -2,8 +2,16 @@ import Base: merge, hcat, vcat, map
 
 ###### merge ####################
 
+function _merge_outer(::Type{IndexType}, ta1::TimeArray{T, N, D}, ta2::TimeArray{T, M, D}, padvalue, meta) where {IndexType, T, N, M, D}
+    timestamps, new_idx1, new_idx2 = sorted_unique_merge(IndexType, ta1.timestamp, ta2.timestamp)
+    vals = fill(convert(T, padvalue), (length(timestamps), length(ta1.colnames) + length(ta2.colnames)))
+    insertbyidx!(vals, ta1.values, new_idx1)
+    insertbyidx!(vals, ta2.values, new_idx2, size(ta1.values, 2))
+    TimeArray(timestamps, vals, [ta1.colnames; ta2.colnames], meta; unchecked = true)
+end
+
 function merge(ta1::TimeArray{T, N, D}, ta2::TimeArray{T, M, D}, method::Symbol=:inner;
-               colnames::Vector=[], meta::Any=Void) where {T, N, M, D}
+               colnames::Vector=[], meta::Any=Void, padvalue=NaN) where {T, N, M, D}
 
     if ta1.meta == ta2.meta && meta == Void
         meta = ta1.meta
@@ -17,28 +25,29 @@ function merge(ta1::TimeArray{T, N, D}, ta2::TimeArray{T, M, D}, method::Symbol=
 
         idx1, idx2 = overlaps(ta1.timestamp, ta2.timestamp)
         vals = [ta1[idx1].values ta2[idx2].values]
-        ta = TimeArray(ta1[idx1].timestamp, vals, [ta1.colnames; ta2.colnames], meta)
+        ta = TimeArray(ta1[idx1].timestamp, vals, [ta1.colnames; ta2.colnames], meta; unchecked = true)
 
     elseif method == :left
 
         new_idx2, old_idx2 = overlaps(ta1.timestamp, ta2.timestamp)
-        right_vals = NaN * zeros(length(ta1), length(ta2.colnames))
-        right_vals[new_idx2, :]  = ta2.values[old_idx2, :]
-        ta = TimeArray(ta1.timestamp, [ta1.values right_vals], [ta1.colnames; ta2.colnames], meta)
+        right_vals = fill(convert(T, padvalue), (length(ta1), length(ta2.colnames)))
+        insertbyidx!(right_vals, ta2.values, new_idx2, old_idx2)
+        ta = TimeArray(ta1.timestamp, [ta1.values right_vals], [ta1.colnames; ta2.colnames], meta; unchecked = true)
 
     elseif method == :right
 
-        ta = merge(ta2, ta1, :left)
+        ta = merge(ta2, ta1, :left; padvalue = padvalue)
         ncol2 = length(ta2.colnames)
         vals = [ta.values[:, (ncol2+1):end] ta.values[:, 1:ncol2]]
-        ta = TimeArray(ta.timestamp, vals, [ta1.colnames; ta2.colnames], meta)
+        ta = TimeArray(ta.timestamp, vals, [ta1.colnames; ta2.colnames], meta; unchecked = true)
 
     elseif method == :outer
 
-        timestamps = sorted_unique_merge(ta1.timestamp, ta2.timestamp)
-        ta = TimeArray(timestamps, zeros(length(timestamps), 0), String[], Void)
-        ta = merge(ta, ta1, :left)
-        ta = merge(ta, ta2, :left, meta=meta)
+        ta = if (length(ta1.timestamp) + length(ta2.timestamp)) > typemax(Int32)
+            _merge_outer(Int64, ta1, ta2, padvalue, meta)
+        else
+            _merge_outer(Int32, ta1, ta2, padvalue, meta)
+        end
 
     else
         throw(ArgumentError(
