@@ -39,6 +39,8 @@
   │ 2001-12-31 │ 0.9    │
   ```
 
+* New keyword argument for `readtimearray`: `header::Bool`. (#358)
+
 ### 0.11.0
 
 * Dropping 0.5 support. (issue [#327])
