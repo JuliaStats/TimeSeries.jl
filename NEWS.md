@@ -1,10 +1,17 @@
 ### 0.12.0
 
+* Support `Base.copy(::TimeArray)`. ([#352])
+
+* A new option for `TimeArray` constructor: `unchecked::Bool` to skip
+  the sanity check of timestamp. ([#361])
+
+  * `merge()` optimization via the `unchecked` option. ([#363])
+
 * Revoking deprecation warning of `==` and redefining its meaning as
   'comparing all fields of two `TimeArray`s'.
   Note that if two `TimeArray`s have different dimension, we consider that is
   unequal.
-  (#356, #357)
+  ([#356], [#357])
 
   ```julia
   julia> cl == copy(cl)
@@ -23,7 +30,9 @@
     42
     ```
 
-* `diff` support `n` time steps lag. (#TBD)
+* `diff` supports higher order difference now.([#350])
+
+* `diff` support `n` time steps lag now. ([#362])
 
   ```julia
   julia> diff(cl, 5)
@@ -39,9 +48,39 @@
   │ 2001-12-31 │ 0.9    │
   ```
 
-* New keyword argument for `readtimearray`: `header::Bool`. (#358)
+* New keyword argument for `readtimearray`: `header::Bool`. ([#358])
 
-* `TimeArray` supports `all()` and `any()` now. (#356, #359)
+* `TimeArray` supports `all()` and `any()` now. ([#356], [#359])
+
+  ```julia
+  julia> ta
+  3x2 TimeSeries.TimeArray{Int64,2,Date,Array{Int64,2}} 2000-01-03 to 2000-01-05
+  │            │ _1    │ _2    │
+  ├────────────┼───────┼───────┤
+  │ 2000-01-03 │ 1     │ 2     │
+  │ 2000-01-04 │ 3     │ 4     │
+  │ 2000-01-05 │ 5     │ 6     │
+
+  julia> all(ta .> 3, 2)
+  3x1 TimeSeries.TimeArray{Bool,2,Date,BitArray{2}} 2000-01-03 to 2000-01-05
+  │            │ all   │
+  ├────────────┼───────┤
+  │ 2000-01-03 │ false │
+  │ 2000-01-04 │ false │
+  │ 2000-01-05 │ true  │
+  ```
+
+
+[#350]: https://github.com/JuliaStats/TimeSeries.jl/pull/350
+[#352]: https://github.com/JuliaStats/TimeSeries.jl/pull/352
+[#356]: https://github.com/JuliaStats/TimeSeries.jl/pull/356
+[#357]: https://github.com/JuliaStats/TimeSeries.jl/pull/357
+[#358]: https://github.com/JuliaStats/TimeSeries.jl/pull/358
+[#359]: https://github.com/JuliaStats/TimeSeries.jl/pull/359
+[#361]: https://github.com/JuliaStats/TimeSeries.jl/pull/361
+[#362]: https://github.com/JuliaStats/TimeSeries.jl/pull/362
+[#363]: https://github.com/JuliaStats/TimeSeries.jl/pull/363
+
 
 ### 0.11.0
 
