@@ -41,6 +41,8 @@
 
 * New keyword argument for `readtimearray`: `header::Bool`. (#358)
 
+* `TimeArray` supports `all()` and `any()` now. (#356, #359)
+
 ### 0.11.0
 
 * Dropping 0.5 support. (issue [#327])
