@@ -1,5 +1,5 @@
-using Base.Dates
-using Base.Test
+using Dates
+using Test
 
 using MarketData
 using TimeSeries

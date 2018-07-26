@@ -2,7 +2,7 @@ __precompile__(true)
 
 module TimeSeries
 
-using Base.Dates
+using Dates
 
 using RecipesBase
 

@@ -10,7 +10,7 @@ function lag(ta::TimeArray{T, N}, n::Int=1;
              padding::Bool=false, period::Int=0) where {T, N}
 
     if period != 0
-        warn("the period kwarg is deprecated, use lag(ta::TimeArray, period::Int) instead")
+        @warn("the period kwarg is deprecated, use lag(ta::TimeArray, period::Int) instead")
         n = period
     end
 
@@ -30,7 +30,7 @@ function lead(ta::TimeArray{T, N}, n::Int=1;
               padding::Bool=false, period::Int=0) where {T, N}
 
     if period != 0
-      warn("the period kwarg is deprecated, use lead(ta::TimeArray, period::Int) instead")
+      @warn("the period kwarg is deprecated, use lead(ta::TimeArray, period::Int) instead")
       n = period
     end
 
@@ -63,7 +63,7 @@ function percentchange(ta::TimeArray, returns::Symbol=:simple;
                        padding::Bool=false, method::AbstractString="")
 
     if method != ""
-        warn("the method kwarg is deprecated, use percentchange(ta, :methodname) instead")
+        @warn("the method kwarg is deprecated, use percentchange(ta, :methodname) instead")
         returns = Symbol(method)
     end
 

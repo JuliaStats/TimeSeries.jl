@@ -11,11 +11,11 @@ function _merge_outer(::Type{IndexType}, ta1::TimeArray{T, N, D}, ta2::TimeArray
 end
 
 function merge(ta1::TimeArray{T, N, D}, ta2::TimeArray{T, M, D}, method::Symbol=:inner;
-               colnames::Vector=[], meta::Any=Void, padvalue=NaN) where {T, N, M, D}
+               colnames::Vector=[], meta::Any=Nothing, padvalue=NaN) where {T, N, M, D}
 
-    if ta1.meta == ta2.meta && meta == Void
+    if ta1.meta == ta2.meta && meta == Nothing
         meta = ta1.meta
-    elseif typeof(ta1.meta) <: AbstractString && typeof(ta2.meta) <: AbstractString && meta == Void
+    elseif typeof(ta1.meta) <: AbstractString && typeof(ta2.meta) <: AbstractString && meta == Nothing
         meta = string(ta1.meta, "_", ta2.meta)
     else
         meta = meta

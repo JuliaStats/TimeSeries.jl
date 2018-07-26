@@ -122,7 +122,7 @@ hash(x::TimeArray, h::UInt) =
 @inline _showval(v::Any) = repr(v)
 @inline _showval(v::Number) = string(v)
 @inline _showval(v::AbstractFloat) =
-    ifelse(isnan(v), MISSING, string(round(v, DECIMALS)))
+    ifelse(isnan(v), MISSING, string(round(v, digits=DECIMALS)))
 
 """
 calculate the paging
@@ -184,12 +184,12 @@ function show(io::IO, ta::TimeArray{T}) where {T}
     #       in 0.7, it can be:
     #         [strwidth.(ta.colnames)'; strwidth.(strs); fill(5, ncol)']
     colwidth = maximum([
-        reshape(strwidth.(ta.colnames), 1, :);
-        strwidth.(strs);
+        reshape(textwidth.(ta.colnames), 1, :);
+        textwidth.(strs);
         reshape(fill(5, ncol), 1, :)], 1)
 
     # paging
-    spacetime = strwidth(string(ts[1]))
+    spacetime = textwidth(string(ts[1]))
     pages = _showpages(dcol, spacetime, colwidth)
 
     for p ∈ pages

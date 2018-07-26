@@ -1,4 +1,4 @@
-using Base.Test
+using Test
 
 # this line because the const objects are not being exported
 include(joinpath(dirname(@__FILE__), "..", "src/.timeseriesrc.jl"))
