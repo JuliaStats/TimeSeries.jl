@@ -7,7 +7,8 @@ using Base.Dates
 using RecipesBase
 
 export TimeArray, AbstractTimeSeries,
-       when, from, to, findwhen, find, timestamp, values, colnames, meta, head, tail,
+       when, from, to, findwhen, find, timestamp, values, colnames, meta,
+       head, tail, first, last,
        lag, lead, diff, percentchange, moving, upto,
        uniformspaced, uniformspace, dropnan,
        basecall,

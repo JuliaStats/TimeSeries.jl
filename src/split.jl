@@ -31,16 +31,33 @@ findwhen(ta::TimeArray{Bool, 1}) = ta.timestamp[find(ta.values)]
 
 ###### head, tail ###########
 
-function head(ta::TimeArray, n::Int=1)
+function head(ta::TimeArray, n::Int=6)
     ncol          = length(ta.colnames)
     new_timestamp = ta.timestamp[1:n]
     new_values    = ta.values[1:n, 1:ncol]
     TimeArray(new_timestamp, new_values, ta.colnames, ta.meta)
 end
 
-function tail(ta::TimeArray, n::Int=1)
+function tail(ta::TimeArray, n::Int=6)
     ncol          = length(ta.colnames)
     tail_start = length(ta)-n+1
+    new_timestamp = ta.timestamp[tail_start:end]
+    new_values    = ta.values[tail_start:end, 1:ncol]
+    TimeArray(new_timestamp, new_values, ta.colnames, ta.meta)
+end
+
+###### first, last ###########
+
+function first(ta::TimeArray)
+    ncol          = length(ta.colnames)
+    new_timestamp = ta.timestamp[1:1]
+    new_values    = ta.values[1:1, 1:ncol]
+    TimeArray(new_timestamp, new_values, ta.colnames, ta.meta)
+end
+
+function last(ta::TimeArray)
+    ncol          = length(ta.colnames)
+    tail_start    = length(ta)
     new_timestamp = ta.timestamp[tail_start:end]
     new_values    = ta.values[tail_start:end, 1:ncol]
     TimeArray(new_timestamp, new_values, ta.colnames, ta.meta)
