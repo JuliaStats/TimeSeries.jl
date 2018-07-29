@@ -40,7 +40,7 @@ end
 
 function tail(ta::TimeArray, n::Int=6)
     ncol          = length(ta.colnames)
-    tail_start = length(ta)-n+1
+    tail_start    = length(ta)-n+1
     new_timestamp = ta.timestamp[tail_start:end]
     new_values    = ta.values[tail_start:end, 1:ncol]
     TimeArray(new_timestamp, new_values, ta.colnames, ta.meta)
