@@ -48,20 +48,9 @@ end
 
 ###### first, last ###########
 
-function first(ta::TimeArray)
-    ncol          = length(ta.colnames)
-    new_timestamp = ta.timestamp[1:1]
-    new_values    = ta.values[1:1, 1:ncol]
-    TimeArray(new_timestamp, new_values, ta.colnames, ta.meta)
-end
+Base.first(ta::TimeArray) = head(ta, 1)
 
-function last(ta::TimeArray)
-    ncol          = length(ta.colnames)
-    tail_start    = length(ta)
-    new_timestamp = ta.timestamp[tail_start:end]
-    new_values    = ta.values[tail_start:end, 1:ncol]
-    TimeArray(new_timestamp, new_values, ta.colnames, ta.meta)
-end
+Base.last(ta::TimeArray) = tail(ta, 1)
 
 ###### element wrapers ###########
 
