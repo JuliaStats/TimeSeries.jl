@@ -64,39 +64,38 @@ end
     @testset "head, tail, first and last methods work with default n value on single column TimeArray" begin
         @test length(head(cl,6)) == 6
         @test head(cl).timestamp == [Date(2000,1,3), Date(2000,1,4), Date(2000,1,5), Date(2000,1,6), Date(2000,1,7), Date(2000,1,10)]
-        @test head(cl).values    == [111.94, 102.5, 104.0, 95.0, 99.5 , 97.75]
+        @test head(cl).values    == [111.94, 102.5, 104.0, 95.0, 99.5, 97.75]
 
         @test length(tail(cl,6)) == 6
-        @test tail(cl).timestamp == [Date(2000,1,3), Date(2000,1,4), Date(2000,1,5), Date(2000,1,6), Date(2000,1,7), Date(2000,1,10)]
-        @test tail(cl).values    == [21.0, 21.36, 21.49, 22.07, 22.43, 21.9]
+        @test tail(cl).timestamp == [Date(2001,12,21), Date(2001,12,24), Date(2001,12,26), Date(2001,12,27), Date(2001,12,28), Date(2001,12,31)]
+        @test tail(cl).values    ==  [21.0, 21.36, 21.49, 22.07, 22.43, 21.9]
 
         @test length(first(cl))      == 1
         @test first(cl).timestamp[1] == Date(2000,1,3)
         @test first(cl).values[1]    == 111.94
         @test first(cl).meta         == "AAPL"
 
-        @test length(last(cl,1))    == 1
+        @test length(last(cl))      == 1
         @test last(cl).timestamp[1] == Date(2001,12,31)
         @test last(cl).values[1]    == 21.9
         @test last(cl).meta         == "AAPL"
     end
 
     @testset "head, tail, first and last methods work with default n value on multi column TimeArray" begin
-        @test length(head(ohlc)) == 6
-        @test head(ohlc,1)       == [104.88  112.5  101.69  111.94]
+        @test length(head(ohlc))       == 6
+        @test head(ohlc,1).values      == [104.88 112.5 101.69 111.94]
 
-        @test length(tail(ohlc)) == 6
-        @test tail(ohlc,1)       == [22.51  22.66  21.83  21.9]
+        @test length(tail(ohlc))       == 6
+        @test tail(ohlc,1).values      == [22.51 22.66 21.83 21.9]
 
         @test length(first(ohlc))      == 1
         @test first(ohlc).timestamp[1] == Date(2000,1,3)
-        @test first(ohlc).values       == [104.88  112.5  101.69  111.94]
+        @test first(ohlc).values       == [104.88 112.5 101.69 111.94]
         @test first(ohlc).meta         == "AAPL"
 
         @test length(last(ohlc))      == 1
-        @test length(last(ohlc,1))    == 1
         @test last(ohlc).timestamp[1] == Date(2001,12,31)
-        @test last(ohlc).values       == [22.51  22.66  21.83  21.9]
+        @test last(ohlc).values       == [22.51 22.66 21.83 21.9]
         @test last(ohlc).meta         == "AAPL"
     end
 
@@ -116,8 +115,8 @@ end
         @test length(tail(ohlc, 2))   == 2
         @test length(tail(ohlc, 500)) == length(ohlc)
 
-        @test length(first(ohcl))     == 1
-        @test length(last(ohcl))      == 1
+        @test length(first(ohlc))     == 1
+        @test length(last(ohlc))      == 1
     end
 end
 
