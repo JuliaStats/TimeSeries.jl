@@ -11,8 +11,8 @@ using TimeSeries
 
 @testset "find methods" begin
     @testset "find returns correct row numbers array" begin
-        @test cl[find(cl .> op)].timestamp[1] == Date(2000,1,3)
-        @test length(find(cl .> op))          == 244
+        @test cl[findall(cl .> op)].timestamp[1] == Date(2000,1,3)
+        @test length(findall(cl .> op))          == 244
     end
 
     @testset "findwhen returns correct Dates array" begin

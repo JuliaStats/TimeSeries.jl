@@ -13,8 +13,8 @@ using TimeSeries
     new_cls  = update(cl, today(), 111.11)
     new_clv  = update(cl, today(), [111.11])
     new_ohlc = update(ohlc, today(), [111.11 222.22 333.33 444.44])
-    empty1   = TimeArray(Vector{Date}(), Array{Int}(0,1))
-    empty2   = TimeArray(Vector{Date}(), Array{Int}(0,2))
+    empty1   = TimeArray(Vector{Date}(), Array{Int}(undef, 0,1))
+    empty2   = TimeArray(Vector{Date}(), Array{Int}(undef, 0,2))
 
     @testset "empty time arrays can be constructed" begin
         @test length(empty1) == 0

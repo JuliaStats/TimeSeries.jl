@@ -106,10 +106,10 @@ end
     end
 
     @testset "merged meta field value for disparate types in meta field defaults to Void" begin
-        @test merge(mdata, merge(cl, op, meta=47)).meta         == Void
-        @test merge(mdata, merge(cl, op, meta=47), :left).meta  == Void
-        @test merge(mdata, merge(cl, op, meta=47), :right).meta == Void
-        @test merge(mdata, merge(cl, op, meta=47), :outer).meta == Void
+        @test merge(mdata, merge(cl, op, meta=47)).meta         == Nothing
+        @test merge(mdata, merge(cl, op, meta=47), :left).meta  == Nothing
+        @test merge(mdata, merge(cl, op, meta=47), :right).meta == Nothing
+        @test merge(mdata, merge(cl, op, meta=47), :outer).meta == Nothing
     end
 
     @testset "collapse" begin
@@ -128,12 +128,12 @@ end
 @testset "mathematical and comparison operations preserve meta" begin
     @testset ".+" begin
         @test (mdata .+ mdata).meta == "Apple"
-        @test (mdata .+ cl).meta == Void
+        @test (mdata .+ cl).meta == Nothing
     end
 
     @testset ".<" begin
         @test (mdata .< mdata).meta == "Apple"
-        @test (mdata .< cl).meta == Void
+        @test (mdata .< cl).meta == Nothing
     end
 end
 

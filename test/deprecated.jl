@@ -44,7 +44,7 @@ end
 
 
 @testset "deprecated findall returns correct indices" begin
-    @test findall(cl .> op) == find(cl .> op)
+    @test findall(cl .> op) == findall(cl .> op)
 end
 
 

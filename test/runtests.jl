@@ -16,7 +16,7 @@ tests = [
 
 
 @testset "TimeSeries" begin
-    info("Running tests:")
+    @info("Running tests:")
 
     for test ∈ tests
         info("\t* $test ...")
