@@ -42,8 +42,7 @@ using TimeSeries
     end
 
     @testset "update a multi column time array" begin
-        # @test last(new_ohlc).values == [111.11 222.22 333.33 444.44]
-        @test tail(new_ohlc).values == [111.11 222.22 333.33 444.44]
+        @test tail(new_ohlc, 1).values == [111.11 222.22 333.33 444.44]
         @test_throws MethodError update(ohlc, today(), [111.11, 222.22, 333.33])
     end
 

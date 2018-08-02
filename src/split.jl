@@ -31,20 +31,30 @@ findwhen(ta::TimeArray{Bool, 1}) = ta.timestamp[find(ta.values)]
 
 ###### head, tail ###########
 
-function head(ta::TimeArray, n::Int=1)
-    ncol          = length(ta.colnames)
-    new_timestamp = ta.timestamp[1:n]
-    new_values    = ta.values[1:n, 1:ncol]
-    TimeArray(new_timestamp, new_values, ta.colnames, ta.meta)
+@generated function head(ta::TimeArray{T,N}, n::Int=6) where {T,N}
+    new_values = (N == 1) ? :(ta.values[1:n]) : :(ta.values[1:n, :])
+    
+    quote
+        new_timestamp = ta.timestamp[1:n]
+        TimeArray(new_timestamp, $new_values, ta.colnames, ta.meta)
+    end
 end
 
-function tail(ta::TimeArray, n::Int=1)
-    ncol          = length(ta.colnames)
-    tail_start = length(ta)-n+1
-    new_timestamp = ta.timestamp[tail_start:end]
-    new_values    = ta.values[tail_start:end, 1:ncol]
-    TimeArray(new_timestamp, new_values, ta.colnames, ta.meta)
+ @generated function tail(ta::TimeArray{T,N}, n::Int=6) where {T,N}
+    new_values = (N == 1) ? :(ta.values[start:end]) : :(ta.values[start:end, :])
+    
+    quote
+        start = length(ta) - n + 1
+        new_timestamp = ta.timestamp[start:end]
+        TimeArray(new_timestamp, $new_values, ta.colnames, ta.meta)
+    end
 end
+
+###### first, last ###########
+
+Base.first(ta::TimeArray) = head(ta, 1)
+
+Base.last(ta::TimeArray) = tail(ta, 1)
 
 ###### element wrapers ###########
 
