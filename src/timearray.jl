@@ -101,6 +101,8 @@ x.colnames  == y.colnames  &&
 x.meta      == y.meta
 ```
 """
+==
+
 # Other type info is not helpful for assertion.
 # e.g.
 #      1.0 == 1
@@ -157,10 +159,10 @@ function show(io::IO, ta::TimeArray{T}) where {T}
     # summary line
     nrow, ncol = size(ta.values, 1, 2)
 
-    @printf(io, "%dx%d %s", nrow, ncol, typeof(ta))
+    print(io, "$(nrow)x$(ncol) $(typeof(ta))")
     if nrow != 0
-        @printf(io, " %s to %s\n", ta.timestamp[1], ta.timestamp[end])
-    else # e.g. TimeArray(Date[], [])
+        println(io, " $(ta.timestamp[1]) to $(ta.timestamp[end])\n")
+    else  # e.g. TimeArray(Date[], [])
         return
     end
 
