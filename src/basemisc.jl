@@ -1,7 +1,5 @@
 # Misc. Base and stdlib functions
 
-using Statistics
-
 const _tsmap  = Dict{Symbol, Dict{Number, Expr}}()  # timestamp map
 const _colmap = Dict{Symbol, Dict{Number, Expr}}()  # colanmes map
 

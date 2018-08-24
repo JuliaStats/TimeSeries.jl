@@ -25,7 +25,8 @@ struct TimeArray{T, N, D <: TimeType, A <: AbstractArray{T, N}} <: AbstractTimeS
             colnames::Vector{String},
             meta::Any;
             unchecked = false) where {T, N, D <: TimeType, A <: AbstractArray{T, N}}
-        nrow, ncol = size(values, 1, 2)
+        nrow = size(values, 1)
+        ncol = size(values, 2)
 
         unchecked && return new(timestamp, values, replace_dupes(colnames), meta)
 
@@ -44,7 +45,7 @@ end
 ###### outer constructor ########
 
 TimeArray(d::AbstractVector{D}, v::AbstractArray{T, N},
-          c::Vector{S}=fill("", size(v,2)),
+          c::Vector{S}=fill("", size(v, 2)),
           m::Any=nothing;
           args...) where {T, N, D <: TimeType, S <: AbstractString} =
     TimeArray{T, N, D, typeof(v)}(d, v, map(String, c), m; args...)
@@ -74,7 +75,7 @@ length(ata::AbstractTimeSeries) = length(ata.timestamp)
 
 ###### size #####################
 
-size(ta::TimeArray, dim...) = size(ta.values, dim...)
+size(ta::TimeArray, dim= size(ta.values, dim)
 
 ###### iterator protocol ########
 
@@ -157,7 +158,8 @@ end
 function show(io::IO, ta::TimeArray{T}) where {T}
 
     # summary line
-    nrow, ncol = size(ta.values, 1, 2)
+    nrow = size(ta.values, 1)
+    ncol = size(ta.values, 2)
 
     print(io, "$(nrow)x$(ncol) $(typeof(ta))")
     if nrow != 0
