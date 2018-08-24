@@ -1,19 +1,12 @@
-# Misc. Base functions
+# Misc. Base and stdlib functions
 
-function _autoimport(s::Symbol)
-    if isdefined(Base, s)
-        :(import Base: $s)
-    else
-        :()
-    end
-end
+using Statistics
 
 const _tsmap  = Dict{Symbol, Dict{Number, Expr}}()  # timestamp map
 const _colmap = Dict{Symbol, Dict{Number, Expr}}()  # colanmes map
 
 macro _mapbase(sig::Expr, imp::Expr)
     fname = sig.args[1]
-    import_expr = _autoimport(fname)
 
     # these default values are useful for reduction function
     ts = get(_tsmap, fname, Dict())
@@ -39,8 +32,7 @@ macro _mapbase(sig::Expr, imp::Expr)
     fdef = Expr(:function, sig, fbody)
 
     esc(quote
-        $import_expr
-        @doc $doc ->
+        $doc
         $fdef
     end)
 end
@@ -55,9 +47,11 @@ _colmap[:cumprod] = Dict(2 => :(ta.colnames))
 @_mapbase cumprod(ta::TimeArray, dim = 1) cumprod(ta.values, dim)
 
 # Reduction functions
-@_mapbase sum(ta::TimeArray, dim = 1) sum(ta.values, dim)
-@_mapbase mean(ta::TimeArray, dim = 1) mean(ta.values, dim)
-@_mapbase std(ta::TimeArray, dim = 1; kw...) std(ta.values, dim; kw...)
-@_mapbase var(ta::TimeArray, dim = 1; kw...) var(ta.values, dim; kw...)
-@_mapbase all(ta::TimeArray, dim = 1) all(ta.values, dim)
-@_mapbase any(ta::TimeArray, dim = 1) any(ta.values, dim)
+@_mapbase Base.sum(ta::TimeArray, dim = 1) sum(ta.values, dim)
+@_mapbase Base.all(ta::TimeArray, dim = 1) all(ta.values, dim)
+@_mapbase Base.any(ta::TimeArray, dim = 1) any(ta.values, dim)
+
+@_mapbase Statistics.mean(ta::TimeArray, dim = 1) mean(ta.values, dim)
+@_mapbase Statistics.std(ta::TimeArray, dim = 1; kw...) std(ta.values, dim; kw...)
+@_mapbase Statistics.var(ta::TimeArray, dim = 1; kw...) var(ta.values, dim; kw...)
+
