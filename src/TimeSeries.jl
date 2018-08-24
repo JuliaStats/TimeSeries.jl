@@ -1,6 +1,8 @@
 module TimeSeries
 
 using Dates
+using DelimitedFiles
+using Statistics
 
 using RecipesBase
 
