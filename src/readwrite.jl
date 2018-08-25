@@ -8,7 +8,7 @@ function readtimearray(source; delim::Char=',', meta=nothing, format::AbstractSt
     end
 
     # remove empty lines if any
-    inoempty = find(s -> length(s) > 2, cfile[:, 1])
+    inoempty = findall(s -> length(s) > 2, cfile[:, 1])
     cfile = cfile[inoempty, :]
 
     time = cfile[1:end, 1]
