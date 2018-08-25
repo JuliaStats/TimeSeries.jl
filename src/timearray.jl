@@ -33,10 +33,12 @@ struct TimeArray{T, N, D <: TimeType, A <: AbstractArray{T, N}} <: AbstractTimeS
         nrow != length(timestamp) && throw(DimensionMismatch("values must match length of timestamp"))
         ncol != length(colnames) && throw(DimensionMismatch("column names must match width of array"))
 
-        _issorted_and_unique(timestamp) && return new(timestamp, values, replace_dupes(colnames), meta)
+        _issorted_and_unique(timestamp) && return new(
+            timestamp, values, replace_dupes(colnames), meta)
 
         timestamp_r = reverse(timestamp)
-        _issorted_and_unique(timestamp_r) && return new(timestamp_r, flipdim(values, 1), replace_dupes(colnames), meta)
+        _issorted_and_unique(timestamp_r) && return new(
+            timestamp_r, reverse(values, dims = 1), replace_dupes(colnames), meta)
 
         throw(ArgumentError("timestamps must be strictly monotonic"))
     end
