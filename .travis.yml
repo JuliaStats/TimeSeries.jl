@@ -10,7 +10,9 @@ notifications:
 sudo: false
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - julia -e 'Pkg.clone(pwd()); Pkg.build("TimeSeries"); Pkg.test("TimeSeries", coverage=true)'
+  - julia -e 'Pkg.clone(pwd()); Pkg.build("TimeSeries")'
+  - julia -e 'Pkg.checkout("MarketData")'
+  - julia -e 'Pkg.test("TimeSeries", coverage=true)'
 after_success:
   - julia -e 'cd(Pkg.dir("TimeSeries")); Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
 
