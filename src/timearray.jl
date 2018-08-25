@@ -190,7 +190,7 @@ function show(io::IO, ta::TimeArray{T}) where {T}
     colwidth = maximum([
         reshape(textwidth.(ta.colnames), 1, :);
         textwidth.(strs);
-        reshape(fill(5, ncol), 1, :)], 1)
+        reshape(fill(5, ncol), 1, :)], dims = 1)
 
     # paging
     spacetime = textwidth(string(ts[1]))
