@@ -327,7 +327,7 @@ eachindex(ta::TimeArray) = Base.OneTo(length(ta.timestamp))
 function find_dupes_index(cnames)
     idx = Int[]
     for c in 1:length(cnames)
-        if contains(string(cnames[1:c-1]), cnames[c])
+        if occursin(cnames[c], string(cnames[1:c-1]))
             push!(idx, c)
         end
     end
