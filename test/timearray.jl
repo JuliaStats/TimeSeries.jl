@@ -74,9 +74,12 @@ end
             TimeArray(mangled_stamp, cl.values, ["Close"]))
     end
 
-    @testset "flipping occurs when needed" begin
-        @test TimeArray(flipdim(cl.timestamp, 1), flipdim(cl.values, 1),  ["Close"]).timestamp[1] == Date(2000,1,3)
-        @test TimeArray(flipdim(cl.timestamp, 1), flipdim(cl.values, 1),  ["Close"]).values[1]    == 111.94
+    @testset "reverse occurs when needed" begin
+        rev_timestamp = reverse(cl.timestamp, dims = 1)
+        rev_values = reverse(cl.values, dims = 1)
+        ta = TimeArray(rev_timestamp, rev_values, ["Close"])
+        @test ta.timestamp[1] == Date(2000,1,3)
+        @test ta.values[1]    == 111.94
     end
 
     @testset "duplicate column names are enumerated by inner constructor" begin
