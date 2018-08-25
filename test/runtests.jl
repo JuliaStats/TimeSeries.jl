@@ -19,7 +19,7 @@ tests = [
     @info("Running tests:")
 
     for test ∈ tests
-        info("\t* $test ...")
+        @info("\t* $test ...")
         include("$test.jl")
     end
 end
