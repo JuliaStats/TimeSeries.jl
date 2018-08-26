@@ -77,6 +77,7 @@ length(ata::AbstractTimeSeries) = length(ata.timestamp)
 
 ###### size #####################
 
+size(ta::TimeArray) = size(ta.values)
 size(ta::TimeArray, dim) = size(ta.values, dim)
 
 ###### iterator protocol ########
