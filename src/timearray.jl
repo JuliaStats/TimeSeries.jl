@@ -289,13 +289,13 @@ end
 
 # single column by name
 function getindex(ta::TimeArray, s::AbstractString)
-    n = findfirst(ta.colnames, s)
+    n = findfirst(isequal(s), ta.colnames)
     TimeArray(ta.timestamp, ta.values[:, n], String[s], ta.meta)
 end
 
 # array of columns by name
 function getindex(ta::TimeArray, args::AbstractString...)
-    ns = [findfirst(ta.colnames, a) for a in args]
+    ns = [findfirst(isequal(a), ta.colnames) for a in args]
     TimeArray(ta.timestamp, ta.values[:, ns], String[a for a in args], ta.meta)
 end
 
