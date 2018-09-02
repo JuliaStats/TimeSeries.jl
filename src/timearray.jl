@@ -1,7 +1,7 @@
 ###### type definition ##########
 
 import Base: convert, copy, length, show, getindex, start, next, done, isempty,
-             endof, size, eachindex, ==, isequal, hash
+             lastindex, size, eachindex, ==, isequal, hash, ndims
 
 abstract type AbstractTimeSeries end
 
@@ -322,7 +322,7 @@ getindex(ta::TimeArray, k::TimeArray{Bool, 1}) = ta[findwhen(k)]
 # getindex{T,N}(ta::TimeArray{T,N}, d::DAYOFWEEK) = ta[dayofweek(ta.timestamp) .== d]
 
 # Define end keyword
-endof(ta::TimeArray) = length(ta.timestamp)
+lastindex(ta::TimeArray) = length(ta.timestamp)
 
 eachindex(ta::TimeArray) = Base.OneTo(length(ta.timestamp))
 
