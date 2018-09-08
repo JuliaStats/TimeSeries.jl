@@ -1,10 +1,19 @@
-# Misc. Base and stdlib functions
+# Misc. Base and stdlib functions supports
 
-const _tsmap  = Dict{Symbol,Dict{Number,Expr}}()  # timestamp map
-const _colmap = Dict{Symbol,Dict{Number,Expr}}()  # colanmes map
+import Base: cumsum, cumprod, sum, all, any
+import Statistics: mean, std, var
+
+const _tsmap  = Dict{Any,Dict{Number,Expr}}()  # timestamp map
+const _colmap = Dict{Any,Dict{Number,Expr}}()  # colanmes map
+
+"""
+To handle :where clause
+"""
+_get_fname(sig::Expr) =
+    (sig.head == :call) ?  sig.args[1] : _get_fname(sig.args[1])
 
 macro _mapbase(sig::Expr, imp::Expr)
-    fname = sig.args[1]
+    fname = _get_fname(sig)
 
     # these default values are useful for reduction function
     ts = get(_tsmap, fname, Dict())
@@ -14,15 +23,15 @@ macro _mapbase(sig::Expr, imp::Expr)
     # these default values are useful for reduction function
     col = get(_colmap, fname, Dict())
     dim1col = get(col, 1, :(ta.colnames))
-    dim2col = get(col, 2, :([string($fname)]))
+    dim2col = get(col, 2, :([$(string(fname))]))
 
     fbody = quote
-        if dim == 1
+        if dims == 1
             TimeArray($dim1ts, $imp, $dim1col, ta.meta)
-        elseif dim == 2
+        elseif dims == 2
             TimeArray($dim2ts, $imp, $dim2col, ta.meta)
         else
-            throw(DimensionMismatch("dim should be 1 or 2"))
+            throw(DimensionMismatch("dims should be 1 or 2"))
         end
     end
 
@@ -38,18 +47,21 @@ end
 # Cumulative functions
 _tsmap[:cumsum] = Dict(1 => :(ta.timestamp))
 _colmap[:cumsum] = Dict(2 => :(ta.colnames))
-@_mapbase cumsum(ta::TimeArray, dim = 1) cumsum(ta.values, dim)
+@_mapbase cumsum(ta::TimeArray; dims::Integer) cumsum(values(ta), dims = dims)
+@_mapbase(cumsum(ta::TimeArray{T,1}, dims::Integer = 1) where{T},
+          cumsum(values(ta), dims = dims))
 
 _tsmap[:cumprod] = Dict(1 => :(ta.timestamp))
 _colmap[:cumprod] = Dict(2 => :(ta.colnames))
-@_mapbase cumprod(ta::TimeArray, dim = 1) cumprod(ta.values, dim)
+@_mapbase cumprod(ta::TimeArray; dims::Integer) cumprod(values(ta), dims = dims)
+@_mapbase(cumprod(ta::TimeArray{T,1}; dims::Integer = 1) where {T},
+          cumprod(values(ta), dims = dims))
 
 # Reduction functions
-@_mapbase Base.sum(ta::TimeArray, dim = 1) sum(ta.values, dim)
-@_mapbase Base.all(ta::TimeArray, dim = 1) all(ta.values, dim)
-@_mapbase Base.any(ta::TimeArray, dim = 1) any(ta.values, dim)
+@_mapbase sum(ta::TimeArray; dims = 1) sum(values(ta), dims = dims)
+@_mapbase all(ta::TimeArray; dims = 1) all(values(ta), dims = dims)
+@_mapbase any(ta::TimeArray; dims = 1) any(values(ta), dims = dims)
 
-@_mapbase Statistics.mean(ta::TimeArray, dim = 1) mean(ta.values, dim)
-@_mapbase Statistics.std(ta::TimeArray, dim = 1; kw...) std(ta.values, dim; kw...)
-@_mapbase Statistics.var(ta::TimeArray, dim = 1; kw...) var(ta.values, dim; kw...)
-
+@_mapbase mean(ta::TimeArray; dims = 1) mean(values(ta), dims = dims)
+@_mapbase std(ta::TimeArray; dims = 1, kw...) std(values(ta); dims = dims, kw...)
+@_mapbase var(ta::TimeArray; dims = 1, kw...) var(values(ta); dims = dims, kw...)
