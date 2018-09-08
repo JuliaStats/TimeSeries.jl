@@ -1,106 +1,79 @@
-import Base.Broadcast:
-    _containertype, promote_containertype, broadcast_c
+using Base.Broadcast: Broadcasted, DefaultArrayStyle
 
-# make TimeArray as new resulting container type of Base.Broadcast
-_containertype(::Type{<:AbstractTimeSeries}) = TimeArray
+abstract type AbstractTimeSeriesStyle{N} <: Broadcast.AbstractArrayStyle{N} end
 
-# From the default rule of promote_containertype:
-#     TimeArray, TimeArray -> TimeArray
-# And we add following to prevent ambiguous:
-#     Array, TimeArray -> TimeArray
-promote_containertype(::Type{Array}, ::Type{TimeArray}) = TimeArray
-promote_containertype(::Type{TimeArray}, ::Type{Array}) = TimeArray
+struct TimeArrayStyle{N} <: AbstractTimeSeriesStyle{N} end
+TimeArrayStyle(::Val{N}) where N = TimeArrayStyle{N}()
+TimeArrayStyle{M}(::Val{N}) where {N,M} = TimeArrayStyle{N}()
 
-promote_containertype(::Type{Any}, ::Type{TimeArray}) = TimeArray
-promote_containertype(::Type{TimeArray}, ::Type{Any}) = TimeArray
+# Determin the output type
+Base.BroadcastStyle(::Type{<:TimeArray{T,N}}) where {T,N} = TimeArrayStyle{N}()
+
+Base.broadcastable(x::AbstractTimeSeries) = x
+
+Base.Broadcast.instantiate(bc::Broadcasted{<:TimeArrayStyle}) =
+    # skip the default axes checking
+    Broadcast.flatten(bc)
 
 
-@generated function broadcast_c(f, ::Type{TimeArray}, args::Vararg{Any, N}) where {N}
-    idx = Int[]
-    colwidths = :[]
-    overlaps_expr = :(overlaps())
+function Base.copy(bc′::Broadcasted{<:TimeArrayStyle})
+    tas = find_ta(bc′)
 
-    for i in 1:N
-        if !(args[i] <: TimeArray)
-            continue
-        end
+    check_column_lens(tas)
 
-        # unroll
-        push!(idx, i)
-        push!(overlaps_expr.args, :(args[$i].timestamp))
+    n = length(tas)
+    col′ = (n == 1) ? tas[1].colnames : _new_cnames.(colnames.(tas)...)
+    meta′ = (n == 1) ? tas[1].meta : allequal(meta.(tas)) ? tas[1].meta : nothing
 
-        if args[i].parameters[2] == 2  # 2D array
-            push!(colwidths.args, :(length(args[$i].colnames)))
-        end
-    end
+    # obtain shared timestamp
+    tstamp_idx = overlap(timestamp.(tas)...)
 
-    n = length(idx)
-
-    # retain meta if all of TimeArray contain the same one
-    meta_expr = if n == 1
-        :(args[$(idx[1])].meta)
-    else
-        _e = Expr(:comparison, :(args[$(idx[1])].meta))
-        for i ∈ 2:n
-            push!(_e.args, :(==), :(args[$(idx[i])].meta))
-        end
-        :($(_e) ? args[$(idx[1])].meta : Void)
-    end
-
-    # check column length. all of non-single column should have same length
-    # and contruct new column names
-    col_check_expr = if length(colwidths.args) > 1  # if we have more than one TimeArray
-        quote
-            colwidth = Set{Int}()
-            for n ∈ $colwidths
-                n == 1 && continue
-                push!(colwidth, n)
-            end
-            if length(colwidth) > 1
-                throw(DimensionMismatch(
-                    "arrays must have the same number of columns, " *
-                    "or one must be a single column"))
-            end
-        end
-    end
-
-    col_expr = if n == 1
-        :(args[$(idx[1])].colnames)
-    else
-        _e = :(broadcast(_new_cnames))
-        append!(_e.args, map(i -> :(args[$i].colnames), idx))
-        _e
-    end
-
-    # compute output values, broadcast through Array
-    broadcast_expr = :(broadcast(f))
-    j = 1
-    for i ∈ 1:N
-        if args[i] <: TimeArray
-            if args[i].parameters[2] == 1  # 1D array
-                push!(broadcast_expr.args, :(view(args[$i].values, tstamp_idx[$j])))
-            else  # 2D array
-                push!(broadcast_expr.args, :(view(args[$i].values, tstamp_idx[$j], :)))
-            end
+    # replace TimeArray objects into Array in the Broadcasted arguments
+    j = 0
+    args = Any[]
+    for (i, arg) ∈ enumerate(bc′.args)
+        x = if arg isa TimeArray
             j += 1
+            if typeof(arg).parameters[2] == 1  # 1D array
+                view(arg.values, tstamp_idx[j])
+            else
+                view(arg.values, tstamp_idx[j], :)
+            end
         else
-            push!(broadcast_expr.args, :(args[$i]))
+            arg
         end
+        push!(args, x)
     end
 
-    quote
-        $col_check_expr
-
-        # obtain shared timestamp
-        tstamp_idx = $overlaps_expr
-
-        TimeArray(view(args[$(idx[1])].timestamp, tstamp_idx[1]),
-                  $broadcast_expr,
-                  $col_expr,
-                  $meta_expr)
-    end
+    TimeArray(view(tas[1].timestamp, tstamp_idx[1]),
+              broadcast(bc′.f, args...),
+              col′,
+              meta′)
 end
 
+@inline function check_column_lens(tas::Tuple)
+    length(tas) <= 1 && return
+
+    # if we have more than one TimeArray
+    lens = Set(i for i ∈ map(ta -> length(ta.colnames), tas) if i ≠ 1)
+    length(lens) > 1 && throw(
+        DimensionMismatch(
+            "TimeArrays must have the same number of columns, " *
+            "or one must be a single column"))
+end
+
+"""
+find all TimeArray in the Broadcasted args and return a tuple of them.
+"""
+function find_ta(bc)
+    ret = tuple()
+    for i ∈ bc.args
+        if i isa TimeArray
+            ret = tuple(ret..., i)
+        end
+    end
+    ret
+end
 
 @generated function _new_cnames(args::Vararg{String, N}) where N
     expr = :(string(args[1]))
@@ -109,6 +82,3 @@ end
     end
     expr
 end
-
-
-#TODO: support broadcast_getindex
