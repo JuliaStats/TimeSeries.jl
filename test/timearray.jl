@@ -162,12 +162,24 @@ end
 
 
 @testset "ordered collection methods" begin
-    @testset "iterator protocol is valid" begin
-        @test !isempty(op)
-        @test isempty(op[op .< 0])
-        @test start(op)              == 1
-        @test next(op, 1)            == ((op.timestamp[1], op.values[1,:]), 2)
-        @test done(op, length(op)+1) == true
+    @testset "iteration protocol is valid" begin
+        let  # single column
+            i = 1
+            for (t, val) ∈ cl[1:3]
+                @test t   == timestamp(cl)[i]
+                @test val == values(cl)[i]
+                i += 1
+            end
+        end
+
+        let  # multiple column
+            i = 1
+            for (t, val) ∈ ohlc[1:3]
+                @test t   == timestamp(ohlc)[i]
+                @test val == values(ohlc)[i, :]
+                i += 1
+            end
+        end
     end
 
     @testset "end keyword returns correct index" begin

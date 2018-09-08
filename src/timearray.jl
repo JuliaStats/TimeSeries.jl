@@ -1,6 +1,6 @@
 ###### type definition ##########
 
-import Base: convert, copy, length, show, getindex, start, next, done, isempty,
+import Base: convert, copy, length, show, getindex, iterate,
              lastindex, size, eachindex, ==, isequal, hash, ndims
 
 abstract type AbstractTimeSeries{T,N} end
@@ -84,12 +84,16 @@ size(ta::TimeArray, dim) = size(ta.values, dim)
 
 ndims(ta::AbstractTimeSeries{T,N}) where {T,N} = N
 
-###### iterator protocol ########
+###### iteration protocol ########
 
-start(ta::TimeArray)   = 1
-next(ta::TimeArray, i) = ((ta.timestamp[i], ta.values[i, :]), i + 1)
-done(ta::TimeArray, i) = (i > length(ta))
-isempty(ta::TimeArray) = (length(ta) == 0)
+@generated function iterate(ta::AbstractTimeSeries{T,N}, i = 1) where {T,N}
+    val = (N == 1) ? :(values(ta)[i]) : :(values(ta)[i, :])
+
+    quote
+        i > length(ta) && return nothing
+        ((timestamp(ta)[i], $val), i + 1)
+    end
+end
 
 ###### equal ####################
 
@@ -166,8 +170,7 @@ calculate the paging
     ret
 end
 
-function show(io::IO, ta::TimeArray{T}) where {T}
-
+function show(io::IO, ta::TimeArray{T}) where T
     # summary line
     nrow = size(ta.values, 1)
     ncol = size(ta.values, 2)
