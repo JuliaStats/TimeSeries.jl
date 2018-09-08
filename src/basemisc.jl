@@ -1,7 +1,7 @@
 # Misc. Base and stdlib functions
 
-const _tsmap  = Dict{Symbol, Dict{Number, Expr}}()  # timestamp map
-const _colmap = Dict{Symbol, Dict{Number, Expr}}()  # colanmes map
+const _tsmap  = Dict{Symbol,Dict{Number,Expr}}()  # timestamp map
+const _colmap = Dict{Symbol,Dict{Number,Expr}}()  # colanmes map
 
 macro _mapbase(sig::Expr, imp::Expr)
     fname = sig.args[1]

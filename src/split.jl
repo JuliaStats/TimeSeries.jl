@@ -1,4 +1,4 @@
-import Base: values, find
+import Base: values
 
 # when ############################
 
@@ -21,13 +21,13 @@ to(ta::TimeArray{T, N, D}, d::D) where {T, N, D} =
         d > ta.timestamp[end] ? ta :
         ta[1:searchsortedlast(ta.timestamp, d)]
 
-###### find ##################
+###### findall ##################
 
-find(ta::TimeArray{Bool, 1}) = find(ta.values)
+Base.findall(ta::TimeArray{Bool,1}) = findall(ta.values)
 
 ###### findwhen #################
 
-findwhen(ta::TimeArray{Bool, 1}) = ta.timestamp[find(ta.values)]
+findwhen(ta::TimeArray{Bool,1}) = ta.timestamp[findall(ta.values)]
 
 ###### head, tail ###########
 
