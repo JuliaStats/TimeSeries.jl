@@ -1,4 +1,5 @@
 using Dates
+using Statistics
 using Test
 
 using MarketData
@@ -11,7 +12,7 @@ using TimeSeries
 
 @testset "time series methods" begin
     @testset "lag takes previous day and timestamps it to next day" begin
-        @test isapprox(lag(cl).values[1]   , 111.94, atol=.01)
+        @test lag(cl).values[1] ≈ 111.94 atol=.01
         @test lag(cl).timestamp[1] == Date(2000,1,4)
     end
 
@@ -32,7 +33,7 @@ using TimeSeries
     end
 
     @testset "lead takes next day and timestamps it to current day" begin
-        @test isapprox(lead(cl).values[1]   , 102.5, atol=.1)
+        @test lead(cl).values[1] ≈ 102.5 atol=.1
         @test lead(cl).timestamp[1] == Date(2000,1,3)
     end
 
@@ -115,17 +116,17 @@ using TimeSeries
 
     @testset "diff n lag" begin
         let ta = diff(cl, 5)
-          ans = cl .- lag(cl, 5)
+            ans = cl .- lag(cl, 5)
 
-          @test ta.values == ans.values
-          @test ta.timestamp == ans.timestamp
+            @test ta.values == ans.values
+            @test ta.timestamp == ans.timestamp
         end
 
         let ta = diff(ohlc, 5)
-          ans = ohlc .- lag(ohlc, 5)
+            ans = ohlc .- lag(ohlc, 5)
 
-          @test ta.values == ans.values
-          @test ta.timestamp == ans.timestamp
+            @test ta.values == ans.values
+            @test ta.timestamp == ans.timestamp
         end
     end  # @testset "diff n lag"
 
@@ -157,7 +158,7 @@ using TimeSeries
         @test isequal(moving(mean, cl, 10, padding=true).values[1], NaN) == true
         @test moving(mean, cl, 10, padding=true).values[10]              == moving(mean, cl, 10).values[1]
         @test moving(mean, ohlc, 10).values                              == moving(mean, ohlc, 10, padding=false).values
-        @test isapprox(moving(mean, ohlc, 10).values[1, :]', mean(ohlc.values[1:10, :], 1))
+        @test isapprox(moving(mean, ohlc, 10).values[1, :]', mean(ohlc.values[1:10, :], dims = 1))
         @test isequal(moving(mean, ohlc, 10, padding=true).values[1, :], [NaN, NaN, NaN, NaN]) == true
         @test moving(mean, ohlc, 10, padding=true).values[10, :]         == moving(mean, ohlc, 10).values[1, :]
 
@@ -175,12 +176,15 @@ using TimeSeries
     end
 
     @testset "upto method accumulates" begin
-        @test isapprox(upto(sum, cl).values[10]       , sum(cl.values[1:10]))
-        @test isapprox(upto(mean, cl).values[10]      , mean(cl.values[1:10]))
-        @test upto(sum, cl).timestamp[10] == Date(2000,1,14)
+        @test upto(sum, cl).values[10]  ≈ sum(cl.values[1:10])
+        @test upto(mean, cl).values[10] ≈ mean(cl.values[1:10])
+
+        @test upto(sum, cl).timestamp[10]  == Date(2000,1,14)
+        @test upto(mean, cl).timestamp[10] == Date(2000,1,14)
+
         # transpose the upto value output from column to row vector but values are identical
-        @test isapprox(upto(sum, ohlc).values[10, :]' , sum(ohlc.values[1:10, :], 1))
-        @test isapprox(upto(mean, ohlc).values[10, :]', mean(ohlc.values[1:10, :], 1))
+        @test upto(sum, ohlc).values[10, :]'  ≈ sum(ohlc.values[1:10, :], dims = 1)
+        @test upto(mean, ohlc).values[10, :]' ≈ mean(ohlc.values[1:10, :], dims = 1)
     end
 end
 
@@ -212,7 +216,7 @@ end
 
     @testset "dropnan works" begin
         nohlc = TimeArray(ohlc.timestamp, copy(ohlc.values), ohlc.colnames, ohlc.meta)
-        nohlc.values[7:12, 2] = NaN
+        nohlc.values[7:12, 2] .= NaN
 
         @test dropnan(uohlc).timestamp       == dropnan(uohlc, :all).timestamp
         @test dropnan(uohlc).values          == dropnan(uohlc, :all).values

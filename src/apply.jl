@@ -82,7 +82,7 @@ end  # percentchange
 function moving(f, ta::TimeArray{T, 1}, window::Int;
                 padding::Bool = false) where {T}
     tstamps = padding ? ta.timestamp : ta.timestamp[window:end]
-    vals    = zeros(ta.values[window:end])
+    vals    = zero(ta.values[window:end])
     for i=1:length(vals)
         vals[i] = f(ta.values[i:i+(window-1)])
     end
@@ -93,18 +93,18 @@ end
 function moving(f, ta::TimeArray{T, 2}, window::Int;
                 padding::Bool = false) where {T}
     tstamps = padding ? ta.timestamp : ta.timestamp[window:end]
-    vals    = zeros(ta.values[window:end, :])
+    vals    = zero(ta.values[window:end, :])
     for i=1:size(vals, 1), j=1:size(vals, 2)
         vals[i, j] = f(ta.values[i:i+(window-1), j])
     end
-    padding && (vals = [NaN*ones(ta.values[1:(window-1), :]); vals])
+    padding && (vals = [NaN*fill(1, size(ta.values[1:(window-1), :])); vals])
     TimeArray(tstamps, vals, ta.colnames, ta.meta)
 end
 
 ###### upto #####################
 
 function upto(f, ta::TimeArray{T, 1}) where {T}
-    vals = zeros(ta.values)
+    vals = zero(ta.values)
     for i=1:length(vals)
         vals[i] = f(ta.values[1:i])
     end
@@ -112,7 +112,7 @@ function upto(f, ta::TimeArray{T, 1}) where {T}
 end
 
 function upto(f, ta::TimeArray{T, 2}) where {T}
-    vals = zeros(ta.values)
+    vals = zero(ta.values)
     for i=1:size(vals, 1), j=1:size(vals, 2)
         vals[i, j] = f(ta.values[1:i, j])
     end
@@ -148,6 +148,6 @@ end  # uniformspace
 ###### dropnan ####################
 
 dropnan(ta::TimeArray, method::Symbol=:all) =
-    method == :all ? ta[find(any(.!isnan.(ta.values), 2))] :
-    method == :any ? ta[find(all(.!isnan.(ta.values), 2))] :
+    method == :all ? ta[findall(reshape(any(.!isnan.(ta), dims = 2).values, :))] :
+    method == :any ? ta[findall(reshape(all(.!isnan.(ta), dims = 2).values, :))] :
     error("dropnan method must be :all or :any")
