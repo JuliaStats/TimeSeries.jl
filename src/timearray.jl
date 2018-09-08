@@ -164,9 +164,9 @@ function show(io::IO, ta::TimeArray{T}) where {T}
     nrow = size(ta.values, 1)
     ncol = size(ta.values, 2)
 
-    print(io, "$(nrow)x$(ncol) $(typeof(ta))")
+    print(io, "$(nrow)×$(ncol) $(typeof(ta))")
     if nrow != 0
-        println(io, " $(ta.timestamp[1]) to $(ta.timestamp[end])\n")
+        println(io, " $(ta.timestamp[1]) to $(ta.timestamp[end])")
     else  # e.g. TimeArray(Date[], [])
         return
     end

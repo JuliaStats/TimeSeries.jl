@@ -301,7 +301,7 @@ end
 
 @testset "show methods don't throw errors" begin
     let str = sprint(show, cl)
-        out = """500x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
+        out = """500×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
 │            │ Close  │
 ├────────────┼────────┤
 │ 2000-01-03 │ 111.94 │
@@ -326,7 +326,7 @@ end
     end
 
     let str = sprint(show, ohlc)
-        out = """500x4 TimeSeries.TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2001-12-31
+        out = """500×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2001-12-31
 │            │ Open   │ High   │ Low    │ Close  │
 ├────────────┼────────┼────────┼────────┼────────┤
 │ 2000-01-03 │ 104.88 │ 112.5  │ 101.69 │ 111.94 │
@@ -351,7 +351,7 @@ end
     end
 
     let str = sprint(show, AAPL)
-        out = """8336x12 TimeSeries.TimeArray{Float64,2,Date,Array{Float64,2}} 1980-12-12 to 2013-12-31
+        out = """8336×12 TimeArray{Float64,2,Date,Array{Float64,2}} 1980-12-12 to 2013-12-31
 │            │ Open   │ High   │ Low    │ Close  │ Volume    │ Ex-Dividend │
 ├────────────┼────────┼────────┼────────┼────────┼───────────┼─────────────┤
 │ 1980-12-12 │ 28.75  │ 28.88  │ 28.75  │ 28.75  │ 2.0939e6  │ 0.0         │
@@ -397,7 +397,7 @@ end
     end
 
     let str = sprint(show, ohlc[1:4])
-        out = """4x4 TimeSeries.TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-06
+        out = """4×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-06
 │            │ Open   │ High   │ Low    │ Close  │
 ├────────────┼────────┼────────┼────────┼────────┤
 │ 2000-01-03 │ 104.88 │ 112.5  │ 101.69 │ 111.94 │
@@ -408,11 +408,15 @@ end
     end
 
     let str = sprint(show, ohlc[1:0])
-        @test str == "0x4 TimeSeries.TimeArray{Float64,2,Date,Array{Float64,2}}"
+        @test str == "0×4 TimeArray{Float64,2,Date,Array{Float64,2}}"
+    end
+
+    let str = sprint(show, TimeArray(Date[], []))
+        @test str == "0×1 TimeArray{Any,1,Date,Array{Any,1}}"
     end
 
     let str = sprint(show, lag(cl[1:2], padding=true))
-        out = """2x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-04
+        out = """2×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-04
 │            │ Close  │
 ├────────────┼────────┤
 │ 2000-01-03 │ NaN    │
