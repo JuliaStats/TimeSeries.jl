@@ -33,8 +33,8 @@ and calculate the indexes idx_a and idx_b mapping each element in a and b to the
 function sorted_unique_merge(::Type{IndexType}, a::Vector, b::Vector) where {IndexType}
     i, na, j, nb = 1, length(a), 1, length(b)
     c = similar(a, length(a) + length(b))
-    idx_a = Vector{IndexType}(length(a))
-    idx_b = Vector{IndexType}(length(b))
+    idx_a = Vector{IndexType}(undef, length(a))
+    idx_b = Vector{IndexType}(undef, length(b))
     k = 1
     @inbounds while (i <= na) && (j <= nb)
         if a[i] < b[j]

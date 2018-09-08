@@ -149,18 +149,21 @@ end
 
 # map ######################
 
-function map(f, ta::TimeArray)
-    timestamps = similar(ta.timestamp)
-    values = similar(ta.values)
+@generated function map(f, ta::TimeArray{T,N}) where {T,N}
+    input_val  = (N == 1) ? :(ta.values[i]) : :(vec(ta.values[i, :]))
+    output_val = (N == 1) ? :(vals[i]) : :(vals[i, :])
 
-    for i in 1:length(ta)
-        timestamps[i], values[i, :] = f(ta.timestamp[i], vec(ta.values[i, :]))
-    end
+    output_vals = (N == 1) ? :(vals[order]) : :(vals[order, :])
 
-    order = sortperm(timestamps)
-    if length(ta.colnames) == 1 # Check for 1D to ensure values remains a 1D vector.
-        TimeArray(timestamps[order], values[order], ta.colnames, ta.meta)
-    else
-        TimeArray(timestamps[order], values[order, :], ta.colnames, ta.meta)
+    quote
+        ts   = similar(timestamp(ta))
+        vals = similar(values(ta))
+
+        for i in eachindex(ta)
+            @inbounds ts[i], $output_val = f(ta.timestamp[i], $input_val)
+        end
+
+        order = sortperm(ts)
+        TimeArray(ts[order], $output_vals, ta.colnames, ta.meta)
     end
 end
