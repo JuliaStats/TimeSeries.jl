@@ -21,7 +21,7 @@ end
 
 @testset "type constructors allow views" begin
     source_rows = 101:121
-    source_cols = 1:size(AAPL.values)[2]
+    source_cols = 1:size(AAPL.values, 2)
     tstamps = view(AAPL.timestamp, source_rows)
     tvalues = view(AAPL.values, source_rows, source_cols)
 
@@ -216,7 +216,7 @@ end
     end
 
     @testset "getindex on range of Date" begin
-        @test length(cl[Date(2000,1,1):Date(2001,12,31)]) == 500
+        @test length(cl[Date(2000,1,1):Day(1):Date(2001,12,31)]) == 500
     end
 
     @testset "getindex on single column name" begin
@@ -269,7 +269,7 @@ end
     @test !isequal(cl, ohlc)
     @test !isequal(cl, lag(cl))
 
-    ds = DateTime(2017, 12, 25):DateTime(2017, 12, 31) |> collect
+    ds = DateTime(2017, 12, 25):Day(1):DateTime(2017, 12, 31) |> collect
 
     let  # diff colnames
         x = TimeArray(ds, 1:7, ["foo"])
@@ -284,7 +284,7 @@ end
     end
 
     let  # Date vs DateTime
-        ds2 = Date(2017, 12, 25):Date(2017, 12, 31) |> collect
+        ds2 = Date(2017, 12, 25):Day(1):Date(2017, 12, 31) |> collect
         x = TimeArray(ds,  1:7, ["foo"], "bar")
         y = TimeArray(ds2, 1:7, ["foo"], "bar")
         @test x == y

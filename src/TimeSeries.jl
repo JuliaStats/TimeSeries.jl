@@ -19,12 +19,12 @@ export TimeArray, AbstractTimeSeries,
 
 include(".timeseriesrc.jl")
 include("timearray.jl")
+include("utilities.jl")
 include("split.jl")
 include("apply.jl")
 include("broadcast.jl")
 include("combine.jl")
 include("readwrite.jl")
-include("utilities.jl")
 include("modify.jl")
 include("basemisc.jl")
 include("deprecated.jl")
