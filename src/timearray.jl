@@ -80,6 +80,10 @@ length(ata::AbstractTimeSeries) = length(ata.timestamp)
 size(ta::TimeArray) = size(ta.values)
 size(ta::TimeArray, dim) = size(ta.values, dim)
 
+###### ndims #####################
+
+ndims(ta::AbstractTimeSeries{T,N}) where {T,N} = N
+
 ###### iterator protocol ########
 
 start(ta::TimeArray)   = 1
@@ -122,6 +126,10 @@ isequal(x::TimeArray{T,N}, y::TimeArray{S,N}) where {T,S,N} =
 # support for Dict
 hash(x::TimeArray, h::UInt) =
     sum(f -> hash(getfield(x, f), h), fieldnames(TimeArray))
+
+###### eltype #####################
+
+Base.eltype(::AbstractTimeSeries{T}) where T = T
 
 ###### show #####################
 
