@@ -3,7 +3,7 @@
 import Base: convert, copy, length, show, getindex, start, next, done, isempty,
              lastindex, size, eachindex, ==, isequal, hash, ndims
 
-abstract type AbstractTimeSeries end
+abstract type AbstractTimeSeries{T,N} end
 
 function _issorted_and_unique(x)
     for i in 1:length(x)-1
@@ -12,19 +12,19 @@ function _issorted_and_unique(x)
     true
 end
 
-struct TimeArray{T, N, D <: TimeType, A <: AbstractArray{T, N}} <: AbstractTimeSeries
+struct TimeArray{T,N,D<:TimeType,A<:AbstractArray{T,N}} <: AbstractTimeSeries{T,N}
 
     timestamp::Vector{D}
     values::A
     colnames::Vector{String}
     meta::Any
 
-    function TimeArray{T, N, D, A}(
+    function TimeArray{T,N,D,A}(
             timestamp::AbstractVector{D},
             values::A,
             colnames::Vector{String},
             meta::Any;
-            unchecked = false) where {T, N, D <: TimeType, A <: AbstractArray{T, N}}
+            unchecked = false) where {T,N,D<:TimeType,A<:AbstractArray{T,N}}
         nrow = size(values, 1)
         ncol = size(values, 2)
 
@@ -46,25 +46,25 @@ end
 
 ###### outer constructor ########
 
-TimeArray(d::AbstractVector{D}, v::AbstractArray{T, N},
+TimeArray(d::AbstractVector{D}, v::AbstractArray{T,N},
           c::Vector{S}=fill("", size(v, 2)),
           m::Any=nothing;
-          args...) where {T, N, D <: TimeType, S <: AbstractString} =
+          args...) where {T,N,D<:TimeType,S<:AbstractString} =
     TimeArray{T, N, D, typeof(v)}(d, v, map(String, c), m; args...)
 TimeArray(d::D, v::AbstractArray{T, N}, c::Vector{S}=fill("", size(v, 2)),
           m::Any=nothing;
-          args...) where {T, N, D <: TimeType, S <: AbstractString} =
+          args...) where {T,N,D<:TimeType,S<:AbstractString} =
     TimeArray{T, N, D, typeof(v)}([d], v, map(String, c), m; args...)
 
 ###### conversion ###############
 
-convert(::Type{TimeArray{Float64, 1}}, x::TimeArray{Bool, 1}) =
+convert(::Type{TimeArray{Float64,1}}, x::TimeArray{Bool,1}) =
     TimeArray(x.timestamp, map(Float64, x.values), x.colnames, x.meta)
-convert(::Type{TimeArray{Float64, 2}}, x::TimeArray{Bool, 2}) =
+convert(::Type{TimeArray{Float64,2}}, x::TimeArray{Bool,2}) =
     TimeArray(x.timestamp, map(Float64, x.values), x.colnames, x.meta)
 
-convert(x::TimeArray{Bool, 1}) = convert(TimeArray{Float64, 1}, x::TimeArray{Bool, 1})
-convert(x::TimeArray{Bool, 2}) = convert(TimeArray{Float64, 2}, x::TimeArray{Bool, 2})
+convert(x::TimeArray{Bool,1}) = convert(TimeArray{Float64,1}, x::TimeArray{Bool,1})
+convert(x::TimeArray{Bool,2}) = convert(TimeArray{Float64,2}, x::TimeArray{Bool,2})
 
 ###### copy ###############
 
@@ -257,35 +257,32 @@ end
 ###### getindex #################
 
 # single row
-function getindex(ta::TimeArray, n::Int)
+getindex(ta::TimeArray, n::Integer) =
     # avoid conversion to column vector
     TimeArray(ta.timestamp[n], ta.values[n:n, :], ta.colnames, ta.meta)
-end
+
+# getindex(ta::TimeArray, I::CartesianIndex{1}) =
+#     TimeArray(ta.timestamp[I], ta.values[I:I, :], ta.colnames, ta.meta)
 
 # single row 1d
-function getindex(ta::TimeArray{T, 1}, n::Int) where {T}
+getindex(ta::TimeArray{T,1}, n::Integer) where {T} =
     TimeArray(ta.timestamp[n], ta.values[[n]], ta.colnames, ta.meta)
-end
 
 # range of rows
-function getindex(ta::TimeArray, r::UnitRange{Int})
+getindex(ta::TimeArray, r::UnitRange{Int}) =
     TimeArray(ta.timestamp[r], ta.values[r, :], ta.colnames, ta.meta)
-end
 
 # range of 1d rows
-function getindex(ta::TimeArray{T, 1}, r::UnitRange{Int}) where {T}
+getindex(ta::TimeArray{T,1}, r::UnitRange{Int}) where T =
     TimeArray(ta.timestamp[r], ta.values[r], ta.colnames, ta.meta)
-end
 
 # array of rows
-function getindex(ta::TimeArray, a::AbstractVector{S}) where {S <: Integer}
+getindex(ta::TimeArray, a::AbstractVector{<:Integer}) =
     TimeArray(ta.timestamp[a], ta.values[a, :], ta.colnames, ta.meta)
-end
 
 # array of 1d rows
-function getindex(ta::TimeArray{T, 1}, a::AbstractVector{S}) where {T, S <: Integer}
+getindex(ta::TimeArray{T,1}, a::AbstractVector{<:Integer}) where T =
     TimeArray(ta.timestamp[a], ta.values[a], ta.colnames, ta.meta)
-end
 
 # single column by name
 function getindex(ta::TimeArray, s::AbstractString)
@@ -308,7 +305,7 @@ end
 # multiple dates
 function getindex(ta::TimeArray{T, N, D}, dates::Vector{D}) where {T, N, D}
     dates = sort(dates)
-    idxs, _ = overlaps(ta.timestamp, dates)
+    idxs, _ = overlap(ta.timestamp, dates)
     ta[idxs]
 end
 
