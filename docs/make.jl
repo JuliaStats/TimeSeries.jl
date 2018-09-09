@@ -23,7 +23,7 @@ makedocs(
 
 deploydocs(
     repo = "github.com/JuliaStats/TimeSeries.jl.git",
-    julia  = "0.6",
+    julia  = "1.0",
     latest = "master",
     target = "build",
     deps = nothing,  # we use the `format = :html`, without `mkdocs`
