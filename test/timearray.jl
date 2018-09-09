@@ -276,6 +276,23 @@ end
 end
 
 
+@testset "Base.collect" begin
+    @testset "cl" begin
+        A = collect(cl)
+        @test A[1] == (Date(2000, 01, 03), 111.94)
+        @test A[2] == (Date(2000, 01, 04), 102.5)
+        @test A[3] == (Date(2000, 01, 05), 104.0)
+    end
+
+    @testset "ohlc" begin
+        A = collect(ohlc)
+        @test A[1] == (Date(2000, 01, 03), [104.88, 112.5, 101.69, 111.94])
+        @test A[2] == (Date(2000, 01, 04), [108.25, 110.62, 101.19, 102.5])
+        @test A[3] == (Date(2000, 01, 05), [103.75, 110.56, 103.0, 104.0])
+    end
+end
+
+
 @testset "Base.size" begin
     @test size(ohlc) == (500, 4)
     @test size(ohlc, 1) == 500
