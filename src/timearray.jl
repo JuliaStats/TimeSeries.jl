@@ -273,19 +273,16 @@ getindex(ta::TimeArray, n::Integer) =
     # avoid conversion to column vector
     TimeArray(ta.timestamp[n], ta.values[n:n, :], ta.colnames, ta.meta)
 
-# getindex(ta::TimeArray, I::CartesianIndex{1}) =
-#     TimeArray(ta.timestamp[I], ta.values[I:I, :], ta.colnames, ta.meta)
-
 # single row 1d
 getindex(ta::TimeArray{T,1}, n::Integer) where {T} =
     TimeArray(ta.timestamp[n], ta.values[[n]], ta.colnames, ta.meta)
 
 # range of rows
-getindex(ta::TimeArray, r::UnitRange{Int}) =
+getindex(ta::TimeArray, r::UnitRange{<:Integer}) =
     TimeArray(ta.timestamp[r], ta.values[r, :], ta.colnames, ta.meta)
 
 # range of 1d rows
-getindex(ta::TimeArray{T,1}, r::UnitRange{Int}) where T =
+getindex(ta::TimeArray{T,1}, r::UnitRange{<:Integer}) where T =
     TimeArray(ta.timestamp[r], ta.values[r], ta.colnames, ta.meta)
 
 # array of rows
@@ -309,23 +306,22 @@ function getindex(ta::TimeArray, args::AbstractString...)
 end
 
 # single date
-function getindex(ta::TimeArray{T, N, D}, d::D) where {T, N, D}
+function getindex(ta::TimeArray{T,N,D}, d::D) where {T,N,D}
     idxs = searchsorted(ta.timestamp, d)
     length(idxs) == 1 ? ta[idxs[1]] : nothing
 end
 
 # multiple dates
-function getindex(ta::TimeArray{T, N, D}, dates::Vector{D}) where {T, N, D}
+function getindex(ta::TimeArray{T,N,D}, dates::Vector{D}) where {T,N,D}
     dates = sort(dates)
     idxs, _ = overlap(ta.timestamp, dates)
     ta[idxs]
 end
 
 # StepRange{Date,...}
-getindex(ta::TimeArray{T, N, D}, r::StepRange{D}) where {T, N, D} =
-    ta[collect(r)]
+getindex(ta::TimeArray{T,N,D}, r::StepRange{D}) where {T,N,D} = ta[collect(r)]
 
-getindex(ta::TimeArray, k::TimeArray{Bool, 1}) = ta[findwhen(k)]
+getindex(ta::TimeArray, k::TimeArray{Bool,1}) = ta[findall(k)]
 
 # day of week
 # getindex{T,N}(ta::TimeArray{T,N}, d::DAYOFWEEK) = ta[dayofweek(ta.timestamp) .== d]
