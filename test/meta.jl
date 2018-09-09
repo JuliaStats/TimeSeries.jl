@@ -1,4 +1,5 @@
 using Dates
+using Statistics
 using Test
 
 using MarketData
@@ -70,7 +71,7 @@ end
     end
 
     @testset "moving" begin
-        @test moving(mdata,mean,10).meta == "Apple"
+        @test moving(mean,mdata,10).meta == "Apple"
     end
 
     @testset "upto" begin
