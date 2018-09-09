@@ -98,9 +98,16 @@ end
     end
 
     @testset "and doesn't when unchecked" begin
-        @test TimeArray(mangled_stamp, cl.values; unchecked = true).values === cl.values
-        @test TimeArray(mangled_stamp, cl.values; unchecked = true).timestamp === mangled_stamp
-        @test TimeArray(dupe_stamp, cl.values; unchecked = true).timestamp === dupe_stamp
+        let
+            ta = TimeArray(mangled_stamp, cl.values; unchecked = true)
+            @test values(ta)    === values(cl)
+            @test timestamp(ta) === mangled_stamp
+        end
+
+        let
+            ta = TimeArray(dupe_stamp, cl.values; unchecked = true)
+            @test timestamp(ta) === dupe_stamp
+        end
     end
 end
 
@@ -132,15 +139,17 @@ end
 @testset "copy methods" begin
     cop = copy(op)
     cohlc = copy(ohlc)
+
     @testset "copy works" begin
         @test cop.timestamp == op.timestamp
-        @test cop.values == op.values
-        @test cop.colnames == op.colnames
-        @test cop.meta == op.meta
+        @test cop.values    == op.values
+        @test cop.colnames  == op.colnames
+        @test cop.meta      == op.meta
+
         @test cohlc.timestamp == ohlc.timestamp
-        @test cohlc.values == ohlc.values
-        @test cohlc.colnames == ohlc.colnames
-        @test cohlc.meta == ohlc.meta
+        @test cohlc.values    == ohlc.values
+        @test cohlc.colnames  == ohlc.colnames
+        @test cohlc.meta      == ohlc.meta
     end
 end
 
@@ -197,10 +206,12 @@ end
     end
 
     @testset "getindex on range of Int and Date" begin
-        @test ohlc[1:2].timestamp                                  == [Date(2000,1,3), Date(2000,1,4)]
-        @test ohlc[1:2:4].timestamp                                == [Date(2000,1,3), Date(2000,1,5)]
-        @test ohlc[Int8(1):Int8(2):Int8(4)].timestamp              == [Date(2000,1,3), Date(2000,1,5)]
-        @test ohlc[Date(2000,1,3):Day(1):Date(2000,1,4)].timestamp == [Date(2000,1,3), Date(2000,1,4)]
+        irng = Int8(1):Int8(2):Int8(4)
+        drng = Date(2000,1,3):Day(1):Date(2000,1,4)
+        @test ohlc[1:2].timestamp   == [Date(2000,1,3), Date(2000,1,4)]
+        @test ohlc[1:2:4].timestamp == [Date(2000,1,3), Date(2000,1,5)]
+        @test ohlc[irng].timestamp  == [Date(2000,1,3), Date(2000,1,5)]
+        @test ohlc[drng].timestamp  == [Date(2000,1,3), Date(2000,1,4)]
     end
 
     @testset "getindex on range of DateTime when only Date is in timestamp" begin
@@ -220,8 +231,9 @@ end
     end
 
     @testset "getindex on single column name" begin
-        @test size(ohlc["Open"].values, 2)                                        == 1
-        @test size(ohlc["Open"][Date(2000,1,3):Day(1):Date(2000,1,14)].values, 1) == 10
+        idx = Date(2000,1,3):Day(1):Date(2000,1,14)
+        @test size(ohlc["Open"].values, 2)      == 1
+        @test size(ohlc["Open"][idx].values, 1) == 10
     end
 
     @testset "getindex on multiple column name" begin
