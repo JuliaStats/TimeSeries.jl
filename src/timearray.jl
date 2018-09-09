@@ -321,7 +321,7 @@ end
 # StepRange{Date,...}
 getindex(ta::TimeArray{T,N,D}, r::StepRange{D}) where {T,N,D} = ta[collect(r)]
 
-getindex(ta::TimeArray, k::TimeArray{Bool,1}) = ta[findall(k)]
+getindex(ta::TimeArray, k::TimeArray{Bool,1}) = ta[findwhen(k)]
 
 # day of week
 # getindex{T,N}(ta::TimeArray{T,N}, d::DAYOFWEEK) = ta[dayofweek(ta.timestamp) .== d]

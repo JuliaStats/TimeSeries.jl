@@ -127,6 +127,18 @@ end
 end
 
 
+@testset "construct with StepRange{Date,Day}" begin
+    drng = Date(2000,1,1):Day(1):Date(2000,1,5)
+    ta = TimeArray(drng, 1:5)
+
+    @test timestamp(ta)[1]   == first(drng)
+    @test timestamp(ta)[end] == last(drng)
+
+    @test values(ta)[1]   == 1
+    @test values(ta)[end] == 5
+end
+
+
 @testset "conversion methods" begin
     @testset "convert works " begin
         @test isa(convert(TimeArray{Float64,1}, (cl.>op)), TimeArray{Float64,1})                == true
