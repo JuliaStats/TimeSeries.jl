@@ -249,6 +249,21 @@ end
 end
 
 
+@testset "Base.ndims" begin
+    @test ndims(cl)   == 1
+    @test ndims(ohlc) == 2
+end
+
+
+@testset "Base.eltype" begin
+    @test eltype(cl)   == Float64
+    @test eltype(ohlc) == Float64
+
+    @test eltype(cl .> 1)   == Bool
+    @test eltype(ohlc .> 1) == Bool
+end
+
+
 @testset "Base.size" begin
     @test size(ohlc) == (500, 4)
     @test size(ohlc, 1) == 500
