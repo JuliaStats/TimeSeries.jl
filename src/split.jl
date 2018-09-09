@@ -2,10 +2,10 @@ import Base: values
 
 # when ############################
 
-when(ta::TimeArray, period::Function, t::Int) =
-    ta[find(period.(ta.timestamp) .== t)]
+when(ta::TimeArray, period::Function, t::Integer) =
+    ta[findall(period.(ta.timestamp) .== t)]
 when(ta::TimeArray, period::Function, t::String) =
-    ta[find(period.(ta.timestamp) .== t)]
+    ta[findall(period.(ta.timestamp) .== t)]
 
 # from, to ######################
 
