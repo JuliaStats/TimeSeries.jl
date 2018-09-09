@@ -47,7 +47,7 @@ function writetimearray(ta::TimeArray, fname::AbstractString)
         write(io, string("Timestamp,", strvals, "\n"))
 
         for i in eachindex(ta.timestamp)
-            strvals = replace(join(ta.values[i, :], ","), "NaN", "")
+            strvals = replace(join(ta.values[i, :], ","), "NaN" => "")
             write(io, string(ta.timestamp[i], ",", strvals, "\n"))
         end  # for
 
