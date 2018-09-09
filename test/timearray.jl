@@ -268,11 +268,11 @@ end
 
 
 @testset "Base.eltype" begin
-    @test eltype(cl)   == Float64
-    @test eltype(ohlc) == Float64
+    @test eltype(cl)   == Tuple{Date,Float64}
+    @test eltype(ohlc) == Tuple{Date,Vector{Float64}}
 
-    @test eltype(cl .> 1)   == Bool
-    @test eltype(ohlc .> 1) == Bool
+    @test eltype(cl .> 1)   == Tuple{Date,Bool}
+    @test eltype(ohlc .> 1) == Tuple{Date,Vector{Bool}}
 end
 
 

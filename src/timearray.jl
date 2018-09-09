@@ -3,7 +3,7 @@
 import Base: convert, copy, length, show, getindex, iterate,
              lastindex, size, eachindex, ==, isequal, hash, ndims
 
-abstract type AbstractTimeSeries{T,N} end
+abstract type AbstractTimeSeries{T,N,D} end
 
 function _issorted_and_unique(x)
     for i in 1:length(x)-1
@@ -12,7 +12,7 @@ function _issorted_and_unique(x)
     true
 end
 
-struct TimeArray{T,N,D<:TimeType,A<:AbstractArray{T,N}} <: AbstractTimeSeries{T,N}
+struct TimeArray{T,N,D<:TimeType,A<:AbstractArray{T,N}} <: AbstractTimeSeries{T,N,D}
 
     timestamp::Vector{D}
     values::A
@@ -133,7 +133,8 @@ hash(x::TimeArray, h::UInt) =
 
 ###### eltype #####################
 
-Base.eltype(::AbstractTimeSeries{T}) where T = T
+Base.eltype(::AbstractTimeSeries{T,1,D}) where {T,D} = Tuple{D,T}
+Base.eltype(::AbstractTimeSeries{T,2,D}) where {T,D} = Tuple{D,Vector{T}}
 
 ###### show #####################
 
