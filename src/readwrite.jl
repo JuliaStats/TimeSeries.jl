@@ -8,7 +8,7 @@ function readtimearray(source; delim::Char=',', meta=nothing, format::AbstractSt
     end
 
     # remove empty lines if any
-    inoempty = find(s -> length(s) > 2, cfile[:, 1])
+    inoempty = findall(s -> length(s) > 2, cfile[:, 1])
     cfile = cfile[inoempty, :]
 
     time = cfile[1:end, 1]
@@ -47,7 +47,7 @@ function writetimearray(ta::TimeArray, fname::AbstractString)
         write(io, string("Timestamp,", strvals, "\n"))
 
         for i in eachindex(ta.timestamp)
-            strvals = replace(join(ta.values[i, :], ","), "NaN", "")
+            strvals = replace(join(ta.values[i, :], ","), "NaN" => "")
             write(io, string(ta.timestamp[i], ",", strvals, "\n"))
         end  # for
 

@@ -2,15 +2,12 @@ language: julia
 os:
   - linux
 julia:
-  - 0.6
-env:
-  - PYTHON=""
+  - 0.7
+  - 1.0
 notifications:
   email: false
 sudo: false
-script:
-  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - julia -e 'Pkg.clone(pwd()); Pkg.build("TimeSeries"); Pkg.test("TimeSeries", coverage=true)'
+
 after_success:
   - julia -e 'cd(Pkg.dir("TimeSeries")); Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
 

@@ -1,5 +1,5 @@
-using Base.Dates
-using Base.Test
+using Dates
+using Test
 
 using MarketData
 
@@ -21,7 +21,7 @@ end
 
 @testset "type constructors allow views" begin
     source_rows = 101:121
-    source_cols = 1:size(AAPL.values)[2]
+    source_cols = 1:size(AAPL.values, 2)
     tstamps = view(AAPL.timestamp, source_rows)
     tvalues = view(AAPL.values, source_rows, source_cols)
 
@@ -74,9 +74,12 @@ end
             TimeArray(mangled_stamp, cl.values, ["Close"]))
     end
 
-    @testset "flipping occurs when needed" begin
-        @test TimeArray(flipdim(cl.timestamp, 1), flipdim(cl.values, 1),  ["Close"]).timestamp[1] == Date(2000,1,3)
-        @test TimeArray(flipdim(cl.timestamp, 1), flipdim(cl.values, 1),  ["Close"]).values[1]    == 111.94
+    @testset "reverse occurs when needed" begin
+        rev_timestamp = reverse(cl.timestamp, dims = 1)
+        rev_values = reverse(cl.values, dims = 1)
+        ta = TimeArray(rev_timestamp, rev_values, ["Close"])
+        @test ta.timestamp[1] == Date(2000,1,3)
+        @test ta.values[1]    == 111.94
     end
 
     @testset "duplicate column names are enumerated by inner constructor" begin
@@ -95,9 +98,16 @@ end
     end
 
     @testset "and doesn't when unchecked" begin
-        @test TimeArray(mangled_stamp, cl.values; unchecked = true).values === cl.values
-        @test TimeArray(mangled_stamp, cl.values; unchecked = true).timestamp === mangled_stamp
-        @test TimeArray(dupe_stamp, cl.values; unchecked = true).timestamp === dupe_stamp
+        let
+            ta = TimeArray(mangled_stamp, cl.values; unchecked = true)
+            @test values(ta)    === values(cl)
+            @test timestamp(ta) === mangled_stamp
+        end
+
+        let
+            ta = TimeArray(dupe_stamp, cl.values; unchecked = true)
+            @test timestamp(ta) === dupe_stamp
+        end
     end
 end
 
@@ -117,6 +127,18 @@ end
 end
 
 
+@testset "construct with StepRange{Date,Day}" begin
+    drng = Date(2000,1,1):Day(1):Date(2000,1,5)
+    ta = TimeArray(drng, 1:5)
+
+    @test timestamp(ta)[1]   == first(drng)
+    @test timestamp(ta)[end] == last(drng)
+
+    @test values(ta)[1]   == 1
+    @test values(ta)[end] == 5
+end
+
+
 @testset "conversion methods" begin
     @testset "convert works " begin
         @test isa(convert(TimeArray{Float64,1}, (cl.>op)), TimeArray{Float64,1})                == true
@@ -129,15 +151,17 @@ end
 @testset "copy methods" begin
     cop = copy(op)
     cohlc = copy(ohlc)
+
     @testset "copy works" begin
         @test cop.timestamp == op.timestamp
-        @test cop.values == op.values
-        @test cop.colnames == op.colnames
-        @test cop.meta == op.meta
+        @test cop.values    == op.values
+        @test cop.colnames  == op.colnames
+        @test cop.meta      == op.meta
+
         @test cohlc.timestamp == ohlc.timestamp
-        @test cohlc.values == ohlc.values
-        @test cohlc.colnames == ohlc.colnames
-        @test cohlc.meta == ohlc.meta
+        @test cohlc.values    == ohlc.values
+        @test cohlc.colnames  == ohlc.colnames
+        @test cohlc.meta      == ohlc.meta
     end
 end
 
@@ -159,12 +183,24 @@ end
 
 
 @testset "ordered collection methods" begin
-    @testset "iterator protocol is valid" begin
-        @test !isempty(op)
-        @test isempty(op[op .< 0])
-        @test start(op)              == 1
-        @test next(op, 1)            == ((op.timestamp[1], op.values[1,:]), 2)
-        @test done(op, length(op)+1) == true
+    @testset "iteration protocol is valid" begin
+        let  # single column
+            i = 1
+            for (t, val) ∈ cl[1:3]
+                @test t   == timestamp(cl)[i]
+                @test val == values(cl)[i]
+                i += 1
+            end
+        end
+
+        let  # multiple column
+            i = 1
+            for (t, val) ∈ ohlc[1:3]
+                @test t   == timestamp(ohlc)[i]
+                @test val == values(ohlc)[i, :]
+                i += 1
+            end
+        end
     end
 
     @testset "end keyword returns correct index" begin
@@ -182,10 +218,12 @@ end
     end
 
     @testset "getindex on range of Int and Date" begin
-        @test ohlc[1:2].timestamp                                  == [Date(2000,1,3), Date(2000,1,4)]
-        @test ohlc[1:2:4].timestamp                                == [Date(2000,1,3), Date(2000,1,5)]
-        @test ohlc[Int8(1):Int8(2):Int8(4)].timestamp              == [Date(2000,1,3), Date(2000,1,5)]
-        @test ohlc[Date(2000,1,3):Day(1):Date(2000,1,4)].timestamp == [Date(2000,1,3), Date(2000,1,4)]
+        irng = Int8(1):Int8(2):Int8(4)
+        drng = Date(2000,1,3):Day(1):Date(2000,1,4)
+        @test ohlc[1:2].timestamp   == [Date(2000,1,3), Date(2000,1,4)]
+        @test ohlc[1:2:4].timestamp == [Date(2000,1,3), Date(2000,1,5)]
+        @test ohlc[irng].timestamp  == [Date(2000,1,3), Date(2000,1,5)]
+        @test ohlc[drng].timestamp  == [Date(2000,1,3), Date(2000,1,4)]
     end
 
     @testset "getindex on range of DateTime when only Date is in timestamp" begin
@@ -201,12 +239,13 @@ end
     end
 
     @testset "getindex on range of Date" begin
-        @test length(cl[Date(2000,1,1):Date(2001,12,31)]) == 500
+        @test length(cl[Date(2000,1,1):Day(1):Date(2001,12,31)]) == 500
     end
 
     @testset "getindex on single column name" begin
-        @test size(ohlc["Open"].values, 2)                                        == 1
-        @test size(ohlc["Open"][Date(2000,1,3):Day(1):Date(2000,1,14)].values, 1) == 10
+        idx = Date(2000,1,3):Day(1):Date(2000,1,14)
+        @test size(ohlc["Open"].values, 2)      == 1
+        @test size(ohlc["Open"][idx].values, 1) == 10
     end
 
     @testset "getindex on multiple column name" begin
@@ -234,6 +273,38 @@ end
 end
 
 
+@testset "Base.ndims" begin
+    @test ndims(cl)   == 1
+    @test ndims(ohlc) == 2
+end
+
+
+@testset "Base.eltype" begin
+    @test eltype(cl)   == Tuple{Date,Float64}
+    @test eltype(ohlc) == Tuple{Date,Vector{Float64}}
+
+    @test eltype(cl .> 1)   == Tuple{Date,Bool}
+    @test eltype(ohlc .> 1) == Tuple{Date,Vector{Bool}}
+end
+
+
+@testset "Base.collect" begin
+    @testset "cl" begin
+        A = collect(cl)
+        @test A[1] == (Date(2000, 01, 03), 111.94)
+        @test A[2] == (Date(2000, 01, 04), 102.5)
+        @test A[3] == (Date(2000, 01, 05), 104.0)
+    end
+
+    @testset "ohlc" begin
+        A = collect(ohlc)
+        @test A[1] == (Date(2000, 01, 03), [104.88, 112.5, 101.69, 111.94])
+        @test A[2] == (Date(2000, 01, 04), [108.25, 110.62, 101.19, 102.5])
+        @test A[3] == (Date(2000, 01, 05), [103.75, 110.56, 103.0, 104.0])
+    end
+end
+
+
 @testset "Base.size" begin
     @test size(ohlc) == (500, 4)
     @test size(ohlc, 1) == 500
@@ -254,7 +325,7 @@ end
     @test !isequal(cl, ohlc)
     @test !isequal(cl, lag(cl))
 
-    ds = DateTime(2017, 12, 25):DateTime(2017, 12, 31) |> collect
+    ds = DateTime(2017, 12, 25):Day(1):DateTime(2017, 12, 31) |> collect
 
     let  # diff colnames
         x = TimeArray(ds, 1:7, ["foo"])
@@ -269,7 +340,7 @@ end
     end
 
     let  # Date vs DateTime
-        ds2 = Date(2017, 12, 25):Date(2017, 12, 31) |> collect
+        ds2 = Date(2017, 12, 25):Day(1):Date(2017, 12, 31) |> collect
         x = TimeArray(ds,  1:7, ["foo"], "bar")
         y = TimeArray(ds2, 1:7, ["foo"], "bar")
         @test x == y
@@ -298,7 +369,7 @@ end
 
 @testset "show methods don't throw errors" begin
     let str = sprint(show, cl)
-        out = """500x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
+        out = """500×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
 │            │ Close  │
 ├────────────┼────────┤
 │ 2000-01-03 │ 111.94 │
@@ -323,7 +394,7 @@ end
     end
 
     let str = sprint(show, ohlc)
-        out = """500x4 TimeSeries.TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2001-12-31
+        out = """500×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2001-12-31
 │            │ Open   │ High   │ Low    │ Close  │
 ├────────────┼────────┼────────┼────────┼────────┤
 │ 2000-01-03 │ 104.88 │ 112.5  │ 101.69 │ 111.94 │
@@ -348,7 +419,7 @@ end
     end
 
     let str = sprint(show, AAPL)
-        out = """8336x12 TimeSeries.TimeArray{Float64,2,Date,Array{Float64,2}} 1980-12-12 to 2013-12-31
+        out = """8336×12 TimeArray{Float64,2,Date,Array{Float64,2}} 1980-12-12 to 2013-12-31
 │            │ Open   │ High   │ Low    │ Close  │ Volume    │ Ex-Dividend │
 ├────────────┼────────┼────────┼────────┼────────┼───────────┼─────────────┤
 │ 1980-12-12 │ 28.75  │ 28.88  │ 28.75  │ 28.75  │ 2.0939e6  │ 0.0         │
@@ -394,7 +465,7 @@ end
     end
 
     let str = sprint(show, ohlc[1:4])
-        out = """4x4 TimeSeries.TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-06
+        out = """4×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-06
 │            │ Open   │ High   │ Low    │ Close  │
 ├────────────┼────────┼────────┼────────┼────────┤
 │ 2000-01-03 │ 104.88 │ 112.5  │ 101.69 │ 111.94 │
@@ -405,11 +476,15 @@ end
     end
 
     let str = sprint(show, ohlc[1:0])
-        @test str == "0x4 TimeSeries.TimeArray{Float64,2,Date,Array{Float64,2}}"
+        @test str == "0×4 TimeArray{Float64,2,Date,Array{Float64,2}}"
+    end
+
+    let str = sprint(show, TimeArray(Date[], []))
+        @test str == "0×1 TimeArray{Any,1,Date,Array{Any,1}}"
     end
 
     let str = sprint(show, lag(cl[1:2], padding=true))
-        out = """2x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-04
+        out = """2×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-04
 │            │ Close  │
 ├────────────┼────────┤
 │ 2000-01-03 │ NaN    │

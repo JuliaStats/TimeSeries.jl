@@ -11,11 +11,11 @@ function _merge_outer(::Type{IndexType}, ta1::TimeArray{T, N, D}, ta2::TimeArray
 end
 
 function merge(ta1::TimeArray{T, N, D}, ta2::TimeArray{T, M, D}, method::Symbol=:inner;
-               colnames::Vector=[], meta::Any=Void, padvalue=NaN) where {T, N, M, D}
+               colnames::Vector=[], meta::Any=nothing, padvalue=NaN) where {T, N, M, D}
 
-    if ta1.meta == ta2.meta && meta == Void
+    if ta1.meta == ta2.meta && meta isa Nothing
         meta = ta1.meta
-    elseif typeof(ta1.meta) <: AbstractString && typeof(ta2.meta) <: AbstractString && meta == Void
+    elseif typeof(ta1.meta) <: AbstractString && typeof(ta2.meta) <: AbstractString && meta isa Nothing
         meta = string(ta1.meta, "_", ta2.meta)
     else
         meta = meta
@@ -23,13 +23,13 @@ function merge(ta1::TimeArray{T, N, D}, ta2::TimeArray{T, M, D}, method::Symbol=
 
     if method == :inner
 
-        idx1, idx2 = overlaps(ta1.timestamp, ta2.timestamp)
+        idx1, idx2 = overlap(ta1.timestamp, ta2.timestamp)
         vals = [ta1[idx1].values ta2[idx2].values]
         ta = TimeArray(ta1[idx1].timestamp, vals, [ta1.colnames; ta2.colnames], meta; unchecked = true)
 
     elseif method == :left
 
-        new_idx2, old_idx2 = overlaps(ta1.timestamp, ta2.timestamp)
+        new_idx2, old_idx2 = overlap(ta1.timestamp, ta2.timestamp)
         right_vals = fill(convert(T, padvalue), (length(ta1), length(ta2.colnames)))
         insertbyidx!(right_vals, ta2.values, new_idx2, old_idx2)
         ta = TimeArray(ta1.timestamp, [ta1.values right_vals], [ta1.colnames; ta2.colnames], meta; unchecked = true)
@@ -149,18 +149,21 @@ end
 
 # map ######################
 
-function map(f, ta::TimeArray)
-    timestamps = similar(ta.timestamp)
-    values = similar(ta.values)
+@generated function map(f, ta::TimeArray{T,N}) where {T,N}
+    input_val  = (N == 1) ? :(ta.values[i]) : :(vec(ta.values[i, :]))
+    output_val = (N == 1) ? :(vals[i]) : :(vals[i, :])
 
-    for i in 1:length(ta)
-        timestamps[i], values[i, :] = f(ta.timestamp[i], vec(ta.values[i, :]))
-    end
+    output_vals = (N == 1) ? :(vals[order]) : :(vals[order, :])
 
-    order = sortperm(timestamps)
-    if length(ta.colnames) == 1 # Check for 1D to ensure values remains a 1D vector.
-        TimeArray(timestamps[order], values[order], ta.colnames, ta.meta)
-    else
-        TimeArray(timestamps[order], values[order, :], ta.colnames, ta.meta)
+    quote
+        ts   = similar(timestamp(ta))
+        vals = similar(values(ta))
+
+        for i in eachindex(ta)
+            @inbounds ts[i], $output_val = f(ta.timestamp[i], $input_val)
+        end
+
+        order = sortperm(ts)
+        TimeArray(ts[order], $output_vals, ta.colnames, ta.meta)
     end
 end

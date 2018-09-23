@@ -1,5 +1,6 @@
-using Base.Dates
-using Base.Test
+using Dates
+using Statistics
+using Test
 
 using MarketData
 
@@ -70,7 +71,7 @@ end
     end
 
     @testset "moving" begin
-        @test moving(mdata,mean,10).meta == "Apple"
+        @test moving(mean,mdata,10).meta == "Apple"
     end
 
     @testset "upto" begin
@@ -106,10 +107,10 @@ end
     end
 
     @testset "merged meta field value for disparate types in meta field defaults to Void" begin
-        @test merge(mdata, merge(cl, op, meta=47)).meta         == Void
-        @test merge(mdata, merge(cl, op, meta=47), :left).meta  == Void
-        @test merge(mdata, merge(cl, op, meta=47), :right).meta == Void
-        @test merge(mdata, merge(cl, op, meta=47), :outer).meta == Void
+        @test merge(mdata, merge(cl, op, meta=47)).meta         == nothing
+        @test merge(mdata, merge(cl, op, meta=47), :left).meta  == nothing
+        @test merge(mdata, merge(cl, op, meta=47), :right).meta == nothing
+        @test merge(mdata, merge(cl, op, meta=47), :outer).meta == nothing
     end
 
     @testset "collapse" begin
@@ -128,12 +129,12 @@ end
 @testset "mathematical and comparison operations preserve meta" begin
     @testset ".+" begin
         @test (mdata .+ mdata).meta == "Apple"
-        @test (mdata .+ cl).meta == Void
+        @test (mdata .+ cl).meta == nothing
     end
 
     @testset ".<" begin
         @test (mdata .< mdata).meta == "Apple"
-        @test (mdata .< cl).meta == Void
+        @test (mdata .< cl).meta == nothing
     end
 end
 

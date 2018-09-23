@@ -1,5 +1,5 @@
-using Base.Dates
-using Base.Test
+using Dates
+using Test
 
 using MarketData
 
@@ -222,7 +222,7 @@ end
 @testset "map works correctly" begin
     @testset "works on both time stamps and 1D values" begin
         a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"], :Something)
-        b = map((timestamp, values) -> (timestamp + Dates.Year(1), values - 1), a)
+        b = map((timestamp, values) -> (timestamp + Dates.Year(1), values .- 1), a)
 
         @test length(b)                  == length(a)
         @test b.colnames                 == a.colnames

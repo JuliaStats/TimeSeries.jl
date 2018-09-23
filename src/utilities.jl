@@ -1,7 +1,6 @@
-overlaps(ts::Vararg{Vector, 1}) = (Base.OneTo(length(ts[1])),)
+overlap(ts::Vararg{Vector, 1}) = (Base.OneTo(length(ts[1])),)
 
-
-function overlaps(ts::Vararg{Vector, N}) where {N}
+function overlap(ts::Vararg{Vector, N}) where {N}
     ret = ntuple(_ -> Int[], N)
     t1 = ts[1]
 
@@ -34,8 +33,8 @@ and calculate the indexes idx_a and idx_b mapping each element in a and b to the
 function sorted_unique_merge(::Type{IndexType}, a::Vector, b::Vector) where {IndexType}
     i, na, j, nb = 1, length(a), 1, length(b)
     c = similar(a, length(a) + length(b))
-    idx_a = Vector{IndexType}(length(a))
-    idx_b = Vector{IndexType}(length(b))
+    idx_a = Vector{IndexType}(undef, length(a))
+    idx_b = Vector{IndexType}(undef, length(b))
     k = 1
     @inbounds while (i <= na) && (j <= nb)
         if a[i] < b[j]
@@ -105,3 +104,14 @@ function setcolnames!(ta::TimeArray, colnames::Vector)
     length(colnames) > 0 && error("colnames supplied is not correct size")
     return ta
 end  # setcolnames!
+
+@inline function allequal(x)
+    length(x) < 2 && return true
+    e1 = x[1]
+
+    @inbounds for i ∈ 2:length(x)
+        x[i] == e1 || return false
+    end
+
+    true
+end

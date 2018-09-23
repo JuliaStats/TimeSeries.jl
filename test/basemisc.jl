@@ -1,4 +1,5 @@
-using Base.Test
+using Statistics
+using Test
 
 using MarketData
 
@@ -14,46 +15,46 @@ using TimeSeries
         @test ta.meta == cl.meta
     end
 
-    let ta = cumsum(ohlc)
-        @test ta.values == cumsum(ohlc.values)
+    let ta = cumsum(ohlc, dims = 1)
+        @test ta.values == cumsum(ohlc.values, dims = 1)
         @test ta.meta == ohlc.meta
     end
 
-    let ta = cumsum(cl, 2)
-        @test ta.values == cumsum(cl.values, 2)
+    let ta = cumsum(cl, dims = 2)
+        @test ta.values == cumsum(cl.values, dims = 2)
         @test ta.meta == cl.meta
     end
 
-    let ta = cumsum(ohlc, 2)
-        @test ta.values == cumsum(ohlc.values, 2)
+    let ta = cumsum(ohlc, dims = 2)
+        @test ta.values == cumsum(ohlc.values, dims = 2)
         @test ta.meta == ohlc.meta
     end
 
-    @test_throws DimensionMismatch cumsum(cl, 3)
-    @test_throws DimensionMismatch cumsum(ohlc, 3)
+    @test_throws DimensionMismatch cumsum(cl, dims = 3)
+    @test_throws DimensionMismatch cumsum(ohlc, dims = 3)
 
     let ta = cumprod(cl[1:5])
         @test ta.values == cumprod(cl[1:5].values)
         @test ta.meta == cl[1:5].meta
     end
 
-    let ta = cumprod(ohlc[1:5])
-        @test ta.values == cumprod(ohlc[1:5].values)
+    let ta = cumprod(ohlc[1:5], dims = 1)
+        @test ta.values == cumprod(ohlc[1:5].values, dims = 1)
         @test ta.meta == ohlc[1:5].meta
     end
 
-    let ta = cumprod(cl[1:5], 2)
-        @test ta.values == cumprod(cl[1:5].values, 2)
+    let ta = cumprod(cl[1:5], dims = 2)
+        @test ta.values == cumprod(cl[1:5].values, dims = 2)
         @test ta.meta == cl[1:5].meta
     end
 
-    let ta = cumprod(ohlc[1:5], 2)
-        @test ta.values == cumprod(ohlc[1:5].values, 2)
+    let ta = cumprod(ohlc[1:5], dims = 2)
+        @test ta.values == cumprod(ohlc[1:5].values, dims = 2)
         @test ta.meta == ohlc[1:5].meta
     end
 
-    @test_throws DimensionMismatch cumprod(cl, 3)
-    @test_throws DimensionMismatch cumprod(ohlc, 3)
+    @test_throws DimensionMismatch cumprod(cl, dims = 3)
+    @test_throws DimensionMismatch cumprod(ohlc, dims = 3)
 end
 
 @testset "reduction functions" begin
@@ -63,17 +64,17 @@ end
                 let ta = f(src)
                     @test ta.meta == src.meta
                     @test length(ta) == 1
-                    @test ta.values == f(src.values, 1)
+                    @test ta.values == f(src.values, dims = 1)
                 end
 
-                let ta = f(src, 2)
+                let ta = f(src, dims = 2)
                     @test ta.meta == src.meta
                     @test length(ta) == length(src.timestamp)
-                    @test ta.values == f(src.values, 2)
+                    @test ta.values == f(src.values, dims = 2)
                     @test ta.colnames == [string(fname)]
                 end
 
-                @test_throws DimensionMismatch f(src, 3)
+                @test_throws DimensionMismatch f(src, dims = 3)
             end  # @testset
         end
     end  # for func
@@ -84,17 +85,17 @@ end
                 let ta = f(src)
                     @test ta.meta == src.meta
                     @test length(ta) == 1
-                    @test ta.values == f(src.values, 1)
+                    @test ta.values == f(src.values, dims = 1)
                 end
 
-                let ta = f(src, 2, corrected=false)
+                let ta = f(src, dims = 2, corrected = false)
                     @test ta.meta == src.meta
                     @test length(ta) == length(src.timestamp)
-                    @test ta.values == f(src.values, 2, corrected=false)
+                    @test ta.values == f(src.values, dims = 2, corrected = false)
                     @test ta.colnames == [string(fname)]
                 end
 
-                @test_throws DimensionMismatch f(src, 3)
+                @test_throws DimensionMismatch f(src, dims = 3)
             end  # @testset
         end
     end  # for func
@@ -131,7 +132,7 @@ end
     let
       ts = cl.timestamp[1:5]
       ta = TimeArray(ts, [1, 2, 2, 3, 4])
-      xs = any(ta .== lag(ta), 2)
+      xs = any(ta .== lag(ta), dims = 2)
 
       @test xs.timestamp == ts[2:end]
       @test any(xs.values .== [false, true, false, false])
@@ -159,7 +160,7 @@ end
     """
     ts = cl.timestamp[1:3]
     ta = TimeArray(ts, [1 2; 3 4; 5 6])
-    xs = any(ta .> 3, 2)
+    xs = any(ta .> 3, dims = 2)
 
     @test xs.timestamp == ts
     @test any(xs.values .== [false, true, true])
@@ -198,7 +199,7 @@ end  # @testset "Base.any" function
     let
       ts = cl.timestamp[1:5]
       ta = TimeArray(ts, [1, 2, 2, 3, 4])
-      xs = all(ta .== lag(ta), 2)
+      xs = all(ta .== lag(ta), dims = 2)
 
       @test xs.timestamp == ts[2:end]
       @test all(xs.values .== [false, true, false, false])
@@ -226,7 +227,7 @@ end  # @testset "Base.any" function
     """
     ts = cl.timestamp[1:3]
     ta = TimeArray(ts, [1 2; 3 4; 5 6])
-    xs = all(ta .> 3, 2)
+    xs = all(ta .> 3, dims = 2)
 
     @test xs.timestamp == ts
     @test all(xs.values .== [false, false, true])

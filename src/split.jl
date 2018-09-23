@@ -1,11 +1,11 @@
-import Base: values, find
+import Base: values
 
 # when ############################
 
-when(ta::TimeArray, period::Function, t::Int) =
-    ta[find(period.(ta.timestamp) .== t)]
+when(ta::TimeArray, period::Function, t::Integer) =
+    ta[findall(period.(ta.timestamp) .== t)]
 when(ta::TimeArray, period::Function, t::String) =
-    ta[find(period.(ta.timestamp) .== t)]
+    ta[findall(period.(ta.timestamp) .== t)]
 
 # from, to ######################
 
@@ -21,13 +21,13 @@ to(ta::TimeArray{T, N, D}, d::D) where {T, N, D} =
         d > ta.timestamp[end] ? ta :
         ta[1:searchsortedlast(ta.timestamp, d)]
 
-###### find ##################
+###### findall ##################
 
-find(ta::TimeArray{Bool, 1}) = find(ta.values)
+Base.findall(ta::TimeArray{Bool,1}) = findall(ta.values)
 
 ###### findwhen #################
 
-findwhen(ta::TimeArray{Bool, 1}) = ta.timestamp[find(ta.values)]
+findwhen(ta::TimeArray{Bool,1}) = ta.timestamp[findall(ta.values)]
 
 ###### head, tail ###########
 

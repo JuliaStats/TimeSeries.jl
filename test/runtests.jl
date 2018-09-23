@@ -1,4 +1,4 @@
-using Base.Test
+using Test
 
 tests = [
     "timearray",
@@ -10,16 +10,15 @@ tests = [
     "meta",
     "readwrite",
     "timeseriesrc",
-    "deprecated",
     "basemisc",
 ]
 
 
 @testset "TimeSeries" begin
-    info("Running tests:")
+    @info("Running tests:")
 
     for test ∈ tests
-        info("\t* $test ...")
+        @info("\t* $test ...")
         include("$test.jl")
     end
 end
