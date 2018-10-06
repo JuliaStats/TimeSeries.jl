@@ -280,15 +280,15 @@ getindex(ta::TimeArray{T,1}, a::AbstractVector{<:Integer}) where T =
     TimeArray(ta.timestamp[a], ta.values[a], ta.colnames, ta.meta)
 
 # single column by name
-function getindex(ta::TimeArray, s::AbstractString)
-    n = findfirst(isequal(s), ta.colnames)
-    TimeArray(ta.timestamp, ta.values[:, n], String[s], ta.meta)
+function getindex(ta::TimeArray, s::Symbol)
+    n = findfirst(isequal(s), colnames(ta))
+    TimeArray(ta.timestamp, ta.values[:, n], Symbol[s], ta.meta, unchecked = true)
 end
 
 # array of columns by name
-function getindex(ta::TimeArray, args::AbstractString...)
-    ns = [findfirst(isequal(a), ta.colnames) for a in args]
-    TimeArray(ta.timestamp, ta.values[:, ns], String[a for a in args], ta.meta)
+function getindex(ta::TimeArray, ss::Symbol...)
+    ns = [findfirst(isequal(s), colnames(ta)) for s in ss]
+    TimeArray(ta.timestamp, ta.values[:, ns], collect(ss), ta.meta)
 end
 
 # single date
