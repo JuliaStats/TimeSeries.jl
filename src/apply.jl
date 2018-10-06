@@ -14,8 +14,9 @@ function lag(ta::TimeArray{T, N}, n::Int=1;
         n = period
     end
 
+    # TODO: apply `unchecked`
     if padding
-        paddedvals = [NaN*ones(n, length(ta.colnames)); ta.values[1:end-n, :]]
+        paddedvals = [NaN * ones(n,size(ta, 2)); ta.values[1:end-n, :]]
         ta = TimeArray(ta.timestamp, paddedvals, ta.colnames, ta.meta)
     else
         ta = TimeArray(ta.timestamp[1+n:end], ta.values[1:end-n, :], ta.colnames, ta.meta)
@@ -139,7 +140,8 @@ end  # uniformspaced
 function uniformspace(ta::TimeArray{T, N}) where {T, N}
     min_gap = minimum(ta.timestamp[2:end] - ta.timestamp[1:end-1])
     newtimestamp = ta.timestamp[1]:min_gap:ta.timestamp[end]
-    emptyta = TimeArray(collect(newtimestamp), zeros(length(newtimestamp), 0), String[], ta.meta)
+    emptyta = TimeArray(collect(newtimestamp), zeros(length(newtimestamp), 0),
+                        Symbol[], ta.meta)
     ta = merge(emptyta, ta, :left)
     N == 1 && (ta = ta[ta.colnames[1]])
     return ta
