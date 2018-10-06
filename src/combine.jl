@@ -2,7 +2,7 @@ import Base: merge, hcat, vcat, map
 
 ###### merge ####################
 
-function _merge_outer(::Type{IndexType}, ta1::TimeArray{T, N, D}, ta2::TimeArray{T, M, D}, padvalue, meta) where {IndexType, T, N, M, D}
+function _merge_outer(::Type{IndexType}, ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, padvalue, meta) where {IndexType,T,N,M,D}
     timestamps, new_idx1, new_idx2 = sorted_unique_merge(IndexType, ta1.timestamp, ta2.timestamp)
     vals = fill(convert(T, padvalue), (length(timestamps), length(ta1.colnames) + length(ta2.colnames)))
     insertbyidx!(vals, ta1.values, new_idx1)
@@ -10,8 +10,15 @@ function _merge_outer(::Type{IndexType}, ta1::TimeArray{T, N, D}, ta2::TimeArray
     TimeArray(timestamps, vals, [ta1.colnames; ta2.colnames], meta; unchecked = true)
 end
 
-function merge(ta1::TimeArray{T, N, D}, ta2::TimeArray{T, M, D}, method::Symbol=:inner;
-               colnames::Vector=[], meta::Any=nothing, padvalue=NaN) where {T, N, M, D}
+function merge(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, method::Symbol = :inner;
+               colnames::Vector = [], meta = nothing,
+               padvalue=NaN) where {T,N,M,D}
+
+    if colnames isa Vector{<:AbstractString}
+        @warn "`merge(...; colname::Vector{<:AbstractString})` is deprecated, " *
+              "use `merge(...; colnames=Symbol.(colnames))` instead."
+        colnames = Symbol.(colnames)
+    end
 
     if ta1.meta == ta2.meta && meta isa Nothing
         meta = ta1.meta
