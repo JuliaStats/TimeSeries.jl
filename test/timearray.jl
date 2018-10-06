@@ -11,9 +11,9 @@ using TimeSeries
 
 @testset "field extraction methods work" begin
     @testset "timestamp, values, colnames and meta" begin
-        @test typeof(timestamp(cl)) == Array{Date,1}
-        @test typeof(values(cl))    == Array{Float64,1}
-        @test typeof(colnames(cl))  == Array{String,1}
+        @test typeof(timestamp(cl)) == Vector{Date}
+        @test typeof(values(cl))    == Vector{Float64}
+        @test typeof(colnames(cl))  == Vector{Symbol}
         @test meta(mdata)           == "Apple"
     end
 end
@@ -83,18 +83,18 @@ end
     end
 
     @testset "duplicate column names are enumerated by inner constructor" begin
-        @test dupe_cnames.colnames[1]  == "a"
-        @test dupe_cnames.colnames[2]  == "b"
-        @test dupe_cnames.colnames[3]  == "c"
-        @test dupe_cnames.colnames[4]  == "a_1"
-        @test dupe_cnames.colnames[5]  == "a_2"
-        @test dupe_cnames.colnames[6]  == "b_1"
-        @test dupe_cnames.colnames[7]  == "d"
-        @test dupe_cnames.colnames[8]  == "e"
-        @test dupe_cnames.colnames[9]  == "e_1"
-        @test dupe_cnames.colnames[10] == "e_2"
-        @test dupe_cnames.colnames[11] == "e_3"
-        @test dupe_cnames.colnames[12] == "f"
+        @test dupe_cnames.colnames[1]  == :a
+        @test dupe_cnames.colnames[2]  == :b
+        @test dupe_cnames.colnames[3]  == :c
+        @test dupe_cnames.colnames[4]  == :a_1
+        @test dupe_cnames.colnames[5]  == :a_2
+        @test dupe_cnames.colnames[6]  == :b_1
+        @test dupe_cnames.colnames[7]  == :d
+        @test dupe_cnames.colnames[8]  == :e
+        @test dupe_cnames.colnames[9]  == :e_1
+        @test dupe_cnames.colnames[10] == :e_2
+        @test dupe_cnames.colnames[11] == :e_3
+        @test dupe_cnames.colnames[12] == :f
     end
 
     @testset "and doesn't when unchecked" begin
@@ -112,17 +112,24 @@ end
 end
 
 @testset "construction without colnames" begin
-    no_colnames_one   = TimeArray(cl.timestamp, cl.values)
-    no_colnames_multi = TimeArray(AAPL.timestamp, AAPL.values)
+    one   = TimeArray(cl.timestamp, cl.values)
+    multi = TimeArray(AAPL.timestamp, AAPL.values)
+    more  = TimeArray(cl.timestamp[1], collect(1:50)')
 
-    @testset "default colnames to empty String vector" begin
-        @test no_colnames_one.colnames   == String[""]
-        @test no_colnames_multi.colnames == String["_1", "_2", "_3", "_4", "_5", "_6", "_7", "_8", "_9", "_10", "_11", "_12"]
+    @testset "default colnames" begin
+        @test colnames(one)   == [:A]
+        @test colnames(multi) == [:A, :B, :C, :D, :E, :F, :G, :H, :I, :J, :K, :L]
+        @test colnames(more)  == [:A, :B, :C, :D, :E, :F, :G, :H, :I, :J, :K, :L, :M,
+                                  :N, :O, :P, :Q, :R, :S, :T, :U, :V, :W, :X, :Y, :Z,
+                                  :AA, :AB, :AC, :AD, :AE, :AF, :AG, :AH, :AI, :AJ, :AK,
+                                  :AL, :AM, :AN, :AO, :AP, :AQ, :AR, :AS, :AT, :AU, :AV,
+                                  :AW, :AX]
     end
 
     @testset "empty colnames forces meta to nothing" begin
-        @test no_colnames_one.meta   == nothing
-        @test no_colnames_multi.meta == nothing
+        @test meta(one)   == nothing
+        @test meta(multi) == nothing
+        @test meta(more)  == nothing
     end
 end
 
@@ -169,14 +176,14 @@ end
     @testset "1d time array" begin
         @test cl[1].timestamp == [Date(2000,1,3)]
         @test cl[1].values    == [111.94]
-        @test cl[1].colnames  == ["Close"]
+        @test cl[1].colnames  == [:Close]
         @test cl[1].meta      == "AAPL"
     end
 
     @testset "2d time array" begin
         @test ohlc[1].timestamp == [Date(2000,1,3)]
         @test ohlc[1].values    == [104.88 112.5 101.69 111.94]
-        @test ohlc[1].colnames  == ["Open", "High", "Low","Close"]
+        @test ohlc[1].colnames  == [:Open, :High, :Low, :Close]
         @test ohlc[1].meta      == "AAPL"
     end
 end
