@@ -12,6 +12,8 @@
     TimeArray(d, v, Symbol.(c), m; args...)
 )
 
-@deprecate getindex(ta::TimeArray, s::AbstractString) getindex(ta, Symbol(s))
-
+@deprecate getindex(ta::TimeArray, s::AbstractString)     getindex(ta, Symbol(s))
 @deprecate getindex(ta::TimeArray, ss::AbstractString...) getindex(ta, Symbol.(ss)...)
+
+@deprecate rename(ta::TimeArray, col::String)         rename(ta::TimeArray, Symbol(col))
+@deprecate rename(ta::TimeArray, col::Vector{String}) rename(ta, Symbol.(col))

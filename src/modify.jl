@@ -34,10 +34,10 @@ end
 
 ###### rename ####################
 
-function rename(ta::TimeArray, colnames::Vector)
-    TimeArray(ta.timestamp, ta.values, colnames, ta.meta)
-end
+# TODO: apply `unchecked`
 
-function rename(ta::TimeArray, colnames::String)
+rename(ta::TimeArray, colnames::Vector{Symbol}) =
+    TimeArray(ta.timestamp, ta.values, colnames, ta.meta)
+
+rename(ta::TimeArray, colnames::Symbol) =
     TimeArray(ta.timestamp, ta.values, [colnames], ta.meta)
-end
