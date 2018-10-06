@@ -1,8 +1,8 @@
 ###### readtimearray ############
 
-function readtimearray(source; delim::Char=',', meta=nothing, format::AbstractString="",
-                       header::Bool=true)
-    cfile = readdlm(source, delim, header=header)
+function readtimearray(source; delim::Char = ',', meta = nothing,
+                       format::AbstractString = "", header::Bool = true)
+    cfile = readdlm(source, delim, header = header)
     if header
         cfile, hd = cfile
     end
@@ -24,7 +24,7 @@ function readtimearray(source; delim::Char=',', meta=nothing, format::AbstractSt
     end
 
     vals   = insertNaN(cfile[1:end, 2:end])
-    cnames = header ? string.(hd[2:end]) : fill("", size(cfile, 2) - 1)
+    cnames = header ? Symbol.(hd[2:end]) : gen_colnames(size(cfile, 2) - 1)
     TimeArray(tstamps, vals, cnames, meta)
 end  # readtimearray
 
