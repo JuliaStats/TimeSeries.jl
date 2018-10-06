@@ -5,24 +5,17 @@ import Base: convert, copy, length, show, getindex, iterate,
 
 abstract type AbstractTimeSeries{T,N,D} end
 
-function _issorted_and_unique(x)
-    for i in 1:length(x)-1
-        @inbounds !(x[i] < x[i + 1]) && return false
-    end
-    true
-end
-
 struct TimeArray{T,N,D<:TimeType,A<:AbstractArray{T,N}} <: AbstractTimeSeries{T,N,D}
 
     timestamp::Vector{D}
     values::A
-    colnames::Vector{String}
+    colnames::Vector{Symbol}
     meta::Any
 
     function TimeArray{T,N,D,A}(
             timestamp::AbstractVector{D},
             values::A,
-            colnames::Vector{String},
+            colnames::Vector{Symbol},
             meta::Any;
             unchecked = false) where {T,N,D<:TimeType,A<:AbstractArray{T,N}}
         nrow = size(values, 1)
@@ -47,33 +40,30 @@ end
 ###### outer constructor ########
 
 TimeArray(d::AbstractVector{D}, v::AbstractArray{T,N},
-          c::Vector{S}=fill("", size(v, 2)),
-          m::Any=nothing;
-          args...) where {T,N,D<:TimeType,S<:AbstractString} =
-    TimeArray{T, N, D, typeof(v)}(d, v, map(String, c), m; args...)
-TimeArray(d::D, v::AbstractArray{T, N}, c::Vector{S}=fill("", size(v, 2)),
-          m::Any=nothing;
-          args...) where {T,N,D<:TimeType,S<:AbstractString} =
-    TimeArray{T, N, D, typeof(v)}([d], v, map(String, c), m; args...)
+          c::Vector{Symbol} = gen_colnames(size(v, 2)),
+          m::Any = nothing; args...) where {T,N,D<:TimeType} =
+    TimeArray{T,N,D,typeof(v)}(d, v, c, m; args...)
+TimeArray(d::D, v::AbstractArray{T,N},
+          c::Vector{Symbol} = gen_colnames(size(v, 2)),
+          m::Any = nothing; args...) where {T,N,D<:TimeType} =
+    TimeArray{T,N,D,typeof(v)}([d], v, c, m; args...)
 
 ###### conversion ###############
 
-convert(::Type{TimeArray{Float64,1}}, x::TimeArray{Bool,1}) =
-    TimeArray(x.timestamp, map(Float64, x.values), x.colnames, x.meta)
-convert(::Type{TimeArray{Float64,2}}, x::TimeArray{Bool,2}) =
-    TimeArray(x.timestamp, map(Float64, x.values), x.colnames, x.meta)
+convert(::Type{TimeArray{Float64,N}}, x::TimeArray{Bool,N}) where N =
+    TimeArray(x.timestamp, Float64.(x.values), x.colnames, x.meta; unchecked = true)
 
-convert(x::TimeArray{Bool,1}) = convert(TimeArray{Float64,1}, x::TimeArray{Bool,1})
-convert(x::TimeArray{Bool,2}) = convert(TimeArray{Float64,2}, x::TimeArray{Bool,2})
+convert(x::TimeArray{Bool,N}) where N =
+    convert(TimeArray{Float64,N}, x::TimeArray{Bool,N})
 
 ###### copy ###############
 
-copy(ta::TimeArray)::TimeArray =
-    TimeArray(ta.timestamp, ta.values, ta.colnames, ta.meta)
+copy(ta::TimeArray) =
+    TimeArray(ta.timestamp, ta.values, ta.colnames, ta.meta; unchecked = true)
 
 ###### length ###################
 
-length(ata::AbstractTimeSeries) = length(ata.timestamp)
+length(ata::AbstractTimeSeries) = length(timestamp(ata))
 
 ###### size #####################
 
@@ -199,13 +189,9 @@ function show(io::IO, ta::TimeArray{T}) where T
         ts   = ta.timestamp
     end
 
-    # NOTE: reshaping is a workaround in julia 0.6
-    #       in 0.7, it can be:
-    #         [strwidth.(ta.colnames)'; strwidth.(strs); fill(5, ncol)']
-    colwidth = maximum([
-        reshape(textwidth.(ta.colnames), 1, :);
-        textwidth.(strs);
-        reshape(fill(5, ncol), 1, :)], dims = 1)
+    colwidth = maximum(
+        [textwidth.(string.(ta.colnames))'; textwidth.(strs); fill(5, ncol)'],
+        dims = 1)
 
     # paging
     spacetime = textwidth(string(ts[1]))
@@ -330,30 +316,3 @@ getindex(ta::TimeArray, k::TimeArray{Bool,1}) = ta[findwhen(k)]
 lastindex(ta::TimeArray) = length(ta.timestamp)
 
 eachindex(ta::TimeArray) = Base.OneTo(length(ta.timestamp))
-
-# helper methods for inner constructor
-function find_dupes_index(cnames)
-    idx = Int[]
-    for c in 1:length(cnames)
-        if occursin(cnames[c], string(cnames[1:c-1]))
-            push!(idx, c)
-        end
-    end
-    idx
-end
-
-function replace_dupes(cnames)
-    n = 1
-    while !allunique(cnames)
-        ds = find_dupes_index(cnames)
-        for d in ds
-            if n == 1
-                cnames[d] = string(cnames[d], "_$n")
-            else
-                cnames[d] = string(cnames[d][1:length(cnames[d])-length(string(n))-1], "_$n")
-            end
-        end
-        n += 1
-    end
-    cnames
-end

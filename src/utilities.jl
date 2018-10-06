@@ -115,3 +115,61 @@ end  # setcolnames!
 
     true
 end
+
+# helper method for inner constructor
+@inline function _issorted_and_unique(x)
+    for i in 1:length(x)-1
+        @inbounds !(x[i] < x[i + 1]) && return false
+    end
+    true
+end
+
+# helper method for inner constructor
+function replace_dupes(cnames::Vector{Symbol})
+    n = 1
+    while !allunique(cnames)
+        ds = find_dupes_index(cnames)
+        for d in ds
+            if n == 1
+                cnames[d] = Symbol(cnames[d], "_$n")
+            else
+                cnames[d] = Symbol(cnames[d][1:length(cnames[d])-length(string(n))-1], "_$n")
+            end
+        end
+        n += 1
+    end
+    cnames
+end
+
+# helper method for inner constructor
+find_dupes_index(A::Vector{Symbol}) =
+    @inbounds [i for i in eachindex(A) if A[i] ∈ A[1:i-1]]
+
+@memoize function gen_colnames(n::Integer)
+    ret = Vector{Symbol}(undef, n)
+
+    s = ""
+    for i ∈ 1:n
+        s = carry_char(s)
+        ret[i] = Symbol(s)
+    end
+
+    ret
+end
+
+@memoize function carry_char(s::String = "")
+    if s == ""
+        return "A"
+    end
+
+    n = length(s)
+
+    c = s[n] + 1
+
+    if c > 'Z'
+        c = 'A'
+        carry_char(s[1:n-1]) * c
+    else
+        s[1:n-1] * c
+    end
+end
