@@ -197,7 +197,7 @@ end
 @testset "dot call auto-fusion" begin
     @testset "single TimeArray" begin
         let ta = sin.(log.(2, op))
-            @test ta.colnames == ["Open"]
+            @test ta.colnames == [:Open]
             @test ta.timestamp == op.timestamp
             @test ta.meta == op.meta
             @test ta.values[1] == sin(log(2, op.values[1]))
@@ -206,7 +206,7 @@ end
 
         f(x, c) = x + c
         let ta = f.(cl, 42)
-            @test ta.colnames == ["Close"]
+            @test ta.colnames == [:Close]
             @test ta.timestamp == cl.timestamp
             @test ta.meta == cl.meta
             @test ta.values[1] == cl.values[1] + 42
@@ -214,7 +214,7 @@ end
         end
 
         let ta = sin.(log.(2, ohlc))
-            @test ta.colnames == ["Open", "High", "Low", "Close"]
+            @test ta.colnames == [:Open, :High, :Low, :Close]
             @test ta.timestamp == ohlc.timestamp
             @test ta.meta == ohlc.meta
 
@@ -232,7 +232,7 @@ end
 
     @testset "TimeArray and Array" begin
         let ta = cl[1:4] .+ [1, 2, 3, 4]
-            @test ta.colnames == ["Close"]
+            @test ta.colnames == [:Close]
             @test ta.timestamp == cl.timestamp[1:4]
             @test ta.meta == cl.meta
 
@@ -243,7 +243,7 @@ end
         end
 
         let ta = ohlc[1:4] .+ [1, 2, 3, 4]
-            @test ta.colnames == ["Open", "High", "Low", "Close"]
+            @test ta.colnames == [:Open, :High, :Low, :Close]
             @test ta.timestamp == ohlc.timestamp[1:4]
             @test ta.meta == ohlc.meta
 
@@ -260,7 +260,7 @@ end
 
     @testset "custom function" begin
         let f(x, y, c) = x - y + c, ta = f.(op, cl, 42)
-            @test ta.colnames == ["Open_Close"]
+            @test ta.colnames == [:Open_Close]
             @test ta.timestamp == cl.timestamp
             @test ta.timestamp == op.timestamp
             @test ta.meta == op.meta
