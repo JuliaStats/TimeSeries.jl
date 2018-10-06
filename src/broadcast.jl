@@ -75,8 +75,8 @@ function find_ta(bc)
     ret
 end
 
-@generated function _new_cnames(args::Vararg{String, N}) where N
-    expr = :(string(args[1]))
+@generated function _new_cnames(args::Vararg{Symbol, N}) where N
+    expr = :(Symbol(args[1]))
     for i ∈ 2:N
         push!(expr.args, "_", :(args[$i]))
     end
