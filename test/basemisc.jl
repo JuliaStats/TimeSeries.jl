@@ -71,7 +71,7 @@ end
                     @test ta.meta == src.meta
                     @test length(ta) == length(src.timestamp)
                     @test ta.values == f(src.values, dims = 2)
-                    @test ta.colnames == [string(fname)]
+                    @test ta.colnames == [fname]
                 end
 
                 @test_throws DimensionMismatch f(src, dims = 3)
@@ -92,7 +92,7 @@ end
                     @test ta.meta == src.meta
                     @test length(ta) == length(src.timestamp)
                     @test ta.values == f(src.values, dims = 2, corrected = false)
-                    @test ta.colnames == [string(fname)]
+                    @test ta.colnames == [fname]
                 end
 
                 @test_throws DimensionMismatch f(src, dims = 3)
@@ -136,7 +136,7 @@ end
 
       @test xs.timestamp == ts[2:end]
       @test any(xs.values .== [false, true, false, false])
-      @test xs.colnames == ["any"]
+      @test xs.colnames == [:any]
     end
   end  # single column
 
@@ -164,7 +164,7 @@ end
 
     @test xs.timestamp == ts
     @test any(xs.values .== [false, true, true])
-    @test xs.colnames == ["any"]
+    @test xs.colnames == [:any]
   end  # multi column
 end  # @testset "Base.any" function
 
@@ -174,7 +174,7 @@ end  # @testset "Base.any" function
     """
     julia> all(x .== lag(x))
     1x1 TimeSeries.TimeArray{Bool,1,Date,BitArray{1}} 2000-01-07 to 2000-01-07
-    │            │ _     │
+    │            │ A     │
     ├────────────┼───────┤
     │ 2000-01-07 │ false │
     """
@@ -203,7 +203,7 @@ end  # @testset "Base.any" function
 
       @test xs.timestamp == ts[2:end]
       @test all(xs.values .== [false, true, false, false])
-      @test xs.colnames == ["all"]
+      @test xs.colnames == [:all]
     end
   end  # single column
 
@@ -231,7 +231,7 @@ end  # @testset "Base.any" function
 
     @test xs.timestamp == ts
     @test all(xs.values .== [false, false, true])
-    @test xs.colnames == ["all"]
+    @test xs.colnames == [:all]
   end  # multi column
 end  # @testset "Base.all" function
 
