@@ -43,30 +43,17 @@ end
     ba   = tail(BA)
 
     @testset "takes colnames kwarg correctly" begin
-        @test merge(cl, ohlc["High", "Low"], colnames=["a","b","c"]).colnames == ["a", "b", "c"]
-        @test merge(cl, op, colnames=["a","b"]).colnames                      == ["a", "b"]
-        @test_throws ErrorException merge(cl, op, colnames=["a"])
-        @test_throws ErrorException merge(cl, op, colnames=["a","b","c"])
+        @test merge(cl, ohlc[:High, :Low], colnames=[:a, :b, :c]).colnames == [:a, :b, :c]
+        @test merge(cl, op, colnames=[:a, :b]).colnames                    == [:a, :b]
+        @test_throws ErrorException merge(cl, op, colnames=[:a])
+        @test_throws ErrorException merge(cl, op, colnames=[:a, :b, :c])
 
-        @test merge(cl, ohlc["High", "Low"], :inner, colnames=["a","b","c"]).colnames == ["a", "b", "c"]
-        @test merge(cl, op, :inner, colnames=["a","b"]).colnames == ["a", "b"]
-        @test_throws ErrorException merge(cl, op, :inner, colnames=["a"])
-        @test_throws ErrorException merge(cl, op, :inner, colnames=["a","b","c"])
-
-        @test merge(cl, ohlc["High", "Low"], :left, colnames=["a","b","c"]).colnames == ["a", "b", "c"]
-        @test merge(cl, op, :left, colnames=["a","b"]).colnames          == ["a", "b"]
-        @test_throws ErrorException merge(cl, op, :left, colnames=["a"])
-        @test_throws ErrorException merge(cl, op, :left, colnames=["a","b","c"])
-
-        @test merge(cl, ohlc["High", "Low"], :right, colnames=["a","b","c"]).colnames == ["a", "b", "c"]
-        @test merge(cl, op, :right, colnames=["a","b"]).colnames == ["a", "b"]
-        @test_throws ErrorException merge(cl, op, :right, colnames=["a"])
-        @test_throws ErrorException merge(cl, op, :right, colnames=["a","b","c"])
-
-        @test merge(cl, ohlc["High", "Low"], :outer, colnames=["a","b","c"]).colnames == ["a", "b", "c"]
-        @test merge(cl, op, :outer, colnames=["a","b"]).colnames == ["a", "b"]
-        @test_throws ErrorException merge(cl, op, :outer, colnames=["a"])
-        @test_throws ErrorException merge(cl, op, :outer, colnames=["a","b","c"])
+        for mode ∈ [:inner, :left, :right, :outer]
+          @test merge(cl, ohlc[:High, :Low], mode, colnames=[:a, :b, :c]).colnames == [:a, :b, :c]
+          @test merge(cl, op, mode, colnames=[:a, :b]).colnames == [:a, :b]
+          @test_throws ErrorException merge(cl, op, mode, colnames=[:a])
+          @test_throws ErrorException merge(cl, op, mode, colnames=[:a, :b, :c])
+        end
     end
 
     @testset "returns correct alignment with Dates and values" begin
@@ -103,20 +90,20 @@ end
     end
 
     @testset "column names match the correct values" begin
-        @test merge(cl, op[2:5]).colnames         == ["Close", "Open"]
-        @test merge(op[2:5], cl).colnames         == ["Open", "Close"]
+        @test merge(cl, op[2:5]).colnames         == [:Close, :Open]
+        @test merge(op[2:5], cl).colnames         == [:Open, :Close]
 
-        @test merge(cl, op[2:5], :inner).colnames == ["Close", "Open"]
-        @test merge(op[2:5], cl, :inner).colnames == ["Open", "Close"]
+        @test merge(cl, op[2:5], :inner).colnames == [:Close, :Open]
+        @test merge(op[2:5], cl, :inner).colnames == [:Open, :Close]
 
-        @test merge(cl, op[2:5], :left).colnames  == ["Close", "Open"]
-        @test merge(op[2:5], cl, :left).colnames  == ["Open", "Close"]
+        @test merge(cl, op[2:5], :left).colnames  == [:Close, :Open]
+        @test merge(op[2:5], cl, :left).colnames  == [:Open, :Close]
 
-        @test merge(cl, op[2:5], :right).colnames == ["Close", "Open"]
-        @test merge(op[2:5], cl, :right).colnames == ["Open", "Close"]
+        @test merge(cl, op[2:5], :right).colnames == [:Close, :Open]
+        @test merge(op[2:5], cl, :right).colnames == [:Open, :Close]
 
-        @test merge(cl, op[2:5], :outer).colnames == ["Close", "Open"]
-        @test merge(op[2:5], cl, :outer).colnames == ["Open", "Close"]
+        @test merge(cl, op[2:5], :outer).colnames == [:Close, :Open]
+        @test merge(op[2:5], cl, :outer).colnames == [:Open, :Close]
     end
 
     @testset "unknown method" begin
@@ -144,15 +131,15 @@ end
         @test ta.meta == cl.meta
         @test length(ta.colnames) == 3
         @test ta.colnames[1] != ta.colnames[3]
-        @test ta.colnames[1] == "Close"
-        @test ta.colnames[2] == "Open"
+        @test ta.colnames[1] == :Close
+        @test ta.colnames[2] == :Open
         @test ta.values == [cl.values op.values cl.values]
     end
 
     let ta = [cl ohlc]
         @test ta.meta == ta.meta
         @test length(ta.colnames) == 5
-        @test ta.colnames[1] == "Close"
+        @test ta.colnames[1] == :Close
         @test ta.colnames[1] != ta.colnames[end]
         @test ta.values == [cl.values ohlc.values]
     end
