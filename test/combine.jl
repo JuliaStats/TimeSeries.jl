@@ -150,8 +150,8 @@ end
 
 @testset "vcat works correctly" begin
     @testset "concatenates time series correctly in 1D" begin
-        a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"])
-        b = TimeArray([Date(2015, 12, 01)], [17], ["Number"])
+        a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], [:Number])
+        b = TimeArray([Date(2015, 12, 01)], [17], [:Number])
         c = vcat(a, b)
 
         @test length(c)  == (length(a) + length(b))
@@ -161,8 +161,8 @@ end
     end
 
     @testset "concatenates time series correctly in 2D" begin
-        a = TimeArray([Date(2015, 09, 01), Date(2015, 10, 01), Date(2015, 11, 01)], [[15 16]; [17 18]; [19 20]], ["Number 1", "Number 2"])
-        b = TimeArray([Date(2015, 12, 01)], [18 18], ["Number 1", "Number 2"])
+        a = TimeArray([Date(2015, 09, 01), Date(2015, 10, 01), Date(2015, 11, 01)], [[15 16]; [17 18]; [19 20]], [:Number1, :Number2])
+        b = TimeArray([Date(2015, 12, 01)], [18 18], [:Number1, :Number2])
         c = vcat(a, b)
 
         @test length(c)  == length(a) + length(b)
@@ -172,29 +172,29 @@ end
     end
 
     @testset "rejects when column names do not match" begin
-        a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"])
-        b = TimeArray([Date(2015, 12, 01)], [17], ["Data does not match number"])
+        a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], [:foo])
+        b = TimeArray([Date(2015, 12, 01)], [17], [:bar])
 
         @test_throws ArgumentError vcat(a, b)
     end
 
     @testset "rejects when metas do not match" begin
-        a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"], :FirstMeta)
-        b = TimeArray([Date(2015, 12, 01)], [17], ["Number"], :SecondMeta)
+        a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], [:A], :FirstMeta)
+        b = TimeArray([Date(2015, 12, 01)], [17], [:A], :SecondMeta)
 
         @test_throws ArgumentError vcat(a, b)
     end
 
     @testset "rejects when dates overlap" begin
-        a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"])
-        b = TimeArray([Date(2015, 11, 01)], [17], ["Number"])
+        a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16])
+        b = TimeArray([Date(2015, 11, 01)], [17])
 
         @test_throws ArgumentError vcat(a, b)
     end
 
     @testset "still works when dates are mixed" begin
-        a = TimeArray([Date(2015, 10, 01), Date(2015, 12, 01)], [15, 17], ["Number"])
-        b = TimeArray([Date(2015, 11, 01)], [16], ["Number"])
+        a = TimeArray([Date(2015, 10, 01), Date(2015, 12, 01)], [15, 17])
+        b = TimeArray([Date(2015, 11, 01)], [16])
         c = vcat(a, b)
 
         @test length(c)  == length(a) + length(b)
@@ -208,7 +208,7 @@ end
 
 @testset "map works correctly" begin
     @testset "works on both time stamps and 1D values" begin
-        a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"], :Something)
+        a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], [:A], :Something)
         b = map((timestamp, values) -> (timestamp + Dates.Year(1), values .- 1), a)
 
         @test length(b)                  == length(a)
@@ -219,7 +219,7 @@ end
     end
 
     @testset "works on both time stamps and 2D values" begin
-        a = TimeArray([Date(2015, 09, 01), Date(2015, 10, 01), Date(2015, 11, 01)], [[15 16]; [17 18]; [19 20]], ["Number 1", "Number 2"])
+        a = TimeArray([Date(2015, 09, 01), Date(2015, 10, 01), Date(2015, 11, 01)], [[15 16]; [17 18]; [19 20]], [:A, :B])
         b = map((timestamp, values) -> (timestamp + Dates.Year(1), [values[1] + 2, values[2] - 1]), a)
 
         @test length(b)                  == length(a)
@@ -230,7 +230,7 @@ end
     end
 
     @testset "works with order of elements that varies after modifications" begin
-        a = TimeArray([Date(2015, 10, 01), Date(2015, 12, 01)], [15, 16], ["Number"])
+        a = TimeArray([Date(2015, 10, 01), Date(2015, 12, 01)], [15, 16], [:A])
         b = map((timestamp, values) -> (timestamp + Dates.Year((timestamp >= Date(2015, 11, 01)) ? -1 : 1), values), a)
 
         @test length(b) == length(a)
