@@ -49,10 +49,10 @@ end
         @test_throws ErrorException merge(cl, op, colnames=[:a, :b, :c])
 
         for mode ∈ [:inner, :left, :right, :outer]
-          @test merge(cl, ohlc[:High, :Low], mode, colnames=[:a, :b, :c]).colnames == [:a, :b, :c]
-          @test merge(cl, op, mode, colnames=[:a, :b]).colnames == [:a, :b]
-          @test_throws ErrorException merge(cl, op, mode, colnames=[:a])
-          @test_throws ErrorException merge(cl, op, mode, colnames=[:a, :b, :c])
+            @test merge(cl, ohlc[:High, :Low], mode, colnames=[:a, :b, :c]).colnames == [:a, :b, :c]
+            @test merge(cl, op, mode, colnames=[:a, :b]).colnames == [:a, :b]
+            @test_throws ErrorException merge(cl, op, mode, colnames=[:a])
+            @test_throws ErrorException merge(cl, op, mode, colnames=[:a, :b, :c])
         end
     end
 

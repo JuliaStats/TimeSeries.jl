@@ -52,10 +52,11 @@ end
 
 @testset "element wrappers" begin
     @testset "type element wrappers isolate elements" begin
-        @test isa(timestamp(cl), Array{Date,1})       == true
-        @test isa(values(cl), Array{Float64,1})       == true
-        @test isa(values(ohlc), Array{Float64,2})     == true
-        @test isa(colnames(cl), Array{String, 1})     == true
+        for ta ∈ [cl, ohlc]
+            @test timestamp(ta) isa Vector{Date}
+            @test values(ta)    isa Array{Float64}
+            @test colnames(ta)  isa Vector{Symbol}
+        end
     end
 end
 
