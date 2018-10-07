@@ -33,7 +33,7 @@ end
     end
 
     @testset "index by column name" begin
-        @test mdata["Close"].meta == "Apple"
+        @test mdata[:Close].meta == "Apple"
     end
 
     @testset "index by date range" begin
