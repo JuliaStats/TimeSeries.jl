@@ -358,7 +358,7 @@ end
 
     let  # diff meta
         x = TimeArray(ds, 1:7, [:foo], :bar)
-        y = TimeArray(ds, 1:7, [:foo], "baz")
+        y = TimeArray(ds, 1:7, [:foo], :baz)
         @test x != y
     end
 
