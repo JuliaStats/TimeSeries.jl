@@ -23,7 +23,7 @@ macro _mapbase(sig::Expr, imp::Expr)
     # these default values are useful for reduction function
     col = get(_colmap, fname, Dict())
     dim1col = get(col, 1, :(ta.colnames))
-    dim2col = get(col, 2, :([$(string(fname))]))
+    dim2col = get(col, 2, :([$(QuoteNode(fname))]))
 
     fbody = quote
         if dims == 1
