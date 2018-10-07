@@ -1,7 +1,8 @@
 ###### type definition ##########
 
 import Base: convert, copy, length, show, getindex, iterate,
-             lastindex, size, eachindex, ==, isequal, hash, ndims
+             lastindex, size, eachindex, ==, isequal, hash, ndims,
+             getproperty
 
 abstract type AbstractTimeSeries{T,N,D} end
 
@@ -281,13 +282,13 @@ getindex(ta::TimeArray{T,1}, a::AbstractVector{<:Integer}) where T =
 
 # single column by name
 function getindex(ta::TimeArray, s::Symbol)
-    n = findfirst(isequal(s), colnames(ta))
+    n = findcol(ta, s)
     TimeArray(ta.timestamp, ta.values[:, n], Symbol[s], ta.meta, unchecked = true)
 end
 
 # array of columns by name
 function getindex(ta::TimeArray, ss::Symbol...)
-    ns = [findfirst(isequal(s), colnames(ta)) for s in ss]
+    ns = [findcol(ta, s) for s in ss]
     TimeArray(ta.timestamp, ta.values[:, ns], collect(ss), ta.meta)
 end
 
@@ -316,3 +317,13 @@ getindex(ta::TimeArray, k::TimeArray{Bool,1}) = ta[findwhen(k)]
 lastindex(ta::TimeArray) = length(ta.timestamp)
 
 eachindex(ta::TimeArray) = Base.OneTo(length(ta.timestamp))
+
+###### getproperty #################
+
+@generated function getproperty(ta::T, c::Symbol) where {T<:AbstractTimeSeries}
+    fs = fieldnames(T)
+
+    quote
+        (c ∈ $fs) ? getfield(ta, c) : ta[c]
+    end
+end

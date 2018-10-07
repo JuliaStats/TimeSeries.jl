@@ -174,3 +174,16 @@ end
         s[1:n-1] * c
     end
 end
+
+# helper method for `getindex`
+"""
+Return the first index of the given column names.
+Raise `KeyError` if col name not found.
+"""
+findcol(ta::AbstractTimeSeries, s::Symbol) = findcol(colnames(ta), s)
+
+@inline function findcol(cols::Vector{Symbol}, s::Symbol)
+  i = findfirst(isequal(s), cols)
+  (i === nothing) && throw(KeyError(s))
+  i
+end

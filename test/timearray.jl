@@ -504,4 +504,20 @@ end
 end  # @testset "show methods don't throw errors"
 
 
+@testset "getproperty" begin
+    let
+        @test cl.Close  == cl[:Close]
+        @test_throws KeyError cl.NotFound
+    end
+
+    let
+        @test ohlc.Open  == ohlc[:Open]
+        @test ohlc.High  == ohlc[:High]
+        @test ohlc.Low   == ohlc[:Low]
+        @test ohlc.Close == ohlc[:Close]
+        @test_throws KeyError ohlc.NotFound
+    end
+end
+
+
 end  # @testset "timearray"
