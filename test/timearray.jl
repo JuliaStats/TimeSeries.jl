@@ -11,10 +11,12 @@ using TimeSeries
 
 @testset "field extraction methods work" begin
     @testset "timestamp, values, colnames and meta" begin
-        @test typeof(timestamp(cl)) == Vector{Date}
-        @test typeof(values(cl))    == Vector{Float64}
-        @test typeof(colnames(cl))  == Vector{Symbol}
-        @test meta(mdata)           == "Apple"
+        for ta ∈ [cl, op, ohlc]
+            @test timestamp(ta) isa Vector{Date}
+            @test values(ta)    isa Array{Float64}
+            @test colnames(ta)  isa Vector{Symbol}
+            @test meta(mdata) == "Apple"
+        end
     end
 end
 
@@ -48,53 +50,54 @@ end
 @testset "type constructors enforce invariants" begin
     mangled_stamp = vcat(cl.timestamp[200:end], cl.timestamp[1:199])
     dupe_stamp    = vcat(cl.timestamp[1:499], cl.timestamp[499])
-    dupe_cnames   = rename(AAPL, ["a", "b", "c", "a", "a", "b", "d", "e", "e", "e", "e", "f"])
 
     @testset "unequal length between values and timestamp fails" begin
         @test_throws(
             DimensionMismatch,
-            TimeArray(cl.timestamp, cl.values[2:end], ["Close"]))
+            TimeArray(cl.timestamp, cl.values[2:end], [:Close]))
     end
 
     @testset "unequal length between colnames and array width fails" begin
         @test_throws(
             DimensionMismatch,
-            TimeArray(cl.timestamp, cl.values, ["Close", "Open"]))
+            TimeArray(cl.timestamp, cl.values, [:Close, :Open]))
     end
 
     @testset "duplicate timestamp values fails" begin
         @test_throws(
             ArgumentError,
-            TimeArray(dupe_stamp, cl.values, ["Close"]))
+            TimeArray(dupe_stamp, cl.values, [:Close]))
     end
 
     @testset "mangled order of timestamp values fails" begin
         @test_throws(
             ArgumentError,
-            TimeArray(mangled_stamp, cl.values, ["Close"]))
+            TimeArray(mangled_stamp, cl.values, [:Close]))
     end
 
     @testset "reverse occurs when needed" begin
         rev_timestamp = reverse(cl.timestamp, dims = 1)
         rev_values = reverse(cl.values, dims = 1)
-        ta = TimeArray(rev_timestamp, rev_values, ["Close"])
+        ta = TimeArray(rev_timestamp, rev_values, [:Close])
         @test ta.timestamp[1] == Date(2000,1,3)
         @test ta.values[1]    == 111.94
     end
 
     @testset "duplicate column names are enumerated by inner constructor" begin
-        @test dupe_cnames.colnames[1]  == :a
-        @test dupe_cnames.colnames[2]  == :b
-        @test dupe_cnames.colnames[3]  == :c
-        @test dupe_cnames.colnames[4]  == :a_1
-        @test dupe_cnames.colnames[5]  == :a_2
-        @test dupe_cnames.colnames[6]  == :b_1
-        @test dupe_cnames.colnames[7]  == :d
-        @test dupe_cnames.colnames[8]  == :e
-        @test dupe_cnames.colnames[9]  == :e_1
-        @test dupe_cnames.colnames[10] == :e_2
-        @test dupe_cnames.colnames[11] == :e_3
-        @test dupe_cnames.colnames[12] == :f
+        cols = [:a, :b, :c, :a, :a, :b, :d, :e, :e, :e, :e, :f]
+        ta = TimeArray(timestamp(AAPL), values(AAPL), cols)
+        @test ta.colnames[1]  == :a
+        @test ta.colnames[2]  == :b
+        @test ta.colnames[3]  == :c
+        @test ta.colnames[4]  == :a_1
+        @test ta.colnames[5]  == :a_2
+        @test ta.colnames[6]  == :b_1
+        @test ta.colnames[7]  == :d
+        @test ta.colnames[8]  == :e
+        @test ta.colnames[9]  == :e_1
+        @test ta.colnames[10] == :e_2
+        @test ta.colnames[11] == :e_3
+        @test ta.colnames[12] == :f
     end
 
     @testset "and doesn't when unchecked" begin
@@ -251,14 +254,14 @@ end
 
     @testset "getindex on single column name" begin
         idx = Date(2000,1,3):Day(1):Date(2000,1,14)
-        @test size(ohlc["Open"].values, 2)      == 1
-        @test size(ohlc["Open"][idx].values, 1) == 10
+        @test size(ohlc[:Open].values, 2)      == 1
+        @test size(ohlc[:Open][idx].values, 1) == 10
     end
 
     @testset "getindex on multiple column name" begin
-        @test ohlc["Open", "Close"].values[1]   == 104.88
-        @test ohlc["Open", "Close"].values[2]   == 108.25
-        @test ohlc["Open", "Close"].values[501] == 111.94
+        @test ohlc[:Open, :Close].values[1]   == 104.88
+        @test ohlc[:Open, :Close].values[2]   == 108.25
+        @test ohlc[:Open, :Close].values[501] == 111.94
     end
 
     @testset "getindex on 1d returns 1d object" begin
@@ -335,8 +338,8 @@ end
     ds = DateTime(2017, 12, 25):Day(1):DateTime(2017, 12, 31) |> collect
 
     let  # diff colnames
-        x = TimeArray(ds, 1:7, ["foo"])
-        y = TimeArray(ds, 1:7, ["bar"])
+        x = TimeArray(ds, 1:7, [:foo])
+        y = TimeArray(ds, 1:7, [:bar])
         @test x != y
     end
 
@@ -348,14 +351,14 @@ end
 
     let  # Date vs DateTime
         ds2 = Date(2017, 12, 25):Day(1):Date(2017, 12, 31) |> collect
-        x = TimeArray(ds,  1:7, ["foo"], "bar")
-        y = TimeArray(ds2, 1:7, ["foo"], "bar")
+        x = TimeArray(ds,  1:7, [:foo], :bar)
+        y = TimeArray(ds2, 1:7, [:foo], :bar)
         @test x == y
     end
 
     let  # diff meta
-        x = TimeArray(ds, 1:7, ["foo"], "bar")
-        y = TimeArray(ds, 1:7, ["foo"], "baz")
+        x = TimeArray(ds, 1:7, [:foo], :bar)
+        y = TimeArray(ds, 1:7, [:foo], "baz")
         @test x != y
     end
 

@@ -50,17 +50,6 @@ end
 end
 
 
-@testset "element wrappers" begin
-    @testset "type element wrappers isolate elements" begin
-        for ta ∈ [cl, ohlc]
-            @test timestamp(ta) isa Vector{Date}
-            @test values(ta)    isa Array{Float64}
-            @test colnames(ta)  isa Vector{Symbol}
-        end
-    end
-end
-
-
 @testset "head, tail, first and last methods" begin
     @testset "head, tail, first and last methods work with default n value on single column TimeArray" begin
         @test length(head(cl,6)) == 6
