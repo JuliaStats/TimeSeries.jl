@@ -133,7 +133,7 @@ function replace_dupes(cnames::Vector{Symbol})
             if n == 1
                 cnames[d] = Symbol(cnames[d], "_$n")
             else
-                s = cnames[d] |> string
+              s = string(cnames[d])
                 cnames[d] = Symbol(s[1:length(s)-length(string(n))-1], "_$n")
             end
         end
@@ -183,7 +183,7 @@ Raise `KeyError` if col name not found.
 findcol(ta::AbstractTimeSeries, s::Symbol) = findcol(colnames(ta), s)
 
 @inline function findcol(cols::Vector{Symbol}, s::Symbol)
-  i = findfirst(isequal(s), cols)
-  (i === nothing) && throw(KeyError(s))
-  i
+    i = findfirst(isequal(s), cols)
+    (i === nothing) && throw(KeyError(s))
+    i
 end
