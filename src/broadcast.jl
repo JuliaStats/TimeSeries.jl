@@ -55,7 +55,7 @@ end
     length(tas) <= 1 && return
 
     # if we have more than one TimeArray
-    lens = Set(i for i ∈ map(ta -> length(ta.colnames), tas) if i ≠ 1)
+    lens = Set(i for i ∈ map(ta -> length(colnames(ta)), tas) if i ≠ 1)
     length(lens) > 1 && throw(
         DimensionMismatch(
             "TimeArrays must have the same number of columns, " *

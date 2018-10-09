@@ -11,7 +11,7 @@ function update(ta::TimeArray{T, N, D}, tstamp::D, val::Array{T, N}) where {T, N
     else
         t    = vcat(timestamp(ta), tstamp)
         vals = vcat(values(ta), val)
-        uta  = TimeArray(t, vals, ta.colnames, ta.meta)
+        uta  = TimeArray(t, vals, colnames(ta), ta.meta)
     end
     uta
 end
@@ -27,7 +27,7 @@ function update(ta::TimeArray{T, N, D}, tstamp::D, val::T) where {T, N, D}
     else
         t    = vcat(timestamp(ta), tstamp)
         vals = vcat(values(ta), val)
-        uta  = TimeArray(t, vals, ta.colnames, ta.meta)
+        uta  = TimeArray(t, vals, colnames(ta), ta.meta)
     end
     uta
 end

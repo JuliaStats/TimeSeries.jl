@@ -43,7 +43,7 @@ function writetimearray(ta::TimeArray, fname::AbstractString)
 
     open(fname, "w") do io
 
-        strvals = join(ta.colnames, ",")
+        strvals = join(colnames(ta), ",")
         write(io, string("Timestamp,", strvals, "\n"))
 
         for i in eachindex(timestamp(ta))

@@ -91,7 +91,7 @@ function collapse(ta::TimeArray{T, N, D}, period::Function, timestamp::Function,
 
     length(ta) == 0 && return ta
 
-    ncols = length(ta.colnames)
+    ncols = length(colnames(ta))
     collapsed_tstamps = D[]
     collapsed_values = values(ta)[1:0, :]
 
@@ -119,7 +119,7 @@ function collapse(ta::TimeArray{T, N, D}, period::Function, timestamp::Function,
     collapsed_values = [collapsed_values; T[value(values(ta)[cluster_startrow:end, j]) for j in 1:ncols]']
 
     N == 1 && (collapsed_values = vec(collapsed_values))
-    return TimeArray(collapsed_tstamps, collapsed_values, ta.colnames, ta.meta)
+    return TimeArray(collapsed_tstamps, collapsed_values, colnames(ta), ta.meta)
 
 end
 
@@ -137,7 +137,7 @@ function vcat(TA::TimeArray...)
     # Check column names are identical.
     prev_colnames = TA[1].colnames
     for ta in TA
-        if ta.colnames != prev_colnames
+        if colnames(ta) != prev_colnames
             throw(ArgumentError("column names don't match"))
         end
     end
@@ -171,6 +171,6 @@ end
         end
 
         order = sortperm(ts)
-        TimeArray(ts[order], $output_vals, ta.colnames, ta.meta)
+        TimeArray(ts[order], $output_vals, colnames(ta), ta.meta)
     end
 end
