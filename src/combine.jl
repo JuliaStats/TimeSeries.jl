@@ -46,7 +46,7 @@ function merge(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, method::Symbol = :i
         ta = merge(ta2, ta1, :left; padvalue = padvalue)
         ncol2 = length(ta2.colnames)
         vals = [ta.values[:, (ncol2+1):end] ta.values[:, 1:ncol2]]
-        ta = TimeArray(ta.timestamp, vals, [ta1.colnames; ta2.colnames], meta; unchecked = true)
+        ta = TimeArray(timestamp(ta), vals, [ta1.colnames; ta2.colnames], meta; unchecked = true)
 
     elseif method == :outer
 
@@ -95,17 +95,17 @@ function collapse(ta::TimeArray{T, N, D}, period::Function, timestamp::Function,
     collapsed_tstamps = D[]
     collapsed_values = ta.values[1:0, :]
 
-    tstamp = ta.timestamp[1]
+    tstamp = timestamp(ta)[1]
     mapped_tstamp = period(tstamp)
     cluster_startrow = 1
 
     for i in 1:length(ta)-1
 
-        next_tstamp = ta.timestamp[i+1]
+        next_tstamp = timestamp(ta)[i+1]
         next_mapped_tstamp = period(next_tstamp)
 
         if mapped_tstamp != next_mapped_tstamp
-          push!(collapsed_tstamps, timestamp(ta.timestamp[cluster_startrow:i]))
+          push!(collapsed_tstamps, timestamp(timestamp(ta)[cluster_startrow:i]))
           collapsed_values = [collapsed_values; T[value(ta.values[cluster_startrow:i, j]) for j in 1:ncols]']
           cluster_startrow = i+1
         end #if
@@ -115,7 +115,7 @@ function collapse(ta::TimeArray{T, N, D}, period::Function, timestamp::Function,
 
     end #for
 
-    push!(collapsed_tstamps, timestamp(ta.timestamp[cluster_startrow:end]))
+    push!(collapsed_tstamps, timestamp(timestamp(ta)[cluster_startrow:end]))
     collapsed_values = [collapsed_values; T[value(ta.values[cluster_startrow:end, j]) for j in 1:ncols]']
 
     N == 1 && (collapsed_values = vec(collapsed_values))
@@ -143,7 +143,7 @@ function vcat(TA::TimeArray...)
     end
 
     # Concatenate the contents.
-    timestamps = vcat([ta.timestamp for ta in TA]...)
+    timestamps = vcat([timestamp(ta) for ta in TA]...)
     values = vcat([ta.values for ta in TA]...)
 
     order = sortperm(timestamps)
@@ -167,7 +167,7 @@ end
         vals = similar(values(ta))
 
         for i in eachindex(ta)
-            @inbounds ts[i], $output_val = f(ta.timestamp[i], $input_val)
+            @inbounds ts[i], $output_val = f(timestamp(ta)[i], $input_val)
         end
 
         order = sortperm(ts)

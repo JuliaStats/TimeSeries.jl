@@ -17,8 +17,8 @@ macro _mapbase(sig::Expr, imp::Expr)
 
     # these default values are useful for reduction function
     ts = get(_tsmap, fname, Dict())
-    dim1ts = get(ts, 1, :(ta.timestamp[end]))
-    dim2ts = get(ts, 2, :(ta.timestamp))
+    dim1ts = get(ts, 1, :(timestamp(ta)[end]))
+    dim2ts = get(ts, 2, :(timestamp(ta)))
 
     # these default values are useful for reduction function
     col = get(_colmap, fname, Dict())
@@ -45,13 +45,13 @@ macro _mapbase(sig::Expr, imp::Expr)
 end
 
 # Cumulative functions
-_tsmap[:cumsum] = Dict(1 => :(ta.timestamp))
+_tsmap[:cumsum] = Dict(1 => :(timestamp(ta)))
 _colmap[:cumsum] = Dict(2 => :(ta.colnames))
 @_mapbase cumsum(ta::TimeArray; dims::Integer) cumsum(values(ta), dims = dims)
 @_mapbase(cumsum(ta::TimeArray{T,1}, dims::Integer = 1) where{T},
           cumsum(values(ta), dims = dims))
 
-_tsmap[:cumprod] = Dict(1 => :(ta.timestamp))
+_tsmap[:cumprod] = Dict(1 => :(timestamp(ta)))
 _colmap[:cumprod] = Dict(2 => :(ta.colnames))
 @_mapbase cumprod(ta::TimeArray; dims::Integer) cumprod(values(ta), dims = dims)
 @_mapbase(cumprod(ta::TimeArray{T,1}; dims::Integer = 1) where {T},

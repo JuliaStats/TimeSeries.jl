@@ -17,9 +17,9 @@ function lag(ta::TimeArray{T, N}, n::Int=1;
     # TODO: apply `unchecked`
     if padding
         paddedvals = [NaN * ones(n,size(ta, 2)); ta.values[1:end-n, :]]
-        ta = TimeArray(ta.timestamp, paddedvals, ta.colnames, ta.meta)
+        ta = TimeArray(timestamp(ta), paddedvals, ta.colnames, ta.meta)
     else
-        ta = TimeArray(ta.timestamp[1+n:end], ta.values[1:end-n, :], ta.colnames, ta.meta)
+        ta = TimeArray(timestamp(ta)[1+n:end], ta.values[1:end-n, :], ta.colnames, ta.meta)
     end
 
     N == 1 && (ta = ta[ta.colnames[1]])
@@ -37,9 +37,9 @@ function lead(ta::TimeArray{T, N}, n::Int=1;
 
     if padding
         paddedvals = [ta.values[1+n:end, :]; NaN*ones(n, length(ta.colnames))]
-        ta = TimeArray(ta.timestamp, paddedvals, ta.colnames, ta.meta)
+        ta = TimeArray(timestamp(ta), paddedvals, ta.colnames, ta.meta)
     else
-        ta = TimeArray(ta.timestamp[1:end-n], ta.values[1+n:end, :], ta.colnames, ta.meta)
+        ta = TimeArray(timestamp(ta)[1:end-n], ta.values[1+n:end, :], ta.colnames, ta.meta)
     end
 
     N == 1 && (ta = ta[ta.colnames[1]])
@@ -82,7 +82,7 @@ end  # percentchange
 
 function moving(f, ta::TimeArray{T, 1}, window::Int;
                 padding::Bool = false) where {T}
-    tstamps = padding ? ta.timestamp : ta.timestamp[window:end]
+    tstamps = padding ? timestamp(ta) : timestamp(ta)[window:end]
     vals    = zero(ta.values[window:end])
     for i=1:length(vals)
         vals[i] = f(ta.values[i:i+(window-1)])
@@ -93,7 +93,7 @@ end
 
 function moving(f, ta::TimeArray{T, 2}, window::Int;
                 padding::Bool = false) where {T}
-    tstamps = padding ? ta.timestamp : ta.timestamp[window:end]
+    tstamps = padding ? timestamp(ta) : timestamp(ta)[window:end]
     vals    = zero(ta.values[window:end, :])
     for i=1:size(vals, 1), j=1:size(vals, 2)
         vals[i, j] = f(ta.values[i:i+(window-1), j])
@@ -109,7 +109,7 @@ function upto(f, ta::TimeArray{T, 1}) where {T}
     for i=1:length(vals)
         vals[i] = f(ta.values[1:i])
     end
-    TimeArray(ta.timestamp, vals, ta.colnames, ta.meta)
+    TimeArray(timestamp(ta), vals, ta.colnames, ta.meta)
 end
 
 function upto(f, ta::TimeArray{T, 2}) where {T}
@@ -117,29 +117,29 @@ function upto(f, ta::TimeArray{T, 2}) where {T}
     for i=1:size(vals, 1), j=1:size(vals, 2)
         vals[i, j] = f(ta.values[1:i, j])
     end
-    TimeArray(ta.timestamp, vals, ta.colnames, ta.meta)
+    TimeArray(timestamp(ta), vals, ta.colnames, ta.meta)
 end
 
 ###### basecall #################
 
 basecall(ta::TimeArray, f::Function; cnames=ta.colnames) =
-    TimeArray(ta.timestamp, f(ta.values), cnames, ta.meta)
+    TimeArray(timestamp(ta), f(ta.values), cnames, ta.meta)
 
 ###### uniform observations #####
 
 function uniformspaced(ta::TimeArray)
-    gap1 = ta.timestamp[2] - ta.timestamp[1]
+    gap1 = timestamp(ta)[2] - timestamp(ta)[1]
     i, n, is_uniform = 2, length(ta), true
     while is_uniform & (i < n)
-        is_uniform = gap1 == (ta.timestamp[i+1] - ta.timestamp[i])
+        is_uniform = gap1 == (timestamp(ta)[i+1] - timestamp(ta)[i])
         i += 1
     end
     return is_uniform
 end  # uniformspaced
 
 function uniformspace(ta::TimeArray{T, N}) where {T, N}
-    min_gap = minimum(ta.timestamp[2:end] - ta.timestamp[1:end-1])
-    newtimestamp = ta.timestamp[1]:min_gap:ta.timestamp[end]
+    min_gap = minimum(timestamp(ta)[2:end] - timestamp(ta)[1:end-1])
+    newtimestamp = timestamp(ta)[1]:min_gap:timestamp(ta)[end]
     emptyta = TimeArray(collect(newtimestamp), zeros(length(newtimestamp), 0),
                         Symbol[], ta.meta)
     ta = merge(emptyta, ta, :left)
