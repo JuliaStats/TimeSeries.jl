@@ -2,7 +2,7 @@
 
 import Base: convert, copy, length, show, getindex, iterate,
              lastindex, size, eachindex, ==, isequal, hash, ndims,
-             getproperty
+             getproperty, propertynames, values
 
 abstract type AbstractTimeSeries{T,N,D} end
 
@@ -318,12 +318,15 @@ lastindex(ta::TimeArray) = length(ta.timestamp)
 
 eachindex(ta::TimeArray) = Base.OneTo(length(ta.timestamp))
 
-###### getproperty #################
+###### getproperty/propertynames #################
 
-@generated function getproperty(ta::T, c::Symbol) where {T<:AbstractTimeSeries}
-    fs = fieldnames(T)
+getproperty(ta::AbstractTimeSeries, c::Symbol) = ta[c]
 
-    quote
-        (c ∈ $fs) ? getfield(ta, c) : ta[c]
-    end
-end
+propertynames(ta::TimeArray) = colnames(ta)
+
+###### element wrapers ###########
+
+timestamp(ta::TimeArray) = getfield(ta, :timestamp)
+values(ta::TimeArray)    = getfield(ta, :values)
+colnames(ta::TimeArray)  = getfield(ta, :colnames)
+meta(ta::TimeArray)      = getfield(ta, :meta)

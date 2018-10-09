@@ -1,5 +1,3 @@
-import Base: values
-
 # when ############################
 
 when(ta::TimeArray, period::Function, t::Integer) =
@@ -55,10 +53,3 @@ end
 Base.first(ta::TimeArray) = head(ta, 1)
 
 Base.last(ta::TimeArray) = tail(ta, 1)
-
-###### element wrapers ###########
-
-timestamp(ta::TimeArray) = ta.timestamp
-values(ta::TimeArray)    = ta.values
-colnames(ta::TimeArray)  = ta.colnames
-meta(ta::TimeArray)      = ta.meta
