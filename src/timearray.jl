@@ -52,7 +52,7 @@ TimeArray(d::D, v::AbstractArray{T,N},
 ###### conversion ###############
 
 convert(::Type{TimeArray{Float64,N}}, x::TimeArray{Bool,N}) where N =
-    TimeArray(x.timestamp, Float64.(x.values), x.colnames, x.meta; unchecked = true)
+    TimeArray(timestamp(x), Float64.(values(x)), colnames(x), meta(x); unchecked = true)
 
 convert(x::TimeArray{Bool,N}) where N =
     convert(TimeArray{Float64,N}, x::TimeArray{Bool,N})
@@ -330,3 +330,9 @@ timestamp(ta::TimeArray) = getfield(ta, :timestamp)
 values(ta::TimeArray)    = getfield(ta, :values)
 colnames(ta::TimeArray)  = getfield(ta, :colnames)
 meta(ta::TimeArray)      = getfield(ta, :meta)
+
+# internal use, to avoid name collision
+_timestamp(ta::TimeArray) = getfield(ta, :timestamp)
+_values(ta::TimeArray)    = getfield(ta, :values)
+_colnames(ta::TimeArray)  = getfield(ta, :colnames)
+_meta(ta::TimeArray)	  = getfield(ta, :meta)

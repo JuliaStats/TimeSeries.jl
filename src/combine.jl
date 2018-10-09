@@ -11,7 +11,7 @@ function _merge_outer(::Type{IndexType}, ta1::TimeArray{T,N,D}, ta2::TimeArray{T
 end
 
 function merge(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, method::Symbol = :inner;
-               colnames::Vector = [], meta = nothing,
+               colnames::Vector = Symbol[], meta = nothing,
                padvalue=NaN) where {T,N,M,D}
 
     if colnames isa Vector{<:AbstractString}
@@ -20,37 +20,35 @@ function merge(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, method::Symbol = :i
         colnames = Symbol.(colnames)
     end
 
-    if ta1.meta == ta2.meta && meta isa Nothing
-        meta = ta1.meta
-    elseif typeof(ta1.meta) <: AbstractString && typeof(ta2.meta) <: AbstractString && meta isa Nothing
-        meta = string(ta1.meta, "_", ta2.meta)
-    else
-        meta = meta
+    meta = if _meta(ta1) == _meta(ta2) && meta isa Nothing
+        _meta(ta1)
+    elseif typeof(_meta(ta1)) <: AbstractString && typeof(_meta(ta2)) <: AbstractString && meta isa Nothing
+        string(_meta(ta1), "_", _meta(ta2))
     end
 
     if method == :inner
 
-        idx1, idx2 = overlap(ta1.timestamp, ta2.timestamp)
-        vals = [ta1[idx1].values ta2[idx2].values]
-        ta = TimeArray(ta1[idx1].timestamp, vals, [ta1.colnames; ta2.colnames], meta; unchecked = true)
+        idx1, idx2 = overlap(timestamp(ta1), timestamp(ta2))
+        vals = [values(ta1[idx1]) values(ta2[idx2])]
+        ta = TimeArray(timestamp(ta1[idx1]), vals, [_colnames(ta1); _colnames(ta2)], meta; unchecked = true)
 
     elseif method == :left
 
-        new_idx2, old_idx2 = overlap(ta1.timestamp, ta2.timestamp)
-        right_vals = fill(convert(T, padvalue), (length(ta1), length(ta2.colnames)))
-        insertbyidx!(right_vals, ta2.values, new_idx2, old_idx2)
-        ta = TimeArray(ta1.timestamp, [ta1.values right_vals], [ta1.colnames; ta2.colnames], meta; unchecked = true)
+        new_idx2, old_idx2 = overlap(timestamp(ta1), timestamp(ta2))
+        right_vals = fill(convert(T, padvalue), (length(ta1), length(_colnames(ta2))))
+        insertbyidx!(right_vals, values(ta2), new_idx2, old_idx2)
+        ta = TimeArray(timestamp(ta1), [values(ta1) right_vals], [_colnames(ta1); _colnames(ta2)], meta; unchecked = true)
 
     elseif method == :right
 
         ta = merge(ta2, ta1, :left; padvalue = padvalue)
-        ncol2 = length(ta2.colnames)
+        ncol2 = length(_colnames(ta2))
         vals = [values(ta)[:, (ncol2+1):end] values(ta)[:, 1:ncol2]]
-        ta = TimeArray(timestamp(ta), vals, [ta1.colnames; ta2.colnames], meta; unchecked = true)
+        ta = TimeArray(timestamp(ta), vals, [_colnames(ta1); _colnames(ta2)], meta; unchecked = true)
 
     elseif method == :outer
 
-        ta = if (length(ta1.timestamp) + length(ta2.timestamp)) > typemax(Int32)
+        ta = if (length(timestamp(ta1)) + length(timestamp(ta2))) > typemax(Int32)
             _merge_outer(Int64, ta1, ta2, padvalue, meta)
         else
             _merge_outer(Int32, ta1, ta2, padvalue, meta)

@@ -99,8 +99,8 @@ function insertbyidx!(dst::AbstractArray, src::AbstractArray, dstidx::Vector, sr
     nothing
 end
 
-function setcolnames!(ta::TimeArray, colnames::Vector)
-    length(colnames) == length(colnames(ta)) ? colnames(ta)[:] = colnames :
+function setcolnames!(ta::TimeArray, colnames::Vector{Symbol})
+    length(colnames) == ndims(ta) ? colnames(ta)[:] = colnames :
     length(colnames) > 0 && error("colnames supplied is not correct size")
     return ta
 end  # setcolnames!
