@@ -27,9 +27,9 @@ macro _mapbase(sig::Expr, imp::Expr)
 
     fbody = quote
         if dims == 1
-            TimeArray($dim1ts, $imp, $dim1col, ta.meta)
+            TimeArray($dim1ts, $imp, $dim1col, meta(ta))
         elseif dims == 2
-            TimeArray($dim2ts, $imp, $dim2col, ta.meta)
+            TimeArray($dim2ts, $imp, $dim2col, meta(ta))
         else
             throw(DimensionMismatch("dims should be 1 or 2"))
         end

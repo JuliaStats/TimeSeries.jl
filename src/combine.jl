@@ -119,7 +119,7 @@ function collapse(ta::TimeArray{T, N, D}, period::Function, timestamp::Function,
     collapsed_values = [collapsed_values; T[value(values(ta)[cluster_startrow:end, j]) for j in 1:ncols]']
 
     N == 1 && (collapsed_values = vec(collapsed_values))
-    return TimeArray(collapsed_tstamps, collapsed_values, colnames(ta), ta.meta)
+    return TimeArray(collapsed_tstamps, collapsed_values, colnames(ta), meta(ta))
 
 end
 
@@ -129,7 +129,7 @@ function vcat(TA::TimeArray...)
     # Check all meta fields are identical.
     prev_meta = TA[1].meta
     for ta in TA
-        if ta.meta != prev_meta
+        if meta(ta) != prev_meta
             throw(ArgumentError("metadata doesn't match"))
         end
     end
@@ -171,6 +171,6 @@ end
         end
 
         order = sortperm(ts)
-        TimeArray(ts[order], $output_vals, colnames(ta), ta.meta)
+        TimeArray(ts[order], $output_vals, colnames(ta), meta(ta))
     end
 end

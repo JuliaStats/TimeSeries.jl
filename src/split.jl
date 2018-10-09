@@ -34,7 +34,7 @@ findwhen(ta::TimeArray{Bool,1}) = timestamp(ta)[findall(values(ta))]
 
     quote
         new_timestamp = timestamp(ta)[1:n]
-        TimeArray(new_timestamp, $new_values, colnames(ta), ta.meta)
+        TimeArray(new_timestamp, $new_values, colnames(ta), meta(ta))
     end
 end
 
@@ -44,7 +44,7 @@ end
     quote
         start = length(ta) - n + 1
         new_timestamp = timestamp(ta)[start:end]
-        TimeArray(new_timestamp, $new_values, colnames(ta), ta.meta)
+        TimeArray(new_timestamp, $new_values, colnames(ta), meta(ta))
     end
 end
 
