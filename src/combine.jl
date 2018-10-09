@@ -45,7 +45,7 @@ function merge(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, method::Symbol = :i
 
         ta = merge(ta2, ta1, :left; padvalue = padvalue)
         ncol2 = length(ta2.colnames)
-        vals = [ta.values[:, (ncol2+1):end] ta.values[:, 1:ncol2]]
+        vals = [values(ta)[:, (ncol2+1):end] values(ta)[:, 1:ncol2]]
         ta = TimeArray(timestamp(ta), vals, [ta1.colnames; ta2.colnames], meta; unchecked = true)
 
     elseif method == :outer
@@ -93,7 +93,7 @@ function collapse(ta::TimeArray{T, N, D}, period::Function, timestamp::Function,
 
     ncols = length(ta.colnames)
     collapsed_tstamps = D[]
-    collapsed_values = ta.values[1:0, :]
+    collapsed_values = values(ta)[1:0, :]
 
     tstamp = timestamp(ta)[1]
     mapped_tstamp = period(tstamp)
@@ -106,7 +106,7 @@ function collapse(ta::TimeArray{T, N, D}, period::Function, timestamp::Function,
 
         if mapped_tstamp != next_mapped_tstamp
           push!(collapsed_tstamps, timestamp(timestamp(ta)[cluster_startrow:i]))
-          collapsed_values = [collapsed_values; T[value(ta.values[cluster_startrow:i, j]) for j in 1:ncols]']
+          collapsed_values = [collapsed_values; T[value(values(ta)[cluster_startrow:i, j]) for j in 1:ncols]']
           cluster_startrow = i+1
         end #if
 
@@ -116,7 +116,7 @@ function collapse(ta::TimeArray{T, N, D}, period::Function, timestamp::Function,
     end #for
 
     push!(collapsed_tstamps, timestamp(timestamp(ta)[cluster_startrow:end]))
-    collapsed_values = [collapsed_values; T[value(ta.values[cluster_startrow:end, j]) for j in 1:ncols]']
+    collapsed_values = [collapsed_values; T[value(values(ta)[cluster_startrow:end, j]) for j in 1:ncols]']
 
     N == 1 && (collapsed_values = vec(collapsed_values))
     return TimeArray(collapsed_tstamps, collapsed_values, ta.colnames, ta.meta)
@@ -144,7 +144,7 @@ function vcat(TA::TimeArray...)
 
     # Concatenate the contents.
     timestamps = vcat([timestamp(ta) for ta in TA]...)
-    values = vcat([ta.values for ta in TA]...)
+    values = vcat([values(ta) for ta in TA]...)
 
     order = sortperm(timestamps)
     if length(TA[1].colnames) == 1 # Check for 1D to ensure values remains a 1D vector.
@@ -157,7 +157,7 @@ end
 # map ######################
 
 @generated function map(f, ta::TimeArray{T,N}) where {T,N}
-    input_val  = (N == 1) ? :(ta.values[i]) : :(vec(ta.values[i, :]))
+    input_val  = (N == 1) ? :(values(ta)[i]) : :(vec(values(ta)[i, :]))
     output_val = (N == 1) ? :(vals[i]) : :(vals[i, :])
 
     output_vals = (N == 1) ? :(vals[order]) : :(vals[order, :])

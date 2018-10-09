@@ -10,7 +10,7 @@ function update(ta::TimeArray{T, N, D}, tstamp::D, val::Array{T, N}) where {T, N
         throw(ArgumentError("only appending operations supported"))
     else
         t    = vcat(timestamp(ta), tstamp)
-        vals = vcat(ta.values, val)
+        vals = vcat(values(ta), val)
         uta  = TimeArray(t, vals, ta.colnames, ta.meta)
     end
     uta
@@ -26,7 +26,7 @@ function update(ta::TimeArray{T, N, D}, tstamp::D, val::T) where {T, N, D}
         throw(ArgumentError("only appending operations supported"))
     else
         t    = vcat(timestamp(ta), tstamp)
-        vals = vcat(ta.values, val)
+        vals = vcat(values(ta), val)
         uta  = TimeArray(t, vals, ta.colnames, ta.meta)
     end
     uta
@@ -37,7 +37,7 @@ end
 # TODO: apply `unchecked`
 
 rename(ta::TimeArray, colnames::Vector{Symbol}) =
-    TimeArray(timestamp(ta), ta.values, colnames, ta.meta)
+    TimeArray(timestamp(ta), values(ta), colnames, ta.meta)
 
 rename(ta::TimeArray, colnames::Symbol) =
-    TimeArray(timestamp(ta), ta.values, [colnames], ta.meta)
+    TimeArray(timestamp(ta), values(ta), [colnames], ta.meta)

@@ -21,16 +21,16 @@ to(ta::TimeArray{T, N, D}, d::D) where {T, N, D} =
 
 ###### findall ##################
 
-Base.findall(ta::TimeArray{Bool,1}) = findall(ta.values)
+Base.findall(ta::TimeArray{Bool,1}) = findall(values(ta))
 
 ###### findwhen #################
 
-findwhen(ta::TimeArray{Bool,1}) = timestamp(ta)[findall(ta.values)]
+findwhen(ta::TimeArray{Bool,1}) = timestamp(ta)[findall(values(ta))]
 
 ###### head, tail ###########
 
 @generated function head(ta::TimeArray{T,N}, n::Int=6) where {T,N}
-    new_values = (N == 1) ? :(ta.values[1:n]) : :(ta.values[1:n, :])
+    new_values = (N == 1) ? :(values(ta)[1:n]) : :(values(ta)[1:n, :])
 
     quote
         new_timestamp = timestamp(ta)[1:n]
@@ -39,7 +39,7 @@ findwhen(ta::TimeArray{Bool,1}) = timestamp(ta)[findall(ta.values)]
 end
 
  @generated function tail(ta::TimeArray{T,N}, n::Int=6) where {T,N}
-    new_values = (N == 1) ? :(ta.values[start:end]) : :(ta.values[start:end, :])
+    new_values = (N == 1) ? :(values(ta)[start:end]) : :(values(ta)[start:end, :])
 
     quote
         start = length(ta) - n + 1

@@ -16,10 +16,10 @@ function lag(ta::TimeArray{T, N}, n::Int=1;
 
     # TODO: apply `unchecked`
     if padding
-        paddedvals = [NaN * ones(n,size(ta, 2)); ta.values[1:end-n, :]]
+        paddedvals = [NaN * ones(n,size(ta, 2)); values(ta)[1:end-n, :]]
         ta = TimeArray(timestamp(ta), paddedvals, ta.colnames, ta.meta)
     else
-        ta = TimeArray(timestamp(ta)[1+n:end], ta.values[1:end-n, :], ta.colnames, ta.meta)
+        ta = TimeArray(timestamp(ta)[1+n:end], values(ta)[1:end-n, :], ta.colnames, ta.meta)
     end
 
     N == 1 && (ta = ta[ta.colnames[1]])
@@ -36,10 +36,10 @@ function lead(ta::TimeArray{T, N}, n::Int=1;
     end
 
     if padding
-        paddedvals = [ta.values[1+n:end, :]; NaN*ones(n, length(ta.colnames))]
+        paddedvals = [values(ta)[1+n:end, :]; NaN*ones(n, length(ta.colnames))]
         ta = TimeArray(timestamp(ta), paddedvals, ta.colnames, ta.meta)
     else
-        ta = TimeArray(timestamp(ta)[1:end-n], ta.values[1+n:end, :], ta.colnames, ta.meta)
+        ta = TimeArray(timestamp(ta)[1:end-n], values(ta)[1+n:end, :], ta.colnames, ta.meta)
     end
 
     N == 1 && (ta = ta[ta.colnames[1]])
@@ -83,9 +83,9 @@ end  # percentchange
 function moving(f, ta::TimeArray{T, 1}, window::Int;
                 padding::Bool = false) where {T}
     tstamps = padding ? timestamp(ta) : timestamp(ta)[window:end]
-    vals    = zero(ta.values[window:end])
+    vals    = zero(values(ta)[window:end])
     for i=1:length(vals)
-        vals[i] = f(ta.values[i:i+(window-1)])
+        vals[i] = f(values(ta)[i:i+(window-1)])
     end
     padding && (vals = [NaN*ones(window-1); vals])
     TimeArray(tstamps, vals, ta.colnames, ta.meta)
@@ -94,28 +94,28 @@ end
 function moving(f, ta::TimeArray{T, 2}, window::Int;
                 padding::Bool = false) where {T}
     tstamps = padding ? timestamp(ta) : timestamp(ta)[window:end]
-    vals    = zero(ta.values[window:end, :])
+    vals    = zero(values(ta)[window:end, :])
     for i=1:size(vals, 1), j=1:size(vals, 2)
-        vals[i, j] = f(ta.values[i:i+(window-1), j])
+        vals[i, j] = f(values(ta)[i:i+(window-1), j])
     end
-    padding && (vals = [NaN*fill(1, size(ta.values[1:(window-1), :])); vals])
+    padding && (vals = [NaN*fill(1, size(values(ta)[1:(window-1), :])); vals])
     TimeArray(tstamps, vals, ta.colnames, ta.meta)
 end
 
 ###### upto #####################
 
 function upto(f, ta::TimeArray{T, 1}) where {T}
-    vals = zero(ta.values)
+    vals = zero(values(ta))
     for i=1:length(vals)
-        vals[i] = f(ta.values[1:i])
+        vals[i] = f(values(ta)[1:i])
     end
     TimeArray(timestamp(ta), vals, ta.colnames, ta.meta)
 end
 
 function upto(f, ta::TimeArray{T, 2}) where {T}
-    vals = zero(ta.values)
+    vals = zero(values(ta))
     for i=1:size(vals, 1), j=1:size(vals, 2)
-        vals[i, j] = f(ta.values[1:i, j])
+        vals[i, j] = f(values(ta)[1:i, j])
     end
     TimeArray(timestamp(ta), vals, ta.colnames, ta.meta)
 end
@@ -123,7 +123,7 @@ end
 ###### basecall #################
 
 basecall(ta::TimeArray, f::Function; cnames=ta.colnames) =
-    TimeArray(timestamp(ta), f(ta.values), cnames, ta.meta)
+    TimeArray(timestamp(ta), f(values(ta)), cnames, ta.meta)
 
 ###### uniform observations #####
 
