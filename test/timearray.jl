@@ -23,101 +23,101 @@ end
 
 @testset "type constructors allow views" begin
     source_rows = 101:121
-    source_cols = 1:size(AAPL.values, 2)
-    tstamps = view(AAPL.timestamp, source_rows)
-    tvalues = view(AAPL.values, source_rows, source_cols)
+    source_cols = 1:size(values(AAPL), 2)
+    tstamps = view(timestamp(AAPL), source_rows)
+    tvalues = view(values(AAPL), source_rows, source_cols)
 
-    AAPL1 = TimeArray(AAPL.timestamp[source_rows],
-                      AAPL.values[source_rows, source_cols],
-                      AAPL.colnames, AAPL.meta)
+    AAPL1 = TimeArray(timestamp(AAPL)[source_rows],
+                      values(AAPL)[source_rows, source_cols],
+                      colnames(AAPL), meta(AAPL))
 
-    AAPL2 = TimeArray(tstamps, tvalues, AAPL.colnames, AAPL.meta)
+    AAPL2 = TimeArray(tstamps, tvalues, colnames(AAPL), meta(AAPL))
 
     @testset "match first date" begin
-        @test AAPL1[1].timestamp == AAPL2[1].timestamp
+        @test timestamp(AAPL1)[1] == timestamp(AAPL2)[1]
     end
 
     @testset "match first values" begin
-        @test AAPL1[1].values == AAPL2[1].values
+        @test values(AAPL1)[1] == values(AAPL2)[1]
     end
 
     @testset "match all values" begin
-        @test AAPL1.values == AAPL2.values
+        @test values(AAPL1) == values(AAPL2)
     end
 end
 
 
 @testset "type constructors enforce invariants" begin
-    mangled_stamp = vcat(cl.timestamp[200:end], cl.timestamp[1:199])
-    dupe_stamp    = vcat(cl.timestamp[1:499], cl.timestamp[499])
+    mangled_stamp = vcat(timestamp(cl)[200:end], timestamp(cl)[1:199])
+    dupe_stamp    = vcat(timestamp(cl)[1:499], timestamp(cl)[499])
 
     @testset "unequal length between values and timestamp fails" begin
         @test_throws(
             DimensionMismatch,
-            TimeArray(cl.timestamp, cl.values[2:end], [:Close]))
+            TimeArray(timestamp(cl), values(cl)[2:end], [:Close]))
     end
 
     @testset "unequal length between colnames and array width fails" begin
         @test_throws(
             DimensionMismatch,
-            TimeArray(cl.timestamp, cl.values, [:Close, :Open]))
+            TimeArray(timestamp(cl), values(cl), [:Close, :Open]))
     end
 
     @testset "duplicate timestamp values fails" begin
         @test_throws(
             ArgumentError,
-            TimeArray(dupe_stamp, cl.values, [:Close]))
+            TimeArray(dupe_stamp, values(cl), [:Close]))
     end
 
     @testset "mangled order of timestamp values fails" begin
         @test_throws(
             ArgumentError,
-            TimeArray(mangled_stamp, cl.values, [:Close]))
+            TimeArray(mangled_stamp, values(cl), [:Close]))
     end
 
     @testset "reverse occurs when needed" begin
-        rev_timestamp = reverse(cl.timestamp, dims = 1)
-        rev_values = reverse(cl.values, dims = 1)
+        rev_timestamp = reverse(timestamp(cl), dims = 1)
+        rev_values = reverse(values(cl), dims = 1)
         ta = TimeArray(rev_timestamp, rev_values, [:Close])
-        @test ta.timestamp[1] == Date(2000,1,3)
-        @test ta.values[1]    == 111.94
+        @test timestamp(ta)[1] == Date(2000,1,3)
+        @test values(ta)[1]    == 111.94
     end
 
     @testset "duplicate column names are enumerated by inner constructor" begin
         cols = [:a, :b, :c, :a, :a, :b, :d, :e, :e, :e, :e, :f]
         ta = TimeArray(timestamp(AAPL), values(AAPL), cols)
-        @test ta.colnames[1]  == :a
-        @test ta.colnames[2]  == :b
-        @test ta.colnames[3]  == :c
-        @test ta.colnames[4]  == :a_1
-        @test ta.colnames[5]  == :a_2
-        @test ta.colnames[6]  == :b_1
-        @test ta.colnames[7]  == :d
-        @test ta.colnames[8]  == :e
-        @test ta.colnames[9]  == :e_1
-        @test ta.colnames[10] == :e_2
-        @test ta.colnames[11] == :e_3
-        @test ta.colnames[12] == :f
+        @test colnames(ta)[1]  == :a
+        @test colnames(ta)[2]  == :b
+        @test colnames(ta)[3]  == :c
+        @test colnames(ta)[4]  == :a_1
+        @test colnames(ta)[5]  == :a_2
+        @test colnames(ta)[6]  == :b_1
+        @test colnames(ta)[7]  == :d
+        @test colnames(ta)[8]  == :e
+        @test colnames(ta)[9]  == :e_1
+        @test colnames(ta)[10] == :e_2
+        @test colnames(ta)[11] == :e_3
+        @test colnames(ta)[12] == :f
     end
 
     @testset "and doesn't when unchecked" begin
         let
-            ta = TimeArray(mangled_stamp, cl.values; unchecked = true)
+            ta = TimeArray(mangled_stamp, values(cl); unchecked = true)
             @test values(ta)    === values(cl)
             @test timestamp(ta) === mangled_stamp
         end
 
         let
-            ta = TimeArray(dupe_stamp, cl.values; unchecked = true)
+            ta = TimeArray(dupe_stamp, values(cl); unchecked = true)
             @test timestamp(ta) === dupe_stamp
         end
     end
 end
 
 @testset "construction without colnames" begin
-    one   = TimeArray(cl.timestamp, cl.values)
-    multi = TimeArray(AAPL.timestamp, AAPL.values)
-    more  = TimeArray(cl.timestamp[1], collect(1:50)')
+    one   = TimeArray(timestamp(cl), values(cl))
+    multi = TimeArray(timestamp(AAPL), values(AAPL))
+    more  = TimeArray(timestamp(cl)[1], collect(1:50)')
 
     @testset "default colnames" begin
         @test colnames(one)   == [:A]
@@ -151,10 +151,10 @@ end
 
 @testset "conversion methods" begin
     @testset "convert works " begin
-        @test isa(convert(TimeArray{Float64,1}, (cl.>op)), TimeArray{Float64,1})                == true
-        @test isa(convert(TimeArray{Float64,2}, (merge(cl.<op, cl.>op))), TimeArray{Float64,2}) == true
-        @test isa(convert(cl.>op), TimeArray{Float64,1})                                        == true
-        @test isa(convert(merge(cl.<op, cl.>op)), TimeArray{Float64,2})                         == true
+        @test convert(TimeArray{Float64,1}, (cl.>op))                isa TimeArray{Float64,1}
+        @test convert(TimeArray{Float64,2}, (merge(cl.<op, cl.>op))) isa TimeArray{Float64,2}
+        @test convert(cl.>op)                                        isa TimeArray{Float64,1}
+        @test convert(merge(cl.<op, cl.>op))                         isa TimeArray{Float64,2}
     end
 end
 
@@ -163,31 +163,33 @@ end
     cohlc = copy(ohlc)
 
     @testset "copy works" begin
-        @test cop.timestamp == op.timestamp
-        @test cop.values    == op.values
-        @test cop.colnames  == op.colnames
-        @test cop.meta      == op.meta
+        @test timestamp(cop) == timestamp(op)
+        @test values(cop)    == values(op)
+        @test colnames(cop)  == colnames(op)
+        @test meta(cop)      == meta(op)
 
-        @test cohlc.timestamp == ohlc.timestamp
-        @test cohlc.values    == ohlc.values
-        @test cohlc.colnames  == ohlc.colnames
-        @test cohlc.meta      == ohlc.meta
+        @test timestamp(cohlc) == timestamp(ohlc)
+        @test values(cohlc)    == values(ohlc)
+        @test colnames(cohlc)  == colnames(ohlc)
+        @test meta(cohlc)      == meta(ohlc)
     end
 end
 
 @testset "index by integer works with both 1d and 2d time array" begin
     @testset "1d time array" begin
-        @test cl[1].timestamp == [Date(2000,1,3)]
-        @test cl[1].values    == [111.94]
-        @test cl[1].colnames  == [:Close]
-        @test cl[1].meta      == "AAPL"
+        ta = cl[1]
+        @test timestamp(ta) == [Date(2000,1,3)]
+        @test values(ta)    == [111.94]
+        @test colnames(ta)  == [:Close]
+        @test meta(ta)      == "AAPL"
     end
 
     @testset "2d time array" begin
-        @test ohlc[1].timestamp == [Date(2000,1,3)]
-        @test ohlc[1].values    == [104.88 112.5 101.69 111.94]
-        @test ohlc[1].colnames  == [:Open, :High, :Low, :Close]
-        @test ohlc[1].meta      == "AAPL"
+        ta = ohlc[1]
+        @test timestamp(ta) == [Date(2000,1,3)]
+        @test values(ta)    == [104.88 112.5 101.69 111.94]
+        @test colnames(ta)  == [:Open, :High, :Low, :Close]
+        @test meta(ta)      == "AAPL"
     end
 end
 
@@ -214,26 +216,26 @@ end
     end
 
     @testset "end keyword returns correct index" begin
-        @test ohlc[end].timestamp[1] == ohlc.timestamp[end]
+        @test timestamp(ohlc[end])[1] == timestamp(ohlc)[end]
     end
 
     @testset "getindex on single Int and Date" begin
-        @test ohlc[1].timestamp              == [Date(2000,1,3)]
-        @test ohlc[Date(2000,1,3)].timestamp == [Date(2000,1,3)]
+        @test timestamp(ohlc[1])              == [Date(2000,1,3)]
+        @test timestamp(ohlc[Date(2000,1,3)]) == [Date(2000,1,3)]
     end
 
     @testset "getindex on array of Int and Date" begin
-        @test ohlc[[1,10]].timestamp                           == [Date(2000,1,3), Date(2000,1,14)]
-        @test ohlc[[Date(2000,1,3),Date(2000,1,14)]].timestamp == [Date(2000,1,3), Date(2000,1,14)]
+        @test timestamp(ohlc[[1,10]])                           == [Date(2000,1,3), Date(2000,1,14)]
+        @test timestamp(ohlc[[Date(2000,1,3),Date(2000,1,14)]]) == [Date(2000,1,3), Date(2000,1,14)]
     end
 
     @testset "getindex on range of Int and Date" begin
         irng = Int8(1):Int8(2):Int8(4)
         drng = Date(2000,1,3):Day(1):Date(2000,1,4)
-        @test ohlc[1:2].timestamp   == [Date(2000,1,3), Date(2000,1,4)]
-        @test ohlc[1:2:4].timestamp == [Date(2000,1,3), Date(2000,1,5)]
-        @test ohlc[irng].timestamp  == [Date(2000,1,3), Date(2000,1,5)]
-        @test ohlc[drng].timestamp  == [Date(2000,1,3), Date(2000,1,4)]
+        @test timestamp(ohlc[1:2])   == [Date(2000,1,3), Date(2000,1,4)]
+        @test timestamp(ohlc[1:2:4]) == [Date(2000,1,3), Date(2000,1,5)]
+        @test timestamp(ohlc[irng])  == [Date(2000,1,3), Date(2000,1,5)]
+        @test timestamp(ohlc[drng])  == [Date(2000,1,3), Date(2000,1,4)]
     end
 
     @testset "getindex on range of DateTime when only Date is in timestamp" begin
@@ -254,31 +256,31 @@ end
 
     @testset "getindex on single column name" begin
         idx = Date(2000,1,3):Day(1):Date(2000,1,14)
-        @test size(ohlc[:Open].values, 2)      == 1
-        @test size(ohlc[:Open][idx].values, 1) == 10
+        @test size(values(ohlc[:Open]), 2)      == 1
+        @test size(values(ohlc[:Open][idx]), 1) == 10
     end
 
     @testset "getindex on multiple column name" begin
-        @test ohlc[:Open, :Close].values[1]   == 104.88
-        @test ohlc[:Open, :Close].values[2]   == 108.25
-        @test ohlc[:Open, :Close].values[501] == 111.94
+        @test values(ohlc[:Open, :Close])[1]   == 104.88
+        @test values(ohlc[:Open, :Close])[2]   == 108.25
+        @test values(ohlc[:Open, :Close])[501] == 111.94
     end
 
     @testset "getindex on 1d returns 1d object" begin
-        @test isa(cl[1], TimeArray{Float64,1})   == true
-        @test isa(cl[1:2], TimeArray{Float64,1}) == true
+        @test cl[1]   isa TimeArray{Float64,1}
+        @test cl[1:2] isa TimeArray{Float64,1}
     end
 
     @testset "getindex on a 1d Boolean TimeArray returns appropriate rows" begin
-        @test ohlc[op .> cl][2].values             == ohlc[4].values
-        @test ohlc[op[300:end] .> cl][2].timestamp == ohlc[303].timestamp
+        @test values(ohlc[op .> cl][2])             == values(ohlc[4])
+        @test timestamp(ohlc[op[300:end] .> cl][2]) == timestamp(ohlc[303])
         # MethodError, Bool must be 1D-TimeArray
-        @test_throws MethodError ohlc[merge(op.>cl, op.<cl)]
+        @test_throws MethodError ohlc[merge(op .> cl, op .< cl)]
     end
 
     @testset "Base.eachindex" begin
-        @test collect(eachindex(cl))   == collect(1:length(cl))
-        @test collect(eachindex(ohlc)) == collect(1:length(ohlc))
+        @test eachindex(cl)   == 1:length(cl)
+        @test eachindex(ohlc) == 1:length(ohlc)
     end
 end
 
@@ -316,11 +318,11 @@ end
 
 
 @testset "Base.size" begin
-    @test size(ohlc) == (500, 4)
+    @test size(ohlc)    == (500, 4)
     @test size(ohlc, 1) == 500
     @test size(ohlc, 2) == 4
 
-    @test size(cl) == (500,)
+    @test size(cl)    == (500,)
     @test size(cl, 1) == 500
     @test size(cl, 2) == 1
 end
@@ -331,7 +333,7 @@ end
     @test cl ≠ ohlc  # rely on fallback definition
     @test cl ≠ lag(cl)
 
-    @test isequal(cl, copy(cl))
+    @test  isequal(cl, copy(cl))
     @test !isequal(cl, ohlc)
     @test !isequal(cl, lag(cl))
 
