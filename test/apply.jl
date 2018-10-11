@@ -12,155 +12,176 @@ using TimeSeries
 
 @testset "time series methods" begin
     @testset "lag takes previous day and timestamps it to next day" begin
-        @test lag(cl).values[1] ≈ 111.94 atol=.01
-        @test lag(cl).timestamp[1] == Date(2000,1,4)
+        ta = lag(cl)
+        @test values(ta)[1] ≈ 111.94 atol=.01
+        @test timestamp(ta)[1] == Date(2000, 1, 4)
     end
 
     @testset "lag accepts other offset values" begin
-        @test lag(cl, 9).timestamp[1] == Date(2000,1,14)
+        ta = lag(cl, 9)
+        @test timestamp(ta)[1] == Date(2000, 1, 14)
     end
 
     @testset "lag operates on 2d arrays" begin
-        @test lag(ohlc, 9).timestamp[1] == Date(2000,1,14)
+        ta = lag(ohlc, 9)
+        @test timestamp(ta)[1] == Date(2000, 1, 14)
     end
 
     @testset "lag returns 1d from 1d time arrays" begin
-        @test ndims(lag(cl).values) == 1
+        @test ndims(values(lag(cl))) == 1
     end
 
     @testset "lag returns 2d from 2d time arrays" begin
-        @test ndims(lag(ohlc).values) == 2
+        @test ndims(values(lag(ohlc))) == 2
     end
 
     @testset "lead takes next day and timestamps it to current day" begin
-        @test lead(cl).values[1] ≈ 102.5 atol=.1
-        @test lead(cl).timestamp[1] == Date(2000,1,3)
+        ta = lead(cl)
+        @test values(ta)[1] ≈ 102.5 atol=.1
+        @test timestamp(ta)[1] == Date(2000,1,3)
     end
 
     @testset "lead accepts other offset values" begin
-        @test lead(cl, 9).values[1]    == 100.44
-        @test lead(cl, 9).timestamp[1] == Date(2000,1,3)
+        ta = lead(cl, 9)
+        @test values(ta)[1] ≈ 100.44 atol=.1
+        @test timestamp(ta)[1] == Date(2000,1,3)
     end
 
     @testset "lead operates on 2d arrays" begin
-        @test lead(ohlc, 9).timestamp[1] == Date(2000,1,3)
+        @test timestamp(lead(ohlc, 9))[1] == Date(2000,1,3)
     end
 
     @testset "lead returns 1d from 1d time arrays" begin
-        @test ndims(lead(cl).values) == 1
+        @test ndims(values(lead(cl))) == 1
     end
 
     @testset "lead returns 2d from 2d time arrays" begin
-        @test ndims(lead(ohlc).values) == 2
+        @test ndims(values(lead(ohlc))) == 2
     end
 
     @testset "diff calculates 1st-order differences" begin
-        @test diff(op).timestamp                              == diff(op, padding=false).timestamp
-        @test diff(op).values                                 == diff(op, padding=false).values
-        @test diff(op, padding=false).values[1]               == op[2].values[1] .- op[1].values[1]
-        @test isequal(diff(op, padding=true).values[1], NaN)  == true
-        @test diff(op, padding=true).values[2]                == diff(op).values[1]
-        @test diff(op, padding=true).values[2]                == op[2].values[1] .- op[1].values[1]
+        @test timestamp(diff(op))                 == timestamp(diff(op, padding=false))
+        @test values(diff(op))                    == values(diff(op, padding=false))
+        @test values(diff(op, padding=false))[1]  == values(op[2])[1] .- values(op[1])[1]
+        @test values(diff(op, padding=true))[1]    ≡ NaN
+        @test values(diff(op, padding=true))[2]   == values(diff(op))[1]
+        @test values(diff(op, padding=true))[2]   == values(op[2])[1] .- values(op[1])[1]
     end
 
     @testset "diff calculates 1st-order differences for multi-column ts" begin
-        @test diff(ohlc).timestamp                                     == diff(ohlc, padding=false).timestamp
-        @test diff(ohlc).values                                        == diff(ohlc, padding=false).values
-        @test diff(ohlc, padding=false).values[1,:]                    == ohlc.values[2,:] .- ohlc.values[1,:]
-        @test all(x -> isnan(x), diff(ohlc, padding=true).values[1,:]) == true
-        @test diff(ohlc, padding=true).values[2,:]                     == diff(ohlc).values[1,:]
-        @test diff(ohlc, padding=true).values[2,:]                     == ohlc.values[2,:] .- ohlc.values[1,:]
+        @test timestamp(diff(ohlc))                   == timestamp(diff(ohlc, padding=false))
+        @test values(diff(ohlc))                      == values(diff(ohlc, padding=false))
+        @test values(diff(ohlc, padding=false))[1,:]  == values(ohlc)[2, :] .- values(ohlc)[1, :]
+        @test values(diff(ohlc, padding=true))[2,:]   == values(diff(ohlc))[1, :]
+        @test values(diff(ohlc, padding=true))[2,:]   == values(ohlc)[2, :] .- values(ohlc)[1, :]
+        @test all(x -> isnan(x), values(diff(ohlc, padding=true))[1, :])
     end
 
     @testset "diff calculates 2nd-order differences" begin
-        @test diff(op, differences=2).timestamp               == diff(op, padding=false, differences=2).timestamp
-        @test diff(op, differences=2).values                  == diff(op, padding=false, differences=2).values
-        @test diff(diff(op)).timestamp                        == diff(op, padding=false, differences=2).timestamp
-        @test diff(diff(op)).values                           == diff(op, padding=false, differences=2).values
-        @test diff(op, padding=true, differences=2).values[3] == diff(op, differences=2).values[1]
-        @test isequal(diff(op, padding=true, differences=2).values[2], NaN)  == true
-        @test isequal(diff(op, padding=true, differences=2).values[1], NaN)  == true
+        @test timestamp(diff(op, differences=2))                  == timestamp(diff(op, padding=false, differences=2))
+        @test timestamp(diff(diff(op)))                           == timestamp(diff(op, padding=false, differences=2))
+
+        @test values(diff(op, differences=2))                     == values(diff(op, padding=false, differences=2))
+        @test values(diff(diff(op)))                              == values(diff(op, padding=false, differences=2))
+
+        @test values(diff(op, padding=true, differences=2))[3]    == values(diff(op, differences=2))[1]
+        @test values(diff(op, padding=true, differences=2)[2])[1]  ≡ NaN
+        @test values(diff(op, padding=true, differences=2)[1])[1]  ≡ NaN
     end
 
     @testset "diff calculates 2nd-order differences for multi-column ts" begin
-        @test diff(ohlc, differences=2).timestamp                 == diff(ohlc, padding=false, differences=2).timestamp
-        @test diff(ohlc, differences=2).values                    == diff(ohlc, padding=false, differences=2).values
-        @test diff(diff(ohlc)).timestamp                          == diff(ohlc, padding=false, differences=2).timestamp
-        @test diff(diff(ohlc)).values                             == diff(ohlc, padding=false, differences=2).values
-        @test diff(ohlc, padding=true, differences=2).values[3,:] == diff(ohlc, differences=2).values[1,:]
-        @test all(x -> isnan(x), diff(ohlc, padding=true, differences=2).values[2,:]) == true
-        @test all(x -> isnan(x), diff(ohlc, padding=true, differences=2).values[1,:]) == true
+        @test timestamp(diff(ohlc, differences=2))                  == timestamp(diff(ohlc, padding=false, differences=2))
+        @test timestamp(diff(diff(ohlc)))                           == timestamp(diff(ohlc, padding=false, differences=2))
+
+        @test values(diff(ohlc, differences=2))                     == values(diff(ohlc, padding=false, differences=2))
+        @test values(diff(diff(ohlc)))                              == values(diff(ohlc, padding=false, differences=2))
+        @test values(diff(ohlc, padding=true, differences=2))[3, :] == values(diff(ohlc, differences=2))[1, :]
+
+        @test all(x -> isnan(x), values(diff(ohlc, padding=true, differences=2))[2,:])
+        @test all(x -> isnan(x), values(diff(ohlc, padding=true, differences=2))[1,:])
     end
 
     @testset "diff calculates 3rd-order differences" begin
-        @test diff(op, differences=3).timestamp               == diff(op, padding=false, differences=3).timestamp
-        @test diff(op, differences=3).values                  == diff(op, padding=false, differences=3).values
-        @test diff(diff(diff(op))).timestamp                  == diff(op, padding=false, differences=3).timestamp
-        @test diff(diff(diff(op))).values                     == diff(op, padding=false, differences=3).values
-        @test diff(op, padding=true, differences=3).values[4] == diff(op, differences=3).values[1]
-        @test isequal(diff(op, padding=true, differences=3).values[3], NaN)  == true
-        @test isequal(diff(op, padding=true, differences=3).values[2], NaN)  == true
-        @test isequal(diff(op, padding=true, differences=3).values[1], NaN)  == true
+        @test diff(op, differences=3) |> timestamp               == diff(op, padding=false, differences=3) |> timestamp
+        @test diff(op, differences=3) |> values                  == diff(op, padding=false, differences=3) |> values
+        @test diff(diff(diff(op))) |> timestamp                  == diff(op, padding=false, differences=3) |> timestamp
+        @test diff(diff(diff(op))) |> values                     == diff(op, padding=false, differences=3) |> values
+        @test values(diff(op, padding=true, differences=3))[4]   == values(diff(op, differences=3))[1]
+        @test values(diff(op, padding=true, differences=3))[3]    ≡ NaN
+        @test values(diff(op, padding=true, differences=3))[2]    ≡ NaN
+        @test values(diff(op, padding=true, differences=3))[1]    ≡ NaN
     end
 
     @testset "diff calculates 3rd-order differences for multi-column ts" begin
-        @test diff(ohlc, differences=3).timestamp                 == diff(ohlc, padding=false, differences=3).timestamp
-        @test diff(ohlc, differences=3).values                    == diff(ohlc, padding=false, differences=3).values
-        @test diff(diff(diff(ohlc))).timestamp                    == diff(ohlc, padding=false, differences=3).timestamp
-        @test diff(diff(diff(ohlc))).values                       == diff(ohlc, padding=false, differences=3).values
-        @test diff(ohlc, padding=true, differences=3).values[4,:] == diff(ohlc, differences=3).values[1,:]
-        @test all(x -> isnan(x), diff(ohlc, padding=true, differences=3).values[3,:]) == true
-        @test all(x -> isnan(x), diff(ohlc, padding=true, differences=3).values[2,:]) == true
-        @test all(x -> isnan(x), diff(ohlc, padding=true, differences=3).values[1,:]) == true
+        @test diff(ohlc, differences=3) |> timestamp                 == diff(ohlc, padding=false, differences=3) |> timestamp
+        @test diff(ohlc, differences=3) |> values                    == diff(ohlc, padding=false, differences=3) |> values
+        @test diff(diff(diff(ohlc))) |> timestamp                    == diff(ohlc, padding=false, differences=3) |> timestamp
+        @test diff(diff(diff(ohlc))) |> values                       == diff(ohlc, padding=false, differences=3) |> values
+        @test values(diff(ohlc, padding=true, differences=3))[4, :]  == values(diff(ohlc, differences=3))[1, :]
+        @test all(x -> isnan(x), values(diff(ohlc, padding=true, differences=3))[3,:])
+        @test all(x -> isnan(x), values(diff(ohlc, padding=true, differences=3))[2,:])
+        @test all(x -> isnan(x), values(diff(ohlc, padding=true, differences=3))[1,:])
     end
 
     @testset "diff n lag" begin
         let ta = diff(cl, 5)
             ans = cl .- lag(cl, 5)
 
-            @test ta.values == ans.values
-            @test ta.timestamp == ans.timestamp
+            @test values(ta)    == values(ans)
+            @test timestamp(ta) == timestamp(ans)
         end
 
         let ta = diff(ohlc, 5)
             ans = ohlc .- lag(ohlc, 5)
 
-            @test ta.values == ans.values
-            @test ta.timestamp == ans.timestamp
+            @test values(ta)    == values(ans)
+            @test timestamp(ta) == timestamp(ans)
         end
     end  # @testset "diff n lag"
 
     @testset "simple return value" begin
-        @test percentchange(cl, :simple).values == percentchange(cl).values
-        @test percentchange(cl).values          == percentchange(cl, padding=false).values
-        @test isapprox(percentchange(cl).values[1]                   , (102.5-111.94)/111.94, atol=.01)
-        @test isapprox(percentchange(ohlc).values[1, :]              , (ohlc.values[2,:] - ohlc.values[1,:]) ./ ohlc.values[1,:])
-        @test isnan.(percentchange(cl, padding=true).values[1])
-        @test isapprox(percentchange(cl, padding=true).values[2]     , (102.5-111.94)/111.94, atol=.01)
-        @test isapprox(percentchange(ohlc, padding=true).values[2, :], (ohlc.values[2,:] - ohlc.values[1,:]) ./ ohlc.values[1,:])
+        @test values(percentchange(cl, :simple)) == values(percentchange(cl))
+        @test values(percentchange(cl))          == values(percentchange(cl, padding=false))
+        @test values(percentchange(cl))[1]        ≈ (102.5 - 111.94) / 111.94 atol=.01
+        @test values(percentchange(ohlc))[1, :]   ≈ (values(ohlc)[2, :] - values(ohlc)[1, :]) ./ values(ohlc)[1, :]
+        @test isnan.(values(percentchange(cl, padding=true))[1])
+        @test values(percentchange(cl, padding=true))[2]      ≈ (102.5 - 111.94) / 111.94 atol=.01
+        @test values(percentchange(ohlc, padding=true))[2, :] ≈ (values(ohlc)[2,:] - values(ohlc)[1,:]) ./ values(ohlc)[1,:]
     end
 
     @testset "log return value" begin
-        @test percentchange(cl, :log).values == percentchange(cl, :log, padding=false).values
-        @test isapprox(percentchange(cl, :log).values[1]                   , log(102.5) - log(111.94), atol=.01)
-        @test isapprox(percentchange(ohlc, :log).values[1, :]              , log.(ohlc.values[2,:]) .- log.(ohlc.values[1,:]), atol=.01)
-        @test isnan.(percentchange(cl, :log, padding=true).values[1])
-        @test isapprox(percentchange(cl, :log, padding=true).values[2]     , log(102.5) - log(111.94))
-        @test isapprox(percentchange(ohlc, :log, padding=true).values[2, :], log.(ohlc.values[2,:]) .- log.(ohlc.values[1,:]))
+        @test values(percentchange(cl, :log)) == values(percentchange(cl, :log, padding=false))
+        @test values(percentchange(cl, :log))[1]       ≈ log(102.5) - log(111.94) atol=.01
+        @test values(percentchange(ohlc, :log))[1, :]  ≈ log.(values(ohlc)[2,:]) .- log.(values(ohlc)[1,:]) atol=.01
+        @test isnan.(values(percentchange(cl, :log, padding=true))[1])
+        @test values(percentchange(cl, :log, padding=true))[2]      ≈ log(102.5) - log(111.94)
+        @test values(percentchange(ohlc, :log, padding=true))[2, :] ≈ log.(values(ohlc)[2,:]) .- log.(values(ohlc)[1,:])
     end
 
     @testset "moving supplies correct window length" begin
-        @test moving(mean, cl, 10).values                                == moving(mean, cl, 10, padding=false).values
-        @test moving(mean, cl, 10).timestamp[1]                          == Date(2000,1,14)
-        @test isapprox(moving(mean, cl, 10).values[1], mean(cl.values[1:10]))
-        @test moving(mean, cl, 10, padding=true).timestamp[1]            == Date(2000,1, 3)
-        @test moving(mean, cl, 10, padding=true).timestamp[10]           == Date(2000,1,14)
-        @test isequal(moving(mean, cl, 10, padding=true).values[1], NaN) == true
-        @test moving(mean, cl, 10, padding=true).values[10]              == moving(mean, cl, 10).values[1]
-        @test moving(mean, ohlc, 10).values                              == moving(mean, ohlc, 10, padding=false).values
-        @test isapprox(moving(mean, ohlc, 10).values[1, :]', mean(ohlc.values[1:10, :], dims = 1))
-        @test isequal(moving(mean, ohlc, 10, padding=true).values[1, :], [NaN, NaN, NaN, NaN]) == true
-        @test moving(mean, ohlc, 10, padding=true).values[10, :]         == moving(mean, ohlc, 10).values[1, :]
+        let
+            ta = moving(mean, cl, 10)
+            @test values(ta)       == values(moving(mean, cl, 10, padding=false))
+            @test timestamp(ta)[1] == Date(2000, 1, 14)
+            @test values(ta)[1]     ≈ mean(values(cl)[1:10])
+        end
+        let
+            ta = moving(mean, cl, 10, padding = true)
+            @test timestamp(ta)   == timestamp(cl)
+            @test values(ta)[1]   ≡ NaN
+            @test values(ta)[10] == values(moving(mean, cl, 10))[1]
+        end
+
+        let
+            ta = moving(mean, ohlc, 10)
+            @test values(ta)        == values(moving(mean, ohlc, 10, padding=false))
+            @test values(ta)[1, :]'  ≈ mean(values(ohlc)[1:10, :], dims = 1)
+        end
+        let
+            ta = moving(mean, ohlc, 10, padding = true)
+            @test all(isnan, values(ta)[1, :])
+            @test values(ta)[10, :] == values(moving(mean, ohlc, 10))[1, :]
+        end
 
         @testset "moving with do syntax" begin
             moving(cl, 10) do x
@@ -176,22 +197,22 @@ using TimeSeries
     end
 
     @testset "upto method accumulates" begin
-        @test upto(sum, cl).values[10]  ≈ sum(cl.values[1:10])
-        @test upto(mean, cl).values[10] ≈ mean(cl.values[1:10])
+        @test values(upto(sum, cl))[10]  ≈ sum(values(cl)[1:10])
+        @test values(upto(mean, cl))[10] ≈ mean(values(cl)[1:10])
 
-        @test upto(sum, cl).timestamp[10]  == Date(2000,1,14)
-        @test upto(mean, cl).timestamp[10] == Date(2000,1,14)
+        @test timestamp(upto(sum, cl))[10]  == Date(2000, 1, 14)
+        @test timestamp(upto(mean, cl))[10] == Date(2000, 1, 14)
 
         # transpose the upto value output from column to row vector but values are identical
-        @test upto(sum, ohlc).values[10, :]'  ≈ sum(ohlc.values[1:10, :], dims = 1)
-        @test upto(mean, ohlc).values[10, :]' ≈ mean(ohlc.values[1:10, :], dims = 1)
+        @test values(upto(sum, ohlc))[10, :]'  ≈ sum(values(ohlc)[1:10, :], dims = 1)
+        @test values(upto(mean, ohlc))[10, :]' ≈ mean(values(ohlc)[1:10, :], dims = 1)
     end
 end
 
 
 @testset "basecall works with Base methods" begin
     @testset "cumsum works" begin
-        @test basecall(cl, cumsum).values[2] == cl.values[1] + cl.values[2]
+        @test values(basecall(cl, cumsum))[2] == values(cl)[1] + values(cl)[2]
     end
 end
 
@@ -207,30 +228,30 @@ end
     end
 
     @testset "forcing uniform spacing works" begin
-        @test length(uohlc)                               == 10
-        @test uohlc[5].values                             == ohlc[5].values
-        @test isequal(uohlc[6].values, [NaN NaN NaN NaN]) == true
-        @test isequal(uohlc[7].values, [NaN NaN NaN NaN]) == true
-        @test uohlc[8].values                             == ohlc[6].values
+        @test length(uohlc)    == 10
+        @test values(uohlc[5]) == values(ohlc[5])
+        @test all(isnan, values(uohlc[6]))
+        @test all(isnan, values(uohlc[7]))
+        @test values(uohlc[8]) == values(ohlc[6])
     end
 
     @testset "dropnan works" begin
-        nohlc = TimeArray(ohlc.timestamp, copy(ohlc.values), ohlc.colnames, ohlc.meta)
-        nohlc.values[7:12, 2] .= NaN
+        nohlc = TimeArray(timestamp(ohlc), copy(values(ohlc)), colnames(ohlc), meta(ohlc))
+        values(nohlc)[7:12, 2] .= NaN
 
-        @test dropnan(uohlc).timestamp       == dropnan(uohlc, :all).timestamp
-        @test dropnan(uohlc).values          == dropnan(uohlc, :all).values
+        @test timestamp(dropnan(uohlc))       == timestamp(dropnan(uohlc, :all))
+        @test values(dropnan(uohlc))          == values(dropnan(uohlc, :all))
 
-        @test dropnan(ohlc, :all).values     == ohlc.values
-        @test dropnan(nohlc, :all).timestamp == ohlc.timestamp
-        @test dropnan(uohlc, :all).timestamp == ohlc[1:8].timestamp
-        @test dropnan(uohlc, :all).values    == ohlc[1:8].values
+        @test values(dropnan(ohlc, :all))     == values(ohlc)
+        @test timestamp(dropnan(nohlc, :all)) == timestamp(ohlc)
+        @test timestamp(dropnan(uohlc, :all)) == timestamp(ohlc[1:8])
+        @test values(dropnan(uohlc, :all))    == values(ohlc[1:8])
 
-        @test dropnan(ohlc, :any).values     == ohlc.values
-        @test dropnan(nohlc, :any).timestamp == ohlc.timestamp[[1:6;13:end]]
-        @test dropnan(nohlc, :any).values    == ohlc.values[[1:6;13:end], :]
-        @test dropnan(uohlc, :any).timestamp == ohlc[1:8].timestamp
-        @test dropnan(uohlc, :any).values    == ohlc[1:8].values
+        @test values(dropnan(ohlc, :any))     == values(ohlc)
+        @test timestamp(dropnan(nohlc, :any)) == timestamp(ohlc)[[1:6;13:end]]
+        @test values(dropnan(nohlc, :any))    == values(ohlc)[[1:6;13:end], :]
+        @test timestamp(dropnan(uohlc, :any)) == timestamp(ohlc[1:8])
+        @test values(dropnan(uohlc, :any))    == values(ohlc[1:8])
     end
 end
 
