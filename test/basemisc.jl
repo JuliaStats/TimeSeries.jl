@@ -11,46 +11,46 @@ using TimeSeries
 
 @testset "cumulative functions" begin
     let ta = cumsum(cl)
-        @test ta.values == cumsum(cl.values)
-        @test ta.meta == cl.meta
+        @test values(ta) == cumsum(values(cl))
+        @test meta(ta) == meta(cl)
     end
 
     let ta = cumsum(ohlc, dims = 1)
-        @test ta.values == cumsum(ohlc.values, dims = 1)
-        @test ta.meta == ohlc.meta
+        @test values(ta) == cumsum(values(ohlc), dims = 1)
+        @test meta(ta) == meta(ohlc)
     end
 
     let ta = cumsum(cl, dims = 2)
-        @test ta.values == cumsum(cl.values, dims = 2)
-        @test ta.meta == cl.meta
+        @test values(ta) == cumsum(values(cl), dims = 2)
+        @test meta(ta) == meta(cl)
     end
 
     let ta = cumsum(ohlc, dims = 2)
-        @test ta.values == cumsum(ohlc.values, dims = 2)
-        @test ta.meta == ohlc.meta
+        @test values(ta) == cumsum(values(ohlc), dims = 2)
+        @test meta(ta) == meta(ohlc)
     end
 
     @test_throws DimensionMismatch cumsum(cl, dims = 3)
     @test_throws DimensionMismatch cumsum(ohlc, dims = 3)
 
     let ta = cumprod(cl[1:5])
-        @test ta.values == cumprod(cl[1:5].values)
-        @test ta.meta == cl[1:5].meta
+        @test values(ta) == cumprod(values(cl[1:5]))
+        @test meta(ta) == meta(cl[1:5])
     end
 
     let ta = cumprod(ohlc[1:5], dims = 1)
-        @test ta.values == cumprod(ohlc[1:5].values, dims = 1)
-        @test ta.meta == ohlc[1:5].meta
+        @test values(ta) == cumprod(values(ohlc[1:5]), dims = 1)
+        @test meta(ta) == meta(ohlc[1:5])
     end
 
     let ta = cumprod(cl[1:5], dims = 2)
-        @test ta.values == cumprod(cl[1:5].values, dims = 2)
-        @test ta.meta == cl[1:5].meta
+        @test values(ta) == cumprod(values(cl[1:5]), dims = 2)
+        @test meta(ta) == meta(cl[1:5])
     end
 
     let ta = cumprod(ohlc[1:5], dims = 2)
-        @test ta.values == cumprod(ohlc[1:5].values, dims = 2)
-        @test ta.meta == ohlc[1:5].meta
+        @test values(ta) == cumprod(values(ohlc[1:5]), dims = 2)
+        @test meta(ta) == meta(ohlc[1:5])
     end
 
     @test_throws DimensionMismatch cumprod(cl, dims = 3)
@@ -62,16 +62,16 @@ end
         for (name, src) ∈ [(:cl, cl), (:ohlc, ohlc)]
             @testset "$fname::$name" begin
                 let ta = f(src)
-                    @test ta.meta == src.meta
+                    @test meta(ta)   == meta(src)
                     @test length(ta) == 1
-                    @test ta.values == f(src.values, dims = 1)
+                    @test values(ta) == f(values(src), dims = 1)
                 end
 
                 let ta = f(src, dims = 2)
-                    @test ta.meta == src.meta
-                    @test length(ta) == length(src.timestamp)
-                    @test ta.values == f(src.values, dims = 2)
-                    @test ta.colnames == [fname]
+                    @test meta(ta)     == meta(src)
+                    @test length(ta)   == length(timestamp(src))
+                    @test values(ta)   == f(values(src), dims = 2)
+                    @test colnames(ta) == [fname]
                 end
 
                 @test_throws DimensionMismatch f(src, dims = 3)
@@ -83,16 +83,16 @@ end
         for (name, src) ∈ [(:cl, cl), (:ohlc, ohlc)]
             @testset "$fname::$name" begin
                 let ta = f(src)
-                    @test ta.meta == src.meta
+                    @test meta(ta)   == meta(src)
                     @test length(ta) == 1
-                    @test ta.values == f(src.values, dims = 1)
+                    @test values(ta) == f(values(src), dims = 1)
                 end
 
                 let ta = f(src, dims = 2, corrected = false)
-                    @test ta.meta == src.meta
-                    @test length(ta) == length(src.timestamp)
-                    @test ta.values == f(src.values, dims = 2, corrected = false)
-                    @test ta.colnames == [fname]
+                    @test meta(ta)     == meta(src)
+                    @test length(ta)   == length(timestamp(src))
+                    @test values(ta)   == f(values(src), dims = 2, corrected = false)
+                    @test colnames(ta) == [fname]
                 end
 
                 @test_throws DimensionMismatch f(src, dims = 3)
@@ -112,11 +112,11 @@ end
     │ 2000-01-07 │ false │
     """
     let
-      ts = cl.timestamp[1:5]
+      ts = timestamp(cl)[1:5]
       ta = TimeArray(ts, 1:5)
       xs = any(ta .== lag(ta))
-      @test xs.timestamp[] == ts[end]
-      @test xs.values[]    == false
+      @test timestamp(xs)[1] == ts[end]
+      @test values(xs)[1]    == false
     end
 
     """
@@ -130,13 +130,13 @@ end
     │ 2000-01-07 │ false │
     """
     let
-      ts = cl.timestamp[1:5]
+      ts = timestamp(cl)[1:5]
       ta = TimeArray(ts, [1, 2, 2, 3, 4])
       xs = any(ta .== lag(ta), dims = 2)
 
-      @test xs.timestamp == ts[2:end]
-      @test any(xs.values .== [false, true, false, false])
-      @test xs.colnames == [:any]
+      @test timestamp(xs)   == ts[2:end]
+      @test any(values(xs) .== [false, true, false, false])
+      @test colnames(xs)    == [:any]
     end
   end  # single column
 
@@ -158,13 +158,13 @@ end
     │ 2000-01-04 │ true  │
     │ 2000-01-05 │ true  │
     """
-    ts = cl.timestamp[1:3]
+    ts = timestamp(cl)[1:3]
     ta = TimeArray(ts, [1 2; 3 4; 5 6])
     xs = any(ta .> 3, dims = 2)
 
-    @test xs.timestamp == ts
-    @test any(xs.values .== [false, true, true])
-    @test xs.colnames == [:any]
+    @test timestamp(xs) == ts
+    @test any(values(xs) .== [false, true, true])
+    @test colnames(xs) == [:any]
   end  # multi column
 end  # @testset "Base.any" function
 
@@ -179,11 +179,11 @@ end  # @testset "Base.any" function
     │ 2000-01-07 │ false │
     """
     let
-      ts = cl.timestamp[1:5]
+      ts = timestamp(cl)[1:5]
       ta = TimeArray(ts, 1:5)
       xs = all(ta .== lag(ta))
-      @test xs.timestamp[] == ts[end]
-      @test xs.values[]    == false
+      @test timestamp(xs)[] == ts[end]
+      @test values(xs)[]    == false
     end
 
     """
@@ -197,13 +197,13 @@ end  # @testset "Base.any" function
     │ 2000-01-07 │ false │
     """
     let
-      ts = cl.timestamp[1:5]
+      ts = timestamp(cl)[1:5]
       ta = TimeArray(ts, [1, 2, 2, 3, 4])
       xs = all(ta .== lag(ta), dims = 2)
 
-      @test xs.timestamp == ts[2:end]
-      @test all(xs.values .== [false, true, false, false])
-      @test xs.colnames == [:all]
+      @test timestamp(xs) == ts[2:end]
+      @test all(values(xs) .== [false, true, false, false])
+      @test colnames(xs) == [:all]
     end
   end  # single column
 
@@ -225,13 +225,13 @@ end  # @testset "Base.any" function
     │ 2000-01-04 │ false │
     │ 2000-01-05 │ true  │
     """
-    ts = cl.timestamp[1:3]
+    ts = timestamp(cl)[1:3]
     ta = TimeArray(ts, [1 2; 3 4; 5 6])
     xs = all(ta .> 3, dims = 2)
 
-    @test xs.timestamp == ts
-    @test all(xs.values .== [false, false, true])
-    @test xs.colnames == [:all]
+    @test timestamp(xs) == ts
+    @test all(values(xs) .== [false, false, true])
+    @test colnames(xs) == [:all]
   end  # multi column
 end  # @testset "Base.all" function
 
