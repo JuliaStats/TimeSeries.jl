@@ -149,7 +149,7 @@ end  # uniformspace
 
 ###### dropnan ####################
 
-dropnan(ta::TimeArray, method::Symbol=:all) =
-    method == :all ? ta[findall(reshape(any(.!isnan.(ta), dims = 2).values, :))] :
-    method == :any ? ta[findall(reshape(all(.!isnan.(ta), dims = 2).values, :))] :
+dropnan(ta::TimeArray, method::Symbol = :all) =
+    method == :all ? ta[findall(reshape(values(any(.!isnan.(ta), dims = 2)), :))] :
+    method == :any ? ta[findall(reshape(values(all(.!isnan.(ta), dims = 2)), :))] :
     error("dropnan method must be :all or :any")
