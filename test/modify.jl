@@ -27,12 +27,12 @@ using TimeSeries
     end
 
     @testset "update a single column time array with single value vector" begin
-        @test last(new_clv.values) == 111.11
+        @test last(values(new_clv)) == 111.11
         @test_throws DimensionMismatch update(cl, today(), [111.11, 222.22])
     end
 
     @testset "update a multi column time array" begin
-        @test tail(new_ohlc, 1).values == [111.11 222.22 333.33 444.44]
+        @test values(tail(new_ohlc, 1)) == [111.11 222.22 333.33 444.44]
         @test_throws MethodError update(ohlc, today(), [111.11, 222.22, 333.33])
     end
 
