@@ -76,9 +76,9 @@ function hcat(x::TimeArray, y::TimeArray)
             "timestamps not consistent, please checkout `merge`."))
     end
 
-    meta = ifelse(x.meta == y.meta, x.meta, nothing)
+    m = ifelse(meta(x) == meta(y), meta(x), nothing)
 
-    TimeArray(tsx, [values(x) values(y)], [x.colnames; y.colnames], meta)
+    TimeArray(tsx, [values(x) values(y)], [colnames(x); colnames(y)], m)
 end
 
 hcat(x::TimeArray, y::TimeArray, zs::Vararg{TimeArray}) =
@@ -127,7 +127,7 @@ end
 
 function vcat(TA::TimeArray...)
     # Check all meta fields are identical.
-    prev_meta = TA[1].meta
+    prev_meta = meta(TA[1])
     for ta in TA
         if meta(ta) != prev_meta
             throw(ArgumentError("metadata doesn't match"))
@@ -135,7 +135,7 @@ function vcat(TA::TimeArray...)
     end
 
     # Check column names are identical.
-    prev_colnames = TA[1].colnames
+    prev_colnames = colnames(TA[1])
     for ta in TA
         if colnames(ta) != prev_colnames
             throw(ArgumentError("column names don't match"))
@@ -143,14 +143,14 @@ function vcat(TA::TimeArray...)
     end
 
     # Concatenate the contents.
-    timestamps = vcat([timestamp(ta) for ta in TA]...)
-    values = vcat([values(ta) for ta in TA]...)
+    ts  = vcat([timestamp(ta) for ta in TA]...)
+    val = vcat([values(ta) for ta in TA]...)
 
-    order = sortperm(timestamps)
-    if length(TA[1].colnames) == 1 # Check for 1D to ensure values remains a 1D vector.
-        return TimeArray(timestamps[order], values[order], TA[1].colnames, TA[1].meta)
+    order = sortperm(ts)
+    if ndims(TA[1]) == 1 # Check for 1D to ensure values remains a 1D vector.
+        return TimeArray(ts[order], val[order], prev_colnames, prev_meta)
     else
-        return TimeArray(timestamps[order], values[order, :], TA[1].colnames, TA[1].meta)
+        return TimeArray(ts[order], val[order, :], prev_colnames, prev_meta)
     end
 end
 
