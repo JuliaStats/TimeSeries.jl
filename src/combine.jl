@@ -3,11 +3,11 @@ import Base: merge, hcat, vcat, map
 ###### merge ####################
 
 function _merge_outer(::Type{IndexType}, ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, padvalue, meta) where {IndexType,T,N,M,D}
-    timestamps, new_idx1, new_idx2 = sorted_unique_merge(IndexType, ta1.timestamp, ta2.timestamp)
-    vals = fill(convert(T, padvalue), (length(timestamps), length(ta1.colnames) + length(ta2.colnames)))
-    insertbyidx!(vals, ta1.values, new_idx1)
-    insertbyidx!(vals, ta2.values, new_idx2, size(ta1.values, 2))
-    TimeArray(timestamps, vals, [ta1.colnames; ta2.colnames], meta; unchecked = true)
+    timestamps, new_idx1, new_idx2 = sorted_unique_merge(IndexType, timestamp(ta1), timestamp(ta2))
+    vals = fill(convert(T, padvalue), (length(timestamps), length(colnames(ta1)) + length(colnames(ta2))))
+    insertbyidx!(vals, values(ta1), new_idx1)
+    insertbyidx!(vals, values(ta2), new_idx2, size(values(ta1), 2))
+    TimeArray(timestamps, vals, [colnames(ta1); colnames(ta2)], meta; unchecked = true)
 end
 
 function merge(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, method::Symbol = :inner;
@@ -24,6 +24,8 @@ function merge(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, method::Symbol = :i
         _meta(ta1)
     elseif typeof(_meta(ta1)) <: AbstractString && typeof(_meta(ta2)) <: AbstractString && meta isa Nothing
         string(_meta(ta1), "_", _meta(ta2))
+    else
+      meta
     end
 
     if method == :inner
@@ -66,8 +68,8 @@ end
 # hcat ##########################
 
 function hcat(x::TimeArray, y::TimeArray)
-    tsx = x.timestamp
-    tsy = y.timestamp
+    tsx = timestamp(x)
+    tsy = timestamp(y)
 
     if length(tsx) != length(tsx) || tsx != tsy
         throw(DimensionMismatch(
@@ -76,7 +78,7 @@ function hcat(x::TimeArray, y::TimeArray)
 
     meta = ifelse(x.meta == y.meta, x.meta, nothing)
 
-    TimeArray(tsx, [x.values y.values], [x.colnames; y.colnames], meta)
+    TimeArray(tsx, [values(x) values(y)], [x.colnames; y.colnames], meta)
 end
 
 hcat(x::TimeArray, y::TimeArray, zs::Vararg{TimeArray}) =
@@ -84,8 +86,8 @@ hcat(x::TimeArray, y::TimeArray, zs::Vararg{TimeArray}) =
 
 # collapse ######################
 
-function collapse(ta::TimeArray{T, N, D}, period::Function, timestamp::Function,
-                  value::Function=timestamp) where {T, N, D}
+function collapse(ta::TimeArray{T,N,D}, period::Function, timestamp::Function,
+                  value::Function = timestamp) where {T,N,D}
 
     length(ta) == 0 && return ta
 
@@ -93,17 +95,17 @@ function collapse(ta::TimeArray{T, N, D}, period::Function, timestamp::Function,
     collapsed_tstamps = D[]
     collapsed_values = values(ta)[1:0, :]
 
-    tstamp = timestamp(ta)[1]
+    tstamp = _timestamp(ta)[1]
     mapped_tstamp = period(tstamp)
     cluster_startrow = 1
 
     for i in 1:length(ta)-1
 
-        next_tstamp = timestamp(ta)[i+1]
+        next_tstamp = _timestamp(ta)[i+1]
         next_mapped_tstamp = period(next_tstamp)
 
         if mapped_tstamp != next_mapped_tstamp
-          push!(collapsed_tstamps, timestamp(timestamp(ta)[cluster_startrow:i]))
+          push!(collapsed_tstamps, timestamp(_timestamp(ta)[cluster_startrow:i]))
           collapsed_values = [collapsed_values; T[value(values(ta)[cluster_startrow:i, j]) for j in 1:ncols]']
           cluster_startrow = i+1
         end #if
@@ -113,7 +115,7 @@ function collapse(ta::TimeArray{T, N, D}, period::Function, timestamp::Function,
 
     end #for
 
-    push!(collapsed_tstamps, timestamp(timestamp(ta)[cluster_startrow:end]))
+    push!(collapsed_tstamps, timestamp(_timestamp(ta)[cluster_startrow:end]))
     collapsed_values = [collapsed_values; T[value(values(ta)[cluster_startrow:end, j]) for j in 1:ncols]']
 
     N == 1 && (collapsed_values = vec(collapsed_values))
