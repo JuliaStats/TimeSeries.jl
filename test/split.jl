@@ -11,12 +11,12 @@ using TimeSeries
 
 @testset "find methods" begin
     @testset "find returns correct row numbers array" begin
-        @test cl[findall(cl .> op)].timestamp[1] == Date(2000,1,3)
-        @test length(findall(cl .> op))          == 244
+        @test timestamp(cl[findall(cl .> op)])[1] == Date(2000, 1, 3)
+        @test length(findall(cl .> op))           == 244
     end
 
     @testset "findwhen returns correct Dates array" begin
-       @test findwhen(cl .> op)[2]      == Date(2000,1,5)
+       @test findwhen(cl .> op)[2]      == Date(2000, 1, 5)
        @test length(findwhen(cl .> op)) == 244
     end
 end
@@ -34,59 +34,61 @@ end
     end
 
     @testset "when method correctly subset" begin
-        @test when(cl, day, 4).timestamp[1]              == Date(2000,1,4)
-        @test when(cl, dayname, "Friday").timestamp[1]   == Date(2000,1,7)
-        @test when(cl, week, 5).timestamp[1]             == Date(2000,1,31)
-        @test when(cl, month, 5).timestamp[1]            == Date(2000,5,1)
-        @test when(cl, monthname, "June").timestamp[1]   == Date(2000,6,1)
-        @test when(cl, year, 2001).timestamp[1]          == Date(2001,1,2)
-        @test when(cl, dayofweek, 1).timestamp[1]        == Date(2000,1,3)
+        @test timestamp(when(cl, day, 4))[1]              == Date(2000,1,4)
+        @test timestamp(when(cl, dayname, "Friday"))[1]   == Date(2000,1,7)
+        @test timestamp(when(cl, week, 5))[1]             == Date(2000,1,31)
+        @test timestamp(when(cl, month, 5))[1]            == Date(2000,5,1)
+        @test timestamp(when(cl, monthname, "June"))[1]   == Date(2000,6,1)
+        @test timestamp(when(cl, year, 2001))[1]          == Date(2001,1,2)
+        @test timestamp(when(cl, dayofweek, 1))[1]        == Date(2000,1,3)
         # all the days in the nth week of each month
-        @test when(cl, dayofweekofmonth, 5).timestamp[1] == Date(2000,1,31)
-        @test when(cl, dayofyear, 365).timestamp[1]      == Date(2001,12,31)
-        @test when(cl, quarterofyear, 4).timestamp[1]    == Date(2000,10,2)
-        @test when(cl, dayofquarter, 1).timestamp[1]     == Date(2001,10,1)
+        @test timestamp(when(cl, dayofweekofmonth, 5))[1] == Date(2000,1,31)
+        @test timestamp(when(cl, dayofyear, 365))[1]      == Date(2001,12,31)
+        @test timestamp(when(cl, quarterofyear, 4))[1]    == Date(2000,10,2)
+        @test timestamp(when(cl, dayofquarter, 1))[1]     == Date(2001,10,1)
     end
 end
 
 
 @testset "head, tail, first and last methods" begin
     @testset "head, tail, first and last methods work with default n value on single column TimeArray" begin
-        @test length(head(cl,6)) == 6
-        @test head(cl).timestamp == [Date(2000,1,3), Date(2000,1,4), Date(2000,1,5), Date(2000,1,6), Date(2000,1,7), Date(2000,1,10)]
-        @test head(cl).values    == [111.94, 102.5, 104.0, 95.0, 99.5, 97.75]
+        @test length(head(cl,6))  == 6
+        @test timestamp(head(cl)) == [Date(2000,1,3), Date(2000,1,4), Date(2000,1,5),
+                                      Date(2000,1,6), Date(2000,1,7), Date(2000,1,10)]
+        @test values(head(cl))    == [111.94, 102.5, 104.0, 95.0, 99.5, 97.75]
 
-        @test length(tail(cl,6)) == 6
-        @test tail(cl).timestamp == [Date(2001,12,21), Date(2001,12,24), Date(2001,12,26), Date(2001,12,27), Date(2001,12,28), Date(2001,12,31)]
-        @test tail(cl).values    ==  [21.0, 21.36, 21.49, 22.07, 22.43, 21.9]
+        @test length(tail(cl,6))  == 6
+        @test timestamp(tail(cl)) == [Date(2001,12,21), Date(2001,12,24), Date(2001,12,26),
+                                      Date(2001,12,27), Date(2001,12,28), Date(2001,12,31)]
+        @test values(tail(cl))    == [21.0, 21.36, 21.49, 22.07, 22.43, 21.9]
 
-        @test length(first(cl))      == 1
-        @test first(cl).timestamp[1] == Date(2000,1,3)
-        @test first(cl).values[1]    == 111.94
-        @test first(cl).meta         == "AAPL"
+        @test length(first(cl))       == 1
+        @test timestamp(first(cl))[1] == Date(2000,1,3)
+        @test values(first(cl))[1]    == 111.94
+        @test meta(first(cl))         == "AAPL"
 
-        @test length(last(cl))      == 1
-        @test last(cl).timestamp[1] == Date(2001,12,31)
-        @test last(cl).values[1]    == 21.9
-        @test last(cl).meta         == "AAPL"
+        @test length(last(cl))       == 1
+        @test timestamp(last(cl))[1] == Date(2001,12,31)
+        @test values(last(cl))[1]    == 21.9
+        @test meta(last(cl))         == "AAPL"
     end
 
     @testset "head, tail, first and last methods work with default n value on multi column TimeArray" begin
-        @test length(head(ohlc))       == 6
-        @test head(ohlc,1).values      == [104.88 112.5 101.69 111.94]
+        @test length(head(ohlc))         == 6
+        @test values(head(ohlc, 1))      == [104.88 112.5 101.69 111.94]
 
-        @test length(tail(ohlc))       == 6
-        @test tail(ohlc,1).values      == [22.51 22.66 21.83 21.9]
+        @test length(tail(ohlc))         == 6
+        @test values(tail(ohlc, 1))      == [22.51 22.66 21.83 21.9]
 
-        @test length(first(ohlc))      == 1
-        @test first(ohlc).timestamp[1] == Date(2000,1,3)
-        @test first(ohlc).values       == [104.88 112.5 101.69 111.94]
-        @test first(ohlc).meta         == "AAPL"
+        @test length(first(ohlc))       == 1
+        @test timestamp(first(ohlc))[1] == Date(2000,1,3)
+        @test values(first(ohlc))       == [104.88 112.5 101.69 111.94]
+        @test meta(first(ohlc))         == "AAPL"
 
-        @test length(last(ohlc))      == 1
-        @test last(ohlc).timestamp[1] == Date(2001,12,31)
-        @test last(ohlc).values       == [22.51 22.66 21.83 21.9]
-        @test last(ohlc).meta         == "AAPL"
+        @test length(last(ohlc))       == 1
+        @test timestamp(last(ohlc))[1] == Date(2001,12,31)
+        @test values(last(ohlc))       == [22.51 22.66 21.83 21.9]
+        @test meta(last(ohlc))         == "AAPL"
     end
 
     @testset "head, tail, first and last methods work with custom periods on single column TimeArray" begin
