@@ -1,6 +1,6 @@
 ###### update ####################
 
-function update(ta::TimeArray{T, N, D}, tstamp::D, val::Array{T, N}) where {T, N, D}
+function update(ta::TimeArray{T,N,D}, tstamp::D, val::AbstractArray{T}) where {T,N,D}
 
     if length(ta) == 0
         throw(ArgumentError(
@@ -16,7 +16,7 @@ function update(ta::TimeArray{T, N, D}, tstamp::D, val::Array{T, N}) where {T, N
     uta
 end
 
-function update(ta::TimeArray{T, N, D}, tstamp::D, val::T) where {T, N, D}
+function update(ta::TimeArray{T,N,D}, tstamp::D, val::T) where {T,N,D}
 
     if length(ta) == 0
         throw(ArgumentError(
