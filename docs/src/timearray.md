@@ -4,10 +4,10 @@ The `TimeArray` time series type is defined here
 (with inner constructor code removed for readability):
 
 ```julia
-struct TimeArray{T,N,D<:TimeType,A<:AbstractArray} <: AbstractTimeSeries
+struct TimeArray{T,N,D<:TimeType,A<:AbstractArray{T,N}} <: AbstractTimeSeries{T,N,D}
     timestamp::Vector{D}
     values::A # some kind of AbstractArray{T,N}
-    colnames::Vector{String}
+    colnames::Vector{Symbol}
     meta::Any
 
     # inner constructor code enforcing invariants
@@ -37,7 +37,7 @@ be of the same type.
 
 ## `colnames`
 
-The `colnames` field is a vector of type `String` and contains the
+The `colnames` field is a vector of `Symbol` and contains the
 names of the columns for each column in the `values` field. The length
 of this vector must match the column count of the `values` array, or the
 constructor will fail. Since `TimeArrays` are indexable on column names,
@@ -48,8 +48,18 @@ where `n` enumerates from 1.
 ## `meta`
 
 The `meta` field defaults to holding `nothing`, which is represented by
-type `Void`. This default is designed to allow programmers to ignore
+type `Nothing`. This default is designed to allow programmers to ignore
 this field. For those who wish to utilize this field, `meta` can hold
 common types such as `String` or more elaborate user-defined types. One
 might want to assign a name to an object that is immutable versus
 relying on variable bindings outside of the object's type fields.
+
+## Fields getter functions
+
+There are four field getter functions exported.
+They are named as same as the field names.
+
+- `timestamp(ta::TimeArray)`
+- `values(ta::TimeArray)`
+- `colnames(ta::TimeArray)`
+- `meta(ta::TimeArray)`
