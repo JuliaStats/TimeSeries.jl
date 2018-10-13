@@ -1,4 +1,4 @@
-# Splitting by time constraint or when condition is true
+# Splitting by conditions
 
 Specific methods for segmenting on time ranges or if condition is met is
 supported with the following methods.
@@ -65,21 +65,21 @@ The `findwhen` method test a condition and returns a vector of `Date` or
 using TimeSeries
 using MarketData
 
-green = findwhen(ohlc["Close"] .> ohlc["Open"]);
+green = findwhen(ohlc[:Close] .> ohlc[:Open]);
 typeof(green)
 ohlc[green]
 ```
 
-## `find`
+## `findall`
 
-The `find` method tests a condition and returns a vector of `Int`
+The `findall` method tests a condition and returns a vector of `Int`
 representing the row in the array where the condition is `true`:
 
 ```@repl
 using TimeSeries
 using MarketData
 
-red = find(ohlc["Close"] .< ohlc["Open"]);
+red = findall(ohlc[:Close] .< ohlc[:Open]);
 typeof(red)
 ohlc[red]
 ```
