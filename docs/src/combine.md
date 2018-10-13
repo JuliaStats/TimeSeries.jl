@@ -85,6 +85,7 @@ We can also supply the function that chooses the timestamp and the
 function that determines the corresponding value independently:
 
 ```@repl collapse
+using Statistics
 collapse(cl, month, last, mean)
 ```
 
@@ -104,8 +105,8 @@ For example:
 
 ```@repl
 using TimeSeries
-a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"])
-b = TimeArray([Date(2015, 12, 01)], [17], ["Number"])
+a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16])
+b = TimeArray([Date(2015, 12, 01)], [17])
 [a; b]
 ```
 
@@ -124,6 +125,7 @@ series, here by one year:
 
 ```@repl
 using TimeSeries
-a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16], ["Number"])
-map((timestamp, values) -> (timestamp + Dates.Year(1), values), a)
+using Dates
+ta = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16])
+map((timestamp, values) -> (timestamp + Year(1), values), ta)
 ```
