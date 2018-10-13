@@ -7,7 +7,9 @@ and only controls how values are printed to REPL.
 Here is an handy way to edit it:
 
 ```julia
-julia> edit(Pkg.dir("TimeSeries", "src", ".timeseriesrc.jl"))
+julia> using TimeSeries
+
+julia> @edit joinpath(dirname(pathof(TimeSeries)), "src", ".timeseriesrc.jl")
 ```
 
 ## `DECIMALS`
