@@ -9,7 +9,7 @@ Here is an handy way to edit it:
 ```julia
 julia> using TimeSeries
 
-julia> @edit joinpath(dirname(pathof(TimeSeries)), "src", ".timeseriesrc.jl")
+julia> edit(joinpath(dirname(pathof(TimeSeries)), ".timeseriesrc.jl"))
 ```
 
 ## `DECIMALS`
