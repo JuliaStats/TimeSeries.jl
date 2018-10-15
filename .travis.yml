@@ -9,12 +9,21 @@ notifications:
 sudo: false
 
 after_success:
-  - julia -e 'cd(Pkg.dir("TimeSeries")); Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
+  - julia -e 'using Pkg;
+              cd(Pkg.dir("TimeSeries"));
+              Pkg.add("Coverage");
+              using Coverage;
+              Codecov.submit(process_folder())'
 
-  # Documenter auto-deploy
-  # following `using` instruction is for triggering precompilation
-  - julia -e 'Pkg.add("Documenter")'
-  - julia -e 'Pkg.add("MarketData")'
-  - julia -e 'Pkg.add("Plots"); Pkg.add("PlotlyJS")'
-  - julia -e 'using Plots; plotlyjs()'
-  - julia -e 'cd(Pkg.dir("TimeSeries", "docs")); include("make.jl")'
+
+# https://juliadocs.github.io/Documenter.jl/latest/man/hosting/#.travis.yml-Configuration-1
+jobs:
+  include:
+    - stage: "Documentation"
+      julia: 1.0
+      os: linux
+      script:
+        - julia --project=docs/ -e 'using Pkg; Pkg.instantiate();
+                                    Pkg.develop(PackageSpec(path=pwd()))'
+        - julia --project=docs/ docs/make.jl
+      after_success: skip
