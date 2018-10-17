@@ -20,9 +20,9 @@ function merge(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, method::Symbol = :i
         colnames = Symbol.(colnames)
     end
 
-    meta = if _meta(ta1) == _meta(ta2) && meta isa Nothing
+    meta = if _meta(ta1) == _meta(ta2) && meta ≡ nothing
         _meta(ta1)
-    elseif typeof(_meta(ta1)) <: AbstractString && typeof(_meta(ta2)) <: AbstractString && meta isa Nothing
+    elseif typeof(_meta(ta1)) <: AbstractString && typeof(_meta(ta2)) <: AbstractString && meta ≡ nothing
         string(_meta(ta1), "_", _meta(ta2))
     else
       meta
