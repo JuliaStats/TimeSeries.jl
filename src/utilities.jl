@@ -133,7 +133,7 @@ function replace_dupes(cnames::Vector{Symbol})
             if n == 1
                 cnames[d] = Symbol(cnames[d], "_$n")
             else
-              s = string(cnames[d])
+                s = string(cnames[d])
                 cnames[d] = Symbol(s[1:length(s)-length(string(n))-1], "_$n")
             end
         end

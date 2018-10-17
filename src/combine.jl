@@ -25,7 +25,7 @@ function merge(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, method::Symbol = :i
     elseif typeof(_meta(ta1)) <: AbstractString && typeof(_meta(ta2)) <: AbstractString && meta ≡ nothing
         string(_meta(ta1), "_", _meta(ta2))
     else
-      meta
+        meta
     end
 
     if method == :inner
