@@ -146,11 +146,13 @@ end
 find_dupes_index(A::Vector{Symbol}) =
     @inbounds [i for i in eachindex(A) if A[i] ∈ A[1:i-1]]
 
-@memoize function gen_colnames(n::Integer)
-    ret = Vector{Symbol}(undef, n)
+gen_colnames(n::Integer) = gen_colnames(Val{n}())
+
+@generated function gen_colnames(v::Val{N}) where {N}
+    ret = Vector{Symbol}(undef, N)
 
     s = ""
-    for i ∈ 1:n
+    for i ∈ 1:N
         s = carry_char(s)
         ret[i] = Symbol(s)
     end
@@ -158,21 +160,24 @@ find_dupes_index(A::Vector{Symbol}) =
     ret
 end
 
-@memoize function carry_char(s::String = "")
-    if s == ""
-        return "A"
-    end
+const carry_char_cache = Dict{String,String}("" => "A")
+
+function carry_char(s::String = "")
+    ret = get(carry_char_cache, s, "")
+    (ret != "") && return ret
 
     n = length(s)
 
     c = s[n] + 1
 
-    if c > 'Z'
+    ret = if c > 'Z'
         c = 'A'
         carry_char(s[1:n-1]) * c
     else
         s[1:n-1] * c
     end
+
+    carry_char_cache[s] = ret
 end
 
 # helper method for `getindex`

@@ -5,7 +5,6 @@ using DelimitedFiles
 using Statistics
 
 using RecipesBase
-using Memoize
 
 export TimeArray, AbstractTimeSeries,
        when, from, to, findwhen, find, timestamp, values, colnames, meta, head, tail,
