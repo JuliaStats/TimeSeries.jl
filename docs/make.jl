@@ -5,6 +5,7 @@ using TimeSeries
 makedocs(
     format = :html,
     sitename = "TimeSeries.jl",
+    modules = [TimeSeries],
     pages = [
         "index.md",
         "getting_started.md",
