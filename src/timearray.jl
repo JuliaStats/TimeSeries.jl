@@ -326,13 +326,47 @@ propertynames(ta::TimeArray) = colnames(ta)
 
 ###### element wrapers ###########
 
+"""
+    timestamp(ta::TimeArray)
+
+Get the time index of a `TimeArray`.
+"""
 timestamp(ta::TimeArray) = getfield(ta, :timestamp)
-values(ta::TimeArray)    = getfield(ta, :values)
-colnames(ta::TimeArray)  = getfield(ta, :colnames)
-meta(ta::TimeArray)      = getfield(ta, :meta)
+
+"""
+    values(ta::TimeArray)
+
+Get the underlying value table of a `TimeArray`.
+"""
+values(ta::TimeArray) = getfield(ta, :values)
+
+"""
+    colnames(ta::TimeArray)
+
+Get the column names of a `TimeArray`.
+
+# Examples
+
+```julia-repl
+julia> colnames(ohlc)
+4-element Array{Symbol,1}:
+ :Open
+ :High
+ :Low
+ :Close
+```
+"""
+colnames(ta::TimeArray) = getfield(ta, :colnames)
+
+"""
+    meta(ta::TimeArray)
+
+Get the user-defined metadata of a `TimeArray`.
+"""
+meta(ta::TimeArray) = getfield(ta, :meta)
 
 # internal use, to avoid name collision
 _timestamp(ta::TimeArray) = getfield(ta, :timestamp)
 _values(ta::TimeArray)    = getfield(ta, :values)
 _colnames(ta::TimeArray)  = getfield(ta, :colnames)
-_meta(ta::TimeArray)	  = getfield(ta, :meta)
+_meta(ta::TimeArray)      = getfield(ta, :meta)
