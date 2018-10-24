@@ -5,6 +5,7 @@ using DelimitedFiles
 using Statistics
 
 using RecipesBase
+using Reexport
 
 export TimeArray, AbstractTimeSeries,
        when, from, to, findwhen, find, timestamp, values, colnames, meta, head, tail,
@@ -14,6 +15,8 @@ export TimeArray, AbstractTimeSeries,
        merge, collapse,
        readtimearray, writetimearray,
        update, rename
+
+@reexport using Dates
 
 ###### include ##################
 
@@ -28,7 +31,6 @@ include("readwrite.jl")
 include("modify.jl")
 include("basemisc.jl")
 include("deprecated.jl")
-include("Base.Dates.jl")
 include("plotrecipes.jl")
 
 end  # module TimeSeries
