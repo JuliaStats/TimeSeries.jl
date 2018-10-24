@@ -1,3 +1,23 @@
+### 0.15.0
+
+* New `TimeArray` constructor for creating a `TimeArray` from existing `TimeArray`.
+  ([#380])
+
+  ```julia
+      TimeArray(ta::TimeArray; timestamp = ..., values = ..., colnames = ..., meta = ...)
+  ```
+
+  E.g.
+  ```julia
+  julia> meta(cl)
+  "AAPL"
+
+  julia> cl′ = TimeArray(cl; meta = :AAPL);
+
+  julia> meta(cl′)
+  :AAPL
+  ```
+
 ### 0.14.0
 
 * Symbol column indexing. ([#377])
