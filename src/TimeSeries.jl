@@ -3,6 +3,7 @@ module TimeSeries
 using Dates
 using DelimitedFiles
 using Statistics
+using Tables
 
 using RecipesBase
 using Reexport
@@ -23,6 +24,7 @@ export TimeArray, AbstractTimeSeries,
 include(".timeseriesrc.jl")
 include("timearray.jl")
 include("utilities.jl")
+include("tables.jl")
 include("split.jl")
 include("apply.jl")
 include("broadcast.jl")
