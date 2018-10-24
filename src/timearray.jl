@@ -1,28 +1,22 @@
 ###### type definition ##########
 
 import Base: convert, copy, length, show, getindex, iterate,
-             lastindex, size, eachindex, ==, isequal, hash, ndims
+             lastindex, size, eachindex, ==, isequal, hash, ndims,
+             getproperty, propertynames, values
 
 abstract type AbstractTimeSeries{T,N,D} end
-
-function _issorted_and_unique(x)
-    for i in 1:length(x)-1
-        @inbounds !(x[i] < x[i + 1]) && return false
-    end
-    true
-end
 
 struct TimeArray{T,N,D<:TimeType,A<:AbstractArray{T,N}} <: AbstractTimeSeries{T,N,D}
 
     timestamp::Vector{D}
     values::A
-    colnames::Vector{String}
+    colnames::Vector{Symbol}
     meta::Any
 
     function TimeArray{T,N,D,A}(
             timestamp::AbstractVector{D},
             values::A,
-            colnames::Vector{String},
+            colnames::Vector{Symbol},
             meta::Any;
             unchecked = false) where {T,N,D<:TimeType,A<:AbstractArray{T,N}}
         nrow = size(values, 1)
@@ -47,38 +41,35 @@ end
 ###### outer constructor ########
 
 TimeArray(d::AbstractVector{D}, v::AbstractArray{T,N},
-          c::Vector{S}=fill("", size(v, 2)),
-          m::Any=nothing;
-          args...) where {T,N,D<:TimeType,S<:AbstractString} =
-    TimeArray{T, N, D, typeof(v)}(d, v, map(String, c), m; args...)
-TimeArray(d::D, v::AbstractArray{T, N}, c::Vector{S}=fill("", size(v, 2)),
-          m::Any=nothing;
-          args...) where {T,N,D<:TimeType,S<:AbstractString} =
-    TimeArray{T, N, D, typeof(v)}([d], v, map(String, c), m; args...)
+          c::Vector{Symbol} = gen_colnames(size(v, 2)),
+          m::Any = nothing; args...) where {T,N,D<:TimeType} =
+    TimeArray{T,N,D,typeof(v)}(d, v, c, m; args...)
+TimeArray(d::D, v::AbstractArray{T,N},
+          c::Vector{Symbol} = gen_colnames(size(v, 2)),
+          m::Any = nothing; args...) where {T,N,D<:TimeType} =
+    TimeArray{T,N,D,typeof(v)}([d], v, c, m; args...)
 
 ###### conversion ###############
 
-convert(::Type{TimeArray{Float64,1}}, x::TimeArray{Bool,1}) =
-    TimeArray(x.timestamp, map(Float64, x.values), x.colnames, x.meta)
-convert(::Type{TimeArray{Float64,2}}, x::TimeArray{Bool,2}) =
-    TimeArray(x.timestamp, map(Float64, x.values), x.colnames, x.meta)
+convert(::Type{TimeArray{Float64,N}}, x::TimeArray{Bool,N}) where N =
+    TimeArray(timestamp(x), Float64.(values(x)), colnames(x), meta(x); unchecked = true)
 
-convert(x::TimeArray{Bool,1}) = convert(TimeArray{Float64,1}, x::TimeArray{Bool,1})
-convert(x::TimeArray{Bool,2}) = convert(TimeArray{Float64,2}, x::TimeArray{Bool,2})
+convert(x::TimeArray{Bool,N}) where N =
+    convert(TimeArray{Float64,N}, x::TimeArray{Bool,N})
 
 ###### copy ###############
 
-copy(ta::TimeArray)::TimeArray =
-    TimeArray(ta.timestamp, ta.values, ta.colnames, ta.meta)
+copy(ta::TimeArray) =
+    TimeArray(timestamp(ta), values(ta), colnames(ta), meta(ta); unchecked = true)
 
 ###### length ###################
 
-length(ata::AbstractTimeSeries) = length(ata.timestamp)
+length(ata::AbstractTimeSeries) = length(timestamp(ata))
 
 ###### size #####################
 
-size(ta::TimeArray) = size(ta.values)
-size(ta::TimeArray, dim) = size(ta.values, dim)
+size(ta::TimeArray) = size(values(ta))
+size(ta::TimeArray, dim) = size(values(ta), dim)
 
 ###### ndims #####################
 
@@ -173,12 +164,12 @@ end
 
 function show(io::IO, ta::TimeArray{T}) where T
     # summary line
-    nrow = size(ta.values, 1)
-    ncol = size(ta.values, 2)
+    nrow = size(values(ta), 1)
+    ncol = size(values(ta), 2)
 
     print(io, "$(nrow)×$(ncol) $(typeof(ta))")
     if nrow != 0
-        println(io, " $(ta.timestamp[1]) to $(ta.timestamp[end])")
+        println(io, " $(timestamp(ta)[1]) to $(timestamp(ta)[end])")
     else  # e.g. TimeArray(Date[], [])
         return
     end
@@ -192,20 +183,16 @@ function show(io::IO, ta::TimeArray{T}) where T
     if nrow > (drow - res_row)
         tophalf = 1:(half_row + add_row)
         bothalf = (nrow - half_row + 1):nrow
-        strs = _showval.(@view ta.values[[tophalf; bothalf], :])
-        ts   = @view ta.timestamp[[tophalf; bothalf]]
+        strs = _showval.(@view values(ta)[[tophalf; bothalf], :])
+        ts   = @view timestamp(ta)[[tophalf; bothalf]]
     else
-        strs = _showval.(ta.values)
-        ts   = ta.timestamp
+        strs = _showval.(values(ta))
+        ts   = timestamp(ta)
     end
 
-    # NOTE: reshaping is a workaround in julia 0.6
-    #       in 0.7, it can be:
-    #         [strwidth.(ta.colnames)'; strwidth.(strs); fill(5, ncol)']
-    colwidth = maximum([
-        reshape(textwidth.(ta.colnames), 1, :);
-        textwidth.(strs);
-        reshape(fill(5, ncol), 1, :)], dims = 1)
+    colwidth = maximum(
+        [textwidth.(string.(colnames(ta)))'; textwidth.(strs); fill(5, ncol)'],
+        dims = 1)
 
     # paging
     spacetime = textwidth(string(ts[1]))
@@ -215,7 +202,7 @@ function show(io::IO, ta::TimeArray{T}) where T
         # row label line
         ## e.g. | Open  | High  | Low   | Close  |
         print(io, "│", " "^(spacetime + 2))
-        for (name, w) in zip(ta.colnames[p], colwidth[p])
+        for (name, w) in zip(colnames(ta)[p], colwidth[p])
             print(io, "│ ", rpad(name, w + 1))
         end
         println(io, "│")
@@ -271,50 +258,50 @@ end
 # single row
 getindex(ta::TimeArray, n::Integer) =
     # avoid conversion to column vector
-    TimeArray(ta.timestamp[n], ta.values[n:n, :], ta.colnames, ta.meta)
+    TimeArray(timestamp(ta)[n], values(ta)[n:n, :], colnames(ta), meta(ta))
 
 # single row 1d
 getindex(ta::TimeArray{T,1}, n::Integer) where {T} =
-    TimeArray(ta.timestamp[n], ta.values[[n]], ta.colnames, ta.meta)
+    TimeArray(timestamp(ta)[n], values(ta)[[n]], colnames(ta), meta(ta))
 
 # range of rows
 getindex(ta::TimeArray, r::UnitRange{<:Integer}) =
-    TimeArray(ta.timestamp[r], ta.values[r, :], ta.colnames, ta.meta)
+    TimeArray(timestamp(ta)[r], values(ta)[r, :], colnames(ta), meta(ta))
 
 # range of 1d rows
 getindex(ta::TimeArray{T,1}, r::UnitRange{<:Integer}) where T =
-    TimeArray(ta.timestamp[r], ta.values[r], ta.colnames, ta.meta)
+    TimeArray(timestamp(ta)[r], values(ta)[r], colnames(ta), meta(ta))
 
 # array of rows
 getindex(ta::TimeArray, a::AbstractVector{<:Integer}) =
-    TimeArray(ta.timestamp[a], ta.values[a, :], ta.colnames, ta.meta)
+    TimeArray(timestamp(ta)[a], values(ta)[a, :], colnames(ta), meta(ta))
 
 # array of 1d rows
 getindex(ta::TimeArray{T,1}, a::AbstractVector{<:Integer}) where T =
-    TimeArray(ta.timestamp[a], ta.values[a], ta.colnames, ta.meta)
+    TimeArray(timestamp(ta)[a], values(ta)[a], colnames(ta), meta(ta))
 
 # single column by name
-function getindex(ta::TimeArray, s::AbstractString)
-    n = findfirst(isequal(s), ta.colnames)
-    TimeArray(ta.timestamp, ta.values[:, n], String[s], ta.meta)
+function getindex(ta::TimeArray, s::Symbol)
+    n = findcol(ta, s)
+    TimeArray(timestamp(ta), values(ta)[:, n], Symbol[s], meta(ta), unchecked = true)
 end
 
 # array of columns by name
-function getindex(ta::TimeArray, args::AbstractString...)
-    ns = [findfirst(isequal(a), ta.colnames) for a in args]
-    TimeArray(ta.timestamp, ta.values[:, ns], String[a for a in args], ta.meta)
+function getindex(ta::TimeArray, ss::Symbol...)
+    ns = [findcol(ta, s) for s in ss]
+    TimeArray(timestamp(ta), values(ta)[:, ns], collect(ss), meta(ta))
 end
 
 # single date
 function getindex(ta::TimeArray{T,N,D}, d::D) where {T,N,D}
-    idxs = searchsorted(ta.timestamp, d)
+    idxs = searchsorted(timestamp(ta), d)
     length(idxs) == 1 ? ta[idxs[1]] : nothing
 end
 
 # multiple dates
 function getindex(ta::TimeArray{T,N,D}, dates::Vector{D}) where {T,N,D}
     dates = sort(dates)
-    idxs, _ = overlap(ta.timestamp, dates)
+    idxs, _ = overlap(timestamp(ta), dates)
     ta[idxs]
 end
 
@@ -324,36 +311,28 @@ getindex(ta::TimeArray{T,N,D}, r::StepRange{D}) where {T,N,D} = ta[collect(r)]
 getindex(ta::TimeArray, k::TimeArray{Bool,1}) = ta[findwhen(k)]
 
 # day of week
-# getindex{T,N}(ta::TimeArray{T,N}, d::DAYOFWEEK) = ta[dayofweek(ta.timestamp) .== d]
+# getindex{T,N}(ta::TimeArray{T,N}, d::DAYOFWEEK) = ta[dayofweek(timestamp(ta)) .== d]
 
 # Define end keyword
-lastindex(ta::TimeArray) = length(ta.timestamp)
+lastindex(ta::TimeArray) = length(timestamp(ta))
 
-eachindex(ta::TimeArray) = Base.OneTo(length(ta.timestamp))
+eachindex(ta::TimeArray) = Base.OneTo(length(timestamp(ta)))
 
-# helper methods for inner constructor
-function find_dupes_index(cnames)
-    idx = Int[]
-    for c in 1:length(cnames)
-        if occursin(cnames[c], string(cnames[1:c-1]))
-            push!(idx, c)
-        end
-    end
-    idx
-end
+###### getproperty/propertynames #################
 
-function replace_dupes(cnames)
-    n = 1
-    while !allunique(cnames)
-        ds = find_dupes_index(cnames)
-        for d in ds
-            if n == 1
-                cnames[d] = string(cnames[d], "_$n")
-            else
-                cnames[d] = string(cnames[d][1:length(cnames[d])-length(string(n))-1], "_$n")
-            end
-        end
-        n += 1
-    end
-    cnames
-end
+getproperty(ta::AbstractTimeSeries, c::Symbol) = ta[c]
+
+propertynames(ta::TimeArray) = colnames(ta)
+
+###### element wrapers ###########
+
+timestamp(ta::TimeArray) = getfield(ta, :timestamp)
+values(ta::TimeArray)    = getfield(ta, :values)
+colnames(ta::TimeArray)  = getfield(ta, :colnames)
+meta(ta::TimeArray)      = getfield(ta, :meta)
+
+# internal use, to avoid name collision
+_timestamp(ta::TimeArray) = getfield(ta, :timestamp)
+_values(ta::TimeArray)    = getfield(ta, :values)
+_colnames(ta::TimeArray)  = getfield(ta, :colnames)
+_meta(ta::TimeArray)	  = getfield(ta, :meta)

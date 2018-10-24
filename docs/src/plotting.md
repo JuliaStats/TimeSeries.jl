@@ -24,7 +24,7 @@ More sophisticated plots can be created by using keyword attributes and
 subsets:
 
 ```julia
-plot(MarketData.ohlc["Low"], seriestype = :scatter, markersize = 3, color = :red, markeralpha = 0.4, grid = true)
+plot(MarketData.ohlc[:Low], seriestype = :scatter, markersize = 3, color = :red, markeralpha = 0.4, grid = true)
 ```
 
 ![image](images/complexplot.svg)

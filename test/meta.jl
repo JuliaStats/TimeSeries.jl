@@ -11,137 +11,137 @@ using TimeSeries
 
 
 @testset "construction with and without meta field" begin
-    nometa = TimeArray(cl.timestamp, cl.values, cl.colnames)
+    nometa = TimeArray(timestamp(cl), values(cl), colnames(cl))
 
     @testset "default meta field to nothing" begin
-        @test nometa.meta == nothing
+        @test meta(nometa) == nothing
     end
 
     @testset "allow objects in meta field" begin
-        @test mdata.meta == "Apple"
+        @test meta(mdata) == "Apple"
     end
 end
 
 
 @testset "get index operations preserve meta" begin
     @testset "index by integer row" begin
-        @test mdata[1].meta == "Apple"
+        @test meta(mdata[1]) == "Apple"
     end
 
     @testset "index by integer range" begin
-        @test mdata[1:2].meta == "Apple"
+        @test meta(mdata[1:2]) == "Apple"
     end
 
     @testset "index by column name" begin
-        @test mdata["Close"].meta == "Apple"
+        @test meta(mdata[:Close]) == "Apple"
     end
 
     @testset "index by date range" begin
-        @test mdata[[Date(2000,1,3), Date(2000,1,14)]].meta == "Apple"
+        @test meta(mdata[[Date(2000,1,3), Date(2000,1,14)]]) == "Apple"
     end
 end
 
 
 @testset "split operations preserve meta" begin
     @testset "when" begin
-        @test when(mdata, dayofweek, 1).meta == "Apple"
+        @test meta(when(mdata, dayofweek, 1)) == "Apple"
     end
 
     @testset "from" begin
-        @test from(mdata, Date(2000,1,1)).meta == "Apple"
+        @test meta(from(mdata, Date(2000,1,1))) == "Apple"
     end
 
     @testset "to" begin
-        @test to(mdata, Date(2000,1,1)).meta == "Apple"
+        @test meta(to(mdata, Date(2000,1,1))) == "Apple"
     end
 end
 
 
 @testset "apply operations preserve meta" begin
     @testset "lag" begin
-        @test lag(mdata).meta == "Apple"
+        @test meta(lag(mdata)) == "Apple"
     end
 
     @testset "lead" begin
-        @test lead(mdata).meta == "Apple"
+        @test meta(lead(mdata)) == "Apple"
     end
 
     @testset "percentchange" begin
-        @test percentchange(mdata).meta == "Apple"
+        @test meta(percentchange(mdata)) == "Apple"
     end
 
     @testset "moving" begin
-        @test moving(mean,mdata,10).meta == "Apple"
+        @test meta(moving(mean,mdata,10)) == "Apple"
     end
 
     @testset "upto" begin
-        @test upto(sum, mdata).meta == "Apple"
+        @test meta(upto(sum, mdata)) == "Apple"
     end
 end
 
 
 @testset "combine operations preserve meta" begin
     @testset "merge when both have identical meta" begin
-        @test merge(cl, op).meta         == "AAPL"
-        @test merge(cl, op, :left).meta  == "AAPL"
-        @test merge(cl, op, :right).meta == "AAPL"
-        @test merge(cl, op, :outer).meta == "AAPL"
+        @test meta(merge(cl, op))         == "AAPL"
+        @test meta(merge(cl, op, :left))  == "AAPL"
+        @test meta(merge(cl, op, :right)) == "AAPL"
+        @test meta(merge(cl, op, :outer)) == "AAPL"
     end
 
     @testset "merged meta field value concatenates when both objects' meta field values are strings" begin
-        @test merge(mdata, cl).meta         == "Apple_AAPL"
-        @test merge(mdata, cl, :left).meta  == "Apple_AAPL"
-        @test merge(mdata, cl, :right).meta == "Apple_AAPL"
-        @test merge(mdata, cl, :outer).meta == "Apple_AAPL"
+        @test meta(merge(mdata, cl))         == "Apple_AAPL"
+        @test meta(merge(mdata, cl, :left))  == "Apple_AAPL"
+        @test meta(merge(mdata, cl, :right)) == "Apple_AAPL"
+        @test meta(merge(mdata, cl, :outer)) == "Apple_AAPL"
     end
 
     @testset "merge when supplied with meta" begin
-        @test merge(mdata, mdata, meta=47).meta         == 47
-        @test merge(mdata, mdata, :left, meta=47).meta  == 47
-        @test merge(mdata, mdata, :right, meta=47).meta == 47
-        @test merge(mdata, mdata, :outer, meta=47).meta == 47
-        @test merge(mdata, cl, meta=47).meta            == 47
-        @test merge(mdata, cl, :left, meta=47).meta     == 47
-        @test merge(mdata, cl, :right, meta=47).meta    == 47
-        @test merge(mdata, cl, :outer, meta=47).meta    == 47
+        @test meta(merge(mdata, mdata, meta=47))         == 47
+        @test meta(merge(mdata, mdata, :left, meta=47))  == 47
+        @test meta(merge(mdata, mdata, :right, meta=47)) == 47
+        @test meta(merge(mdata, mdata, :outer, meta=47)) == 47
+        @test meta(merge(mdata, cl, meta=47))            == 47
+        @test meta(merge(mdata, cl, :left, meta=47))     == 47
+        @test meta(merge(mdata, cl, :right, meta=47))    == 47
+        @test meta(merge(mdata, cl, :outer, meta=47))    == 47
     end
 
     @testset "merged meta field value for disparate types in meta field defaults to Void" begin
-        @test merge(mdata, merge(cl, op, meta=47)).meta         == nothing
-        @test merge(mdata, merge(cl, op, meta=47), :left).meta  == nothing
-        @test merge(mdata, merge(cl, op, meta=47), :right).meta == nothing
-        @test merge(mdata, merge(cl, op, meta=47), :outer).meta == nothing
+        @test meta(merge(mdata, merge(cl, op, meta=47)))         == nothing
+        @test meta(merge(mdata, merge(cl, op, meta=47), :left))  == nothing
+        @test meta(merge(mdata, merge(cl, op, meta=47), :right)) == nothing
+        @test meta(merge(mdata, merge(cl, op, meta=47), :outer)) == nothing
     end
 
     @testset "collapse" begin
-        @test collapse(mdata, week, first).meta == "Apple"
+        @test meta(collapse(mdata, week, first)) == "Apple"
     end
 end
 
 
 @testset "basecall operations preserve meta" begin
     @testset "basecall" begin
-        @test basecall(mdata, cumsum).meta == "Apple"
+        @test meta(basecall(mdata, cumsum)) == "Apple"
     end
 end
 
 
 @testset "mathematical and comparison operations preserve meta" begin
     @testset ".+" begin
-        @test (mdata .+ mdata).meta == "Apple"
-        @test (mdata .+ cl).meta == nothing
+        @test meta(mdata .+ mdata) == "Apple"
+        @test meta(mdata .+ cl)    == nothing
     end
 
     @testset ".<" begin
-        @test (mdata .< mdata).meta == "Apple"
-        @test (mdata .< cl).meta == nothing
+        @test meta(mdata .< mdata) == "Apple"
+        @test meta(mdata .< cl)    == nothing
     end
 end
 
 
 @testset "readwrite accepts meta argument" begin
     @testset "Apple is present" begin
-        @test mdata.meta == "Apple"
+        @test meta(mdata) == "Apple"
     end
 end
 

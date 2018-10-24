@@ -99,8 +99,8 @@ function insertbyidx!(dst::AbstractArray, src::AbstractArray, dstidx::Vector, sr
     nothing
 end
 
-function setcolnames!(ta::TimeArray, colnames::Vector)
-    length(colnames) == length(ta.colnames) ? ta.colnames[:] = colnames :
+function setcolnames!(ta::TimeArray, colnames::Vector{Symbol})
+    length(colnames) == size(ta, 2) ? (_colnames(ta)[:] = colnames) :
     length(colnames) > 0 && error("colnames supplied is not correct size")
     return ta
 end  # setcolnames!
@@ -114,4 +114,81 @@ end  # setcolnames!
     end
 
     true
+end
+
+# helper method for inner constructor
+@inline function _issorted_and_unique(x)
+    for i in 1:length(x)-1
+        @inbounds !(x[i] < x[i + 1]) && return false
+    end
+    true
+end
+
+# helper method for inner constructor
+function replace_dupes(cnames::Vector{Symbol})
+    n = 1
+    while !allunique(cnames)
+        ds = find_dupes_index(cnames)
+        for d in ds
+            if n == 1
+                cnames[d] = Symbol(cnames[d], "_$n")
+            else
+                s = string(cnames[d])
+                cnames[d] = Symbol(s[1:length(s)-length(string(n))-1], "_$n")
+            end
+        end
+        n += 1
+    end
+    cnames
+end
+
+# helper method for inner constructor
+find_dupes_index(A::Vector{Symbol}) =
+    @inbounds [i for i in eachindex(A) if A[i] ∈ A[1:i-1]]
+
+gen_colnames(n::Integer) = gen_colnames(Val{n}())
+
+@generated function gen_colnames(v::Val{N}) where {N}
+    ret = Vector{Symbol}(undef, N)
+
+    s = ""
+    for i ∈ 1:N
+        s = carry_char(s)
+        ret[i] = Symbol(s)
+    end
+
+    ret
+end
+
+const carry_char_cache = Dict{String,String}("" => "A")
+
+function carry_char(s::String = "")
+    ret = get(carry_char_cache, s, "")
+    (ret != "") && return ret
+
+    n = length(s)
+
+    c = s[n] + 1
+
+    ret = if c > 'Z'
+        c = 'A'
+        carry_char(s[1:n-1]) * c
+    else
+        s[1:n-1] * c
+    end
+
+    carry_char_cache[s] = ret
+end
+
+# helper method for `getindex`
+"""
+Return the first index of the given column names.
+Raise `KeyError` if col name not found.
+"""
+findcol(ta::AbstractTimeSeries, s::Symbol) = findcol(colnames(ta), s)
+
+@inline function findcol(cols::Vector{Symbol}, s::Symbol)
+    i = findfirst(isequal(s), cols)
+    (i === nothing) && throw(KeyError(s))
+    i
 end

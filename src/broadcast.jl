@@ -22,8 +22,8 @@ function Base.copy(bc′::Broadcasted{<:TimeArrayStyle})
     check_column_lens(tas)
 
     n = length(tas)
-    col′ = (n == 1) ? tas[1].colnames : _new_cnames.(colnames.(tas)...)
-    meta′ = (n == 1) ? tas[1].meta : allequal(meta.(tas)) ? tas[1].meta : nothing
+    col′ = (n == 1) ? colnames(tas[1]) : _new_cnames.(colnames.(tas)...)
+    meta′ = (n == 1) ? meta(tas[1]) : (allequal(meta.(tas)) ? meta(tas[1]) : nothing)
 
     # obtain shared timestamp
     tstamp_idx = overlap(timestamp.(tas)...)
@@ -35,9 +35,9 @@ function Base.copy(bc′::Broadcasted{<:TimeArrayStyle})
         x = if arg isa TimeArray
             j += 1
             if typeof(arg).parameters[2] == 1  # 1D array
-                view(arg.values, tstamp_idx[j])
+                view(values(arg), tstamp_idx[j])
             else
-                view(arg.values, tstamp_idx[j], :)
+                view(values(arg), tstamp_idx[j], :)
             end
         else
             arg
@@ -45,7 +45,7 @@ function Base.copy(bc′::Broadcasted{<:TimeArrayStyle})
         push!(args, x)
     end
 
-    TimeArray(view(tas[1].timestamp, tstamp_idx[1]),
+    TimeArray(view(timestamp(tas[1]), tstamp_idx[1]),
               broadcast(bc′.f, args...),
               col′,
               meta′)
@@ -55,7 +55,7 @@ end
     length(tas) <= 1 && return
 
     # if we have more than one TimeArray
-    lens = Set(i for i ∈ map(ta -> length(ta.colnames), tas) if i ≠ 1)
+    lens = Set(i for i ∈ map(ta -> length(colnames(ta)), tas) if i ≠ 1)
     length(lens) > 1 && throw(
         DimensionMismatch(
             "TimeArrays must have the same number of columns, " *
@@ -75,8 +75,8 @@ function find_ta(bc)
     ret
 end
 
-@generated function _new_cnames(args::Vararg{String, N}) where N
-    expr = :(string(args[1]))
+@generated function _new_cnames(args::Vararg{Symbol, N}) where N
+    expr = :(Symbol(args[1]))
     for i ∈ 2:N
         push!(expr.args, "_", :(args[$i]))
     end

@@ -2,48 +2,55 @@ import Base: merge, hcat, vcat, map
 
 ###### merge ####################
 
-function _merge_outer(::Type{IndexType}, ta1::TimeArray{T, N, D}, ta2::TimeArray{T, M, D}, padvalue, meta) where {IndexType, T, N, M, D}
-    timestamps, new_idx1, new_idx2 = sorted_unique_merge(IndexType, ta1.timestamp, ta2.timestamp)
-    vals = fill(convert(T, padvalue), (length(timestamps), length(ta1.colnames) + length(ta2.colnames)))
-    insertbyidx!(vals, ta1.values, new_idx1)
-    insertbyidx!(vals, ta2.values, new_idx2, size(ta1.values, 2))
-    TimeArray(timestamps, vals, [ta1.colnames; ta2.colnames], meta; unchecked = true)
+function _merge_outer(::Type{IndexType}, ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, padvalue, meta) where {IndexType,T,N,M,D}
+    timestamps, new_idx1, new_idx2 = sorted_unique_merge(IndexType, timestamp(ta1), timestamp(ta2))
+    vals = fill(convert(T, padvalue), (length(timestamps), length(colnames(ta1)) + length(colnames(ta2))))
+    insertbyidx!(vals, values(ta1), new_idx1)
+    insertbyidx!(vals, values(ta2), new_idx2, size(values(ta1), 2))
+    TimeArray(timestamps, vals, [colnames(ta1); colnames(ta2)], meta; unchecked = true)
 end
 
-function merge(ta1::TimeArray{T, N, D}, ta2::TimeArray{T, M, D}, method::Symbol=:inner;
-               colnames::Vector=[], meta::Any=nothing, padvalue=NaN) where {T, N, M, D}
+function merge(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, method::Symbol = :inner;
+               colnames::Vector = Symbol[], meta = nothing,
+               padvalue=NaN) where {T,N,M,D}
 
-    if ta1.meta == ta2.meta && meta isa Nothing
-        meta = ta1.meta
-    elseif typeof(ta1.meta) <: AbstractString && typeof(ta2.meta) <: AbstractString && meta isa Nothing
-        meta = string(ta1.meta, "_", ta2.meta)
+    if colnames isa Vector{<:AbstractString}
+        @warn "`merge(...; colname::Vector{<:AbstractString})` is deprecated, " *
+              "use `merge(...; colnames=Symbol.(colnames))` instead."
+        colnames = Symbol.(colnames)
+    end
+
+    meta = if _meta(ta1) == _meta(ta2) && meta ≡ nothing
+        _meta(ta1)
+    elseif typeof(_meta(ta1)) <: AbstractString && typeof(_meta(ta2)) <: AbstractString && meta ≡ nothing
+        string(_meta(ta1), "_", _meta(ta2))
     else
-        meta = meta
+        meta
     end
 
     if method == :inner
 
-        idx1, idx2 = overlap(ta1.timestamp, ta2.timestamp)
-        vals = [ta1[idx1].values ta2[idx2].values]
-        ta = TimeArray(ta1[idx1].timestamp, vals, [ta1.colnames; ta2.colnames], meta; unchecked = true)
+        idx1, idx2 = overlap(timestamp(ta1), timestamp(ta2))
+        vals = [values(ta1[idx1]) values(ta2[idx2])]
+        ta = TimeArray(timestamp(ta1[idx1]), vals, [_colnames(ta1); _colnames(ta2)], meta; unchecked = true)
 
     elseif method == :left
 
-        new_idx2, old_idx2 = overlap(ta1.timestamp, ta2.timestamp)
-        right_vals = fill(convert(T, padvalue), (length(ta1), length(ta2.colnames)))
-        insertbyidx!(right_vals, ta2.values, new_idx2, old_idx2)
-        ta = TimeArray(ta1.timestamp, [ta1.values right_vals], [ta1.colnames; ta2.colnames], meta; unchecked = true)
+        new_idx2, old_idx2 = overlap(timestamp(ta1), timestamp(ta2))
+        right_vals = fill(convert(T, padvalue), (length(ta1), length(_colnames(ta2))))
+        insertbyidx!(right_vals, values(ta2), new_idx2, old_idx2)
+        ta = TimeArray(timestamp(ta1), [values(ta1) right_vals], [_colnames(ta1); _colnames(ta2)], meta; unchecked = true)
 
     elseif method == :right
 
         ta = merge(ta2, ta1, :left; padvalue = padvalue)
-        ncol2 = length(ta2.colnames)
-        vals = [ta.values[:, (ncol2+1):end] ta.values[:, 1:ncol2]]
-        ta = TimeArray(ta.timestamp, vals, [ta1.colnames; ta2.colnames], meta; unchecked = true)
+        ncol2 = length(_colnames(ta2))
+        vals = [values(ta)[:, (ncol2+1):end] values(ta)[:, 1:ncol2]]
+        ta = TimeArray(timestamp(ta), vals, [_colnames(ta1); _colnames(ta2)], meta; unchecked = true)
 
     elseif method == :outer
 
-        ta = if (length(ta1.timestamp) + length(ta2.timestamp)) > typemax(Int32)
+        ta = if (length(timestamp(ta1)) + length(timestamp(ta2))) > typemax(Int32)
             _merge_outer(Int64, ta1, ta2, padvalue, meta)
         else
             _merge_outer(Int32, ta1, ta2, padvalue, meta)
@@ -61,17 +68,17 @@ end
 # hcat ##########################
 
 function hcat(x::TimeArray, y::TimeArray)
-    tsx = x.timestamp
-    tsy = y.timestamp
+    tsx = timestamp(x)
+    tsy = timestamp(y)
 
     if length(tsx) != length(tsx) || tsx != tsy
         throw(DimensionMismatch(
             "timestamps not consistent, please checkout `merge`."))
     end
 
-    meta = ifelse(x.meta == y.meta, x.meta, nothing)
+    m = ifelse(meta(x) == meta(y), meta(x), nothing)
 
-    TimeArray(tsx, [x.values y.values], [x.colnames; y.colnames], meta)
+    TimeArray(tsx, [values(x) values(y)], [colnames(x); colnames(y)], m)
 end
 
 hcat(x::TimeArray, y::TimeArray, zs::Vararg{TimeArray}) =
@@ -79,27 +86,27 @@ hcat(x::TimeArray, y::TimeArray, zs::Vararg{TimeArray}) =
 
 # collapse ######################
 
-function collapse(ta::TimeArray{T, N, D}, period::Function, timestamp::Function,
-                  value::Function=timestamp) where {T, N, D}
+function collapse(ta::TimeArray{T,N,D}, period::Function, timestamp::Function,
+                  value::Function = timestamp) where {T,N,D}
 
     length(ta) == 0 && return ta
 
-    ncols = length(ta.colnames)
+    ncols = length(colnames(ta))
     collapsed_tstamps = D[]
-    collapsed_values = ta.values[1:0, :]
+    collapsed_values = values(ta)[1:0, :]
 
-    tstamp = ta.timestamp[1]
+    tstamp = _timestamp(ta)[1]
     mapped_tstamp = period(tstamp)
     cluster_startrow = 1
 
     for i in 1:length(ta)-1
 
-        next_tstamp = ta.timestamp[i+1]
+        next_tstamp = _timestamp(ta)[i+1]
         next_mapped_tstamp = period(next_tstamp)
 
         if mapped_tstamp != next_mapped_tstamp
-          push!(collapsed_tstamps, timestamp(ta.timestamp[cluster_startrow:i]))
-          collapsed_values = [collapsed_values; T[value(ta.values[cluster_startrow:i, j]) for j in 1:ncols]']
+          push!(collapsed_tstamps, timestamp(_timestamp(ta)[cluster_startrow:i]))
+          collapsed_values = [collapsed_values; T[value(values(ta)[cluster_startrow:i, j]) for j in 1:ncols]']
           cluster_startrow = i+1
         end #if
 
@@ -108,11 +115,11 @@ function collapse(ta::TimeArray{T, N, D}, period::Function, timestamp::Function,
 
     end #for
 
-    push!(collapsed_tstamps, timestamp(ta.timestamp[cluster_startrow:end]))
-    collapsed_values = [collapsed_values; T[value(ta.values[cluster_startrow:end, j]) for j in 1:ncols]']
+    push!(collapsed_tstamps, timestamp(_timestamp(ta)[cluster_startrow:end]))
+    collapsed_values = [collapsed_values; T[value(values(ta)[cluster_startrow:end, j]) for j in 1:ncols]']
 
     N == 1 && (collapsed_values = vec(collapsed_values))
-    return TimeArray(collapsed_tstamps, collapsed_values, ta.colnames, ta.meta)
+    return TimeArray(collapsed_tstamps, collapsed_values, colnames(ta), meta(ta))
 
 end
 
@@ -120,37 +127,37 @@ end
 
 function vcat(TA::TimeArray...)
     # Check all meta fields are identical.
-    prev_meta = TA[1].meta
+    prev_meta = meta(TA[1])
     for ta in TA
-        if ta.meta != prev_meta
+        if meta(ta) != prev_meta
             throw(ArgumentError("metadata doesn't match"))
         end
     end
 
     # Check column names are identical.
-    prev_colnames = TA[1].colnames
+    prev_colnames = colnames(TA[1])
     for ta in TA
-        if ta.colnames != prev_colnames
+        if colnames(ta) != prev_colnames
             throw(ArgumentError("column names don't match"))
         end
     end
 
     # Concatenate the contents.
-    timestamps = vcat([ta.timestamp for ta in TA]...)
-    values = vcat([ta.values for ta in TA]...)
+    ts  = vcat([timestamp(ta) for ta in TA]...)
+    val = vcat([values(ta) for ta in TA]...)
 
-    order = sortperm(timestamps)
-    if length(TA[1].colnames) == 1 # Check for 1D to ensure values remains a 1D vector.
-        return TimeArray(timestamps[order], values[order], TA[1].colnames, TA[1].meta)
+    order = sortperm(ts)
+    if ndims(TA[1]) == 1 # Check for 1D to ensure values remains a 1D vector.
+        return TimeArray(ts[order], val[order], prev_colnames, prev_meta)
     else
-        return TimeArray(timestamps[order], values[order, :], TA[1].colnames, TA[1].meta)
+        return TimeArray(ts[order], val[order, :], prev_colnames, prev_meta)
     end
 end
 
 # map ######################
 
 @generated function map(f, ta::TimeArray{T,N}) where {T,N}
-    input_val  = (N == 1) ? :(ta.values[i]) : :(vec(ta.values[i, :]))
+    input_val  = (N == 1) ? :(values(ta)[i]) : :(vec(values(ta)[i, :]))
     output_val = (N == 1) ? :(vals[i]) : :(vals[i, :])
 
     output_vals = (N == 1) ? :(vals[order]) : :(vals[order, :])
@@ -160,10 +167,10 @@ end
         vals = similar(values(ta))
 
         for i in eachindex(ta)
-            @inbounds ts[i], $output_val = f(ta.timestamp[i], $input_val)
+            @inbounds ts[i], $output_val = f(timestamp(ta)[i], $input_val)
         end
 
         order = sortperm(ts)
-        TimeArray(ts[order], $output_vals, ta.colnames, ta.meta)
+        TimeArray(ts[order], $output_vals, colnames(ta), meta(ta))
     end
 end

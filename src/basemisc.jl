@@ -17,19 +17,19 @@ macro _mapbase(sig::Expr, imp::Expr)
 
     # these default values are useful for reduction function
     ts = get(_tsmap, fname, Dict())
-    dim1ts = get(ts, 1, :(ta.timestamp[end]))
-    dim2ts = get(ts, 2, :(ta.timestamp))
+    dim1ts = get(ts, 1, :(timestamp(ta)[end]))
+    dim2ts = get(ts, 2, :(timestamp(ta)))
 
     # these default values are useful for reduction function
     col = get(_colmap, fname, Dict())
-    dim1col = get(col, 1, :(ta.colnames))
-    dim2col = get(col, 2, :([$(string(fname))]))
+    dim1col = get(col, 1, :(colnames(ta)))
+    dim2col = get(col, 2, :([$(QuoteNode(fname))]))
 
     fbody = quote
         if dims == 1
-            TimeArray($dim1ts, $imp, $dim1col, ta.meta)
+            TimeArray($dim1ts, $imp, $dim1col, meta(ta))
         elseif dims == 2
-            TimeArray($dim2ts, $imp, $dim2col, ta.meta)
+            TimeArray($dim2ts, $imp, $dim2col, meta(ta))
         else
             throw(DimensionMismatch("dims should be 1 or 2"))
         end
@@ -45,14 +45,14 @@ macro _mapbase(sig::Expr, imp::Expr)
 end
 
 # Cumulative functions
-_tsmap[:cumsum] = Dict(1 => :(ta.timestamp))
-_colmap[:cumsum] = Dict(2 => :(ta.colnames))
+_tsmap[:cumsum] = Dict(1 => :(timestamp(ta)))
+_colmap[:cumsum] = Dict(2 => :(colnames(ta)))
 @_mapbase cumsum(ta::TimeArray; dims::Integer) cumsum(values(ta), dims = dims)
 @_mapbase(cumsum(ta::TimeArray{T,1}, dims::Integer = 1) where{T},
           cumsum(values(ta), dims = dims))
 
-_tsmap[:cumprod] = Dict(1 => :(ta.timestamp))
-_colmap[:cumprod] = Dict(2 => :(ta.colnames))
+_tsmap[:cumprod] = Dict(1 => :(timestamp(ta)))
+_colmap[:cumprod] = Dict(2 => :(colnames(ta)))
 @_mapbase cumprod(ta::TimeArray; dims::Integer) cumprod(values(ta), dims = dims)
 @_mapbase(cumprod(ta::TimeArray{T,1}; dims::Integer = 1) where {T},
           cumprod(values(ta), dims = dims))

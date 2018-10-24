@@ -135,6 +135,7 @@ In our moving average example, we would pass arguments this way:
 ```@repl
 using TimeSeries
 using MarketData
+using Statistics
 moving(mean, cl, 10)
 ```
 

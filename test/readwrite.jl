@@ -20,9 +20,9 @@ using TimeSeries
     tm0 = readtimearray(IOBuffer(io), format="yyyy/mm/dd|HH:MM:SS")
 
     @testset "Input as IOBuffer and specifying DateTime string format for reading" begin
-        @test length(tm0)      == 5
-        @test size(tm0.values) == (5,1)
-        @test tm0.timestamp[4] == DateTime(2010,1,4,9,4)
+        @test length(tm0)       == 5
+        @test size(values(tm0)) == (5,1)
+        @test timestamp(tm0)[4] == DateTime(2010,1,4,9,4)
     end
 end
 
@@ -42,45 +42,45 @@ end
         format="yyyy-mm-dd HH:MM:SS", header=false)
 
     @testset "Specifying DateTime string format for reading" begin
-        @test length(tm1)      == 5
-        @test size(tm1.values) == (5,1)
-        @test tm1.timestamp[4]  == DateTime(2010,1,4,9,4)
+        @test length(tm1)        == 5
+        @test size(values(tm1))  == (5,1)
+        @test timestamp(tm1)[4]  == DateTime(2010,1,4,9,4)
         @test_throws(
             ArgumentError,
             readtimearray(joinpath(dirname(@__FILE__), "data/datetime3.csv")))
     end
 
     @testset "readtimearray accepts meta field" begin
-        @test tm2.meta == "foo"
+        @test meta(tm2) == "foo"
     end
 
     @testset "readtimearray works with arbitrary delimiters" begin
-        @test length(tm3)      == 2
-        @test size(tm3.values) == (2,2)
-        @test tm3.timestamp[2] == DateTime(2015,1,1,1,0)
-        @test tm3.values[1,1]  == 10.42
+        @test length(tm3)       == 2
+        @test size(values(tm3)) == (2,2)
+        @test timestamp(tm3)[2] == DateTime(2015,1,1,1,0)
+        @test values(tm3)[1,1]  == 10.42
     end
 
     @testset "headless csv" begin
-        @test length(tm4)      == 2
-        @test size(tm4.values) == (2, 4)
-        @test tm4.values       == [1 2 3 4; 5 6 7 8]
+        @test length(tm4)       == 2
+        @test size(values(tm4)) == (2, 4)
+        @test values(tm4)       == [1 2 3 4; 5 6 7 8]
     end
 end
 
 
 @testset "readwrite parses MarketData objects correctly" begin
     @testset "1d values array works" begin
-        @test typeof(cl.values) == Array{Float64,1}
+        @test typeof(values(cl)) == Array{Float64,1}
     end
 
     @testset "2d values array works" begin
-        @test typeof(ohlc.values) == Array{Float64,2}
+        @test typeof(values(ohlc)) == Array{Float64,2}
     end
 
     @testset "timestamp parses to correct type" begin
-        @test typeof(cl.timestamp)        == Vector{Date}
-        @test typeof(datetime1.timestamp) == Vector{DateTime}
+        @test typeof(timestamp(cl))        == Vector{Date}
+        @test typeof(timestamp(datetime1)) == Vector{DateTime}
     end
 end
 
@@ -92,9 +92,9 @@ end
     readback = readtimearray(filename)
 
     @testset "writetimearray output can be round-tripped" begin
-        @test uohlc.colnames                         == readback.colnames
-        @test uohlc.timestamp                        == readback.timestamp
-        @test isequal(uohlc.values, readback.values) == true
+        @test colnames(uohlc)  == colnames(readback)
+        @test timestamp(uohlc) == timestamp(readback)
+        @test isequal(values(uohlc), values(readback))
         rm(filename)
     end
 end

@@ -7,9 +7,9 @@
     #    ta, ohlc = extract_ohlc(ta)
     #    collect(zip(ohlc)) # But there are currently issues with that
     else
-        labels --> reshape(ta.colnames,1,length(ta.colnames))
+        labels --> reshape(colnames(ta),1,length(colnames(ta)))
         seriestype := st
-        ta.timestamp, ta.values
+        timestamp(ta), values(ta)
     end
 end
 
@@ -24,9 +24,9 @@ end
 Candlestick(ta::TimeArray) = Candlestick(extract_ohlc(ta)...)
 
 function extract_ohlc(ta::TimeArray)
-    indices = [find(x->lowercase(x) == name, ta.colnames) for name in ["open", "high", "low", "close"]]
+    indices = [find(x->lowercase(x) == name, colnames(ta)) for name in ["open", "high", "low", "close"]]
     minimum(length.(indices)) < 1 && error("The time array did not have variables named open, high, low and close")
-    (ta.timestamp, [ta.values[:,i] for i in 1:4]...)
+    (timestamp(ta), [values(ta)[:,i] for i in 1:4]...)
 end
 
 function HeikinAshi!(cs::Candlestick) # some values here are made too high!

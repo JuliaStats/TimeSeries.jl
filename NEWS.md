@@ -1,3 +1,47 @@
+### 0.14.0
+
+* Symbol column indexing. ([#377])
+  And the String indexing is deprecated.
+
+  E.g.
+
+  ```julia
+  using MarketData
+  ohlc[:Close]  # and cl["Close"] is deprecated
+  ```
+
+* `Base.getproperty` support. ([#377])
+  All the columns can be accessed via the form `ta.column_name`.
+
+  E.g.
+
+  ```julia
+  using MarketData
+  ohlc.Open
+  ```
+
+  The original `TimeArray` fields getters is available as functions.
+
+    * `timestamp(::TimeArray)`
+    * `values(::TimeArray)`
+    * `colnames(::TimeArray)`
+    * `meta(::TimeArray)`
+
+  ```julia
+  ohlc.values  # this is unavailable due to Base.getproperty support
+  values(ohlc)  # change to this
+  ```
+
+[#377]: https://github.com/JuliaStats/TimeSeries.jl/pull/377
+
+
+### 0.13.0
+
+* Julia v0.7/1.0 support. ([#370])
+
+[#370]: https://github.com/JuliaStats/TimeSeries.jl/pull/370
+
+
 ### 0.12.0
 
 * Support `Base.copy(::TimeArray)`. ([#352])

@@ -4,7 +4,7 @@ Reading/writing a `csv` file into a `TimeArray` object is supported.
 
 ## `readtimearray`
 
-The `readtimearray` method is a wrapper for the `Base.readcsv` method
+The `readtimearray` method is a wrapper for the `DelimitedFiles.readdlm` method
 that returns a `TimeArray`.
 
 ```julia
@@ -16,7 +16,7 @@ of the `csv` file that you wish to parse into a `TimeArray` object.
 Optionally, you can add a value to the `meta` field.
 
 More generally, this function accepts arbitrary delimiters with `delim`,
-just like `Base.readcsv`.
+just like `DelimitedFiles.readdlm`.
 
 For `DateTime` data that has odd formatting, a `format` argument is
 provided where users can pass the format of their data.
