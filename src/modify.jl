@@ -34,10 +34,9 @@ end
 
 ###### rename ####################
 
-# TODO: apply `unchecked`
+function rename(ta::TimeArray, colnames::Vector{Symbol})
+    length(colnames) == size(ta, 2) || throw(DimensionMismatch("Colnames length mismatch"))
+    TimeArray(ta, colnames = colnames, unchecked = true)
+end
 
-rename(ta::TimeArray, colnames::Vector{Symbol}) =
-    TimeArray(timestamp(ta), values(ta), colnames, meta(ta))
-
-rename(ta::TimeArray, colnames::Symbol) =
-    TimeArray(timestamp(ta), values(ta), [colnames], meta(ta))
+rename(ta::TimeArray, colnames::Symbol) = rename(ta, [colnames])

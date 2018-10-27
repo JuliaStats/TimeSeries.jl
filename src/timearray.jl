@@ -44,10 +44,16 @@ TimeArray(d::AbstractVector{D}, v::AbstractArray{T,N},
           c::Vector{Symbol} = gen_colnames(size(v, 2)),
           m::Any = nothing; args...) where {T,N,D<:TimeType} =
     TimeArray{T,N,D,typeof(v)}(d, v, c, m; args...)
+
 TimeArray(d::D, v::AbstractArray{T,N},
           c::Vector{Symbol} = gen_colnames(size(v, 2)),
           m::Any = nothing; args...) where {T,N,D<:TimeType} =
     TimeArray{T,N,D,typeof(v)}([d], v, c, m; args...)
+
+TimeArray(ta::TimeArray;
+          timestamp = _timestamp(ta), values = _values(ta),
+          colnames = _colnames(ta), meta = _meta(ta), args...) =
+    TimeArray(timestamp, values, colnames, meta; args...)
 
 ###### conversion ###############
 

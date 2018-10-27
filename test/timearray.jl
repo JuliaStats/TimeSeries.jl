@@ -149,6 +149,45 @@ end
 end
 
 
+@testset "construction from existing TimeArray" begin
+    ts = Date(2018, 1, 1):Day(1):Date(2018, 1, 31)
+    ta = TimeArray(ts, 1:31, [:x], :Meta)
+
+    let
+        ts′ = Date(2018, 3, 1):Day(1):Date(2018, 3, 31)
+        ta′ = TimeArray(ta; timestamp = ts′)
+        @test timestamp(ta′) == ts′
+        @test values(ta′)    == values(ta)
+        @test colnames(ta′)  == colnames(ta)
+        @test meta(ta′)      == meta(ta)
+    end
+
+    let
+        ta′ = TimeArray(ta; values = 2:32)
+        @test timestamp(ta′) == timestamp(ta)
+        @test values(ta′)    == 2:32
+        @test colnames(ta′)  == colnames(ta)
+        @test meta(ta′)      == meta(ta)
+    end
+
+    let
+        ta′ = TimeArray(ta; colnames = [:y])
+        @test timestamp(ta′) == timestamp(ta)
+        @test values(ta′)    == values(ta)
+        @test colnames(ta′)  == [:y]
+        @test meta(ta′)      == meta(ta)
+    end
+
+    let
+        ta′ = TimeArray(ta; meta = :Meta42)
+        @test timestamp(ta′) == timestamp(ta)
+        @test values(ta′)    == values(ta)
+        @test colnames(ta′)  == colnames(ta)
+        @test meta(ta′)      == :Meta42
+    end
+end
+
+
 @testset "conversion methods" begin
     @testset "convert works " begin
         @test convert(TimeArray{Float64,1}, (cl.>op))                isa TimeArray{Float64,1}
