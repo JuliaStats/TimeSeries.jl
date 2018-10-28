@@ -2,10 +2,11 @@
 
 const TableColumnIter = Tables.EachColumn{<:TimeArray}
 
-Base.getindex(x::TableColumnIter{<:TimeArray}, i::Integer) = x.source[colnames(x.source)[i]]
-Base.length(x::TableColumnIter{<:TimeArray}) = length(colnames(x.source))
-Base.lastindex(x::TableColumnIter{<:TimeArray}) = length(colnames(x.source))
-Base.propertynames(x::TableColumnIter) = propertynames(x.source)
+Base.getindex(x::TableColumnIter{<:TimeArray}, i::Integer) =
+    (i == 1) ? timestamp(x.source) : x.source[colnames(x.source)[i - 1]]
+Base.length(x::TableColumnIter{<:TimeArray}) = length(colnames(x.source)) + 1
+Base.lastindex(x::TableColumnIter{<:TimeArray}) = length(colnames(x.source)) + 1
+Base.propertynames(x::TableColumnIter) = [:timestamp; propertynames(x.source)]
 
 function Base.iterate(x::TableColumnIter{<:TimeArray}, i = 1)
     i > length(x) && return nothing
@@ -15,10 +16,11 @@ end
 Tables.istable(::Type{<:AbstractTimeSeries}) = true
 Tables.rowaccess(::Type{<:TimeArray}) = false
 Tables.columnaccess(::Type{<:TimeArray}) = true
-Tables.columns(ta::TimeArray) = ta
+Tables.columns(ta::TimeArray) = Tables.eachcolumn(ta)
+Tables.eachcolumn(i::TableColumnIter) = i
 
 Tables.schema(ta::TimeArray{T,N,D}) where {T,N,D} =
-    Table.Schema(colnames(ta), ntuple(x -> T, ndims(ta)))
+    Table.Schema([:timestamp; colnames(ta)], (D, ntuple(x -> T, ndims(ta))...) )
 
 
 function TimeArray(x; on)
