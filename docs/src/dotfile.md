@@ -1,4 +1,4 @@
-# Customize `TimeArray` printting
+# Customize `TimeArray` printing
 
 A dot file named `.timeseriesrc` sets three variables that control how
 `TimeArrays` are displayed. This doesn't change the underlying `TimeArray`
