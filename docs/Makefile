@@ -1,2 +1,2 @@
 all:
-	julia --color=yes make.jl
+	julia --project=. --color=yes make.jl

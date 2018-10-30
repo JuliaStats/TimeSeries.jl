@@ -70,3 +70,9 @@ values
 colnames
 meta
 ```
+
+## Constructors
+
+```@docs
+TimeArray
+```
