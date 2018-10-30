@@ -74,11 +74,6 @@ end
         @test_throws MethodError rename(cl, :symbol_a, :symbol_b)
     end
 
-    @testset "change colnames with dict" begin
-        re_ohlc_2 = rename(ohlc, Dict(:Open => :a, :Close => :d))
-        @test colnames(re_ohlc_2) == [:a, :High, :Low, :d]
-    end
-
     @testset "change colnames with pair" begin
         re_ohlc_2 = rename(ohlc, :Open => :a)
         @test colnames(re_ohlc_2) == [:a, :High, :Low, :Close]
@@ -86,6 +81,11 @@ end
 
     @testset "change colnames with several pairs" begin
         re_ohlc_2 = rename(ohlc, :Open => :a, :Close => :d)
+        @test colnames(re_ohlc_2) == [:a, :High, :Low, :d]
+    end
+
+    @testset "change colnames with dict" begin
+        re_ohlc_2 = rename(ohlc, Dict(:Open => :a, :Close => :d)...)
         @test colnames(re_ohlc_2) == [:a, :High, :Low, :d]
     end
 
