@@ -33,5 +33,5 @@ rename(cl, [:Close′])
 rename(ohlc, [:Open′, :High′, :Low′, :Close′])
 rename(ohlc, :Open => :Open′)
 rename(ohlc, Dict(:Open => :Open′, :Close => :Close′))
-rename(ohlc, uppercase, asstring=true)
+rename(uppercase, ohlc, asstring=true)
 ```
