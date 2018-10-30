@@ -105,7 +105,7 @@ end
         end
 
         @testset "automatic string/symbol" begin
-            re_ohlc_2 = rename(uppercase, ohlc, asstring=true)
+            re_ohlc_2 = rename(uppercase, ohlc, String)
             @test colnames(re_ohlc_2) == [:OPEN, :HIGH, :LOW, :CLOSE]
         end
 

@@ -34,5 +34,5 @@ rename(ohlc, [:Open′, :High′, :Low′, :Close′])
 rename(ohlc, :Open => :Open′)
 rename(ohlc, Dict(:Open => :Open′, :Close => :Close′))
 rename(Symbol ∘ uppercase ∘ string, ohlc)
-rename(uppercase, ohlc, asstring=true)
+rename(uppercase, ohlc, String)
 ```
