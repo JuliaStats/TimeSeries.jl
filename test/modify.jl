@@ -84,6 +84,11 @@ end
         @test colnames(re_ohlc_2) == [:a, :High, :Low, :Close]
     end
 
+    @testset "change colnames with several pairs" begin
+        re_ohlc_2 = rename(ohlc, :Open => :a, :Close => :d)
+        @test colnames(re_ohlc_2) == [:a, :High, :Low, :d]
+    end
+
     @testset "change colnames with function" begin
         @testset "lambda function" begin
             f = colname -> Symbol(uppercase(string(colname)))
