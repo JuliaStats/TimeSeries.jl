@@ -53,7 +53,7 @@ end
 
 rename(ta::TimeArray, p_colnames::Pair{Symbol, Symbol}) = rename(ta, Dict(p_colnames))
 
-function rename(f::Base.Callable, ta::TimeArray, colnametyp::Type{Symbol})
+function rename(f::Base.Callable, ta::TimeArray, colnametyp::Type{Symbol} = Symbol)
     _colnames = copy(colnames(ta))
     for (i, colname) in enumerate(_colnames)
         _colnames[i] = f(colname)
@@ -64,8 +64,4 @@ end
 function rename(f::Base.Callable, ta::TimeArray, colnametyp::Type{String})
     f = Symbol ∘ f ∘ string
     rename(f, ta)
-end
-
-function rename(f::Base.Callable, ta::TimeArray)
-    rename(f, ta, Symbol)
 end
