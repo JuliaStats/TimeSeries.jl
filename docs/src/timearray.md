@@ -54,6 +54,12 @@ common types such as `String` or more elaborate user-defined types. One
 might want to assign a name to an object that is immutable versus
 relying on variable bindings outside of the object's type fields.
 
+## Constructors
+
+```@docs
+TimeArray
+```
+
 ## Fields getter functions
 
 There are four field getter functions exported.
@@ -69,10 +75,4 @@ timestamp
 values
 colnames
 meta
-```
-
-## Constructors
-
-```@docs
-TimeArray
 ```
