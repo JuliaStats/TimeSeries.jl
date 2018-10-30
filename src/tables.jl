@@ -59,7 +59,7 @@ function TimeSeries.TimeArray(x; timestamp)
     sch = Tables.schema(x)
     names = sch.names
     (timestamp ∉ names) && throw(ArgumentError("time index `$timestamp` not found"))
-    names′ = [x for x ∈ sch.names if x != timestamp]
+    names′ = filter(!isequal(timestamp), sch.names)
 
     cols = Tables.columns(x)
     val = mapreduce(n -> collect(getproperty(cols, n)), hcat, names′)
