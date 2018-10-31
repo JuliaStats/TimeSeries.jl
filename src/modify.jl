@@ -40,3 +40,27 @@ function rename(ta::TimeArray, colnames::Vector{Symbol})
 end
 
 rename(ta::TimeArray, colnames::Symbol) = rename(ta, [colnames])
+
+function rename(ta::TimeArray, args::Pair{Symbol,Symbol}...)
+    d_colnames = Dict{Symbol,Symbol}(args...)
+    _colnames = copy(colnames(ta))
+    for (i, colname) in enumerate(_colnames)
+        if colname in keys(d_colnames)
+            _colnames[i] = d_colnames[colname]
+        end
+    end
+    rename(ta, _colnames)
+end
+
+function rename(f::Base.Callable, ta::TimeArray, colnametyp::Type{Symbol} = Symbol)
+    _colnames = copy(colnames(ta))
+    for (i, colname) in enumerate(_colnames)
+        _colnames[i] = f(colname)
+    end
+    rename(ta, _colnames)
+end
+
+function rename(f::Base.Callable, ta::TimeArray, colnametyp::Type{String})
+    f = Symbol ∘ f ∘ string
+    rename(f, ta)
+end

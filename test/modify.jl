@@ -73,6 +73,48 @@ end
         @test colnames(re_cls) == [:symbol]
         @test_throws MethodError rename(cl, :symbol_a, :symbol_b)
     end
+
+    @testset "change colnames with pair" begin
+        re_ohlc_2 = rename(ohlc, :Open => :a)
+        @test colnames(re_ohlc_2) == [:a, :High, :Low, :Close]
+    end
+
+    @testset "change colnames with several pairs" begin
+        re_ohlc_2 = rename(ohlc, :Open => :a, :Close => :d)
+        @test colnames(re_ohlc_2) == [:a, :High, :Low, :d]
+    end
+
+    @testset "change colnames with dict" begin
+        re_ohlc_2 = rename(ohlc, Dict(:Open => :a, :Close => :d)...)
+        @test colnames(re_ohlc_2) == [:a, :High, :Low, :d]
+    end
+
+    @testset "change colnames with function" begin
+        @testset "lambda function" begin
+            f = colname -> Symbol(uppercase(string(colname)))
+            re_ohlc_2 = rename(f, ohlc)
+            @test colnames(re_ohlc_2) == [:OPEN, :HIGH, :LOW, :CLOSE]
+        end
+
+        @testset "function composition" begin
+            f = Symbol ∘ uppercase ∘ string
+            re_ohlc_2 = rename(f, ohlc)
+            @test colnames(re_ohlc_2) == [:OPEN, :HIGH, :LOW, :CLOSE]
+        end
+
+        @testset "do block" begin
+            re_ohlc_2 = rename(ohlc) do x
+                x |> string |> uppercase |> Symbol
+            end
+            @test colnames(re_ohlc_2) == [:OPEN, :HIGH, :LOW, :CLOSE]
+        end
+
+        @testset "automatic string/symbol" begin
+            re_ohlc_2 = rename(uppercase, ohlc, String)
+            @test colnames(re_ohlc_2) == [:OPEN, :HIGH, :LOW, :CLOSE]
+        end
+
+    end
 end
 
 
