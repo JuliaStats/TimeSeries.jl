@@ -41,7 +41,7 @@ end
 
 rename(ta::TimeArray, colnames::Symbol) = rename(ta, [colnames])
 
-function rename(ta::TimeArray, args...)
+function rename(ta::TimeArray, args::Pair{Symbol,Symbol}...)
     d_colnames = Dict{Symbol,Symbol}(args...)
     _colnames = copy(colnames(ta))
     for (i, colname) in enumerate(_colnames)
