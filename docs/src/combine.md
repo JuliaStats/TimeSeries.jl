@@ -48,10 +48,10 @@ strings, the merged object will take on `Void` as its `meta` field
 value:
 
 ```@repl merge
-AppleCat.meta
+meta(AppleCat)
 CatApple = merge(CAT, AAPL, meta=47);
-CatApple.meta
-merge(AppleCat, CatApple).meta
+meta(CatApple)
+meta(merge(AppleCat, CatApple))
 ```
 
 ## `collapse`
