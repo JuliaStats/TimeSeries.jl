@@ -6,6 +6,31 @@ import Base: convert, copy, length, show, getindex, iterate,
 
 abstract type AbstractTimeSeries{T,N,D} end
 
+"""
+    TimeArray{T,N,D<:TimeType,A<:AbstractArray{T,N}} <: AbstractTimeSeries{T,N,D}
+
+# Constructors
+
+    TimeArray(timestamp, values[, colnames, meta=nothing])
+    TimeArray(ta::TimeArray; timestamp, values, colnames, meta)
+
+The second constructor will yields a new TimeArray with the new given fields.
+Note that the unchanged fields will be shared, there aren't any copy for the
+underlying arrays.
+
+# Arguments
+
+- `timestamp::AbstractVector{<:TimeType}`: a vector of sorted timestamps,
+  Each element in this vector should be unique.
+
+- `values::AbstractArray`: a data vector or matrix. Its number of rows
+  should match the length of `timestamp`.
+
+- `colnames::Vector{Symbol}`: the column names. Its length should match
+  the column of `values`.
+
+- `meta::Any`: a user-defined metadata.
+"""
 struct TimeArray{T,N,D<:TimeType,A<:AbstractArray{T,N}} <: AbstractTimeSeries{T,N,D}
 
     timestamp::Vector{D}
