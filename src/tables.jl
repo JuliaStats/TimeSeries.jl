@@ -49,9 +49,9 @@ Tables.columnaccess(::Type{<:TimeArray}) = true
 Tables.columns(ta::TimeArray) = TableIter(ta)
 Tables.eachcolumn(i::TableIter) = i
 Tables.schema(ta::TimeArray{T,N,D}) where {T,N,D} = Tables.schema(TableIter(ta))
-Tables.schema(i::TableIter{T,S}) where {T,S} = Tables.Schema(S, coltypes(date(i)))
+Tables.schema(i::TableIter{T,S}) where {T,S} = Tables.Schema(S, coltypes(data(i)))
 
-coltypes(x::AbstractTimeSeries{T,N,D}) where {T,N,D} = (D, (T for _ ∈ 1:size(ta, 2))...)
+coltypes(x::AbstractTimeSeries{T,N,D}) where {T,N,D} = (D, (T for _ ∈ 1:size(x, 2))...)
 
 function TimeSeries.TimeArray(x; timestamp)
     Tables.istable(x) || throw(ArgumentError("TimeArray requires a table input"))
