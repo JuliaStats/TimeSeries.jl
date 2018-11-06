@@ -11,6 +11,7 @@ tests = [
     "readwrite",
     "timeseriesrc",
     "basemisc",
+    "tables",
 ]
 
 

@@ -53,13 +53,13 @@ Tables.schema(i::TableIter{T,S}) where {T,S} = Tables.Schema(S, coltypes(data(i)
 
 coltypes(x::AbstractTimeSeries{T,N,D}) where {T,N,D} = (D, (T for _ ∈ 1:size(x, 2))...)
 
-function TimeSeries.TimeArray(x; timestamp)
+function TimeSeries.TimeArray(x; timestamp::Symbol)
     Tables.istable(x) || throw(ArgumentError("TimeArray requires a table input"))
 
     sch = Tables.schema(x)
     names = sch.names
     (timestamp ∉ names) && throw(ArgumentError("time index `$timestamp` not found"))
-    names′ = filter(!isequal(timestamp), sch.names)
+    names′ = filter(!isequal(timestamp), collect(sch.names))
 
     cols = Tables.columns(x)
     val = mapreduce(n -> collect(getproperty(cols, n)), hcat, names′)
