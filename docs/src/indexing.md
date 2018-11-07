@@ -33,8 +33,8 @@ ohlc[end]
 | Example                                      | Description                                | Indexing value |
 |----------------------------------------------|--------------------------------------------|----------------|
 | `[Date(2000, 1, 3)]`                         | The row containing Jan 3, 2000 timestamp   | single Date    |
-| `[[Date(2000, 1, 3), Date(2000, 2, 4)]]`     | The rows containing Jan 3 & Jan 4, 2000    | multiple Dates |
-| `[Date(2000, 1, 3):Day(1):Date(2000, 2, 4)]` | The rows between Jan 1, 2000 & Feb 1, 2000 | range of Date  |
+| `[[Date(2000, 1, 3), Date(2000, 2, 4)]]`     | The rows containing Jan 3 & Feb 4, 2000    | multiple Dates |
+| `[Date(2000, 1, 3):Day(1):Date(2000, 2, 4)]` | The rows between Jan 3, 2000 & Feb 4, 2000 | range of Date  |
 
 Examples in REPL:
 
