@@ -13,8 +13,7 @@ abstract type AbstractTimeSeries{T,N,D} end
 
     TimeArray(timestamp, values[, colnames, meta=nothing])
     TimeArray(ta::TimeArray; timestamp, values, colnames, meta)
-    data = (datetime=[DateTime(2018, 11, 21, 12, 0), DateTime(2018, 11, 21, 13, 0)], col1=[10.2, 11.2], col2=[20.2, 21.2], col3=[30.2, 31.2])
-    ta = TimeArray(data; timestamp=:datetime, meta="Example")
+    TimeArray(data::NamedTuple; timestamp, meta)
 
 The second constructor will yields a new TimeArray with the new given fields.
 Note that the unchanged fields will be shared, there aren't any copy for the
@@ -34,6 +33,12 @@ The third constructor build a TimeArray from a NamedTuple.
   the column of `values`.
 
 - `meta::Any`: a user-defined metadata.
+
+# Examples
+
+    data = (datetime=[DateTime(2018, 11, 21, 12, 0), DateTime(2018, 11, 21, 13, 0)], col1=[10.2, 11.2], col2=[20.2, 21.2], col3=[30.2, 31.2])
+    ta = TimeArray(data; timestamp=:datetime, meta="Example")
+
 """
 struct TimeArray{T,N,D<:TimeType,A<:AbstractArray{T,N}} <: AbstractTimeSeries{T,N,D}
 
