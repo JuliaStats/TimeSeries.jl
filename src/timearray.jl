@@ -80,7 +80,7 @@ TimeArray(ta::TimeArray;
           colnames = _colnames(ta), meta = _meta(ta), args...) =
     TimeArray(timestamp, values, colnames, meta; args...)
 
-function TimeArray(data::NamedTuple; timestamp=:time)
+function TimeArray(data::NamedTuple; timestamp=:time, meta=_meta(ta))
     columns = (key for key in keys(data) if key != timestamp)
     dat = hcat((data[key] for key in columns)...)
     TimeArray(data[timestamp], dat, collect(columns))
