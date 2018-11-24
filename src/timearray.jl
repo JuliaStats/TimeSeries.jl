@@ -13,7 +13,7 @@ abstract type AbstractTimeSeries{T,N,D} end
 
     TimeArray(timestamp, values[, colnames, meta=nothing])
     TimeArray(ta::TimeArray; timestamp, values, colnames, meta)
-    TimeArray(data::NamedTuple, timestamp::Symbol, meta)
+    TimeArray(data::NamedTuple, timestamp=:datetime, meta)
 
 The second constructor will yields a new TimeArray with the new given fields.
 Note that the unchanged fields will be shared, there aren't any copy for the
@@ -37,7 +37,7 @@ The third constructor build a TimeArray from a NamedTuple.
 # Examples
 
     data = (datetime=[DateTime(2018, 11, 21, 12, 0), DateTime(2018, 11, 21, 13, 0)], col1=[10.2, 11.2], col2=[20.2, 21.2], col3=[30.2, 31.2])
-    ta = TimeArray(data, :datetime; meta="Example")
+    ta = TimeArray(data; timestamp=:datetime, meta="Example")
 
 """
 struct TimeArray{T,N,D<:TimeType,A<:AbstractArray{T,N}} <: AbstractTimeSeries{T,N,D}
@@ -89,7 +89,7 @@ TimeArray(ta::TimeArray;
           colnames = _colnames(ta), meta = _meta(ta), args...) =
     TimeArray(timestamp, values, colnames, meta; args...)
 
-function TimeArray(data::NamedTuple, timestamp::Symbol; meta=nothing, args...)
+function TimeArray(data::NamedTuple; timestamp::Symbol, meta=nothing, args...)
     columns = (key for key in keys(data) if key != timestamp)
     dat = hcat((data[key] for key in columns)...)
     TimeArray(data[timestamp], dat, collect(columns), meta; args...)
