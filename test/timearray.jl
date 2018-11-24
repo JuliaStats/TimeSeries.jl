@@ -189,7 +189,7 @@ end
 
 @testset "construct with NamedTuple" begin
     data = (datetime=[DateTime(2018, 11, 21, 12, 0), DateTime(2018, 11, 21, 13, 0)], col1=[10.2, 11.2], col2=[20.2, 21.2], col3=[30.2, 31.2])
-    ta = TimeArray(data; timestamp=:datetime, meta="Example")
+    ta = TimeArray(data, :datetime; meta="Example")
     @test size(ta) == (2, 3)
     @test colnames(ta) == [:col1, :col2, :col3]
     @test timestamp(ta) == [DateTime(2018, 11, 21, 12, 0), DateTime(2018, 11, 21, 13, 0)]
