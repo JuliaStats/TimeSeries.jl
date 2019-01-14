@@ -3,10 +3,28 @@ using Test
 using TimeSeries
 using MarketData
 using DataFrames
+using Tables
 using CSV
 
 
 @testset "Tables.jl integration" begin
+
+
+@testset "iterator" begin
+  @testset "single column" begin
+    i = Tables.columns(cl)
+    @test size(i) == (length(cl), 2)
+    @test i[100, 1] == timestamp(cl)[100]
+    @test i[100, 2] == values(cl[100])[1]
+  end
+
+  @testset "multi column" begin
+    i = Tables.columns(ohlc)
+    @test size(i) == (length(ohlc), 5)
+    @test i[100, 1] == timestamp(ohlc)[100]
+    @test i[100, 3] == values(ohlc[100])[2]
+  end
+end  # @testset "iterator"
 
 
 @testset "DataFrames.jl" begin
