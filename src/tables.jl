@@ -29,9 +29,12 @@ TimeSeries.colnames(i::TableIter)  = colnames(data(i))
 
 Base.getindex(x::TableIter{<:TimeArray}, i::Integer) =
     i == 1 ? timestamp(x) : values(data(x)[colnames(x)[i - 1]])
+Base.getindex(x::TableIter{<:TimeArray}, j::Integer, i::Integer) =
+    i == 1 ? timestamp(x)[j] : values(data(x)[colnames(x)[i - 1]])[j]
 
 Base.length(::TableIter{<:TimeArray,S,N,M}) where {S,N,M}    = M
 Base.lastindex(::TableIter{<:TimeArray,S,N,M}) where {S,N,M} = M
+Base.size(::TableIter{<:TimeArray,S,N,M}) where {S,N,M}      = (N, M)
 
 Base.propertynames(x::TableIter{<:TimeArray,S}) where {S} = S
 Base.getproperty(x::TableIter{<:TimeArray,S}, c::Symbol) where {S} =
