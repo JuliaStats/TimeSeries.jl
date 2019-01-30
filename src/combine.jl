@@ -106,7 +106,7 @@ function collapse(ta::TimeArray{T,N,D}, period::Function, timestamp::Function,
 
         if mapped_tstamp != next_mapped_tstamp
           push!(collapsed_tstamps, timestamp(_timestamp(ta)[cluster_startrow:i]))
-          collapsed_values = [collapsed_values; T[value(values(ta)[cluster_startrow:i, j]) for j in 1:ncols]']
+          collapsed_values = [collapsed_values; T[value(values(ta)[cluster_startrow:i, j]) for j in 1:ncols] |> permutedims]
           cluster_startrow = i+1
         end #if
 
@@ -116,7 +116,7 @@ function collapse(ta::TimeArray{T,N,D}, period::Function, timestamp::Function,
     end #for
 
     push!(collapsed_tstamps, timestamp(_timestamp(ta)[cluster_startrow:end]))
-    collapsed_values = [collapsed_values; T[value(values(ta)[cluster_startrow:end, j]) for j in 1:ncols]']
+    collapsed_values = [collapsed_values; T[value(values(ta)[cluster_startrow:end, j]) for j in 1:ncols] |> permutedims]
 
     N == 1 && (collapsed_values = vec(collapsed_values))
     return TimeArray(collapsed_tstamps, collapsed_values, colnames(ta), meta(ta))
