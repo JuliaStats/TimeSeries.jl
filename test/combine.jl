@@ -33,6 +33,20 @@ end
         @test values(collapse(ohlc, month, first))[2, :] == [104.0, 105.0, 100.0, 100.25]
         @test timestamp(collapse(ohlc, month, first))[2] == Date(2000,2,1)
     end
+
+    # https://github.com/JuliaStats/TimeSeries.jl/pull/397
+    @testset "Array of String" begin
+        A = string.(Char.(rand(97:97+25, size(cl))))
+        ts = timestamp(cl)
+        ta = TimeArray(ts, A)
+
+        let
+            ta = collapse(ta, week, first)
+
+            @test values(ta[2])    == A[6]
+            @test timestamp(ta)[6] == A[6]
+        end
+    end
 end
 
 
