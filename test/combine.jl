@@ -43,8 +43,8 @@ end
         let
             ta = collapse(ta, week, first)
 
-            @test values(ta[2])    == A[6]
-            @test timestamp(ta)[6] == A[6]
+            @test values(ta)[2]    == A[6]
+            @test timestamp(ta)[2] == ts[6]
         end
     end
 end
