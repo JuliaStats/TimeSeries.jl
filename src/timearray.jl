@@ -208,7 +208,7 @@ calculate the paging
     ret
 end
 
-function show(io::IO, ta::TimeArray{T}) where T
+function print_time_array(io::IO, ta::TimeArray{T}, short=false) where T
     # summary line
     nrow = size(values(ta), 1)
     ncol = size(values(ta), 2)
@@ -220,6 +220,7 @@ function show(io::IO, ta::TimeArray{T}) where T
         return
     end
 
+    if !short
     # calculate column withs
     drow, dcol = displaysize(io)
     res_row    = 7  # number of reserved rows: summary line, lable line ... etc
@@ -297,7 +298,11 @@ function show(io::IO, ta::TimeArray{T}) where T
             print(io, "\n\n")
         end
     end  # for p ∈ pages
+    end # if !short
 end
+Base.show(io::IO, ta::TimeSeries.TimeArray) = print_time_array(io, ta, true)
+Base.show(io::IO, ::MIME"text/plain", ta::TimeArray) = print_time_array(io, ta, false)
+
 
 ###### getindex #################
 
