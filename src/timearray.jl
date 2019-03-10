@@ -300,8 +300,9 @@ function print_time_array(io::IO, ta::TimeArray{T}, short=false) where T
         end
     end  # for p ∈ pages
 end
-Base.show(io::IO, ta::TimeSeries.TimeArray) = print_time_array(io, ta, true)
-Base.show(io::IO, ::MIME"text/plain", ta::TimeArray) = print_time_array(io, ta, false)
+Base.show(io::IO, ta::TimeArray) = print_time_array(io, ta, true)
+Base.show(io::IO, ::MIME"text/plain", ta::TimeArray) =
+    print_time_array(io, ta, false)
 
 
 ###### getindex #################
