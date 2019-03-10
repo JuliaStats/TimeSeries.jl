@@ -430,11 +430,11 @@ end
 @testset "show methods don't throw errors" begin
     io = IOBuffer()
     let str = sprint(show, cl)
-        out = "500×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31\n"
+        out = "500×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31"
         @test str == out
     end
     show(io, "text/plain", cl)
-    let str = String(take!(io))    
+    let str = String(take!(io))
         out = """500×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
 │            │ Close  │
 ├────────────┼────────┤
@@ -461,7 +461,7 @@ end
 
     # my edits above seem to work -- now need to do for the rest, JJS 2/22/19
     let str = sprint(show, ohlc)
-        out = "500×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2001-12-31\n"
+        out = "500×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2001-12-31"
         @test str == out
     end
     show(io, "text/plain", ohlc)
@@ -491,7 +491,7 @@ end
     end
 
     let str = sprint(show, AAPL)
-        out = "8336×12 TimeArray{Float64,2,Date,Array{Float64,2}} 1980-12-12 to 2013-12-31\n"
+        out = "8336×12 TimeArray{Float64,2,Date,Array{Float64,2}} 1980-12-12 to 2013-12-31"
         @test str == out
     end
     show(io, "text/plain", AAPL)
@@ -542,7 +542,7 @@ end
     end
 
     let str = sprint(show, ohlc[1:4])
-        out = "4×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-06\n"    
+        out = "4×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-06"
         @test str == out
     end
     show(io, "text/plain", ohlc[1:4])
@@ -576,7 +576,7 @@ end
     end
 
     let str = sprint(show, lag(cl[1:2], padding=true))
-        out = "2×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-04\n"
+        out = "2×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-04"
         @test str == out
     end
     show(io, "text/plain", lag(cl[1:2], padding=true))
