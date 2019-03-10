@@ -215,12 +215,13 @@ function print_time_array(io::IO, ta::TimeArray{T}, short=false) where T
 
     print(io, "$(nrow)×$(ncol) $(typeof(ta))")
     if nrow != 0
-        println(io, " $(timestamp(ta)[1]) to $(timestamp(ta)[end])")
+        print(io, " $(timestamp(ta)[1]) to $(timestamp(ta)[end])")
     else  # e.g. TimeArray(Date[], [])
         return
     end
 
     short && return
+    println(io)
 
     # calculate column withs
     drow, dcol = displaysize(io)
