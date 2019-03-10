@@ -220,85 +220,85 @@ function print_time_array(io::IO, ta::TimeArray{T}, short=false) where T
         return
     end
 
-    if !short
-        # calculate column withs
-        drow, dcol = displaysize(io)
-        res_row    = 7  # number of reserved rows: summary line, lable line ... etc
-        half_row   = floor(Int, (drow - res_row) / 2)
-        add_row    = (drow - res_row) % 2
+    short && return
 
+    # calculate column withs
+    drow, dcol = displaysize(io)
+    res_row    = 7  # number of reserved rows: summary line, lable line ... etc
+    half_row   = floor(Int, (drow - res_row) / 2)
+    add_row    = (drow - res_row) % 2
+
+    if nrow > (drow - res_row)
+        tophalf = 1:(half_row + add_row)
+        bothalf = (nrow - half_row + 1):nrow
+        strs = _showval.(@view values(ta)[[tophalf; bothalf], :])
+        ts   = @view timestamp(ta)[[tophalf; bothalf]]
+    else
+        strs = _showval.(values(ta))
+        ts   = timestamp(ta)
+    end
+
+    colwidth = maximum(
+        [textwidth.(string.(colnames(ta)))'; textwidth.(strs); fill(5, ncol)'],
+        dims = 1)
+
+    # paging
+    spacetime = textwidth(string(ts[1]))
+    pages = _showpages(dcol, spacetime, colwidth)
+
+    for p ∈ pages
+        # row label line
+        ## e.g. | Open  | High  | Low   | Close  |
+        print(io, "│", " "^(spacetime + 2))
+        for (name, w) in zip(colnames(ta)[p], colwidth[p])
+            print(io, "│ ", rpad(name, w + 1))
+        end
+        println(io, "│")
+        ## e.g. ├───────┼───────┼───────┼────────┤
+        print(io, "├", "─"^(spacetime + 2))
+        for w in colwidth[p]
+            print(io, "┼", "─"^(w + 2))
+        end
+        print(io, "┤")
+
+        # timestamp and values line
         if nrow > (drow - res_row)
-            tophalf = 1:(half_row + add_row)
-            bothalf = (nrow - half_row + 1):nrow
-            strs = _showval.(@view values(ta)[[tophalf; bothalf], :])
-            ts   = @view timestamp(ta)[[tophalf; bothalf]]
+            for i in tophalf
+                println(io)
+                print(io, "│ ", ts[i], " ")
+                for j in p
+                    print(io, "│ ", rpad(strs[i, j], colwidth[j] + 1))
+                end
+                print(io, "│")
+            end
+
+            print(io, "\n   \u22EE")
+
+            for i in (length(bothalf) - 1):-1:0
+                i = size(strs, 1) - i
+                println(io)
+                print(io, "│ ", ts[i], " ")
+                for j in p
+                    print(io, "│ ", rpad(strs[i, j], colwidth[j] + 1))
+                end
+                print(io, "│")
+            end
+
         else
-            strs = _showval.(values(ta))
-            ts   = timestamp(ta)
+            for i in 1:nrow
+                println(io)
+                print(io, "│ ", ts[i], " ")
+                for j in p
+                    print(io, "│ ", rpad(strs[i, j], colwidth[j] + 1))
+                end
+                print(io, "│")
+            end
         end
 
-        colwidth = maximum(
-            [textwidth.(string.(colnames(ta)))'; textwidth.(strs); fill(5, ncol)'],
-            dims = 1)
-
-        # paging
-        spacetime = textwidth(string(ts[1]))
-        pages = _showpages(dcol, spacetime, colwidth)
-
-        for p ∈ pages
-            # row label line
-            ## e.g. | Open  | High  | Low   | Close  |
-            print(io, "│", " "^(spacetime + 2))
-            for (name, w) in zip(colnames(ta)[p], colwidth[p])
-                print(io, "│ ", rpad(name, w + 1))
-            end
-            println(io, "│")
-            ## e.g. ├───────┼───────┼───────┼────────┤
-            print(io, "├", "─"^(spacetime + 2))
-            for w in colwidth[p]
-                print(io, "┼", "─"^(w + 2))
-            end
-            print(io, "┤")
-
-            # timestamp and values line
-            if nrow > (drow - res_row)
-                for i in tophalf
-                    println(io)
-                    print(io, "│ ", ts[i], " ")
-                    for j in p
-                        print(io, "│ ", rpad(strs[i, j], colwidth[j] + 1))
-                    end
-                    print(io, "│")
-                end
-
-                print(io, "\n   \u22EE")
-
-                for i in (length(bothalf) - 1):-1:0
-                    i = size(strs, 1) - i
-                    println(io)
-                    print(io, "│ ", ts[i], " ")
-                    for j in p
-                        print(io, "│ ", rpad(strs[i, j], colwidth[j] + 1))
-                    end
-                    print(io, "│")
-                end
-
-            else
-                for i in 1:nrow
-                    println(io)
-                    print(io, "│ ", ts[i], " ")
-                    for j in p
-                        print(io, "│ ", rpad(strs[i, j], colwidth[j] + 1))
-                    end
-                    print(io, "│")
-                end
-            end
-
-            if length(pages) > 1 && p != pages[end]
-                print(io, "\n\n")
-            end
-        end  # for p ∈ pages
-    end # if !short
+        if length(pages) > 1 && p != pages[end]
+            print(io, "\n\n")
+        end
+    end  # for p ∈ pages
 end
 Base.show(io::IO, ta::TimeSeries.TimeArray) = print_time_array(io, ta, true)
 Base.show(io::IO, ::MIME"text/plain", ta::TimeArray) = print_time_array(io, ta, false)
