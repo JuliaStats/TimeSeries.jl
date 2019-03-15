@@ -208,17 +208,20 @@ calculate the paging
     ret
 end
 
-function show(io::IO, ta::TimeArray{T}) where T
+function print_time_array(io::IO, ta::TimeArray{T}, short=false) where T
     # summary line
     nrow = size(values(ta), 1)
     ncol = size(values(ta), 2)
 
     print(io, "$(nrow)×$(ncol) $(typeof(ta))")
     if nrow != 0
-        println(io, " $(timestamp(ta)[1]) to $(timestamp(ta)[end])")
+        print(io, " $(timestamp(ta)[1]) to $(timestamp(ta)[end])")
     else  # e.g. TimeArray(Date[], [])
         return
     end
+
+    short && return
+    println(io)
 
     # calculate column withs
     drow, dcol = displaysize(io)
@@ -298,6 +301,10 @@ function show(io::IO, ta::TimeArray{T}) where T
         end
     end  # for p ∈ pages
 end
+Base.show(io::IO, ta::TimeArray) = print_time_array(io, ta, true)
+Base.show(io::IO, ::MIME"text/plain", ta::TimeArray) =
+    print_time_array(io, ta, false)
+
 
 ###### getindex #################
 
