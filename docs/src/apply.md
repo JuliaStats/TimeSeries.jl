@@ -53,8 +53,8 @@ Since we are leading an object of length 3, only two values will be
 transformed because we have lost a day to the transformation.
 
 The `cl` object is 500 rows long so if we lead by 499 days, we should
-put the last observation in the object (which happens to be on Dec 31,
-2001) into the first date's value slot:
+put the last observation in the object (which happens to be on Dec 31, 2001)
+into the first date's value slot:
 
 ```@repl lead
 lead(cl, 499)
