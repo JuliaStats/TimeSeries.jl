@@ -101,7 +101,7 @@ end
 
 function setcolnames!(ta::TimeArray, colnames::Vector{Symbol})
     length(colnames) == size(ta, 2) ? (_colnames(ta)[:] = colnames) :
-    length(colnames) > 0 && error("colnames supplied is not correct size")
+    length(colnames) > 0 && throw(ArgumentError("colnames supplied is not correct size"))
     return ta
 end  # setcolnames!
 
