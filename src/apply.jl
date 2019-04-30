@@ -71,7 +71,7 @@ function percentchange(ta::TimeArray, returns::Symbol=:simple;
     cols = colnames(ta)
     ta = returns == :log ? diff(log.(ta), padding=padding) :
          returns == :simple ? expm1.(percentchange(ta, :log, padding=padding)) :
-         error("returns must be either :simple or :log")
+         throw(ArgumentError("returns must be either :simple or :log"))
     colnames(ta)[:] = cols
 
    return ta
