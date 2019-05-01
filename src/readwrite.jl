@@ -39,16 +39,23 @@ function insertNaN(aa::Array{Any, N}) where {N}
     convert(Array{Float64, N}, aa)
 end
 
-function writetimearray(ta::TimeArray, fname::AbstractString)
+function writetimearray(ta::TimeArray, fname::AbstractString; 
+                        delim::Char = ',', format::AbstractString = "",
+                        header::Bool = true)
 
     open(fname, "w") do io
 
-        strvals = join(colnames(ta), ",")
-        write(io, string("Timestamp,", strvals, "\n"))
+        if header
+            strvals = join(colnames(ta), delim)
+            write(io, string("Timestamp", delim, strvals, "\n"))
+        end
 
         for i in eachindex(timestamp(ta))
-            strvals = replace(join(values(ta)[i, :], ","), "NaN" => "")
-            write(io, string(timestamp(ta)[i], ",", strvals, "\n"))
+            strvals = replace(join(values(ta)[i, :], delim), "NaN" => "")
+            format == "" ?
+            strtstamp = string(timestamp(ta)[i]) :
+            strtstamp = Dates.format(timestamp(ta)[i], format)
+            write(io, string(strtstamp, delim, strvals, "\n"))
         end  # for
 
     end

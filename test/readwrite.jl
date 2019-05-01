@@ -85,7 +85,7 @@ end
 end
 
 
-@testset "writetimearray method works" begin
+@testset "writetimearray method with default parameters works" begin
     filename = "$(randstring()).csv"
     uohlc    = uniformspace(ohlc)
     writetimearray(uohlc, filename)
@@ -99,5 +99,43 @@ end
     end
 end
 
+@testset "writetimearray method with a delimiter works" begin
+    filename = "$(randstring()).csv"
+    uohlc    = uniformspace(ohlc)
+    writetimearray(uohlc[1:5], filename, delim=';')
+    readback = readtimearray(filename, delim=';')
+    rm(filename)
+
+    @testset "writetimearray output can be round-tripped" begin
+        @test colnames(uohlc[1:5])  == colnames(readback)
+        @test timestamp(uohlc[1:5]) == timestamp(readback)
+        @test isequal(values(uohlc[1:5]), values(readback))
+    end
+end
+
+@testset "writetimearray method with no header works" begin
+    filename = "$(randstring()).csv"
+    uohlc    = uniformspace(ohlc)
+    writetimearray(uohlc[1:5], filename, header=false)
+    readback = readtimearray(filename, header=false)
+    rm(filename)
+
+    @testset "writetimearray output can be round-tripped" begin
+        @test timestamp(uohlc[1:5]) == timestamp(readback)
+        @test isequal(values(uohlc[1:5]), values(readback))
+    end
+end
+
+@testset "writetimearray method with a timestamp format works" begin
+    filename = "$(randstring()).csv"
+    uohlc    = uniformspace(ohlc)
+    writetimearray(uohlc[1:5], filename, format="yyyy/mm/dd")
+    readback = readtimearray(filename, format="yyyy/mm/dd")
+    rm(filename)
+
+    @testset "writetimearray output can be round-tripped" begin
+        @test timestamp(uohlc[1:5]) == timestamp(readback)
+    end
+end
 
 end  # @testset "readwrite"
