@@ -90,12 +90,12 @@ end
     uohlc    = uniformspace(ohlc)
     writetimearray(uohlc, filename)
     readback = readtimearray(filename)
+    rm(filename)
 
     @testset "writetimearray output can be round-tripped" begin
         @test colnames(uohlc)  == colnames(readback)
         @test timestamp(uohlc) == timestamp(readback)
         @test isequal(values(uohlc), values(readback))
-        rm(filename)
     end
 end
 
