@@ -71,7 +71,7 @@ function percentchange(ta::TimeArray, returns::Symbol=:simple;
     cols = colnames(ta)
     ta = returns == :log ? diff(log.(ta), padding=padding) :
          returns == :simple ? expm1.(percentchange(ta, :log, padding=padding)) :
-         error("returns must be either :simple or :log")
+         throw(ArgumentError("returns must be either :simple or :log"))
     colnames(ta)[:] = cols
 
    return ta
@@ -152,4 +152,4 @@ end  # uniformspace
 dropnan(ta::TimeArray, method::Symbol = :all) =
     method == :all ? ta[findall(reshape(values(any(.!isnan.(ta), dims = 2)), :))] :
     method == :any ? ta[findall(reshape(values(all(.!isnan.(ta), dims = 2)), :))] :
-    error("dropnan method must be :all or :any")
+    throw(ArgumentError("dropnan method must be :all or :any"))
