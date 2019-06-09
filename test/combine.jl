@@ -59,14 +59,14 @@ end
     @testset "takes colnames kwarg correctly" begin
         @test colnames(merge(cl, ohlc[:High, :Low], colnames=[:a, :b, :c])) == [:a, :b, :c]
         @test colnames(merge(cl, op, colnames=[:a, :b]))                    == [:a, :b]
-        @test_throws ErrorException merge(cl, op, colnames=[:a])
-        @test_throws ErrorException merge(cl, op, colnames=[:a, :b, :c])
+        @test_throws ArgumentError merge(cl, op, colnames=[:a])
+        @test_throws ArgumentError merge(cl, op, colnames=[:a, :b, :c])
 
         for mode ∈ [:inner, :left, :right, :outer]
             @test colnames(merge(cl, ohlc[:High, :Low], mode, colnames=[:a, :b, :c])) == [:a, :b, :c]
             @test colnames(merge(cl, op, mode, colnames=[:a, :b])) == [:a, :b]
-            @test_throws ErrorException merge(cl, op, mode, colnames=[:a])
-            @test_throws ErrorException merge(cl, op, mode, colnames=[:a, :b, :c])
+            @test_throws ArgumentError merge(cl, op, mode, colnames=[:a])
+            @test_throws ArgumentError merge(cl, op, mode, colnames=[:a, :b, :c])
         end
     end
 

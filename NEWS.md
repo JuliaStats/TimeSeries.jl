@@ -18,6 +18,11 @@
   :AAPL
   ```
 
+* `merge` now throws `ArgumentError` on invalid column setup. ([#405])
+
+* `percentchange` and `dropnan` now throw `ArgumentError` on invalid `method`. ([#405])
+
+
 ### 0.14.0
 
 * Symbol column indexing. ([#377])
