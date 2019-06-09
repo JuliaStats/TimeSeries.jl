@@ -87,8 +87,7 @@ end
 
 @testset "writetimearray method with default parameters works" begin
     mktemp() do filename, _io
-        filename = "$(randstring()).csv"
-        uohlc    = uniformspace(ohlc)
+        uohlc = uniformspace(ohlc)
         writetimearray(uohlc, filename)
         readback = readtimearray(filename)
 
@@ -100,8 +99,7 @@ end
 
 @testset "writetimearray method with a delimiter works" begin
     mktemp() do filename, _io
-        filename = "$(randstring()).csv"
-        uohlc    = uniformspace(ohlc)
+        uohlc = uniformspace(ohlc)
         writetimearray(uohlc[1:5], filename, delim=';')
         readback = readtimearray(filename, delim=';')
 
@@ -113,7 +111,7 @@ end
 
 @testset "writetimearray method with no header works" begin
     mktemp() do filename, _io
-        uohlc    = uniformspace(ohlc)
+        uohlc = uniformspace(ohlc)
         writetimearray(uohlc[1:5], filename, header=false)
         readback = readtimearray(filename, header=false)
 
@@ -124,7 +122,7 @@ end
 
 @testset "writetimearray method with a timestamp format works" begin
     mktemp() do filename, _io
-        uohlc    = uniformspace(ohlc)
+        uohlc = uniformspace(ohlc)
         writetimearray(uohlc[1:5], filename, format="yyyy/mm/dd")
         readback = readtimearray(filename, format="yyyy/mm/dd")
 
