@@ -85,19 +85,49 @@ end
 end
 
 
-@testset "writetimearray method works" begin
-    filename = "$(randstring()).csv"
-    uohlc    = uniformspace(ohlc)
-    writetimearray(uohlc, filename)
-    readback = readtimearray(filename)
+@testset "writetimearray method with default parameters works" begin
+    mktemp() do filename, _io
+        uohlc = uniformspace(ohlc)
+        writetimearray(uohlc, filename)
+        readback = readtimearray(filename)
 
-    @testset "writetimearray output can be round-tripped" begin
         @test colnames(uohlc)  == colnames(readback)
         @test timestamp(uohlc) == timestamp(readback)
         @test isequal(values(uohlc), values(readback))
-        rm(filename)
     end
 end
 
+@testset "writetimearray method with a delimiter works" begin
+    mktemp() do filename, _io
+        uohlc = uniformspace(ohlc)
+        writetimearray(uohlc[1:5], filename, delim=';')
+        readback = readtimearray(filename, delim=';')
+
+        @test colnames(uohlc[1:5])  == colnames(readback)
+        @test timestamp(uohlc[1:5]) == timestamp(readback)
+        @test isequal(values(uohlc[1:5]), values(readback))
+    end
+end
+
+@testset "writetimearray method with no header works" begin
+    mktemp() do filename, _io
+        uohlc = uniformspace(ohlc)
+        writetimearray(uohlc[1:5], filename, header=false)
+        readback = readtimearray(filename, header=false)
+
+        @test timestamp(uohlc[1:5]) == timestamp(readback)
+        @test isequal(values(uohlc[1:5]), values(readback))
+    end
+end
+
+@testset "writetimearray method with a timestamp format works" begin
+    mktemp() do filename, _io
+        uohlc = uniformspace(ohlc)
+        writetimearray(uohlc[1:5], filename, format="yyyy/mm/dd")
+        readback = readtimearray(filename, format="yyyy/mm/dd")
+
+        @test timestamp(uohlc[1:5]) == timestamp(readback)
+    end
+end
 
 end  # @testset "readwrite"

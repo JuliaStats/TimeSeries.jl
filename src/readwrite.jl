@@ -14,13 +14,13 @@ function readtimearray(source; delim::Char = ',', meta = nothing,
     time = cfile[1:end, 1]
     if length(time[1]) < 11
         # assuming Date not DateTime
-        format == "" ?
-        tstamps = Date[Date(t) for t in time] :
-        tstamps = Date[Date(t, format) for t in time]
+        tstamps = isempty(format) ?
+            Date[Date(t) for t in time] :
+            Date[Date(t, format) for t in time]
     else
-        format == "" ?
-        tstamps = DateTime[DateTime(t) for t in time] :
-        tstamps = DateTime[DateTime(t, format) for t in time]
+        tstamps = isempty(format) ?
+            DateTime[DateTime(t) for t in time] :
+            DateTime[DateTime(t, format) for t in time]
     end
 
     vals   = insertNaN(cfile[1:end, 2:end])
@@ -39,18 +39,21 @@ function insertNaN(aa::Array{Any, N}) where {N}
     convert(Array{Float64, N}, aa)
 end
 
-function writetimearray(ta::TimeArray, fname::AbstractString)
-
+function writetimearray(ta::TimeArray, fname::AbstractString;
+                        delim::Char = ',', format::AbstractString = "",
+                        header::Bool = true)
     open(fname, "w") do io
-
-        strvals = join(colnames(ta), ",")
-        write(io, string("Timestamp,", strvals, "\n"))
+        if header
+            strvals = join(colnames(ta), delim)
+            write(io, string("Timestamp", delim, strvals, "\n"))
+        end
 
         for i in eachindex(timestamp(ta))
-            strvals = replace(join(values(ta)[i, :], ","), "NaN" => "")
-            write(io, string(timestamp(ta)[i], ",", strvals, "\n"))
-        end  # for
-
+            strvals = replace(join(values(ta)[i, :], delim), "NaN" => "")
+            strtstamp = isempty(format) ?
+                string(timestamp(ta)[i]) :
+                Dates.format(timestamp(ta)[i], format)
+            write(io, string(strtstamp, delim, strvals, "\n"))
+        end
     end
-
 end  # writetimearray
