@@ -80,26 +80,26 @@ end  # percentchange
 
 ###### moving ###################
 
-function moving(f, ta::TimeArray{T, 1}, window::Int;
+# Note: please do not involve any side effects in function `f`
+function moving(f, ta::TimeArray{T,1}, window::Integer;
                 padding::Bool = false) where {T}
-    tstamps = padding ? timestamp(ta) : timestamp(ta)[window:end]
-    vals    = zero(values(ta)[window:end])
-    for i=1:length(vals)
-        vals[i] = f(values(ta)[i:i+(window-1)])
-    end
-    padding && (vals = [NaN*ones(window-1); vals])
-    TimeArray(tstamps, vals, colnames(ta), meta(ta))
+    ts   = padding ? timestamp(ta) : @view(timestamp(ta)[window:end])
+    A    = values(ta)
+    vals = map(i -> f(@view A[i:i+(window-1)]), 1:length(ta)-window+1)
+    padding && (vals = [fill(NaN, window - 1); vals])
+    TimeArray(ta; timestamp = ts, values = vals)
 end
 
-function moving(f, ta::TimeArray{T, 2}, window::Int;
+function moving(f, ta::TimeArray{T,2}, window::Integer;
                 padding::Bool = false) where {T}
-    tstamps = padding ? timestamp(ta) : timestamp(ta)[window:end]
-    vals    = zero(values(ta)[window:end, :])
+    ts   = padding ? timestamp(ta) : @view(timestamp(ta)[window:end])
+    A    = values(ta)
+    vals = similar(@view(A[window:end, :]))
     for i=1:size(vals, 1), j=1:size(vals, 2)
-        vals[i, j] = f(values(ta)[i:i+(window-1), j])
+        vals[i, j] = f(@view(values(ta)[i:i+(window-1), j]))
     end
-    padding && (vals = [NaN*fill(1, size(values(ta)[1:(window-1), :])); vals])
-    TimeArray(tstamps, vals, colnames(ta), meta(ta))
+    padding && (vals = [fill(NaN, size(A[1:(window-1), :])); vals])
+    TimeArray(ta; timestamp = ts, values = vals)
 end
 
 ###### upto #####################

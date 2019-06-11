@@ -185,12 +185,12 @@ using TimeSeries
 
         @testset "moving with do syntax" begin
             moving(cl, 10) do x
-                @test isa(x, Array{Float64, 1})
+                @test isa(x, AbstractArray{Float64,1})
                 x[1]
             end
 
             moving(ohlc, 10) do x
-                @test isa(x, Array{Float64, 1})
+                @test isa(x, AbstractArray{Float64,1})
                 x[1]
             end
         end
