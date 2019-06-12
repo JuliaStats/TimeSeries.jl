@@ -1,3 +1,8 @@
+### 0.16.0
+
+* Improve performance of `moving` function. (TBD)
+
+
 ### 0.15.0
 
 * New `TimeArray` constructor for creating a `TimeArray` from existing `TimeArray`.
