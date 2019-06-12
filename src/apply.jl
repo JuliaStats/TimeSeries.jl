@@ -91,15 +91,32 @@ function moving(f, ta::TimeArray{T,1}, window::Integer;
 end
 
 function moving(f, ta::TimeArray{T,2}, window::Integer;
-                padding::Bool = false) where {T}
+                padding::Bool = false, dims::Integer = 1,
+                colnames::AbstractVector{Symbol} = _colnames(ta)) where {T}
+    if !(dims ∈ (1, 2))
+        throw(ArgumentError("invalid dims $dims"))
+    end
+
     ts   = padding ? timestamp(ta) : @view(timestamp(ta)[window:end])
     A    = values(ta)
-    vals = similar(@view(A[window:end, :]))
-    for i=1:size(vals, 1), j=1:size(vals, 2)
-        vals[i, j] = f(@view(values(ta)[i:i+(window-1), j]))
+
+    if dims == 1
+        vals = similar(@view(A[window:end, :]))
+        for i ∈ 1:size(vals, 1), j ∈ 1:size(vals, 2)
+            vals[i, j] = f(@view(A[i:i+(window-1), j]))
+        end
+    else # case of dims = 2
+        vals = mapreduce(i -> f(view(A, i, :)), vcat, window:size(A, 1))
+        if size(vals, 2) != length(colnames)
+            throw(ArgumentError(
+                "the output dims should match the lenght of columns, " *
+                "please set the keyword argument `colnames` properly."
+            ))
+        end
     end
+
     padding && (vals = [fill(NaN, size(A[1:(window-1), :])); vals])
-    TimeArray(ta; timestamp = ts, values = vals)
+    TimeArray(ta; timestamp = ts, values = vals, colnames = colnames)
 end
 
 ###### upto #####################
