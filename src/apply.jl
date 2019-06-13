@@ -115,7 +115,7 @@ function moving(f, ta::TimeArray{T,2}, window::Integer;
         end
     end
 
-    padding && (vals = [fill(NaN, size(A[1:(window-1), :])); vals])
+    padding && (vals = [fill(NaN, (window-1), size(vals, 2)); vals])
     TimeArray(ta; timestamp = ts, values = vals, colnames = colnames)
 end
 
