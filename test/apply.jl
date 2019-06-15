@@ -207,6 +207,12 @@ using TimeSeries
             ans = moving(mean, ohlc, 10)
             @test values(ta)       ≈ values(ans)
             @test timestamp(ta)   == timestamp(ta)
+
+            # with padding
+            ta = moving(ohlc, 10, dims = 2, padding = true) do A
+                mean(A, dims = 1)
+            end
+            @test length(ta) == length(ohlc)
         end
     end
 
