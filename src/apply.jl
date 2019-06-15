@@ -106,7 +106,7 @@ function moving(f, ta::TimeArray{T,2}, window::Integer;
             vals[i, j] = f(@view(A[i:i+(window-1), j]))
         end
     else # case of dims = 2
-        vals = mapreduce(i -> f(view(A, i, :)), vcat, window:size(A, 1))
+        vals = mapreduce(i -> f(view(A, i-window+1:i, :)), vcat, window:size(A, 1))
         if size(vals, 2) != length(colnames)
             throw(ArgumentError(
                 "the output dims should match the lenght of columns, " *
