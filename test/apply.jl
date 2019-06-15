@@ -213,6 +213,11 @@ using TimeSeries
                 mean(A, dims = 1)
             end
             @test length(ta) == length(ohlc)
+            @test all(isnan.(values(ta[1:9])))
+
+            # exceptions
+            @test_throws ArgumentError moving(mean, ohlc, 24, dims = 42)
+            @test_throws DimensionMismatch moving(mean, ohlc, 24, dims = 2)
         end
     end
 
