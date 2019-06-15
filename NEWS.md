@@ -6,7 +6,7 @@
 
   ```julia
   moving(ohlc, 10, dims = 2, colnames = [:A, ...]) do
-    # given ohlc is a 500x4 TimeArray,
+    # given that `ohlc` is a 500x4 `TimeArray`,
     # size(A) is (10, 4)
     ...
   end

@@ -112,15 +112,6 @@ percentchange(cl, :log)
 
 ## `moving`
 
-Function signature:
-
-```julia
-moving(f, ta::TimeArray, window; padding=false)
-moving(ta, window; padding=false) do x
-  ...
-end
-```
-
 Often when working with time series, you want to take a sliding window
 view of the data and perform a calculation on it. The simplest example
 of this is the moving average. For a 10-period moving average, you take
@@ -142,6 +133,10 @@ moving(mean, cl, 10)
 As mentioned previously, we lose the first nine observations to the
 consuming nature of this operation. They are not **missing** per se,
 they simply do not exist.
+
+```@docs
+moving
+```
 
 ## `upto`
 
