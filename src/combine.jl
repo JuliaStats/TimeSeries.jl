@@ -65,6 +65,10 @@ function merge(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, method::Symbol = :i
 
 end
 
+merge(x::TimeArray{T}, y::TimeArray{T}, z::TimeArray{T}, a::TimeArray{T}...; kw...) where {T} =
+    merge(merge(x, y; kw...), z, a...; kw...)
+
+
 # hcat ##########################
 
 function hcat(x::TimeArray, y::TimeArray)
