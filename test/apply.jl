@@ -194,6 +194,31 @@ using TimeSeries
                 x[1]
             end
         end
+
+        @testset "moving with multi-column" begin
+            ta = moving(mean, ohlc, 1, dims = 2, colnames = [:mean])
+            ans = mean(ohlc, dims = 2)
+            @test all(values(ta) .== values(ans))
+            @test timestamp(ta)   == timestamp(ta)
+
+            ta = moving(ohlc, 10, dims = 2) do A
+                mean(A, dims = 1)
+            end
+            ans = moving(mean, ohlc, 10)
+            @test values(ta)       ≈ values(ans)
+            @test timestamp(ta)   == timestamp(ta)
+
+            # with padding
+            ta = moving(ohlc, 10, dims = 2, padding = true) do A
+                mean(A, dims = 1)
+            end
+            @test length(ta) == length(ohlc)
+            @test all(isnan.(values(ta[1:9])))
+
+            # exceptions
+            @test_throws ArgumentError moving(mean, ohlc, 24, dims = 42)
+            @test_throws DimensionMismatch moving(mean, ohlc, 24, dims = 2)
+        end
     end
 
     @testset "upto method accumulates" begin

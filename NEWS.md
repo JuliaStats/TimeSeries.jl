@@ -2,6 +2,16 @@
 
 * Improve performance of `moving` function. (TBD)
 
+* `moving` supports multi-column as input for user-defined function. (#415)
+
+  ```julia
+  moving(ohlc, 10, dims = 2, colnames = [:A, ...]) do
+    # given that `ohlc` is a 500x4 `TimeArray`,
+    # size(A) is (10, 4)
+    ...
+  end
+  ```
+
 
 ### 0.15.0
 

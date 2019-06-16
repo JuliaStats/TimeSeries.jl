@@ -81,6 +81,18 @@ end  # percentchange
 ###### moving ###################
 
 # Note: please do not involve any side effects in function `f`
+"""
+    moving(f, ta::TimeArray{T,1}, w::Integer; padding = false)
+
+Apply user-defined function `f` to a 1D `TimeArray` with window size `w`.
+
+## Example
+To calculate the simple moving average of a time series:
+
+```julia
+moving(mean, ta, 10)
+```
+"""
 function moving(f, ta::TimeArray{T,1}, window::Integer;
                 padding::Bool = false) where {T}
     ts   = padding ? timestamp(ta) : @view(timestamp(ta)[window:end])
@@ -90,16 +102,48 @@ function moving(f, ta::TimeArray{T,1}, window::Integer;
     TimeArray(ta; timestamp = ts, values = vals)
 end
 
+
+"""
+    moving(f, ta::TimeArray{T,2}, w::Integer; padding = false, dims = 1, colnames = [...])
+
+## Example
+In case of `dims = 2`, the user-defined function `f` will get a 2D `Array` as input.
+
+```julia
+moving(ohlc, 10, dims = 2, colnames = [:A, ...]) do
+    # given that `ohlc` is a 500x4 `TimeArray`,
+    # size(A) is (10, 4)
+    ...
+end
+```
+"""
 function moving(f, ta::TimeArray{T,2}, window::Integer;
-                padding::Bool = false) where {T}
+                padding::Bool = false, dims::Integer = 1,
+                colnames::AbstractVector{Symbol} = _colnames(ta)) where {T}
+    if !(dims ∈ (1, 2))
+        throw(ArgumentError("invalid dims $dims"))
+    end
+
     ts   = padding ? timestamp(ta) : @view(timestamp(ta)[window:end])
     A    = values(ta)
-    vals = similar(@view(A[window:end, :]))
-    for i=1:size(vals, 1), j=1:size(vals, 2)
-        vals[i, j] = f(@view(values(ta)[i:i+(window-1), j]))
+
+    if dims == 1
+        vals = similar(@view(A[window:end, :]))
+        for i ∈ 1:size(vals, 1), j ∈ 1:size(vals, 2)
+            vals[i, j] = f(@view(A[i:i+(window-1), j]))
+        end
+    else # case of dims = 2
+        vals = mapreduce(i -> f(view(A, i-window+1:i, :)), vcat, window:size(A, 1))
+        if size(vals, 2) != length(colnames)
+            throw(DimensionMismatch(
+                "the output dims should match the lenght of columns, " *
+                "please set the keyword argument `colnames` properly."
+            ))
+        end
     end
-    padding && (vals = [fill(NaN, size(A[1:(window-1), :])); vals])
-    TimeArray(ta; timestamp = ts, values = vals)
+
+    padding && (vals = [fill(NaN, (window-1), size(vals, 2)); vals])
+    TimeArray(ta; timestamp = ts, values = vals, colnames = colnames)
 end
 
 ###### upto #####################
