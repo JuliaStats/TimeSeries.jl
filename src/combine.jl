@@ -10,8 +10,8 @@ function _merge_outer(::Type{IndexType}, ta1::TimeArray{T,N,D}, ta2::TimeArray{T
     TimeArray(timestamps, vals, [colnames(ta1); colnames(ta2)], meta; unchecked = true)
 end
 
-function merge(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, method::Symbol = :inner;
-               colnames::Vector = Symbol[], meta = nothing,
+function merge(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D};
+               method::Symbol = :inner, colnames::Vector = Symbol[], meta = nothing,
                padvalue=NaN) where {T,N,M,D}
 
     if colnames isa Vector{<:AbstractString}
@@ -43,7 +43,7 @@ function merge(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, method::Symbol = :i
 
     elseif method == :right
 
-        ta = merge(ta2, ta1, :left; padvalue = padvalue)
+        ta = merge(ta2, ta1, method = :left; padvalue = padvalue)
         ncol2 = length(_colnames(ta2))
         vals = [values(ta)[:, (ncol2+1):end] values(ta)[:, 1:ncol2]]
         ta = TimeArray(timestamp(ta), vals, [_colnames(ta1); _colnames(ta2)], meta; unchecked = true)

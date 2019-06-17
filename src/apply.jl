@@ -186,7 +186,7 @@ function uniformspace(ta::TimeArray{T, N}) where {T, N}
     newtimestamp = timestamp(ta)[1]:min_gap:timestamp(ta)[end]
     emptyta = TimeArray(collect(newtimestamp), zeros(length(newtimestamp), 0),
                         Symbol[], meta(ta))
-    ta = merge(emptyta, ta, :left)
+    ta = merge(emptyta, ta, method = :left)
     N == 1 && (ta = ta[colnames(ta)[1]])
     return ta
 end  # uniformspace

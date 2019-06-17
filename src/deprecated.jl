@@ -21,3 +21,7 @@
 
 @deprecate rename(ta::TimeArray, col::String)         rename(ta::TimeArray, Symbol(col))
 @deprecate rename(ta::TimeArray, col::Vector{String}) rename(ta, Symbol.(col))
+
+@deprecate(
+    merge(ta1::TimeArray{T}, ta2::TimeArray, method::Symbol; kw...) where {T},
+    merge(ta1, ta2; method = method, kw...))
