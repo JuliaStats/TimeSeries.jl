@@ -34,9 +34,9 @@ particular timestamp only exists in one of the series to be merged. For
 example:
 
 ```@repl merge
-merge(op[1:3], cl[2:4], :left)
-merge(op[1:3], cl[2:4], :right)
-merge(op[1:3], cl[2:4], :outer)
+merge(op[1:3], cl[2:4], method = :left)
+merge(op[1:3], cl[2:4], method = :right)
+merge(op[1:3], cl[2:4], method = :outer)
 ```
 
 The `merge` method allows users to specify the value for the `meta`
@@ -49,9 +49,13 @@ value:
 
 ```@repl merge
 meta(AppleCat)
-CatApple = merge(CAT, AAPL, meta=47);
+CatApple = merge(CAT, AAPL, meta = 47);
 meta(CatApple)
 meta(merge(AppleCat, CatApple))
+```
+
+```@docs
+merge
 ```
 
 ## `collapse`

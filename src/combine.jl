@@ -10,6 +10,16 @@ function _merge_outer(::Type{IndexType}, ta1::TimeArray{T,N,D}, ta2::TimeArray{T
     TimeArray(timestamps, vals, [colnames(ta1); colnames(ta2)], meta; unchecked = true)
 end
 
+"""
+    merge(ta1::TimeArray{T}, ta2::TimeArray{T}, [tas::TimeArray{T}...];
+          method = :inner, colnames = [...], padvalue = NaN)
+
+Merge several `TimeArray`s along with the time index.
+
+## Argument
+
+- `method::Symbol`: `:inner`, `:outer`, `:left` or `:right`.
+"""
 function merge(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D};
                method::Symbol = :inner, colnames::Vector = Symbol[], meta = nothing,
                padvalue=NaN) where {T,N,M,D}
