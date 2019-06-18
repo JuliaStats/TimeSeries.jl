@@ -607,4 +607,21 @@ end  # @testset "show methods don't throw errors"
 end
 
 
+@testset "colnames should be copied" begin
+    ts = Date(2019, 1, 1):Day(1):Date(2019, 1, 10)
+    data = (ts = ts, A = 1:10)
+
+    ta  = TimeArray(data, timestamp = :ts)
+    ta′ = ta[6:10]
+
+    colnames(ta′)[1] = :B
+
+    @test length(ta)  == 10
+    @test length(ta′) == 5
+
+    @test colnames(ta)  == [:A]
+    @test colnames(ta′) == [:B]
+end
+
+
 end  # @testset "timearray"

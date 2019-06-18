@@ -125,7 +125,7 @@ end
 end
 
 # helper method for inner constructor
-function replace_dupes(cnames::Vector{Symbol})
+function replace_dupes!(cnames::Vector{Symbol})
     n = 1
     while !allunique(cnames)
         ds = find_dupes_index(cnames)
