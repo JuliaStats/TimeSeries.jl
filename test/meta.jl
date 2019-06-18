@@ -82,35 +82,35 @@ end
 
 @testset "combine operations preserve meta" begin
     @testset "merge when both have identical meta" begin
-        @test meta(merge(cl, op))         == "AAPL"
-        @test meta(merge(cl, op, :left))  == "AAPL"
-        @test meta(merge(cl, op, :right)) == "AAPL"
-        @test meta(merge(cl, op, :outer)) == "AAPL"
+        @test meta(merge(cl, op))                  == "AAPL"
+        @test meta(merge(cl, op, method = :left))  == "AAPL"
+        @test meta(merge(cl, op, method = :right)) == "AAPL"
+        @test meta(merge(cl, op, method = :outer)) == "AAPL"
     end
 
     @testset "merged meta field value concatenates when both objects' meta field values are strings" begin
-        @test meta(merge(mdata, cl))         == "Apple_AAPL"
-        @test meta(merge(mdata, cl, :left))  == "Apple_AAPL"
-        @test meta(merge(mdata, cl, :right)) == "Apple_AAPL"
-        @test meta(merge(mdata, cl, :outer)) == "Apple_AAPL"
+        @test meta(merge(mdata, cl))                  == "Apple_AAPL"
+        @test meta(merge(mdata, cl, method = :left))  == "Apple_AAPL"
+        @test meta(merge(mdata, cl, method = :right)) == "Apple_AAPL"
+        @test meta(merge(mdata, cl, method = :outer)) == "Apple_AAPL"
     end
 
     @testset "merge when supplied with meta" begin
-        @test meta(merge(mdata, mdata, meta=47))         == 47
-        @test meta(merge(mdata, mdata, :left, meta=47))  == 47
-        @test meta(merge(mdata, mdata, :right, meta=47)) == 47
-        @test meta(merge(mdata, mdata, :outer, meta=47)) == 47
-        @test meta(merge(mdata, cl, meta=47))            == 47
-        @test meta(merge(mdata, cl, :left, meta=47))     == 47
-        @test meta(merge(mdata, cl, :right, meta=47))    == 47
-        @test meta(merge(mdata, cl, :outer, meta=47))    == 47
+        @test meta(merge(mdata, mdata, meta=47))                  == 47
+        @test meta(merge(mdata, mdata, method = :left, meta=47))  == 47
+        @test meta(merge(mdata, mdata, method = :right, meta=47)) == 47
+        @test meta(merge(mdata, mdata, method = :outer, meta=47)) == 47
+        @test meta(merge(mdata, cl, meta=47))                     == 47
+        @test meta(merge(mdata, cl, method = :left, meta=47))     == 47
+        @test meta(merge(mdata, cl, method = :right, meta=47))    == 47
+        @test meta(merge(mdata, cl, method = :outer, meta=47))    == 47
     end
 
     @testset "merged meta field value for disparate types in meta field defaults to Void" begin
-        @test meta(merge(mdata, merge(cl, op, meta=47)))         == nothing
-        @test meta(merge(mdata, merge(cl, op, meta=47), :left))  == nothing
-        @test meta(merge(mdata, merge(cl, op, meta=47), :right)) == nothing
-        @test meta(merge(mdata, merge(cl, op, meta=47), :outer)) == nothing
+        @test meta(merge(mdata, merge(cl, op, meta=47)))                  == nothing
+        @test meta(merge(mdata, merge(cl, op, meta=47), method = :left))  == nothing
+        @test meta(merge(mdata, merge(cl, op, meta=47), method = :right)) == nothing
+        @test meta(merge(mdata, merge(cl, op, meta=47), method = :outer)) == nothing
     end
 
     @testset "collapse" begin

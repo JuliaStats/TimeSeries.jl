@@ -63,15 +63,15 @@ end
         @test_throws ArgumentError merge(cl, op, colnames=[:a, :b, :c])
 
         for mode ∈ [:inner, :left, :right, :outer]
-            @test colnames(merge(cl, ohlc[:High, :Low], mode, colnames=[:a, :b, :c])) == [:a, :b, :c]
-            @test colnames(merge(cl, op, mode, colnames=[:a, :b])) == [:a, :b]
-            @test_throws ArgumentError merge(cl, op, mode, colnames=[:a])
-            @test_throws ArgumentError merge(cl, op, mode, colnames=[:a, :b, :c])
+            @test colnames(merge(cl, ohlc[:High, :Low], method = mode, colnames=[:a, :b, :c])) == [:a, :b, :c]
+            @test colnames(merge(cl, op, method = mode, colnames=[:a, :b])) == [:a, :b]
+            @test_throws ArgumentError merge(cl, op, method = mode, colnames=[:a])
+            @test_throws ArgumentError merge(cl, op, method = mode, colnames=[:a, :b, :c])
         end
     end
 
     @testset "returns correct alignment with Dates and values" begin
-        @test values(merge(cl, op))     == values(merge(cl, op, :inner))
+        @test values(merge(cl, op))     == values(merge(cl, op, method = :inner))
         @test values(merge(cl,op))[2,1] == values(cl)[2,1]
         @test values(merge(cl,op))[2,2] == values(op)[2,1]
     end
@@ -82,63 +82,78 @@ end
         @test timestamp(merge(cl, op[2:5]))[1] == Date(2000,1,4)
         @test length(merge(cl, op[2:5]))       == 4
 
-        @test length(merge(cl1, op1, :inner))      == 2
-        @test values(merge(cl1, op1, :inner))[2,1] == values(cl1)[3,1]
-        @test values(merge(cl1, op1, :inner))[2,2] == values(op1)[2,1]
+        @test length(merge(cl1, op1, method = :inner))      == 2
+        @test values(merge(cl1, op1, method = :inner))[2,1] == values(cl1)[3,1]
+        @test values(merge(cl1, op1, method = :inner))[2,2] == values(op1)[2,1]
 
-        @test length(merge(cl1, op1, :left))      == 3
-        @test values(merge(cl1, op1, :left))[2,1] == values(cl1)[2,1]
-        @test values(merge(cl1, op1, :left))[2,2] == values(op1)[1,1]
-        @test isnan(values(merge(cl1,op1, :left))[1,2])
+        @test length(merge(cl1, op1, method = :left))      == 3
+        @test values(merge(cl1, op1, method = :left))[2,1] == values(cl1)[2,1]
+        @test values(merge(cl1, op1, method = :left))[2,2] == values(op1)[1,1]
+        @test isnan(values(merge(cl1, op1, method = :left))[1,2])
 
-        @test length(merge(cl1, op1, :right))      == 3
-        @test values(merge(cl1, op1, :right))[2,1] == values(cl1)[3,1]
-        @test values(merge(cl1, op1, :right))[2,2] == values(op1)[2,1]
-        @test isnan(values(merge(cl1, op1, :right))[3,1])
+        @test length(merge(cl1, op1, method = :right))      == 3
+        @test values(merge(cl1, op1, method = :right))[2,1] == values(cl1)[3,1]
+        @test values(merge(cl1, op1, method = :right))[2,2] == values(op1)[2,1]
+        @test isnan(values(merge(cl1, op1, method = :right))[3,1])
 
-        @test length(merge(cl1, op1, :outer))      == 4
-        @test values(merge(cl1, op1, :outer))[2,1] == values(cl1)[2,1]
-        @test values(merge(cl1, op1, :outer))[2,2] == values(op1)[1,1]
-        @test isnan(values(merge(cl1, op1, :outer))[1,2])
-        @test isnan(values(merge(cl1, op1, :outer))[4,1])
+        @test length(merge(cl1, op1, method = :outer))      == 4
+        @test values(merge(cl1, op1, method = :outer))[2,1] == values(cl1)[2,1]
+        @test values(merge(cl1, op1, method = :outer))[2,2] == values(op1)[1,1]
+        @test isnan(values(merge(cl1, op1, method = :outer))[1,2])
+        @test isnan(values(merge(cl1, op1, method = :outer))[4,1])
     end
 
     @testset "column names match the correct values" begin
-        @test colnames(merge(cl, op[2:5]))         == [:Close, :Open]
-        @test colnames(merge(op[2:5], cl))         == [:Open, :Close]
+        @test colnames(merge(cl, op[2:5])) == [:Close, :Open]
+        @test colnames(merge(op[2:5], cl)) == [:Open, :Close]
 
-        @test colnames(merge(cl, op[2:5], :inner)) == [:Close, :Open]
-        @test colnames(merge(op[2:5], cl, :inner)) == [:Open, :Close]
+        @test colnames(merge(cl, op[2:5], method = :inner)) == [:Close, :Open]
+        @test colnames(merge(op[2:5], cl, method = :inner)) == [:Open, :Close]
 
-        @test colnames(merge(cl, op[2:5], :left))  == [:Close, :Open]
-        @test colnames(merge(op[2:5], cl, :left))  == [:Open, :Close]
+        @test colnames(merge(cl, op[2:5], method = :left))  == [:Close, :Open]
+        @test colnames(merge(op[2:5], cl, method = :left))  == [:Open, :Close]
 
-        @test colnames(merge(cl, op[2:5], :right)) == [:Close, :Open]
-        @test colnames(merge(op[2:5], cl, :right)) == [:Open, :Close]
+        @test colnames(merge(cl, op[2:5], method = :right)) == [:Close, :Open]
+        @test colnames(merge(op[2:5], cl, method = :right)) == [:Open, :Close]
 
-        @test colnames(merge(cl, op[2:5], :outer)) == [:Close, :Open]
-        @test colnames(merge(op[2:5], cl, :outer)) == [:Open, :Close]
+        @test colnames(merge(cl, op[2:5], method = :outer)) == [:Close, :Open]
+        @test colnames(merge(op[2:5], cl, method = :outer)) == [:Open, :Close]
     end
 
     @testset "unknown method" begin
-        @test_throws ArgumentError merge(cl, op, :unknown)
+        @test_throws ArgumentError merge(cl, op, method = :unknown)
     end
 
     @testset "custom missing values" begin
         ts1 = TimeArray([Date(2018, 1, 1), Date(2018, 1, 2)], [1, 2])
         ts2 = TimeArray([Date(2018, 1, 2), Date(2018, 1, 3)], [3, 4])
 
-        m1 = merge(ts1, ts2, :left, padvalue = 0)
+        m1 = merge(ts1, ts2, method =  :left, padvalue = 0)
         @test timestamp(m1) == [Date(2018, 1, 1), Date(2018, 1, 2)]
         @test values(m1)    == [1 0; 2 3]
 
-        m2 = merge(ts1, ts2, :right, padvalue = 0)
+        m2 = merge(ts1, ts2, method = :right, padvalue = 0)
         @test timestamp(m2) == [Date(2018, 1, 2), Date(2018, 1, 3)]
         @test values(m2)    == [2 3; 0 4]
 
-        m3 = merge(ts1, ts2, :outer, padvalue = 0)
+        m3 = merge(ts1, ts2, method = :outer, padvalue = 0)
         @test timestamp(m3) == [Date(2018, 1, 1), Date(2018, 1, 2), Date(2018, 1, 3)]
         @test values(m3)    == [1 0; 2 3; 0 4]
+    end
+
+    @testset "vararg input" begin
+        ta1 = merge(op, ohlc, cl)
+        ta2 = merge(merge(op, ohlc), cl)
+
+        @test timestamp(ta1) == timestamp(ta2)
+        @test values(ta1)    == values(ta2)
+
+        # test keyword arguments passing
+        ta1 = merge(op, ohlc, cl, method = :outer)
+        ta2 = merge(merge(op, ohlc, method = :outer), cl, method = :outer)
+
+        @test timestamp(ta1) == timestamp(ta2)
+        @test values(ta1)    == values(ta2)
     end
 end
 

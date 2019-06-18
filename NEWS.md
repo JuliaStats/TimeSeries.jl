@@ -12,6 +12,18 @@
   end
   ```
 
+* The argument `method` of function `merge` is a keyword argument now. (#416)
+
+  ```julia
+  merge(x, y, method = :outer)
+  ```
+
+* The function `merge` supports variable length input. (#416)
+
+  ```julia
+  merge(x, y, [zs...], method = :outer)
+  ```
+
 
 ### 0.15.0
 

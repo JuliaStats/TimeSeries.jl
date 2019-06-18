@@ -10,8 +10,18 @@ function _merge_outer(::Type{IndexType}, ta1::TimeArray{T,N,D}, ta2::TimeArray{T
     TimeArray(timestamps, vals, [colnames(ta1); colnames(ta2)], meta; unchecked = true)
 end
 
-function merge(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, method::Symbol = :inner;
-               colnames::Vector = Symbol[], meta = nothing,
+"""
+    merge(ta1::TimeArray{T}, ta2::TimeArray{T}, [tas::TimeArray{T}...];
+          method = :inner, colnames = [...], padvalue = NaN)
+
+Merge several `TimeArray`s along with the time index.
+
+## Argument
+
+- `method::Symbol`: `:inner`, `:outer`, `:left` or `:right`.
+"""
+function merge(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D};
+               method::Symbol = :inner, colnames::Vector = Symbol[], meta = nothing,
                padvalue=NaN) where {T,N,M,D}
 
     if colnames isa Vector{<:AbstractString}
@@ -43,7 +53,7 @@ function merge(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, method::Symbol = :i
 
     elseif method == :right
 
-        ta = merge(ta2, ta1, :left; padvalue = padvalue)
+        ta = merge(ta2, ta1, method = :left; padvalue = padvalue)
         ncol2 = length(_colnames(ta2))
         vals = [values(ta)[:, (ncol2+1):end] values(ta)[:, 1:ncol2]]
         ta = TimeArray(timestamp(ta), vals, [_colnames(ta1); _colnames(ta2)], meta; unchecked = true)
@@ -64,6 +74,10 @@ function merge(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D}, method::Symbol = :i
     return setcolnames!(ta, colnames)
 
 end
+
+merge(x::TimeArray{T}, y::TimeArray{T}, z::TimeArray{T}, a::TimeArray{T}...; kw...) where {T} =
+    merge(merge(x, y; kw...), z, a...; kw...)
+
 
 # hcat ##########################
 
