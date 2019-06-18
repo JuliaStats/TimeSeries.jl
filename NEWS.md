@@ -1,6 +1,6 @@
 ### 0.16.0
 
-* Improve performance of `moving` function. (TBD)
+* Improve performance of `moving` function. (#414)
 
 * `moving` supports multi-column as input for user-defined function. (#415)
 
@@ -23,6 +23,8 @@
   ```julia
   merge(x, y, [zs...], method = :outer)
   ```
+
+* Fix issues of `TimeArray` column names copying. (#418)
 
 
 ### 0.15.0
