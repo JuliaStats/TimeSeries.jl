@@ -72,6 +72,7 @@ end
     @testset "change colnames with pair" begin
         re_ohlc_2 = rename(ohlc, :Open => :a)
         @test colnames(re_ohlc_2) == [:a, :High, :Low, :Close]
+        @test_throws ArgumentError rename(ohlc, :Unknown => :A)
     end
 
     @testset "change colnames with several pairs" begin
@@ -146,6 +147,7 @@ end
         @test colnames(ohlc) == cols
         @test colnames(ta)   == cols′
         @test_throws MethodError rename!(ta)
+        @test_throws ArgumentError rename!(ohlc, :Unknown => :A)
     end
 
     let
