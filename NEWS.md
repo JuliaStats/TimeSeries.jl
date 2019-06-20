@@ -24,6 +24,8 @@
   merge(x, y, [zs...], method = :outer)
   ```
 
+* New function `rename!` for in-place update of column names. (#417)
+
 * Fix issues of `TimeArray` column names copying. (#418)
 
 

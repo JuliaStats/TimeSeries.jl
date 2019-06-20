@@ -14,7 +14,7 @@ export TimeArray, AbstractTimeSeries,
        basecall,
        merge, collapse,
        readtimearray, writetimearray,
-       update, rename
+       update, rename, rename!
 
 @reexport using Dates
 
