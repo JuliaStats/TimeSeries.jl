@@ -312,6 +312,11 @@ Base.show(io::IO, ::MIME"text/plain", ta::TimeArray) =
 
 ###### getindex #################
 
+# the getindex function should return a new TimeArray, and copy data from
+# the source, includes `timestamp`, `values` and `colnames`.
+
+getindex(ta::TimeArray) = throw(BoundsError(typeof(ta), []))
+
 # single row
 getindex(ta::TimeArray, n::Integer) =
     # avoid conversion to column vector

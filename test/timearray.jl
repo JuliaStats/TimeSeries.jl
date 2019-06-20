@@ -239,6 +239,9 @@ end
         @test colnames(ta)  == [:Open, :High, :Low, :Close]
         @test meta(ta)      == "AAPL"
     end
+
+    @test_throws BoundsError cl[]
+    @test_throws BoundsError ohlc[]
 end
 
 
