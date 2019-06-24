@@ -1,3 +1,42 @@
+### 0.16.0
+
+* Improve performance of `moving` function. (#414)
+
+* `moving` supports multi-column as input for user-defined function. (#415)
+
+  ```julia
+  moving(ohlc, 10, dims = 2, colnames = [:A, ...]) do
+    # given that `ohlc` is a 500x4 `TimeArray`,
+    # size(A) is (10, 4)
+    ...
+  end
+  ```
+
+* The argument `method` of function `merge` is a keyword argument now. (#416)
+
+  ```julia
+  merge(x, y, method = :outer)
+  ```
+
+* The function `merge` supports variable length input. (#416)
+
+  ```julia
+  merge(x, y, [zs...], method = :outer)
+  ```
+
+* New function `rename!` for in-place update of column names. (#417)
+
+* Fix issues of `TimeArray` column names copying. (#418)
+
+* `ta[]` throws `BoundsError` now. (#420)
+
+  ```julia
+  julia> cl[]
+  ERROR: BoundsError: attempt to access TimeArray{Float64,1,Date,Array{Float64,1}}
+    at index []
+  ```
+
+
 ### 0.15.0
 
 * New `TimeArray` constructor for creating a `TimeArray` from existing `TimeArray`.
@@ -17,6 +56,11 @@
   julia> meta(cl′)
   :AAPL
   ```
+
+* `merge` now throws `ArgumentError` on invalid column setup. ([#405])
+
+* `percentchange` and `dropnan` now throw `ArgumentError` on invalid `method`. ([#405])
+
 
 ### 0.14.0
 

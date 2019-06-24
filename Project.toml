@@ -1,0 +1,23 @@
+name = "TimeSeries"
+uuid = "9e3dc215-6440-5c97-bce1-76c03772f85e"
+authors = ["JuliaStats <https://github.com/JuliaStats>"]
+version = "0.15.1"
+
+[deps]
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
+RecipesBase = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
+Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+
+[compat]
+RecipesBase = "≥ 0.2.3"
+Reexport = "≥ 0.2.0"
+julia = "≥ 0.7.0"
+
+[extras]
+MarketData = "945b72a4-3b13-509d-9b46-1525bb5c06de"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["MarketData", "Test"]

@@ -71,7 +71,7 @@ function percentchange(ta::TimeArray, returns::Symbol=:simple;
     cols = colnames(ta)
     ta = returns == :log ? diff(log.(ta), padding=padding) :
          returns == :simple ? expm1.(percentchange(ta, :log, padding=padding)) :
-         error("returns must be either :simple or :log")
+         throw(ArgumentError("returns must be either :simple or :log"))
     colnames(ta)[:] = cols
 
    return ta
@@ -80,26 +80,70 @@ end  # percentchange
 
 ###### moving ###################
 
-function moving(f, ta::TimeArray{T, 1}, window::Int;
+# Note: please do not involve any side effects in function `f`
+"""
+    moving(f, ta::TimeArray{T,1}, w::Integer; padding = false)
+
+Apply user-defined function `f` to a 1D `TimeArray` with window size `w`.
+
+## Example
+To calculate the simple moving average of a time series:
+
+```julia
+moving(mean, ta, 10)
+```
+"""
+function moving(f, ta::TimeArray{T,1}, window::Integer;
                 padding::Bool = false) where {T}
-    tstamps = padding ? timestamp(ta) : timestamp(ta)[window:end]
-    vals    = zero(values(ta)[window:end])
-    for i=1:length(vals)
-        vals[i] = f(values(ta)[i:i+(window-1)])
-    end
-    padding && (vals = [NaN*ones(window-1); vals])
-    TimeArray(tstamps, vals, colnames(ta), meta(ta))
+    ts   = padding ? timestamp(ta) : @view(timestamp(ta)[window:end])
+    A    = values(ta)
+    vals = map(i -> f(@view A[i:i+(window-1)]), 1:length(ta)-window+1)
+    padding && (vals = [fill(NaN, window - 1); vals])
+    TimeArray(ta; timestamp = ts, values = vals)
 end
 
-function moving(f, ta::TimeArray{T, 2}, window::Int;
-                padding::Bool = false) where {T}
-    tstamps = padding ? timestamp(ta) : timestamp(ta)[window:end]
-    vals    = zero(values(ta)[window:end, :])
-    for i=1:size(vals, 1), j=1:size(vals, 2)
-        vals[i, j] = f(values(ta)[i:i+(window-1), j])
+
+"""
+    moving(f, ta::TimeArray{T,2}, w::Integer; padding = false, dims = 1, colnames = [...])
+
+## Example
+In case of `dims = 2`, the user-defined function `f` will get a 2D `Array` as input.
+
+```julia
+moving(ohlc, 10, dims = 2, colnames = [:A, ...]) do
+    # given that `ohlc` is a 500x4 `TimeArray`,
+    # size(A) is (10, 4)
+    ...
+end
+```
+"""
+function moving(f, ta::TimeArray{T,2}, window::Integer;
+                padding::Bool = false, dims::Integer = 1,
+                colnames::AbstractVector{Symbol} = _colnames(ta)) where {T}
+    if !(dims ∈ (1, 2))
+        throw(ArgumentError("invalid dims $dims"))
     end
-    padding && (vals = [NaN*fill(1, size(values(ta)[1:(window-1), :])); vals])
-    TimeArray(tstamps, vals, colnames(ta), meta(ta))
+
+    ts   = padding ? timestamp(ta) : @view(timestamp(ta)[window:end])
+    A    = values(ta)
+
+    if dims == 1
+        vals = similar(@view(A[window:end, :]))
+        for i ∈ 1:size(vals, 1), j ∈ 1:size(vals, 2)
+            vals[i, j] = f(@view(A[i:i+(window-1), j]))
+        end
+    else # case of dims = 2
+        vals = mapreduce(i -> f(view(A, i-window+1:i, :)), vcat, window:size(A, 1))
+        if size(vals, 2) != length(colnames)
+            throw(DimensionMismatch(
+                "the output dims should match the lenght of columns, " *
+                "please set the keyword argument `colnames` properly."
+            ))
+        end
+    end
+
+    padding && (vals = [fill(NaN, (window-1), size(vals, 2)); vals])
+    TimeArray(ta; timestamp = ts, values = vals, colnames = colnames)
 end
 
 ###### upto #####################
@@ -142,7 +186,7 @@ function uniformspace(ta::TimeArray{T, N}) where {T, N}
     newtimestamp = timestamp(ta)[1]:min_gap:timestamp(ta)[end]
     emptyta = TimeArray(collect(newtimestamp), zeros(length(newtimestamp), 0),
                         Symbol[], meta(ta))
-    ta = merge(emptyta, ta, :left)
+    ta = merge(emptyta, ta, method = :left)
     N == 1 && (ta = ta[colnames(ta)[1]])
     return ta
 end  # uniformspace
@@ -152,4 +196,4 @@ end  # uniformspace
 dropnan(ta::TimeArray, method::Symbol = :all) =
     method == :all ? ta[findall(reshape(values(any(.!isnan.(ta), dims = 2)), :))] :
     method == :any ? ta[findall(reshape(values(all(.!isnan.(ta), dims = 2)), :))] :
-    error("dropnan method must be :all or :any")
+    throw(ArgumentError("dropnan method must be :all or :any"))

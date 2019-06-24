@@ -239,6 +239,9 @@ end
         @test colnames(ta)  == [:Open, :High, :Low, :Close]
         @test meta(ta)      == "AAPL"
     end
+
+    @test_throws BoundsError cl[]
+    @test_throws BoundsError ohlc[]
 end
 
 
@@ -428,7 +431,13 @@ end
 
 
 @testset "show methods don't throw errors" begin
+    io = IOBuffer()
     let str = sprint(show, cl)
+        out = "500×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31"
+        @test str == out
+    end
+    show(io, "text/plain", cl)
+    let str = String(take!(io))
         out = """500×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
 │            │ Close  │
 ├────────────┼────────┤
@@ -453,7 +462,13 @@ end
         @test str == out
     end
 
+    # my edits above seem to work -- now need to do for the rest, JJS 2/22/19
     let str = sprint(show, ohlc)
+        out = "500×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2001-12-31"
+        @test str == out
+    end
+    show(io, "text/plain", ohlc)
+    let str = String(take!(io))
         out = """500×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2001-12-31
 │            │ Open   │ High   │ Low    │ Close  │
 ├────────────┼────────┼────────┼────────┼────────┤
@@ -479,6 +494,11 @@ end
     end
 
     let str = sprint(show, AAPL)
+        out = "8336×12 TimeArray{Float64,2,Date,Array{Float64,2}} 1980-12-12 to 2013-12-31"
+        @test str == out
+    end
+    show(io, "text/plain", AAPL)
+    let str = String(take!(io))
         out = """8336×12 TimeArray{Float64,2,Date,Array{Float64,2}} 1980-12-12 to 2013-12-31
 │            │ Open   │ High   │ Low    │ Close  │ Volume    │ Ex-Dividend │
 ├────────────┼────────┼────────┼────────┼────────┼───────────┼─────────────┤
@@ -525,6 +545,11 @@ end
     end
 
     let str = sprint(show, ohlc[1:4])
+        out = "4×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-06"
+        @test str == out
+    end
+    show(io, "text/plain", ohlc[1:4])
+    let str = String(take!(io))
         out = """4×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-06
 │            │ Open   │ High   │ Low    │ Close  │
 ├────────────┼────────┼────────┼────────┼────────┤
@@ -535,15 +560,30 @@ end
         @test str == out
     end
 
+
     let str = sprint(show, ohlc[1:0])
         @test str == "0×4 TimeArray{Float64,2,Date,Array{Float64,2}}"
     end
+    show(io, "text/plain", ohlc[1:0])
+    let str = String(take!(io))
+        @test str == "0×4 TimeArray{Float64,2,Date,Array{Float64,2}}"
+    end
+
 
     let str = sprint(show, TimeArray(Date[], []))
         @test str == "0×1 TimeArray{Any,1,Date,Array{Any,1}}"
     end
+    show(io, "text/plain", TimeArray(Date[], []))
+    let str = String(take!(io))
+        @test str == "0×1 TimeArray{Any,1,Date,Array{Any,1}}"
+    end
 
     let str = sprint(show, lag(cl[1:2], padding=true))
+        out = "2×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-04"
+        @test str == out
+    end
+    show(io, "text/plain", lag(cl[1:2], padding=true))
+    let str = String(take!(io))
         out = """2×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-04
 │            │ Close  │
 ├────────────┼────────┤
@@ -567,6 +607,23 @@ end  # @testset "show methods don't throw errors"
         @test ohlc.Close == ohlc[:Close]
         @test_throws KeyError ohlc.NotFound
     end
+end
+
+
+@testset "colnames should be copied" begin
+    ts = Date(2019, 1, 1):Day(1):Date(2019, 1, 10)
+    data = (ts = ts, A = 1:10)
+
+    ta  = TimeArray(data, timestamp = :ts)
+    ta′ = ta[6:10]
+
+    colnames(ta′)[1] = :B
+
+    @test length(ta)  == 10
+    @test length(ta′) == 5
+
+    @test colnames(ta)  == [:A]
+    @test colnames(ta′) == [:B]
 end
 
 

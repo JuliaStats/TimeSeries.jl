@@ -99,12 +99,6 @@ function insertbyidx!(dst::AbstractArray, src::AbstractArray, dstidx::Vector, sr
     nothing
 end
 
-function setcolnames!(ta::TimeArray, colnames::Vector{Symbol})
-    length(colnames) == size(ta, 2) ? (_colnames(ta)[:] = colnames) :
-    length(colnames) > 0 && error("colnames supplied is not correct size")
-    return ta
-end  # setcolnames!
-
 @inline function allequal(x)
     length(x) < 2 && return true
     e1 = x[1]
@@ -125,7 +119,7 @@ end
 end
 
 # helper method for inner constructor
-function replace_dupes(cnames::Vector{Symbol})
+function replace_dupes!(cnames::Vector{Symbol})
     n = 1
     while !allunique(cnames)
         ds = find_dupes_index(cnames)
