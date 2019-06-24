@@ -349,10 +349,29 @@ function getindex(ta::TimeArray, s::Symbol)
 end
 
 # array of columns by name
-function getindex(ta::TimeArray, ss::Symbol...)
-    ns = [findcol(ta, s) for s in ss]
-    TimeArray(timestamp(ta), values(ta)[:, ns], collect(ss), meta(ta))
-end
+getindex(ta::TimeArray, ss::Symbol...) = getindex(ta, collect(ss))
+getindex(ta::TimeArray, ss::Vector{Symbol}) =
+    TimeArray(ta; values = values(ta)[:, map(s -> findcol(ta, s), ss)], colnames = ss)
+
+# ta[rows, cols]
+getindex(ta::TimeArray,
+         rows::Union{AbstractVector{<:Integer},Colon},
+         cols::AbstractVector{Symbol}) =
+    TimeArray(
+        ta;
+        timestamp = timestamp(ta)[rows],
+        values = values(ta)[rows, map(s -> findcol(ta, s), cols)],
+        colnames = cols,
+        unchecked = true)
+
+# ta[n, cols]
+getindex(ta::TimeArray, n::Integer, cols::AbstractVector{Symbol}) =
+    TimeArray(
+        ta;
+        timestamp = timestamp(ta)[[n]],
+        values = values(ta)[[n], map(s -> findcol(ta, s), cols)],
+        colnames = cols,
+        unchecked = true)
 
 # single date
 function getindex(ta::TimeArray{T,N,D}, d::D) where {T,N,D}
@@ -376,7 +395,10 @@ getindex(ta::TimeArray, k::TimeArray{Bool,1}) = ta[findwhen(k)]
 # getindex{T,N}(ta::TimeArray{T,N}, d::DAYOFWEEK) = ta[dayofweek(timestamp(ta)) .== d]
 
 # Define end keyword
-lastindex(ta::TimeArray) = length(timestamp(ta))
+lastindex(ta::TimeArray, d::Integer = 1) =
+    (d == 1) ? length(timestamp(ta)) :
+    (d == 2) ? length(colnames(ta)) :
+    1
 
 eachindex(ta::TimeArray) = Base.OneTo(length(timestamp(ta)))
 

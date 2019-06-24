@@ -329,6 +329,35 @@ end
         @test_throws MethodError ohlc[merge(op .> cl, op .< cl)]
     end
 
+    @testset "getindex on Vector{Symbol}" begin
+        hl = [:High, :Low]
+        ta = ohlc[hl]
+
+        @test size(values(ta)) == (length(timestamp(ohlc)), 2)
+        @test colnames(ta) == hl
+    end
+
+    @testset "2D getindex on [Vector{Int}, Vector{Symbol}]" begin
+        hl = [:High, :Low]
+        ta = ohlc[1:10, hl]
+
+        @test size(values(ta)) == (10, 2)
+        @test colnames(ta) == hl
+
+        ta = ohlc[10:end, hl]
+        @test size(values(ta)) == (length(timestamp(ohlc)) - 9, 2)
+        @test colnames(ta) == hl
+
+        ta = ohlc[:, hl]
+        @test size(values(ta)) == (length(timestamp(ohlc)), 2)
+        @test colnames(ta) == hl
+
+        # test KeyError
+        @test_throws KeyError ohlc[1:2, [:Unknown]]
+        @test_throws KeyError ohlc[1:end, [:Unknown]]
+        @test_throws KeyError ohlc[:, [:Unknown]]
+    end
+
     @testset "Base.eachindex" begin
         @test eachindex(cl)   == 1:length(cl)
         @test eachindex(ohlc) == 1:length(ohlc)
