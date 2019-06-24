@@ -17,8 +17,10 @@ Reexport = "≥ 0.2.0"
 julia = "≥ 0.7.0"
 
 [extras]
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 MarketData = "945b72a4-3b13-509d-9b46-1525bb5c06de"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["MarketData", "Test"]
+test = ["MarketData", "Test", "DataFrames", "CSV"]
