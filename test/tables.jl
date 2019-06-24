@@ -82,8 +82,8 @@ end  # @testset "DataFrames.jl"
         @test String(take!(io)) == "timestamp,Close\n" *
                                    "2000-01-03,111.94\n" *
                                    "2000-01-04,102.5\n" *
-                                   "2000-01-05,104.0\n" *
-                                   "2000-01-06,95.0\n" *
+                                   "2000-01-05,104\n" *
+                                   "2000-01-06,95\n" *
                                    "2000-01-07,99.5\n"
     end
 
@@ -94,20 +94,20 @@ end  # @testset "DataFrames.jl"
         @test String(take!(io)) == "timestamp,Open,High,Low,Close\n" *
                                    "2000-01-03,104.88,112.5,101.69,111.94\n" *
                                    "2000-01-04,108.25,110.62,101.19,102.5\n" *
-                                   "2000-01-05,103.75,110.56,103.0,104\n" *
-                                   "2000-01-06,106.12,107.0,95.0,95\n" *
-                                   "2000-01-07,96.5,101.0,95.5,99.5\n"
+                                   "2000-01-05,103.75,110.56,103,104\n" *
+                                   "2000-01-06,106.12,107,95,95\n" *
+                                   "2000-01-07,96.5,101,95.5,99.5\n"
     end
 
     @testset "read csv into TimeArray, single column" begin
         file = "timestamp,Close\n" *
                "2000-01-03,111.94\n" *
                "2000-01-04,102.5\n" *
-               "2000-01-05,104.0\n" *
-               "2000-01-06,95.0\n" *
+               "2000-01-05,104\n" *
+               "2000-01-06,95\n" *
                "2000-01-07,99.5\n"
         io = IOBuffer(file)
-        csv = CSV.File(io, allowmissing = :none)
+        csv = CSV.File(io)
         ta = TimeArray(csv, timestamp = :timestamp)
         ans = cl[1:5]
         @test timestamp(ta)   == timestamp(ans)
@@ -119,11 +119,11 @@ end  # @testset "DataFrames.jl"
         file = "timestamp,Open,High,Low,Close\n" *
                "2000-01-03,104.88,112.5,101.69,111.94\n" *
                "2000-01-04,108.25,110.62,101.19,102.5\n" *
-               "2000-01-05,103.75,110.56,103.0,104\n" *
-               "2000-01-06,106.12,107.0,95.0,95\n" *
-               "2000-01-07,96.5,101.0,95.5,99.5\n"
+               "2000-01-05,103.75,110.56,103,104\n" *
+               "2000-01-06,106.12,107,95,95\n" *
+               "2000-01-07,96.5,101,95.5,99.5\n"
         io = IOBuffer(file)
-        csv = CSV.File(io, allowmissing = :none)
+        csv = CSV.File(io)
         ta = TimeArray(csv, timestamp = :timestamp)
         ans = ohlc[1:5]
         @test timestamp(ta)    == Date(2000, 1, 3):Day(1):Date(2000, 1, 7)
