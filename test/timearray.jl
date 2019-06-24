@@ -352,10 +352,15 @@ end
         @test size(values(ta)) == (length(timestamp(ohlc)), 2)
         @test colnames(ta) == hl
 
+        ta = ohlc[42, hl]
+        @test size(values(ta)) == (1, 2)
+        @test colnames(ta) == hl
+
         # test KeyError
         @test_throws KeyError ohlc[1:2, [:Unknown]]
         @test_throws KeyError ohlc[1:end, [:Unknown]]
         @test_throws KeyError ohlc[:, [:Unknown]]
+        @test_throws KeyError ohlc[42, [:Unknown]]
     end
 
     @testset "Base.eachindex" begin
