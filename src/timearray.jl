@@ -365,13 +365,16 @@ getindex(ta::TimeArray,
         unchecked = true)
 
 # ta[n, cols]
-getindex(ta::TimeArray, n::Integer, cols::AbstractVector{Symbol}) =
-    TimeArray(
-        ta;
-        timestamp = timestamp(ta)[[n]],
-        values = values(ta)[[n], map(s -> findcol(ta, s), cols)],
-        colnames = cols,
-        unchecked = true)
+getindex(ta::TimeArray, n::Integer, cols) =
+    getindex(ta, [n], cols)
+
+# ta[rows, col]
+getindex(ta::TimeArray, rows, col::Symbol) =
+    getindex(ta, rows, [col])
+
+# ta[n, col]
+getindex(ta::TimeArray, n::Integer, col::Symbol) =
+    getindex(ta, [n], [col])
 
 # single date
 function getindex(ta::TimeArray{T,N,D}, d::D) where {T,N,D}
