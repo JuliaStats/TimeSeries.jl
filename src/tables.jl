@@ -17,7 +17,7 @@ end
 
 function TableIter(ta::T) where {T<:TimeArray}
     N, M = size(ta, 1), size(ta, 2) + 1
-    ts = TimeSeries.replace_dupes([colnames(ta); :timestamp])[end]
+    ts = TimeSeries.replace_dupes!([colnames(ta); :timestamp])[end]
     S = tuple(ts, colnames(ta)...)
     TableIter{T,S,N,M}(ta)
 end
