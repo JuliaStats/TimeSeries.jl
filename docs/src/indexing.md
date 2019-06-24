@@ -52,10 +52,11 @@ ohlc[Date(2000, 1, 3):Day(1):Date(2000, 2, 4)]
 
 ### Symbol
 
-| Example           | Description                            | Indexing value   |
-|-------------------|----------------------------------------|------------------|
-| `[:Open]`         | The column named `:Open`               | single symbol    |
-| `[:Open, :Close]` | The columns named `:Open` and `:Close` | multiple symbols |
+| Example             | Description                            | Indexing value   |
+|---------------------|----------------------------------------|------------------|
+| `[:Open]`           | The column named `:Open`               | single symbol    |
+| `[:Open, :Close]`   | The columns named `:Open` and `:Close` | multiple symbols |
+| `[[:Open, :Close]]` | The columns named `:Open` and `:Close` | multiple symbols |
 
 Examples in REPL:
 
@@ -67,13 +68,15 @@ using Dates
 ```@repl symbol-indexing
 ohlc[:Open]
 ohlc[:Open, :Close]
+cols = [:Open, :Close]
+ohlc[cols]
 ```
 
 ## Mixed approach
 
 | Example                     | Description                    | Indexing value                |
 |-----------------------------|--------------------------------|-------------------------------|
-| `[:Open][1:3]`              | `:Open` column & first 3 rows  | single symbol & integer range |
+| `[1:3, :Open]`              | `:Open` column & first 3 rows  | single symbol & integer range |
 | `[:Open][Date(2000, 1, 3)]` | `:Open` column and Jan 3, 2000 | single symbol & Date          |
 
 Examples in REPL:
@@ -84,6 +87,6 @@ using Dates
 ```
 
 ```@repl mixed-indexing
-ohlc[:Open][1:3]
+ohlc[1:3, :Open]
 ohlc[:Open][Date(2000, 1, 3)]
 ```
