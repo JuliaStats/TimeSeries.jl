@@ -74,6 +74,7 @@ end  # @testset "iterator"
 end  # @testset "DataFrames.jl"
 
 
+@static if VERSION ≥ v"1.0"  # there are some format issue on v0.7
 @testset "CSV.jl" begin
     @testset "single column" begin
         ta = cl[1:5]
@@ -134,6 +135,7 @@ end  # @testset "DataFrames.jl"
         @test meta(ta)         ≡ csv
     end
 end  # @testset "CSV.jl"
+end  # @static if VERSION ≥ v"1.0"
 
 
 end  # @testset "Tables.jl integration
