@@ -13,16 +13,30 @@ using CSV
 @testset "iterator" begin
   @testset "single column" begin
     i = Tables.columns(cl)
-    @test size(i) == (length(cl), 2)
-    @test i[100, 1] == timestamp(cl)[100]
-    @test i[100, 2] == values(cl[100])[1]
+    @test Tables.istable(cl)
+    @test size(i)     == (length(cl), 2)
+    @test length(i)   == 2  # timestamp and the close columns
+    @test i[100, 1]   == timestamp(cl)[100]
+    @test i[100, 2]   == values(cl)[100]
+    @test i[end]      == values(cl)
+    @test i[end, 1]   == timestamp(cl)[end]
+    @test i[end, 2]   == values(cl)[end]
+    @test colnames(i) == colnames(cl)
+    @test i.Close     == values(cl)
   end
 
   @testset "multi column" begin
     i = Tables.columns(ohlc)
-    @test size(i) == (length(ohlc), 5)
-    @test i[100, 1] == timestamp(ohlc)[100]
-    @test i[100, 3] == values(ohlc[100])[2]
+    @test Tables.istable(ohlc)
+    @test size(i)     == (length(ohlc), 5)
+    @test length(i)   == 5
+    @test i[100, 1]   == timestamp(ohlc)[100]
+    @test i[100, 3]   == values(ohlc)[100, 2]
+    @test i[end]      == values(ohlc[:Close])
+    @test i[end, 1]   == timestamp(ohlc)[end]
+    @test i[end, 3]   == values(ohlc)[end, 2]
+    @test colnames(i) == colnames(ohlc)
+    @test i.Open      == values(ohlc.Open)
   end
 end  # @testset "iterator"
 
@@ -74,30 +88,29 @@ end  # @testset "iterator"
 end  # @testset "DataFrames.jl"
 
 
-@static if VERSION ≥ v"1.0"  # there are some format issue on v0.7
 @testset "CSV.jl" begin
     @testset "single column" begin
-        ta = cl[1:5]
+        ta = TimeArray(cl[1:5], values = [1.1, 2.2, 3.3, 4.4, 5.5])
         io = IOBuffer()
         CSV.write(io, ta)
         @test String(take!(io)) == "timestamp,Close\n" *
-                                   "2000-01-03,111.94\n" *
-                                   "2000-01-04,102.5\n" *
-                                   "2000-01-05,104\n" *
-                                   "2000-01-06,95\n" *
-                                   "2000-01-07,99.5\n"
+                                   "2000-01-03,1.1\n" *
+                                   "2000-01-04,2.2\n" *
+                                   "2000-01-05,3.3\n" *
+                                   "2000-01-06,4.4\n" *
+                                   "2000-01-07,5.5\n"
     end
 
     @testset "multi column" begin
-        ta = ohlc[1:5]
+        ta = TimeArray(ohlc[1:5], values = reshape(1:.1:2.9, 5, :))
         io = IOBuffer()
         CSV.write(io, ta)
         @test String(take!(io)) == "timestamp,Open,High,Low,Close\n" *
-                                   "2000-01-03,104.88,112.5,101.69,111.94\n" *
-                                   "2000-01-04,108.25,110.62,101.19,102.5\n" *
-                                   "2000-01-05,103.75,110.56,103,104\n" *
-                                   "2000-01-06,106.12,107,95,95\n" *
-                                   "2000-01-07,96.5,101,95.5,99.5\n"
+                                   "2000-01-03,1,1.5,2,2.5\n" *
+                                   "2000-01-04,1.1,1.6,2.1,2.6\n" *
+                                   "2000-01-05,1.2,1.7,2.2,2.7\n" *
+                                   "2000-01-06,1.3,1.8,2.3,2.8\n" *
+                                   "2000-01-07,1.4,1.9,2.4,2.9\n"
     end
 
     @testset "read csv into TimeArray, single column" begin
@@ -135,7 +148,6 @@ end  # @testset "DataFrames.jl"
         @test meta(ta)         ≡ csv
     end
 end  # @testset "CSV.jl"
-end  # @static if VERSION ≥ v"1.0"
 
 
 end  # @testset "Tables.jl integration

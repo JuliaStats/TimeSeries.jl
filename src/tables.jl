@@ -34,7 +34,9 @@ Base.getindex(x::TableIter{<:TimeArray}, j::Integer, i::Integer) =
 
 Base.length(::TableIter{<:TimeArray,S,N,M}) where {S,N,M}    = M
 Base.lastindex(::TableIter{<:TimeArray,S,N,M}) where {S,N,M} = M
-Base.size(::TableIter{<:TimeArray,S,N,M}) where {S,N,M}      = (N, M)
+Base.lastindex(::TableIter{<:TimeArray,S,N,M}, d::Integer) where {S,N,M} =
+    ifelse(d == 1, N, ifelse(d == 2, M, 1))
+Base.size(::TableIter{<:TimeArray,S,N,M}) where {S,N,M} = (N, M)
 
 Base.propertynames(x::TableIter{<:TimeArray,S}) where {S} = S
 Base.getproperty(x::TableIter{<:TimeArray,S}, c::Symbol) where {S} =
@@ -51,7 +53,7 @@ Tables.rows(ta::TimeArray) = Tables.rows(Tables.columntable(ta))
 Tables.columnaccess(::Type{<:TimeArray}) = true
 Tables.columns(ta::TimeArray) = TableIter(ta)
 Tables.eachcolumn(i::TableIter) = i
-Tables.schema(ta::TimeArray{T,N,D}) where {T,N,D} = Tables.schema(TableIter(ta))
+Tables.schema(ta::AbstractTimeSeries{T,N,D}) where {T,N,D} = Tables.schema(TableIter(ta))
 Tables.schema(i::TableIter{T,S}) where {T,S} = Tables.Schema(S, coltypes(data(i)))
 
 coltypes(x::AbstractTimeSeries{T,N,D}) where {T,N,D} = (D, (T for _ ∈ 1:size(x, 2))...)
