@@ -121,7 +121,11 @@ end  # @testset "DataFrames.jl"
                "2000-01-06,95\n" *
                "2000-01-07,99.5\n"
         io = IOBuffer(file)
-        csv = CSV.File(io)
+        csv = @static if VERSION ≥ v"1.0.0"
+            CSV.File(io)
+        elseif
+            CSV.File(io, allowmissing = :none)
+        end
         ta = TimeArray(csv, timestamp = :timestamp)
         ans = cl[1:5]
         @test timestamp(ta)   == timestamp(ans)
@@ -137,7 +141,11 @@ end  # @testset "DataFrames.jl"
                "2000-01-06,106.12,107,95,95\n" *
                "2000-01-07,96.5,101,95.5,99.5\n"
         io = IOBuffer(file)
-        csv = CSV.File(io)
+        csv = @static if VERSION ≥ v"1.0.0"
+            CSV.File(io)
+        elseif
+            CSV.File(io, allowmissing = :none)
+        end
         ta = TimeArray(csv, timestamp = :timestamp)
         ans = ohlc[1:5]
         @test timestamp(ta)    == Date(2000, 1, 3):Day(1):Date(2000, 1, 7)
