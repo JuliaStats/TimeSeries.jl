@@ -102,15 +102,15 @@ end  # @testset "DataFrames.jl"
     end
 
     @testset "multi column" begin
-        ta = TimeArray(ohlc[1:5], values = reshape(1:.1:2.9, 5, :))
+        ta = TimeArray(ohlc[1:5], values = reshape(1.05:.1:2.95, 5, :))
         io = IOBuffer()
         CSV.write(io, ta)
         @test String(take!(io)) == "timestamp,Open,High,Low,Close\n" *
-                                   "2000-01-03,1,1.5,2,2.5\n" *
-                                   "2000-01-04,1.1,1.6,2.1,2.6\n" *
-                                   "2000-01-05,1.2,1.7,2.2,2.7\n" *
-                                   "2000-01-06,1.3,1.8,2.3,2.8\n" *
-                                   "2000-01-07,1.4,1.9,2.4,2.9\n"
+                                   "2000-01-03,1.05,1.55,2.05,2.55\n" *
+                                   "2000-01-04,1.15,1.65,2.15,2.65\n" *
+                                   "2000-01-05,1.25,1.75,2.25,2.75\n" *
+                                   "2000-01-06,1.35,1.85,2.35,2.85\n" *
+                                   "2000-01-07,1.45,1.95,2.45,2.95\n"
     end
 
     @testset "read csv into TimeArray, single column" begin
