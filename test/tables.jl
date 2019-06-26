@@ -123,7 +123,7 @@ end  # @testset "DataFrames.jl"
         io = IOBuffer(file)
         csv = @static if VERSION ≥ v"1.0.0"
             CSV.File(io)
-        elseif
+        else
             CSV.File(io, allowmissing = :none)
         end
         ta = TimeArray(csv, timestamp = :timestamp)
@@ -143,7 +143,7 @@ end  # @testset "DataFrames.jl"
         io = IOBuffer(file)
         csv = @static if VERSION ≥ v"1.0.0"
             CSV.File(io)
-        elseif
+        else
             CSV.File(io, allowmissing = :none)
         end
         ta = TimeArray(csv, timestamp = :timestamp)
