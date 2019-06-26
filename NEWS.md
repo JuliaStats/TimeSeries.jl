@@ -28,12 +28,21 @@
 
 * Fix issues of `TimeArray` column names copying. (#418)
 
-* `ta[]` throws `BoundsError` now. (#420)
+* `timearray[]` throws `BoundsError` now. (#420)
 
   ```julia
   julia> cl[]
   ERROR: BoundsError: attempt to access TimeArray{Float64,1,Date,Array{Float64,1}}
     at index []
+  ```
+
+* 2D `getindex` supports. (#423)
+
+  ```julia
+  ohlc[1:42,   [:High, :Low]]
+  ohlc[42:end, [:High, :Low]]
+  ohlc[:,      [:High, :Low]]
+  ohlc[42,     [:High, :Low]]
   ```
 
 
