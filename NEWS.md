@@ -36,6 +36,8 @@
     at index []
   ```
 
+* `Tables.jl` interface integration. (#382)
+
 
 ### 0.15.0
 
