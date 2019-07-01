@@ -28,6 +28,8 @@
 
 * Fix issues of `TimeArray` column names copying. (#418)
 
+* Fix `@inbounds` handling for `TimeArray`. (#425)
+
 * `timearray[]` throws `BoundsError` now. (#420)
 
   ```julia
