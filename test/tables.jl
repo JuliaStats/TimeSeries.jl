@@ -11,8 +11,10 @@ using CSV
 
 
 @testset "interface" begin
+
     @testset "single column" begin
         @test Tables.istable(cl)
+        @test Tables.istable(typeof(cl))
         @test Tables.rowaccess(cl)
         @test Tables.columnaccess(cl)
 
@@ -23,6 +25,7 @@ using CSV
 
     @testset "multiple column" begin
         @test Tables.istable(ohlc)
+        @test Tables.istable(typeof(ohlc))
         @test Tables.rowaccess(ohlc)
         @test Tables.columnaccess(ohlc)
 
