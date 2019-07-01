@@ -10,34 +10,82 @@ using CSV
 @testset "Tables.jl integration" begin
 
 
-@testset "iterator" begin
-  @testset "single column" begin
-    i = Tables.columns(cl)
-    @test Tables.istable(cl)
-    @test size(i)     == (length(cl), 2)
-    @test length(i)   == 2  # timestamp and the close columns
-    @test i[100, 1]   == timestamp(cl)[100]
-    @test i[100, 2]   == values(cl)[100]
-    @test i[end]      == values(cl)
-    @test i[end, 1]   == timestamp(cl)[end]
-    @test i[end, 2]   == values(cl)[end]
-    @test colnames(i) == colnames(cl)
-    @test i.Close     == values(cl)
-  end
+@testset "interface" begin
+    @testset "single column" begin
+        @test Tables.istable(cl)
+        @test Tables.rowaccess(cl)
+        @test Tables.columnaccess(cl)
 
-  @testset "multi column" begin
-    i = Tables.columns(ohlc)
-    @test Tables.istable(ohlc)
-    @test size(i)     == (length(ohlc), 5)
-    @test length(i)   == 5
-    @test i[100, 1]   == timestamp(ohlc)[100]
-    @test i[100, 3]   == values(ohlc)[100, 2]
-    @test i[end]      == values(ohlc[:Close])
-    @test i[end, 1]   == timestamp(ohlc)[end]
-    @test i[end, 3]   == values(ohlc)[end, 2]
-    @test colnames(i) == colnames(ohlc)
-    @test i.Open      == values(ohlc.Open)
-  end
+        sch = Tables.schema(cl)
+        @test sch.names == (:timestamp, :Close)
+        @test sch.types == (Date, Float64)
+    end
+
+    @testset "multiple column" begin
+        @test Tables.istable(ohlc)
+        @test Tables.rowaccess(ohlc)
+        @test Tables.columnaccess(ohlc)
+
+        sch = Tables.schema(ohlc)
+        @test sch.names == (:timestamp, :Open, :High, :Low, :Close)
+        @test sch.types == (Date, Float64, Float64, Float64, Float64)
+    end
+end
+
+
+@testset "iterator" begin
+    @testset "single column" begin
+        # column iterator
+        i = Tables.columns(cl)
+        @test size(i)      == (length(cl), 2)
+        @test length(i)    == 2  # timestamp and the close columns
+        @test i[100, 1]    == timestamp(cl)[100]
+        @test i[100, 2]    == values(cl)[100]
+        @test i[end]       == values(cl)
+        @test i[end, 1]    == timestamp(cl)[end]
+        @test i[end, 2]    == values(cl)[end]
+        @test timestamp(i) == timestamp(cl)
+        @test colnames(i)  == colnames(cl)
+        @test i.Close      == values(cl)
+
+        @test propertynames(i) == (:timestamp, :Close)
+
+        # row iterator
+        i = Tables.rows(cl)
+        for r ∈ i
+            @test r.timestamp == timestamp(cl)[1]
+            @test r.Close     == values(cl)[1]
+            break
+        end
+    end
+
+    @testset "multi column" begin
+        # column iterator
+        i = Tables.columns(ohlc)
+        @test size(i)      == (length(ohlc), 5)
+        @test length(i)    == 5
+        @test i[100, 1]    == timestamp(ohlc)[100]
+        @test i[100, 3]    == values(ohlc)[100, 2]
+        @test i[end]       == values(ohlc[:Close])
+        @test i[end, 1]    == timestamp(ohlc)[end]
+        @test i[end, 3]    == values(ohlc)[end, 2]
+        @test timestamp(i) == timestamp(ohlc)
+        @test colnames(i)  == colnames(ohlc)
+        @test i.Open       == values(ohlc.Open)
+
+        @test propertynames(i) == (:timestamp, :Open, :High, :Low, :Close)
+
+        # row iterator
+        i = Tables.rows(ohlc)
+        for r ∈ i
+            @test r.timestamp == timestamp(ohlc)[1]
+            @test r.Open      == values(ohlc)[1, 1]
+            @test r.High      == values(ohlc)[1, 2]
+            @test r.Low       == values(ohlc)[1, 3]
+            @test r.Close     == values(ohlc)[1, 4]
+            break
+        end
+    end
 end  # @testset "iterator"
 
 
@@ -62,11 +110,11 @@ end  # @testset "iterator"
     @testset "column name collision" begin
         ta = TimeArray(ohlc, colnames = [:Open, :High, :timestamp, :Close])
         df = DataFrame(ta)
-        @test names(df)    == [:timestamp_1; colnames(ta)]
-        @test df.timestamp_1 == timestamp(ta)
+        @test names(df)      == [:timestamp, :Open, :High, :timestamp_1, :Close]
+        @test df.timestamp   == timestamp(ta)
         @test df.Open        == values(ta.Open)
         @test df.High        == values(ta.High)
-        @test df.timestamp   == values(ta.timestamp)
+        @test df.timestamp_1 == values(ta.timestamp)
         @test df.Close       == values(ta.Close)
     end
 
