@@ -16,7 +16,6 @@ The value of the `cl` object on Jan 3, 2000 is 111.94. On Jan 4, 2000 it
 is 102.50 and on Jan 5, 2000 it's 104.0:
 
 ```@repl lag
-using TimeSeries
 using MarketData
 cl[1:3]
 ```

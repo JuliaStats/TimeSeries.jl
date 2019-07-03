@@ -1,6 +1,8 @@
 [deps]
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 MarketData = "945b72a4-3b13-509d-9b46-1525bb5c06de"
+TimeSeries = "9e3dc215-6440-5c97-bce1-76c03772f85e"
 
 [compat]
 Documenter = "~0.20"

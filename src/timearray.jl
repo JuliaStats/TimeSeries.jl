@@ -16,6 +16,7 @@ abstract type AbstractTimeSeries{T,N,D} end
     TimeArray(timestamp, values[, colnames, meta = nothing])
     TimeArray(ta::TimeArray; timestamp, values, colnames, meta)
     TimeArray(data::NamedTuple, timestamp = :datetime, meta)
+    TimeArray(table; timestamp::Symbol)
 
 The second constructor will yields a new TimeArray with the new given fields.
 Note that the unchanged fields will be shared, there aren't any copy for the
@@ -27,6 +28,9 @@ The third constructor builds a `TimeArray` from a `NamedTuple`.
 
 - `timestamp::AbstractVector{<:TimeType}`: a vector of sorted timestamps,
   Each element in this vector should be unique.
+
+- `timestamp::Symbol`: the column name of the time index from the source table.
+  The constructor is used for the Tables.jl package integration.
 
 - `values::AbstractArray`: a data vector or matrix. Its number of rows
   should match the length of `timestamp`.

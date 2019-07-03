@@ -38,6 +38,8 @@
     at index []
   ```
 
+* `Tables.jl` interface integration. (#382)
+
 * 2D `getindex` supports. (#423)
 
   ```julia
