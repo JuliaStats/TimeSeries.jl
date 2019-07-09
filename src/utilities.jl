@@ -186,3 +186,14 @@ findcol(ta::AbstractTimeSeries, s::Symbol) = findcol(colnames(ta), s)
     (i === nothing) && throw(KeyError(s))
     i
 end
+
+"""
+Unicode friendly rpad
+"""
+function _rpad(s::AbstractString, n::Integer)
+  x = n - textwidth(s)
+  (x ≤ 0) && return s
+  s * (" "^x)
+end
+
+_rpad(s::Symbol, n::Integer) = _rpad(string(s), n::Integer)
