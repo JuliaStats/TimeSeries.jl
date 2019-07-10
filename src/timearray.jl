@@ -262,7 +262,7 @@ function print_time_array(io::IO, ta::TimeArray{T}, short=false) where T
         ## e.g. | Open  | High  | Low   | Close  |
         print(io, "│", " "^(spacetime + 2))
         for (name, w) in zip(colnames(ta)[p], colwidth[p])
-            print(io, "│ ", rpad(name, w + 1))
+            print(io, "│ ", _rpad(name, w + 1))
         end
         println(io, "│")
         ## e.g. ├───────┼───────┼───────┼────────┤
@@ -278,7 +278,7 @@ function print_time_array(io::IO, ta::TimeArray{T}, short=false) where T
                 println(io)
                 print(io, "│ ", ts[i], " ")
                 for j in p
-                    print(io, "│ ", rpad(strs[i, j], colwidth[j] + 1))
+                    print(io, "│ ", _rpad(strs[i, j], colwidth[j] + 1))
                 end
                 print(io, "│")
             end
@@ -290,7 +290,7 @@ function print_time_array(io::IO, ta::TimeArray{T}, short=false) where T
                 println(io)
                 print(io, "│ ", ts[i], " ")
                 for j in p
-                    print(io, "│ ", rpad(strs[i, j], colwidth[j] + 1))
+                    print(io, "│ ", _rpad(strs[i, j], colwidth[j] + 1))
                 end
                 print(io, "│")
             end
@@ -300,7 +300,7 @@ function print_time_array(io::IO, ta::TimeArray{T}, short=false) where T
                 println(io)
                 print(io, "│ ", ts[i], " ")
                 for j in p
-                    print(io, "│ ", rpad(strs[i, j], colwidth[j] + 1))
+                    print(io, "│ ", _rpad(strs[i, j], colwidth[j] + 1))
                 end
                 print(io, "│")
             end
