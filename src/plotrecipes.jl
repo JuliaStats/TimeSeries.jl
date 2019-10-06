@@ -7,7 +7,7 @@
     #    ta, ohlc = extract_ohlc(ta)
     #    collect(zip(ohlc)) # But there are currently issues with that
     else
-        labels --> reshape(String.(colnames(ta)),1,length(colnames(ta)))
+        labels --> get(plotattributes, :label, reshape(String.(colnames(ta)),1,length(colnames(ta))))
         seriestype := st
         timestamp(ta), values(ta)
     end
