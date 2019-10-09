@@ -24,7 +24,7 @@ end
 Candlestick(ta::TimeArray) = Candlestick(extract_ohlc(ta)...)
 
 function extract_ohlc(ta::TimeArray)
-    indices = [find(x->lowercase(x) == name, colnames(ta)) for name in ["open", "high", "low", "close"]]
+    indices = [findall(x->lowercase(x) == name, colnames(ta)) for name in ["open", "high", "low", "close"]]
     minimum(length.(indices)) < 1 && error("The time array did not have variables named open, high, low and close")
     (timestamp(ta), [values(ta)[:,i] for i in 1:4]...)
 end
