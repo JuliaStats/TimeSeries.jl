@@ -96,7 +96,7 @@ end
         inds = Vector{Int}(length(cs.close))
         inds[1] = att[:close_open](cs.close[1], cs.open[1]) & att[:close_prev](cs.close[1], cs.close[1])
         @. inds[2:end] = att[:close_open](cs.close[2:end], cs.open[2:end]) & att[:close_prev]($diff(cs.close), 0)
-        inds = find(inds)
+        inds = findall(inds)
 
         if length(inds) > 0
             @series begin
