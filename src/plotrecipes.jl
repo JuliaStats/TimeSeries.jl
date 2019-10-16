@@ -31,7 +31,7 @@ function extract_ohlc(ta::TimeArray)
     cols′ = lowercase.(string.(colnames(ta)))
     V     = map(C) do x
         i = findfirst(isequal(x), cols′)
-        i ≡ nothing && ArgumentError("the TimeArray did not have column `$x`")
+        i ≡ nothing && throw(ArgumentError("the TimeArray did not have column `$x`"))
         values(ta[cols[i]])
     end
     (timestamp(ta), V...)
