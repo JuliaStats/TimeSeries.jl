@@ -1,16 +1,22 @@
 using Test
 
+using MarketData
 using TimeSeries
+
 
 @testset "plotrecipes" begin
 
+
 @testset "the Candlestick constructor works" begin
-    timearray = let 
-        dates = dates = Date(2018, 1, 1):Day(1):Date(2018, 3, 31)
-        TimeArray(dates, rand(length(dates)))
-    end
-    candlestick = TimeSeries.Candlestick(timearray)
-    @test length(canclestick.time) == length(timearray)
+    candlestick = TimeSeries.Candlestick(ohlcv)
+    @test length(candlestick.time) == length(ohlcv)
+
+    candlestick = TimeSeries.Candlestick(ohlc)
+    @test length(candlestick.time) == length(ohlc)
+
+    @test_throws ArgumentError TimeSeries.Candlestick(cl)
+    @test_throws ArgumentError TimeSeries.Candlestick(op)
 end
+
 
 end # @testset "plotrecipes
