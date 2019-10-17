@@ -2,9 +2,14 @@
 
 * Fix Candlestick plotting. ([#433])
 
+* Fix labels bug in `TimeArray` plot recipe. ([#430])
+
+* Fix double-width char display in `Base.show`. ([#427])
+
 
 [#433]: https://github.com/JuliaStats/TimeSeries.jl/pull/433
-
+[#430]: https://github.com/JuliaStats/TimeSeries.jl/issues/430
+[#427]: https://github.com/JuliaStats/TimeSeries.jl/pull/427
 
 ### 0.16.0
 
