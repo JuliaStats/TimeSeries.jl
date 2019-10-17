@@ -12,6 +12,7 @@ tests = [
     "timeseriesrc",
     "basemisc",
     "tables",
+    "plotrecipes",
 ]
 
 

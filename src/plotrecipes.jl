@@ -13,6 +13,24 @@
     end
 end
 
+# FIXME: refine Candlestick as a subtype of AbstractTimeSeries
+#        it requires the Base.view supports. (#419)
+"""
+    Candlestick(ta::TimeArray)
+
+# Argument
+
+- There are four required columns from `ta::TimeArray`: `open`, `high`, `low` and
+  `close`. The column names is case-insensitive.
+
+# Examples
+
+```julia-repl
+julia> using MarketData
+
+julia> TimeSeries.Candlestick(ohlcv)
+```
+"""
 mutable struct Candlestick{D <: TimeType}
     time::Vector{D}
     open::AbstractVector
@@ -24,9 +42,15 @@ end
 Candlestick(ta::TimeArray) = Candlestick(extract_ohlc(ta)...)
 
 function extract_ohlc(ta::TimeArray)
-    indices = [find(x->lowercase(x) == name, colnames(ta)) for name in ["open", "high", "low", "close"]]
-    minimum(length.(indices)) < 1 && error("The time array did not have variables named open, high, low and close")
-    (timestamp(ta), [values(ta)[:,i] for i in 1:4]...)
+    C     = ["open", "high", "low", "close"]
+    cols  = colnames(ta)
+    cols′ = lowercase.(string.(colnames(ta)))
+    V     = map(C) do x
+        i = findfirst(isequal(x), cols′)
+        i ≡ nothing && throw(ArgumentError("the TimeArray did not have column `$x`"))
+        values(ta[cols[i]])
+    end
+    (timestamp(ta), V...)
 end
 
 function HeikinAshi!(cs::Candlestick) # some values here are made too high!
@@ -93,10 +117,10 @@ end
 
 
     for att in attributes
-        inds = Vector{Int}(length(cs.close))
+        inds = similar(cs.close, Int)
         inds[1] = att[:close_open](cs.close[1], cs.open[1]) & att[:close_prev](cs.close[1], cs.close[1])
         @. inds[2:end] = att[:close_open](cs.close[2:end], cs.open[2:end]) & att[:close_prev]($diff(cs.close), 0)
-        inds = find(inds)
+        inds = findall(Bool.(inds))
 
         if length(inds) > 0
             @series begin
