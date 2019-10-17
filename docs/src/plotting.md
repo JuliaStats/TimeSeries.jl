@@ -34,7 +34,7 @@ found in the Plots
 [documentation](http://docs.juliaplots.org/latest/supported/).
 
 
-Plotting candlestick, the ``Candlestick`` constructor requires four columns
+Plotting candlestick, the `Candlestick` constructor requires four columns
 exist in the input. They are `open`, `high`, `low` and `close` (case-insensitive).:
 
 ```julia
