@@ -1,3 +1,11 @@
+### 0.16.1
+
+* Fix Candlestick plotting. ([#433])
+
+
+[#433]: https://github.com/JuliaStats/TimeSeries.jl/pull/433
+
+
 ### 0.16.0
 
 * Improve performance of `moving` function. (#414)
