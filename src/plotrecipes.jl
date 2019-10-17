@@ -15,6 +15,22 @@ end
 
 # FIXME: refine Candlestick as a subtype of AbstractTimeSeries
 #        it requires the Base.view supports. (#419)
+"""
+    Candlestick(ta::TimeArray)
+
+# Argument
+
+- There are four required columns from `ta::TimeArray`: `open`, `high`, `low` and
+  `close`. The column names is case-insensitive.
+
+# Examples
+
+```julia-repl
+julia> using MarketData
+
+julia> TimeSeries.Candlestick(ohlcv)
+```
+"""
 mutable struct Candlestick{D <: TimeType}
     time::Vector{D}
     open::AbstractVector
