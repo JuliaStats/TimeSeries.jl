@@ -65,3 +65,6 @@ _colmap[:cumprod] = Dict(2 => :(colnames(ta)))
 @_mapbase mean(ta::TimeArray; dims = 1) mean(values(ta), dims = dims)
 @_mapbase std(ta::TimeArray; dims = 1, kw...) std(values(ta); dims = dims, kw...)
 @_mapbase var(ta::TimeArray; dims = 1, kw...) var(values(ta); dims = dims, kw...)
+
+@_mapbase maximum(ta::TimeArray; dims = 1) maximum(values(ta), dims = dims)
+@_mapbase minimum(ta::TimeArray; dims = 1) minimum(values(ta), dims = dims)
