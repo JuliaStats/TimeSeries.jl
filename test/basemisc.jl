@@ -58,7 +58,7 @@ using TimeSeries
 end
 
 @testset "reduction functions" begin
-    for (fname, f) ∈ ([(:sum, sum), (:mean, mean)])
+    for (fname, f) ∈ ([(:sum, sum), (:mean, mean), (:maximum, maximum), (:minimum, minimum)])
         for (name, src) ∈ [(:cl, cl), (:ohlc, ohlc)]
             @testset "$fname::$name" begin
                 let ta = f(src)
