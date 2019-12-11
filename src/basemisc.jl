@@ -1,6 +1,6 @@
 # Misc. Base and stdlib functions supports
 
-import Base: cumsum, cumprod, sum, all, any
+import Base: cumsum, cumprod, sum, all, any, maximum, minimum
 import Statistics: mean, std, var
 
 const _tsmap  = Dict{Any,Dict{Number,Expr}}()  # timestamp map
