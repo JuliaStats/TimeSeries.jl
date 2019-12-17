@@ -6,6 +6,7 @@ os:
 julia:
   - 0.7
   - 1.0
+  - 1.3
 
 notifications:
   email: false
