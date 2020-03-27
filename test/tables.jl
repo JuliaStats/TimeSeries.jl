@@ -16,7 +16,9 @@ using CSV
         @test Tables.istable(cl)
         @test Tables.istable(typeof(cl))
         @test Tables.rowaccess(cl)
+        @test Tables.rowaccess(typeof(cl))
         @test Tables.columnaccess(cl)
+        @test Tables.columnaccess(typeof(cl))
 
         sch = Tables.schema(cl)
         @test sch.names == (:timestamp, :Close)
@@ -27,7 +29,9 @@ using CSV
         @test Tables.istable(ohlc)
         @test Tables.istable(typeof(ohlc))
         @test Tables.rowaccess(ohlc)
+        @test Tables.rowaccess(typeof(ohlc))
         @test Tables.columnaccess(ohlc)
+        @test Tables.columnaccess(typeof(ohlc))
 
         sch = Tables.schema(ohlc)
         @test sch.names == (:timestamp, :Open, :High, :Low, :Close)
