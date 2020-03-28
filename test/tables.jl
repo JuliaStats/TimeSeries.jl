@@ -54,6 +54,10 @@ end
         @test timestamp(i) == timestamp(cl)
         @test colnames(i)  == colnames(cl)
         @test i.Close      == values(cl)
+        @test Tables.getcolumn(i, 1)          == timestamp(cl)
+        @test Tables.getcolumn(i, :timestamp) == timestamp(cl)
+        @test Tables.getcolumn(i, 2)          == values(cl)
+        @test Tables.getcolumn(i, :Close)     == values(cl)
 
         @test propertynames(i) == (:timestamp, :Close)
 
@@ -79,6 +83,10 @@ end
         @test timestamp(i) == timestamp(ohlc)
         @test colnames(i)  == colnames(ohlc)
         @test i.Open       == values(ohlc.Open)
+        @test Tables.getcolumn(i, 1)          == timestamp(ohlc)
+        @test Tables.getcolumn(i, :timestamp) == timestamp(ohlc)
+        @test Tables.getcolumn(i, 3)          == values(ohlc[:High])
+        @test Tables.getcolumn(i, :High)      == values(ohlc[:High])
 
         @test propertynames(i) == (:timestamp, :Open, :High, :Low, :Close)
 
