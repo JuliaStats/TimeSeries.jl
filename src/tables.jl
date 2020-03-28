@@ -63,8 +63,8 @@ Tables.schema(i::TableIter{T,S}) where {T,S} = Tables.Schema(S, coltypes(data(i)
 
 coltypes(x::AbstractTimeSeries{T,N,D}) where {T,N,D} = (D, (T for _ ∈ 1:size(x, 2))...)
 
-function TimeSeries.TimeArray(x; timestamp::Symbol)
-    Tables.istable(x) || throw(ArgumentError("TimeArray requires a table input"))
+function TimeSeries.TimeArray(x; timestamp::Symbol, timeparser::Base.Callable = identity)
+    Tables.istable(x) || throw(ArgumentError("TimeArray requires a table as input"))
 
     sch = Tables.schema(x)
     names = sch.names
@@ -72,8 +72,8 @@ function TimeSeries.TimeArray(x; timestamp::Symbol)
     names′ = filter(!isequal(timestamp), collect(sch.names))
 
     cols = Tables.columns(x)
-    val = mapreduce(n -> collect(getproperty(cols, n)), hcat, names′)
-    TimeArray(collect(getproperty(cols, timestamp)), val, names′, x)
+    val = mapreduce(n -> collect(Tables.getcolumn(cols, n)), hcat, names′)
+    TimeArray(map(timeparser, Tables.getcolumn(cols, timestamp)), val, names′, x)
 end
 
 end  # TablesIntegration
