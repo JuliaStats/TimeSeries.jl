@@ -18,6 +18,7 @@ function TableIter(ta::T) where {T<:TimeArray}
     N, M = size(ta, 1), size(ta, 2) + 1
     col′ = TimeSeries.replace_dupes!([:timestamp; colnames(ta)])
     S = Tuple(col′)
+    # TODO: `colnames = @view(col′[2:end])` not work at this moment
     TableIter{T,S,N,M}(TimeArray(ta, colnames = col′[2:end], unchecked = true))
 end
 
