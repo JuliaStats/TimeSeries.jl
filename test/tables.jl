@@ -42,6 +42,12 @@ end
 
 @testset "iterator" begin
     @testset "single column" begin
+        @test Tables.columnnames(cl)           == [:timestamp; colnames(cl)]
+        @test Tables.getcolumn(cl, 1)          == timestamp(cl)
+        @test Tables.getcolumn(cl, :timestamp) == timestamp(cl)
+        @test Tables.getcolumn(cl, 2)          == values(cl)
+        @test Tables.getcolumn(cl, :Close)     == values(cl)
+
         # column iterator
         i = Tables.columns(cl)
         @test size(i)      == (length(cl), 2)
@@ -71,6 +77,12 @@ end
     end
 
     @testset "multi column" begin
+        @test Tables.columnnames(ohlc)           == [:timestamp; colnames(ohlc)]
+        @test Tables.getcolumn(ohlc, 1)          == timestamp(ohlc)
+        @test Tables.getcolumn(ohlc, :timestamp) == timestamp(ohlc)
+        @test Tables.getcolumn(ohlc, 3)          == values(ohlc[:High])
+        @test Tables.getcolumn(ohlc, :High)      == values(ohlc[:High])
+
         # column iterator
         i = Tables.columns(ohlc)
         @test size(i)      == (length(ohlc), 5)
