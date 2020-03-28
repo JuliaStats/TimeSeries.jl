@@ -1,6 +1,5 @@
 # JuliaData/Tables.jl integration
 
-# const TimeArrayColIter = Tables.EachColumn{<:TimeArray}
 module TablesIntegration
 
 using ..TimeSeries
@@ -51,7 +50,12 @@ Tables.rowaccess(::Type{<:TimeArray}) = true
 Tables.rows(ta::TimeArray) = Tables.rows(Tables.columntable(ta))
 Tables.columnaccess(::Type{<:TimeArray}) = true
 Tables.columns(ta::TimeArray) = TableIter(ta)
-Tables.eachcolumn(i::TableIter) = i
+Tables.columnnames(ta::TimeArray) = Tables.columnnames(TableIter(ta))
+Tables.columnnames(i::TableIter{T, S}) where {T,S} = collect(Symbol, S)
+Tables.getcolumn(ta::TimeArray, i::Int) = Tables.getcolumn(TableIter(ta), i)
+Tables.getcolumn(ta::TimeArray, nm::Symbol) = Tables.getcolumn(TableIter(ta), nm)
+Tables.getcolumn(i::TableIter, n::Int) = i[n]
+Tables.getcolumn(i::TableIter, nm::Symbol) = getproperty(i, nm)
 Tables.schema(ta::AbstractTimeSeries{T,N,D}) where {T,N,D} = Tables.schema(TableIter(ta))
 Tables.schema(i::TableIter{T,S}) where {T,S} = Tables.Schema(S, coltypes(data(i)))
 
