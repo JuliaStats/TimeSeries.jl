@@ -16,7 +16,9 @@ using CSV
         @test Tables.istable(cl)
         @test Tables.istable(typeof(cl))
         @test Tables.rowaccess(cl)
+        @test Tables.rowaccess(typeof(cl))
         @test Tables.columnaccess(cl)
+        @test Tables.columnaccess(typeof(cl))
 
         sch = Tables.schema(cl)
         @test sch.names == (:timestamp, :Close)
@@ -27,7 +29,9 @@ using CSV
         @test Tables.istable(ohlc)
         @test Tables.istable(typeof(ohlc))
         @test Tables.rowaccess(ohlc)
+        @test Tables.rowaccess(typeof(ohlc))
         @test Tables.columnaccess(ohlc)
+        @test Tables.columnaccess(typeof(ohlc))
 
         sch = Tables.schema(ohlc)
         @test sch.names == (:timestamp, :Open, :High, :Low, :Close)
@@ -38,6 +42,12 @@ end
 
 @testset "iterator" begin
     @testset "single column" begin
+        @test Tables.columnnames(cl)           == [:timestamp; colnames(cl)]
+        @test Tables.getcolumn(cl, 1)          == timestamp(cl)
+        @test Tables.getcolumn(cl, :timestamp) == timestamp(cl)
+        @test Tables.getcolumn(cl, 2)          == values(cl)
+        @test Tables.getcolumn(cl, :Close)     == values(cl)
+
         # column iterator
         i = Tables.columns(cl)
         @test size(i)      == (length(cl), 2)
@@ -50,6 +60,10 @@ end
         @test timestamp(i) == timestamp(cl)
         @test colnames(i)  == colnames(cl)
         @test i.Close      == values(cl)
+        @test Tables.getcolumn(i, 1)          == timestamp(cl)
+        @test Tables.getcolumn(i, :timestamp) == timestamp(cl)
+        @test Tables.getcolumn(i, 2)          == values(cl)
+        @test Tables.getcolumn(i, :Close)     == values(cl)
 
         @test propertynames(i) == (:timestamp, :Close)
 
@@ -63,6 +77,12 @@ end
     end
 
     @testset "multi column" begin
+        @test Tables.columnnames(ohlc)           == [:timestamp; colnames(ohlc)]
+        @test Tables.getcolumn(ohlc, 1)          == timestamp(ohlc)
+        @test Tables.getcolumn(ohlc, :timestamp) == timestamp(ohlc)
+        @test Tables.getcolumn(ohlc, 3)          == values(ohlc[:High])
+        @test Tables.getcolumn(ohlc, :High)      == values(ohlc[:High])
+
         # column iterator
         i = Tables.columns(ohlc)
         @test size(i)      == (length(ohlc), 5)
@@ -75,6 +95,10 @@ end
         @test timestamp(i) == timestamp(ohlc)
         @test colnames(i)  == colnames(ohlc)
         @test i.Open       == values(ohlc.Open)
+        @test Tables.getcolumn(i, 1)          == timestamp(ohlc)
+        @test Tables.getcolumn(i, :timestamp) == timestamp(ohlc)
+        @test Tables.getcolumn(i, 3)          == values(ohlc[:High])
+        @test Tables.getcolumn(i, :High)      == values(ohlc[:High])
 
         @test propertynames(i) == (:timestamp, :Open, :High, :Low, :Close)
 
@@ -119,6 +143,9 @@ end  # @testset "iterator"
         @test df.High        == values(ta.High)
         @test df.timestamp_1 == values(ta.timestamp)
         @test df.Close       == values(ta.Close)
+
+        # no side effect on column renaming
+        @test colnames(ta)  == [:Open, :High, :timestamp, :Close]
     end
 
     @testset "DataFrame to TimeArray" begin
