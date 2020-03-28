@@ -123,6 +123,9 @@ end  # @testset "iterator"
         @test df.High        == values(ta.High)
         @test df.timestamp_1 == values(ta.timestamp)
         @test df.Close       == values(ta.Close)
+
+        # no side effect on column renaming
+        @test colnames(ta)  == [:Open, :High, :timestamp, :Close]
     end
 
     @testset "DataFrame to TimeArray" begin

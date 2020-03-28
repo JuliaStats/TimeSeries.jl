@@ -16,8 +16,9 @@ end
 
 function TableIter(ta::T) where {T<:TimeArray}
     N, M = size(ta, 1), size(ta, 2) + 1
-    S = Tuple(TimeSeries.replace_dupes!([:timestamp; colnames(ta)]))
-    TableIter{T,S,N,M}(ta)
+    col′ = TimeSeries.replace_dupes!([:timestamp; colnames(ta)])
+    S = Tuple(col′)
+    TableIter{T,S,N,M}(TimeArray(ta, colnames = col′[2:end], unchecked = true))
 end
 
 data(i::TableIter) = getfield(i, :x)
