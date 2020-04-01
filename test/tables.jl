@@ -1,3 +1,4 @@
+using Dates
 using Test
 
 using TimeSeries
@@ -199,11 +200,7 @@ end  # @testset "DataFrames.jl"
                "2000-01-06,95\n" *
                "2000-01-07,99.5\n"
         io = IOBuffer(file)
-        csv = @static if VERSION ≥ v"1.0.0"
-            CSV.File(io)
-        else
-            CSV.File(io, allowmissing = :none)
-        end
+        csv = CSV.File(io)
         ta = TimeArray(csv, timestamp = :timestamp)
         ans = cl[1:5]
         @test timestamp(ta)   == timestamp(ans)
@@ -219,11 +216,7 @@ end  # @testset "DataFrames.jl"
                "2000-01-06,106.12,107,95,95\n" *
                "2000-01-07,96.5,101,95.5,99.5\n"
         io = IOBuffer(file)
-        csv = @static if VERSION ≥ v"1.0.0"
-            CSV.File(io)
-        else
-            CSV.File(io, allowmissing = :none)
-        end
+        csv = CSV.File(io)
         ta = TimeArray(csv, timestamp = :timestamp)
         ans = ohlc[1:5]
         @test timestamp(ta)    == Date(2000, 1, 3):Day(1):Date(2000, 1, 7)
@@ -232,6 +225,19 @@ end  # @testset "DataFrames.jl"
         @test values(ta.Low)   == values(ans.Low)
         @test values(ta.Close) == values(ans.Close)
         @test meta(ta)         ≡ csv
+    end
+
+    @testset "issue #442" begin
+        file = "date,high,low,open,close,volume\n" *
+               "1438992000,50.0,0.00262,50.0,0.00312499,1205.80332085\n" *
+               "1439078400,0.0041,0.0024,0.00299999,0.00258069,898.12343401\n" *
+               "1439164800,0.0029022,0.0022,0.00264996,0.00264498,718.36526568\n" *
+               "1439251200,0.0044,0.002414,0.00264959,0.00395009,3007.27411094\n"
+        io = IOBuffer(file)
+        csv = CSV.File(io)
+        ta = TimeArray(csv, timestamp = :date, timeparser = Date ∘ unix2datetime)
+        @test timestamp(ta) == Date(2015, 8, 8):Day(1):Date(2015, 8, 11)
+        @test colnames(ta) == [:high, :low, :open, :close, :volume]
     end
 end  # @testset "CSV.jl"
 

@@ -16,7 +16,7 @@ abstract type AbstractTimeSeries{T,N,D} end
     TimeArray(timestamp, values[, colnames, meta = nothing])
     TimeArray(ta::TimeArray; timestamp, values, colnames, meta)
     TimeArray(data::NamedTuple, timestamp = :datetime, meta)
-    TimeArray(table; timestamp::Symbol)
+    TimeArray(table; timestamp::Symbol, timeparser::Callable = identity)
 
 The second constructor will yields a new TimeArray with the new given fields.
 Note that the unchanged fields will be shared, there aren't any copy for the
@@ -39,6 +39,9 @@ The third constructor builds a `TimeArray` from a `NamedTuple`.
   the column of `values`.
 
 - `meta::Any`: a user-defined metadata.
+
+- `timeparser::Callable`: a mapping function for converting the source time index.
+  For instance, `Dates.unix2datetime` is a common case.
 
 # Examples
 
