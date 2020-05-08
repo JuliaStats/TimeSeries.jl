@@ -120,30 +120,30 @@ end  # @testset "iterator"
 @testset "DataFrames.jl" begin
     @testset "single column" begin
         df = DataFrame(cl)
-        @test names(df)    == [:timestamp; colnames(cl)]
-        @test df.timestamp == timestamp(cl)
-        @test df.Close     == values(cl.Close)
+        @test propertynames(df) == [:timestamp; colnames(cl)]
+        @test df.timestamp      == timestamp(cl)
+        @test df.Close          == values(cl.Close)
     end
 
     @testset "multi column" begin
         df = DataFrame(ohlc)
-        @test names(df)    == [:timestamp; colnames(ohlc)]
-        @test df.timestamp == timestamp(ohlc)
-        @test df.Open      == values(ohlc.Open)
-        @test df.High      == values(ohlc.High)
-        @test df.Low       == values(ohlc.Low)
-        @test df.Close     == values(ohlc.Close)
+        @test propertynames(df) == [:timestamp; colnames(ohlc)]
+        @test df.timestamp      == timestamp(ohlc)
+        @test df.Open           == values(ohlc.Open)
+        @test df.High           == values(ohlc.High)
+        @test df.Low            == values(ohlc.Low)
+        @test df.Close          == values(ohlc.Close)
     end
 
     @testset "column name collision" begin
         ta = TimeArray(ohlc, colnames = [:Open, :High, :timestamp, :Close])
         df = DataFrame(ta)
-        @test names(df)      == [:timestamp, :Open, :High, :timestamp_1, :Close]
-        @test df.timestamp   == timestamp(ta)
-        @test df.Open        == values(ta.Open)
-        @test df.High        == values(ta.High)
-        @test df.timestamp_1 == values(ta.timestamp)
-        @test df.Close       == values(ta.Close)
+        @test propertynames(df) == [:timestamp, :Open, :High, :timestamp_1, :Close]
+        @test df.timestamp      == timestamp(ta)
+        @test df.Open           == values(ta.Open)
+        @test df.High           == values(ta.High)
+        @test df.timestamp_1    == values(ta.timestamp)
+        @test df.Close          == values(ta.Close)
 
         # no side effect on column renaming
         @test colnames(ta)  == [:Open, :High, :timestamp, :Close]
