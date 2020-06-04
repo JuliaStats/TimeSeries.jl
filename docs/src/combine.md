@@ -96,23 +96,16 @@ collapse(cl, month, last, mean)
 ## `vcat`
 
 The `vcat` method is used to concatenate time series: if you have two
-time series with the same columns, but two distinct periods of time,
-this function can merge them into a single object. Notably, it can be
-used to merge data that is split into multiple files. Its behaviour is
-quite different from `merge`, which does not consider that its arguments
-are actually the *same* time series.
+time series with the same columns, this function can merge them into a single object.
+Notably, it can be used to merge data that is split into multiple files.
+Its behaviour is quite different from `merge`,
+which does not consider that its arguments are actually the *same* time series.
 
 This concatenation is *vertical* (`vcat`) because it does not create
 columns, it extends existing ones (which are represented vertically).
 
-For example:
-
-```@repl
-using TimeSeries
-a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16])
-b = TimeArray([Date(2015, 12, 01)], [17])
-vcat(a, b)
-[a; b] # same as vcat(a,b)
+```@docs
+vcat(tas::Vararg{TimeArray,N} where N)
 ```
 
 ## `map`

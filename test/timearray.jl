@@ -48,8 +48,7 @@ end
 
 
 @testset "type constructors enforce invariants" begin
-    mangled_stamp = vcat(timestamp(cl)[200:end], timestamp(cl)[1:199])
-    dupe_stamp    = vcat(timestamp(cl)[1:499], timestamp(cl)[499])
+    mangled_stamp  = vcat(timestamp(cl)[200:end], timestamp(cl)[1:199])
 
     @testset "unequal length between values and timestamp fails" begin
         @test_throws(
@@ -61,12 +60,6 @@ end
         @test_throws(
             DimensionMismatch,
             TimeArray(timestamp(cl), values(cl), [:Close, :Open]))
-    end
-
-    @testset "duplicate timestamp values fails" begin
-        @test_throws(
-            ArgumentError,
-            TimeArray(dupe_stamp, values(cl), [:Close]))
     end
 
     @testset "mangled order of timestamp values fails" begin
@@ -101,16 +94,9 @@ end
     end
 
     @testset "and doesn't when unchecked" begin
-        let
-            ta = TimeArray(mangled_stamp, values(cl); unchecked = true)
-            @test values(ta)    === values(cl)
-            @test timestamp(ta) === mangled_stamp
-        end
-
-        let
-            ta = TimeArray(dupe_stamp, values(cl); unchecked = true)
-            @test timestamp(ta) === dupe_stamp
-        end
+        ta = TimeArray(mangled_stamp, values(cl); unchecked = true)
+        @test values(ta)    === values(cl)
+        @test timestamp(ta) === mangled_stamp
     end
 end
 
