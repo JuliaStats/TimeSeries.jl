@@ -1,12 +1,14 @@
 module TimeSeries
 
+# stdlib
 using Dates
 using DelimitedFiles
 using Statistics
-using Tables
-
+# third-party
+using DocStringExtensions: SIGNATURES
 using RecipesBase
 using Reexport
+using Tables
 
 export TimeArray, AbstractTimeSeries,
        when, from, to, findwhen, find, timestamp, values, colnames, meta, head, tail,

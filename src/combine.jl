@@ -139,29 +139,52 @@ end
 
 # vcat ######################
 
-function vcat(TA::TimeArray...)
+"""
+    $(SIGNATURES)
+
+Concatenate two ``TimeArray`` into single object.
+
+If there are duplicated timestamps, we will keep order as the function input.
+
+```julia-repl
+julia> a = TimeArray([Date(2015, 10, 1), Date(2015, 10, 2), Date(2015, 10, 3)], [1, 2, 3]);
+
+julia> b = TimeArray([Date(2015, 10, 2), Date(2015, 10, 3)], [4, 5]);
+
+julia> [a; b]
+5×1 TimeArray{Int64,1,Date,Array{Int64,1}} 2015-10-01 to 2015-10-03
+│            │ A     │
+├────────────┼───────┤
+│ 2015-10-01 │ 1     │
+│ 2015-10-02 │ 2     │
+│ 2015-10-02 │ 4     │
+│ 2015-10-03 │ 3     │
+│ 2015-10-03 │ 5     │
+```
+"""
+function vcat(tas::TimeArray...)
     # Check all meta fields are identical.
-    prev_meta = meta(TA[1])
-    for ta in TA
+    prev_meta = meta(tas[1])
+    for ta in tas
         if meta(ta) != prev_meta
             throw(ArgumentError("metadata doesn't match"))
         end
     end
 
     # Check column names are identical.
-    prev_colnames = colnames(TA[1])
-    for ta in TA
+    prev_colnames = colnames(tas[1])
+    for ta in tas
         if colnames(ta) != prev_colnames
             throw(ArgumentError("column names don't match"))
         end
     end
 
     # Concatenate the contents.
-    ts  = vcat([timestamp(ta) for ta in TA]...)
-    val = vcat([values(ta) for ta in TA]...)
+    ts  = vcat([timestamp(ta) for ta in tas]...)
+    val = vcat([values(ta) for ta in tas]...)
 
     order = sortperm(ts)
-    if ndims(TA[1]) == 1 # Check for 1D to ensure values remains a 1D vector.
+    if ndims(tas[1]) == 1 # Check for 1D to ensure values remains a 1D vector.
         return TimeArray(ts[order], val[order], prev_colnames, prev_meta)
     else
         return TimeArray(ts[order], val[order, :], prev_colnames, prev_meta)

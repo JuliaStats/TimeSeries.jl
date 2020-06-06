@@ -18,7 +18,7 @@ abstract type AbstractTimeSeries{T,N,D} end
     TimeArray(data::NamedTuple, timestamp = :datetime, meta)
     TimeArray(table; timestamp::Symbol, timeparser::Callable = identity)
 
-The second constructor will yields a new TimeArray with the new given fields.
+The second constructor yields a new `TimeArray` with the new given fields.
 Note that the unchanged fields will be shared, there aren't any copy for the
 underlying arrays.
 
@@ -27,7 +27,6 @@ The third constructor builds a `TimeArray` from a `NamedTuple`.
 # Arguments
 
 - `timestamp::AbstractVector{<:TimeType}`: a vector of sorted timestamps,
-  Each element in this vector should be unique.
 
 - `timestamp::Symbol`: the column name of the time index from the source table.
   The constructor is used for the Tables.jl package integration.
@@ -74,14 +73,14 @@ struct TimeArray{T,N,D<:TimeType,A<:AbstractArray{T,N}} <: AbstractTimeSeries{T,
         nrow != length(timestamp) && throw(DimensionMismatch("values must match length of timestamp"))
         ncol != length(colnames) && throw(DimensionMismatch("column names must match width of array"))
 
-        _issorted_and_unique(timestamp) && return new(
+        issorted(timestamp) && return new(
             timestamp, values, replace_dupes!(colnames), meta)
 
         timestamp_r = reverse(timestamp)
-        _issorted_and_unique(timestamp_r) && return new(
+        issorted(timestamp_r) && return new(
             timestamp_r, reverse(values, dims = 1), replace_dupes!(colnames), meta)
 
-        throw(ArgumentError("timestamps must be strictly monotonic"))
+        throw(ArgumentError("timestamps must be monotonic"))
     end
 end
 

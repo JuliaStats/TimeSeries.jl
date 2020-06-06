@@ -111,14 +111,6 @@ end
 end
 
 # helper method for inner constructor
-@inline function _issorted_and_unique(x)
-    for i in 1:length(x)-1
-        @inbounds !(x[i] < x[i + 1]) && return false
-    end
-    true
-end
-
-# helper method for inner constructor
 function replace_dupes!(cnames::Vector{Symbol})
     n = 1
     while !allunique(cnames)

@@ -217,11 +217,16 @@ end
         @test_throws ArgumentError vcat(a, b)
     end
 
-    @testset "rejects when dates overlap" begin
-        a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16])
-        b = TimeArray([Date(2015, 11, 01)], [17])
+    @testset "duplicated timestamps order" begin
+        a = TimeArray([Date(2015, 10, 1), Date(2015, 10, 2), Date(2015, 11, 1)], [15, 16, 17])
+        b = TimeArray([Date(2015, 10, 2), Date(2015, 11, 1)], [18, 19])
 
-        @test_throws ArgumentError vcat(a, b)
+        ts = [Date(2015, 10, 1),
+              Date(2015, 10, 2), Date(2015, 10, 2),
+              Date(2015, 11, 1), Date(2015, 11, 1)]
+        ta = vcat(a, b)
+        @test timestamp(ta) == ts
+        @test values(ta)    == [15, 16, 18, 17, 19]
     end
 
     @testset "still works when dates are mixed" begin
