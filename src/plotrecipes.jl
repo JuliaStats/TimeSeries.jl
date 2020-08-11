@@ -73,6 +73,7 @@ end
     legend    --> false
     linewidth --> 0.5
     grid      --> true
+    xrotation --> 90
 
     bw = get(plotattributes, :bar_width, 0.9)
 
@@ -121,11 +122,11 @@ end
         colors[i] = ifelse(o ≤ c, cols[1], cols[2])
     end
 
+    xticks --> (idx .- 0.5, string.(cs.time))
+
     @series begin
         seriestype  := :shape
         seriescolor := colors
-        xticks      := (idx .- 0.5, string.(cs.time))
-        xrotation   := 90
         xseg, yseg
     end
 end
