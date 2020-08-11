@@ -1,14 +1,12 @@
 
 @recipe function f(ta::T) where {T<:TimeArray}
-    st = get(plotattributes, :seriestype, :path)
-    if in(st, [:candlestick, :heikinashi])
+    seriestype --> :path
+
+    st = plotattributes[:seriestype]
+    if st ∈ [:candlestick, :heikinashi]
         Candlestick(ta)
-    #elseif st == :ohlc #ohlc (meaning sticks with steps on the sides) should be passed on to Plots internal ohlc plot engine
-    #    ta, ohlc = extract_ohlc(ta)
-    #    collect(zip(ohlc)) # But there are currently issues with that
     else
-        label --> get(plotattributes, :label, reshape(String.(colnames(ta)),1,length(colnames(ta))))
-        seriestype := st
+        label --> reshape(string.(colnames(ta)), 1, :)
         timestamp(ta), values(ta)
     end
 end
@@ -67,80 +65,67 @@ function HeikinAshi!(cs::Candlestick) # some values here are made too high!
     end
 end
 
+
 @recipe function f(cs::Candlestick)
     st = get(plotattributes, :seriestype, :candlestick)
     st == :heikinashi && HeikinAshi!(cs)
 
-    seriestype := :scatter #ignored
-    legend --> false
-    linewidth --> 0.7
-    grid --> false
+    legend    --> false
+    linewidth --> 0.5
+    grid      --> true
 
-    bw = get(plotattributes, :bar_width, nothing)
-    bw == nothing && (bw = 0.8)
-    bar_width := bw / 2 * minimum(diff(unique(Dates.value.(cs.time))))
+    bw = get(plotattributes, :bar_width, 0.9)
 
     # allow passing alternative colors as a vector
-    cols = get(plotattributes, :seriescolor, nothing)
-    cols = (isa(cols, Vector{Symbol}) && length(cols) == 2) ? cols : [:red, :blue]
+    cols = get(plotattributes, :seriescolor, [:green, :red])
+    if !(cols isa Vector{Symbol}) || length(cols) != 2
+        throw(ArgumentError(":seriescolor should be a Vector{Symbol} of two elements."))
+    end
 
-    attributes = [
-        Dict(:close_open => <,
-             :close_prev => <,
-             :bottombox => cs.close,
-             :topbox => cs.open,
-             :fill => cols[1],
-             :line => cols[1],
-             :fillalpha => 1),
-        Dict(:close_open =>
-             <, :close_prev => >=,
-             :bottombox => cs.close,
-             :topbox => cs.open,
-             :fill => cols[2],
-             :line => cols[2],
-             :fillalpha => 1),
-        Dict(:close_open => >=,
-             :close_prev => <,
-             :bottombox => cs.open,
-             :topbox => cs.close,
-             :fill => :white,
-             :line => cols[1],
-             :fillalpha => 0),
-        Dict(:close_open => >=,
-             :close_prev => >=,
-             :bottombox => cs.open,
-             :topbox => cs.close,
-             :fill => :white,
-             :line => cols[2],
-             :fillalpha => 0)
-    ]
+    xseg, yseg = Float64[], Float64[]
+    idx = 1:length(cs.time)
+    colors = similar(idx, Symbol)
+    margin = (1 - bw) / 2
+    for (i, o, h, l, c) ∈ zip(idx, cs.open, cs.high, cs.low, cs.close)
+        x₁, x₂ = i - 1 + margin, i - margin
+        x̄ = i - 0.5
+        append!(xseg, [
+            x̄,
+            x̄,
+            x₁,
+            x₁,
+            x̄,
+            x̄,
+            x̄,
+            x₂,
+            x₂,
+            x̄,
+            NaN
+        ])
 
+        y₁, y₂ = min(o, c), max(o, c)
+        append!(yseg, [
+            l,
+            y₁,
+            y₁,
+            y₂,
+            y₂,
+            h,
+            y₂,
+            y₂,
+            y₁,
+            y₁,
+            NaN
+        ])
 
-    for att in attributes
-        inds = similar(cs.close, Int)
-        inds[1] = att[:close_open](cs.close[1], cs.open[1]) & att[:close_prev](cs.close[1], cs.close[1])
-        @. inds[2:end] = att[:close_open](cs.close[2:end], cs.open[2:end]) & att[:close_prev]($diff(cs.close), 0)
-        inds = findall(Bool.(inds))
+        colors[i] = ifelse(o ≤ c, cols[1], cols[2])
+    end
 
-        if length(inds) > 0
-            @series begin
-                linecolor := att[:line]
-                fillcolor := att[:fill]
-                fillalpha := att[:fillalpha]
-                fillto := att[:bottombox][inds]
-                seriestype := :bar
-                cs.time[inds], att[:topbox][inds]
-            end
-
-            for j in 1:2
-                @series begin
-                    primary := false
-                    linecolor := att[:line]
-                    seriestype := :sticks
-                    fillto := j == 1 ? cs.low[inds] : att[:topbox][inds]
-                    cs.time[inds], j == 1 ? att[:bottombox][inds] : cs.high[inds]
-                end
-            end
-        end
+    @series begin
+        seriestype  := :shape
+        seriescolor := colors
+        xticks      := (idx .- 0.5, string.(cs.time))
+        xrotation   := 90
+        xseg, yseg
     end
 end

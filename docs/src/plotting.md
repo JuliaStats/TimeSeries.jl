@@ -38,7 +38,7 @@ Plotting candlestick, the `Candlestick` constructor requires four columns
 exist in the input. They are `open`, `high`, `low` and `close` (case-insensitive).:
 
 ```julia
-plot(TimeSeries.Candlestick(MarketData.ohlc))
+plot(MarketData.ohlc, seriestype = :candlestick)
 ```
 
 ![image](images/candlestick.svg)
