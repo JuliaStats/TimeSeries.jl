@@ -84,12 +84,17 @@ end
     end
 
     xseg, yseg = Float64[], Float64[]
-    idx = 1:length(cs.time)
-    colors = similar(idx, Symbol)
-    margin = (1 - bw) / 2
+    xcenter, ycenter = Float64[], Float64[]
+
+    idx  = 1:length(cs.time)
+    tick = 1
+
+    colors = Symbol[]
+    hovers = String[]
+    margin = (1 - bw) / 2 * tick
     for (i, o, h, l, c) ∈ zip(idx, cs.open, cs.high, cs.low, cs.close)
-        x₁, x₂ = i - 1 + margin, i - margin
-        x̄ = i - 0.5
+        x₁, x₂ = i - tick + margin, i - margin
+        x̄ = i - tick / 2
         append!(xseg, [
             x̄,
             x̄,
@@ -119,14 +124,35 @@ end
             NaN
         ])
 
-        colors[i] = ifelse(o ≤ c, cols[1], cols[2])
+        push!(colors, ifelse(o ≤ c, cols[1], cols[2]))
+
+        push!(xcenter, x̄)
+        push!(ycenter, (o + c) / 2)
+        push!(hovers, "Open: $o<br>High: $h<br>Low: $l<br>Close: $c")
     end
 
-    xticks --> (idx .- 0.5, string.(cs.time))
+    xticks = get(plotattributes, :xticks, 1)
+    if xticks isa Integer
+        xticks := (idx .- 0.5, map(x -> (x % xticks) != 1 ? "" : string(cs.time[x]) ,idx))
+    end
+
+    # tweak the hover function for Plotly backend
+    extract_plot_kwargs = get(plotattributes, :extract_plot_kwargs, Dict{Symbol,Any}())
+    get!(extract_plot_kwargs, :hovermode, :x)
+    get!(extract_plot_kwargs, :hoverdistance, 5)
 
     @series begin
         seriestype  := :shape
         seriescolor := colors
         xseg, yseg
+    end
+
+    @series begin
+        seriestype        := :scatter
+        seriescolor       := colors
+        markersize        := 1
+        markerstrokewidth := 0
+        hover             --> hovers
+        xcenter, ycenter
     end
 end
