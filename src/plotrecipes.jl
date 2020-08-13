@@ -144,6 +144,7 @@ end
     @series begin
         seriestype  := :shape
         seriescolor := colors
+        linecolor   := colors
         xseg, yseg
     end
 
