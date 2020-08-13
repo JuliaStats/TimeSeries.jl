@@ -133,7 +133,11 @@ end
 
     xticks = get(plotattributes, :xticks, 1)
     if xticks isa Integer
-        xticks := (idx .- 0.5, map(x -> (x % xticks) != 1 ? "" : string(cs.time[x]) ,idx))
+        if xticks != 1
+            xticks := (idx .- 0.5, map(x -> (x % xticks) != 1 ? "" : string(cs.time[x]) ,idx))
+        else
+            xticks := (idx .- 0.5, string.(cs.time))
+        end
     end
 
     # tweak the hover function for Plotly backend
