@@ -5,40 +5,54 @@ different plotting packages using the
 [Plots.jl](https://github.com/JuliaPlots/Plots.jl) framework
 (no plotting packages will be automatically installed by `TimeSeries`).
 
-## `plot`
+Here we use the data from Yahoo Fiance as a demo.
+
+```@example plot
+using Plots, MarketData, TimeSeries
+default(show = false)  # hide
+ENV["GKSwstype"] = "100" # hide
+gr()
+ta = yahoo(:GOOG, YahooOpt(period1 = now() - Month(1)))
+```
+
+## Plotting as multiple series
 
 The recipe allows `TimeArray` objects to be passed as input to `plot`. The
 recipe will plot each variable as an individual line, aligning all
-variables to the same y axis (here shown using `PyPlot` as a plotting
+variables to the same y axis.
 backend).
 
-```julia
-using Plots, MarketData, TimeSeries
-pyplot()
-plot(MarketData.ohlc)
+```@example plot
+plot(ta[:Open, :High, :Low, :Close])
+savefig("multi-series.svg"); nothing # hide
 ```
+![](multi-series.svg)
 
-![image](images/basicplot.svg)
+## Plotting candlestick
 
-More sophisticated plots can be created by using keyword attributes and
-subsets:
+We have `seriestype = :candlestick` support that requires four columns exist in the input.
+They are `open`, `high`, `low` and `close` (case-insensitive).
 
-```julia
-plot(MarketData.ohlc[:Low], seriestype = :scatter, markersize = 3, color = :red, markeralpha = 0.4, grid = true)
+```@example plot
+plot(ta, seriestype = :candlestick)
+savefig("cs.svg"); nothing # hide
 ```
+![](cs.svg)
 
-![image](images/complexplot.svg)
+### Other available attributes
 
-A complete list of all attributes and plotting possibilities can be
-found in the Plots
-[documentation](http://docs.juliaplots.org/latest/supported/).
+- `bar_width::Float64` the valid value is from `0` to `1`.
 
-
-Plotting candlestick, the `Candlestick` constructor requires four columns
-exist in the input. They are `open`, `high`, `low` and `close` (case-insensitive).:
-
-```julia
-plot(TimeSeries.Candlestick(MarketData.ohlc))
+```@example plot
+plot(ta, seriestype = :candlestick, bar_width = 0.7)
+savefig("bw.svg"); nothing # hide
 ```
+![](bw.svg)
 
-![image](images/candlestick.svg)
+- `xticks::Int` for controlling the density of x axis labels.
+
+```@example plot
+plot(ta, seriestype = :candlestick, xticks = 3, xrotation = 60)
+savefig("xticks.svg"); nothing # hide
+```
+![](xticks.svg)
