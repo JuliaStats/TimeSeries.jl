@@ -9,7 +9,9 @@ Here we use the data from Yahoo Fiance as a demo.
 
 ```@example plot
 using Plots, MarketData, TimeSeries
-plotly()
+default(show = false)  # hide
+ENV["GKSwstype"] = "100" # hide
+gr()
 ta = yahoo(:GOOG, YahooOpt(period1 = now() - Month(1)))
 ```
 
@@ -22,11 +24,9 @@ backend).
 
 ```@example plot
 plot(ta[:Open, :High, :Low, :Close])
-savefig("images/multi-series.svg"); nothing # hide
+savefig("multi-series.svg"); nothing # hide
 ```
-
-![](images/multi-series.svg)
-
+![](multi-series.svg)
 
 ## Plotting candlestick
 
@@ -35,29 +35,24 @@ They are `open`, `high`, `low` and `close` (case-insensitive).
 
 ```@example plot
 plot(ta, seriestype = :candlestick)
-savefig("images/cs.svg"); nothing # hide
+savefig("cs.svg"); nothing # hide
 ```
-
-![](images/cs.svg)
-
+![](cs.svg)
 
 ### Other available attributes
 
-1. `bar_width::Float64` the valid value is from `0` to `1`.
+- `bar_width::Float64` the valid value is from `0` to `1`.
 
 ```@example plot
 plot(ta, seriestype = :candlestick, bar_width = 0.7)
-savefig("images/bw.svg"); nothing # hide
+savefig("bw.svg"); nothing # hide
 ```
+![](bw.svg)
 
-![](images/bw.svg)
-
-
-2. `xticks::Int` for controlling the density of x axis labels.
+- `xticks::Int` for controlling the density of x axis labels.
 
 ```@example plot
 plot(ta, seriestype = :candlestick, xticks = 3, xrotation = 60)
-savefig("images/xticks.svg"); nothing # hide
+savefig("xticks.svg"); nothing # hide
 ```
-
-![](images/xticks.svg)
+![](xticks.svg)
