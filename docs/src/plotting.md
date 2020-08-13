@@ -22,10 +22,10 @@ backend).
 
 ```@example plot
 plot(ta[:Open, :High, :Low, :Close])
-savefig("multi-series.svg"); nothing # hide
+savefig("images/multi-series.svg"); nothing # hide
 ```
 
-![](multi-series.svg)
+![](images/multi-series.svg)
 
 
 ## Plotting candlestick
@@ -35,10 +35,10 @@ They are `open`, `high`, `low` and `close` (case-insensitive).
 
 ```@example plot
 plot(ta, seriestype = :candlestick)
-savefig("cs.svg"); nothing # hide
+savefig("images/cs.svg"); nothing # hide
 ```
 
-![](cs.svg)
+![](images/cs.svg)
 
 
 ### Other available attributes
@@ -47,17 +47,17 @@ savefig("cs.svg"); nothing # hide
 
 ```@example plot
 plot(ta, seriestype = :candlestick, bar_width = 0.7)
-savefig("bw.svg"); nothing # hide
+savefig("images/bw.svg"); nothing # hide
 ```
 
-![](bw.svg)
+![](images/bw.svg)
 
 
 2. `xticks::Int` for controlling the density of x axis labels.
 
 ```@example plot
 plot(ta, seriestype = :candlestick, xticks = 3, xrotation = 60)
-savefig("xticks.svg"); nothing # hide
+savefig("images/xticks.svg"); nothing # hide
 ```
 
-![](xticks.svg)
+![](images/xticks.svg)
