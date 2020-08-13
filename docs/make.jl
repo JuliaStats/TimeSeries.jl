@@ -3,7 +3,7 @@ using TimeSeries
 
 
 makedocs(
-    format = :html,
+    format = Documenter.HTML(),
     sitename = "TimeSeries.jl",
     modules = [TimeSeries],
     pages = [
@@ -24,5 +24,7 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/JuliaStats/TimeSeries.jl.git"
+    repo         = "github.com/JuliaStats/TimeSeries.jl.git",
+    devbranch    = "master",
+    push_preview = true,
 )
