@@ -13,6 +13,18 @@ The time index of a `TimeArray` is considered as a normal data column named
 Here this doc shows some example usages of this integration.
 Converting table between `DataFrame`s or `CSV` are quite common cases.
 
+## `eachrow` and `eachcol` iterators
+
+In Julia v1.1+, these two functions are supported and baked by `Tables.jl`.
+
+```@repl
+using MarketData
+for row ∈ eachrow(ohlc)
+  time = row.timestamp
+  c = row.Close
+  # ...
+end
+```
 
 ## `TimeArray` to `DataFrame`
 
