@@ -155,14 +155,16 @@ end  # @testset "iterator"
                        B  = [4, 5, 6],
                        C  = [7, 8, 9],
                        ts = ts)
-        ta = TimeArray(df; timestamp = :ts)
+        for unchecked ∈ (true, false)
+            ta = TimeArray(df; timestamp = :ts, unchecked = unchecked)
 
-        @test timestamp(ta) == ts
-        @test colnames(ta)  == [:A, :B, :C]
-        @test meta(ta)       ≡ df
-        @test values(ta.A)  == [1., 2, 3]
-        @test values(ta.B)  == [4, 5., 6]
-        @test values(ta.C)  == [7, 8, 9.]
+            @test timestamp(ta) == ts
+            @test colnames(ta)  == [:A, :B, :C]
+            @test meta(ta)       ≡ df
+            @test values(ta.A)  == [1., 2, 3]
+            @test values(ta.B)  == [4, 5., 6]
+            @test values(ta.C)  == [7, 8, 9.]
+        end
     end
 end  # @testset "DataFrames.jl"
 
