@@ -25,3 +25,14 @@
 @deprecate(
     merge(ta1::TimeArray{T}, ta2::TimeArray, method::Symbol; kw...) where {T},
     merge(ta1, ta2; method = method, kw...))
+
+###############################################################################
+#  0.20.0
+###############################################################################
+
+@deprecate(
+    update(ta::TimeArray{T,N,D}, tstamp::D, val::AbstractArray{T,N}) where {T,N,D},
+    vcat(ta, TimeArray(tstamp, val)))
+@deprecate(
+    update(ta::TimeArray{T,N,D}, tstamp::D, val::T) where {T,N,D},
+    vcat(ta, TimeArray([tstamp], [val])))
