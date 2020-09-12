@@ -22,7 +22,7 @@ using MarketData
 for row ∈ eachrow(ohlc)
   time = row.timestamp
   c = row.Close
-  ...
+  # ...
 end
 ```
 
