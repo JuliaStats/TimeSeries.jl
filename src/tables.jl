@@ -63,6 +63,11 @@ Tables.schema(i::TableIter{T,S}) where {T,S} = Tables.Schema(S, coltypes(data(i)
 
 coltypes(x::AbstractTimeSeries{T,N,D}) where {T,N,D} = (D, (T for _ ∈ 1:size(x, 2))...)
 
+
+###############################################################################
+#  Constructors
+###############################################################################
+
 function TimeSeries.TimeArray(x; timestamp::Symbol, timeparser::Base.Callable = identity,
                               unchecked = false)
     Tables.istable(x) || throw(ArgumentError("TimeArray requires a table as input"))
@@ -77,5 +82,38 @@ function TimeSeries.TimeArray(x; timestamp::Symbol, timeparser::Base.Callable = 
     TimeArray(map(timeparser, Tables.getcolumn(cols, timestamp)), val, names′, x;
               unchecked = unchecked)
 end
+
+###############################################################################
+#  eachrow/eachcol
+###############################################################################
+
+@static if VERSION ≥ v"1.1"
+
+
+@doc """
+    eachrow(x::TimeArray)
+
+Return a row iterator baked by `Tables.rows`.
+
+# Examples
+
+```julia
+for row ∈ eachrow(ohlc)
+    time = row.timestamp
+    price = row.Close
+end
+```
+"""
+Base.eachrow(x::TimeArray) = Tables.rows(x)
+
+@doc """
+    eachcol(x::TimeArray)
+
+Return a column iterator baked by `Tables.columns`.
+"""
+Base.eachcol(x::TimeArray) = Tables.columns(x)
+
+
+end  # @static if VERSION ≥ v"1.1"
 
 end  # TablesIntegration

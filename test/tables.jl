@@ -50,30 +50,40 @@ end
         @test Tables.getcolumn(cl, :Close)     == values(cl)
 
         # column iterator
-        i = Tables.columns(cl)
-        @test size(i)      == (length(cl), 2)
-        @test length(i)    == 2  # timestamp and the close columns
-        @test i[100, 1]    == timestamp(cl)[100]
-        @test i[100, 2]    == values(cl)[100]
-        @test i[end]       == values(cl)
-        @test i[end, 1]    == timestamp(cl)[end]
-        @test i[end, 2]    == values(cl)[end]
-        @test timestamp(i) == timestamp(cl)
-        @test colnames(i)  == colnames(cl)
-        @test i.Close      == values(cl)
-        @test Tables.getcolumn(i, 1)          == timestamp(cl)
-        @test Tables.getcolumn(i, :timestamp) == timestamp(cl)
-        @test Tables.getcolumn(i, 2)          == values(cl)
-        @test Tables.getcolumn(i, :Close)     == values(cl)
+        iters = [Tables.columns(cl)]
+        if VERSION ≥ v"1.1"
+            push!(iters, eachcol(cl))
+        end
+        for i ∈ iters
+            @test size(i)      == (length(cl), 2)
+            @test length(i)    == 2  # timestamp and the close columns
+            @test i[100, 1]    == timestamp(cl)[100]
+            @test i[100, 2]    == values(cl)[100]
+            @test i[end]       == values(cl)
+            @test i[end, 1]    == timestamp(cl)[end]
+            @test i[end, 2]    == values(cl)[end]
+            @test timestamp(i) == timestamp(cl)
+            @test colnames(i)  == colnames(cl)
+            @test i.Close      == values(cl)
+            @test Tables.getcolumn(i, 1)          == timestamp(cl)
+            @test Tables.getcolumn(i, :timestamp) == timestamp(cl)
+            @test Tables.getcolumn(i, 2)          == values(cl)
+            @test Tables.getcolumn(i, :Close)     == values(cl)
 
-        @test propertynames(i) == (:timestamp, :Close)
+            @test propertynames(i) == (:timestamp, :Close)
+        end
 
         # row iterator
-        i = Tables.rows(cl)
-        for r ∈ i
-            @test r.timestamp == timestamp(cl)[1]
-            @test r.Close     == values(cl)[1]
-            break
+        iters = [Tables.rows(cl)]
+        if VERSION ≥ v"1.1"
+            push!(iters, eachrow(cl))
+        end
+        for iter ∈ iters
+            for r ∈ iter
+                @test r.timestamp == timestamp(cl)[1]
+                @test r.Close     == values(cl)[1]
+                break
+            end
         end
     end
 
@@ -85,33 +95,43 @@ end
         @test Tables.getcolumn(ohlc, :High)      == values(ohlc[:High])
 
         # column iterator
-        i = Tables.columns(ohlc)
-        @test size(i)      == (length(ohlc), 5)
-        @test length(i)    == 5
-        @test i[100, 1]    == timestamp(ohlc)[100]
-        @test i[100, 3]    == values(ohlc)[100, 2]
-        @test i[end]       == values(ohlc[:Close])
-        @test i[end, 1]    == timestamp(ohlc)[end]
-        @test i[end, 3]    == values(ohlc)[end, 2]
-        @test timestamp(i) == timestamp(ohlc)
-        @test colnames(i)  == colnames(ohlc)
-        @test i.Open       == values(ohlc.Open)
-        @test Tables.getcolumn(i, 1)          == timestamp(ohlc)
-        @test Tables.getcolumn(i, :timestamp) == timestamp(ohlc)
-        @test Tables.getcolumn(i, 3)          == values(ohlc[:High])
-        @test Tables.getcolumn(i, :High)      == values(ohlc[:High])
+        iters = [Tables.columns(ohlc)]
+        if VERSION ≥ v"1.1"
+            push!(iters, eachcol(ohlc))
+        end
+        for i ∈ iters
+            @test size(i)      == (length(ohlc), 5)
+            @test length(i)    == 5
+            @test i[100, 1]    == timestamp(ohlc)[100]
+            @test i[100, 3]    == values(ohlc)[100, 2]
+            @test i[end]       == values(ohlc[:Close])
+            @test i[end, 1]    == timestamp(ohlc)[end]
+            @test i[end, 3]    == values(ohlc)[end, 2]
+            @test timestamp(i) == timestamp(ohlc)
+            @test colnames(i)  == colnames(ohlc)
+            @test i.Open       == values(ohlc.Open)
+            @test Tables.getcolumn(i, 1)          == timestamp(ohlc)
+            @test Tables.getcolumn(i, :timestamp) == timestamp(ohlc)
+            @test Tables.getcolumn(i, 3)          == values(ohlc[:High])
+            @test Tables.getcolumn(i, :High)      == values(ohlc[:High])
 
-        @test propertynames(i) == (:timestamp, :Open, :High, :Low, :Close)
+            @test propertynames(i) == (:timestamp, :Open, :High, :Low, :Close)
+        end
 
         # row iterator
-        i = Tables.rows(ohlc)
-        for r ∈ i
-            @test r.timestamp == timestamp(ohlc)[1]
-            @test r.Open      == values(ohlc)[1, 1]
-            @test r.High      == values(ohlc)[1, 2]
-            @test r.Low       == values(ohlc)[1, 3]
-            @test r.Close     == values(ohlc)[1, 4]
-            break
+        iters = [Tables.rows(ohlc)]
+        if VERSION ≥ v"1.1"
+            push!(iters, eachrow(ohlc))
+        end
+        for iter ∈ iters
+            for r ∈ iter
+                @test r.timestamp == timestamp(ohlc)[1]
+                @test r.Open      == values(ohlc)[1, 1]
+                @test r.High      == values(ohlc)[1, 2]
+                @test r.Low       == values(ohlc)[1, 3]
+                @test r.Close     == values(ohlc)[1, 4]
+                break
+            end
         end
     end
 end  # @testset "iterator"
