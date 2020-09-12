@@ -30,6 +30,8 @@
 #  0.20.0
 ###############################################################################
 
+export update
+
 @deprecate(
     update(ta::TimeArray{T,N,D}, tstamp::D, val::AbstractArray{T,N}) where {T,N,D},
     vcat(ta, TimeArray(tstamp, val)))

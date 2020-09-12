@@ -16,8 +16,10 @@ export TimeArray, AbstractTimeSeries,
        uniformspaced, uniformspace, dropnan,
        basecall,
        merge, collapse,
-       readtimearray, writetimearray,
-       update, rename, rename!
+       readtimearray, writetimearray
+
+# modify.jl
+export rename, rename!
 
 @reexport using Dates
 
