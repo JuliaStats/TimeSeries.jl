@@ -11,16 +11,19 @@ function readtimearray(source; delim::Char = ',', meta = nothing,
     inoempty = findall(s -> length(s) > 2, cfile[:, 1])
     cfile = cfile[inoempty, :]
 
+    # create a DataFormat instance to improve performance
+    df = isempty(format) ? nothing : DateFormat(format)
+
     time = cfile[1:end, 1]
     if length(time[1]) < 11
         # assuming Date not DateTime
-        tstamps = isempty(format) ?
+        tstamps = isnothing(df) ?
             Date[Date(t) for t in time] :
-            Date[Date(t, format) for t in time]
+            Date[Date(t, df) for t in time]
     else
-        tstamps = isempty(format) ?
+        tstamps = isnothing(df) ?
             DateTime[DateTime(t) for t in time] :
-            DateTime[DateTime(t, format) for t in time]
+            DateTime[DateTime(t, df) for t in time]
     end
 
     vals   = insertNaN(cfile[1:end, 2:end])
