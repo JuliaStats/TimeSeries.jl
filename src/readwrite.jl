@@ -17,11 +17,11 @@ function readtimearray(source; delim::Char = ',', meta = nothing,
     time = cfile[1:end, 1]
     if length(time[1]) < 11
         # assuming Date not DateTime
-        tstamps = isnothing(df) ?
+        tstamps = df === nothing ?
             Date[Date(t) for t in time] :
             Date[Date(t, df) for t in time]
     else
-        tstamps = isnothing(df) ?
+        tstamps = df === nothing ?
             DateTime[DateTime(t) for t in time] :
             DateTime[DateTime(t, df) for t in time]
     end
