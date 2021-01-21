@@ -20,8 +20,6 @@ jobs:
           - "1"    # Latest Release
         os:
           - ubuntu-latest
-          - macOS-latest
-          - windows-latest
         arch:
           - x86
 
