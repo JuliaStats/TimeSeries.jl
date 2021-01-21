@@ -70,7 +70,7 @@ end
         end
 
         # issue #475
-        @test colnames(merge(cl, cl, cl colnames = [:a, :b, :c])) == [:a, :b, :c]
+        @test colnames(merge(cl, cl, cl, colnames = [:a, :b, :c])) == [:a, :b, :c]
     end
 
     @testset "returns correct alignment with Dates and values" begin
