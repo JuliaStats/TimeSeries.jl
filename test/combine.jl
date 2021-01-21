@@ -57,17 +57,20 @@ end
     ba   = tail(BA)
 
     @testset "takes colnames kwarg correctly" begin
-        @test colnames(merge(cl, ohlc[:High, :Low], colnames=[:a, :b, :c])) == [:a, :b, :c]
-        @test colnames(merge(cl, op, colnames=[:a, :b]))                    == [:a, :b]
-        @test_throws ArgumentError merge(cl, op, colnames=[:a])
-        @test_throws ArgumentError merge(cl, op, colnames=[:a, :b, :c])
+        @test colnames(merge(cl, ohlc[:High, :Low], colnames = [:a, :b, :c])) == [:a, :b, :c]
+        @test colnames(merge(cl, op, colnames = [:a, :b]))                    == [:a, :b]
+        @test_throws ArgumentError merge(cl, op, colnames = [:a])
+        @test_throws ArgumentError merge(cl, op, colnames = [:a, :b, :c])
 
         for mode ∈ [:inner, :left, :right, :outer]
-            @test colnames(merge(cl, ohlc[:High, :Low], method = mode, colnames=[:a, :b, :c])) == [:a, :b, :c]
-            @test colnames(merge(cl, op, method = mode, colnames=[:a, :b])) == [:a, :b]
-            @test_throws ArgumentError merge(cl, op, method = mode, colnames=[:a])
-            @test_throws ArgumentError merge(cl, op, method = mode, colnames=[:a, :b, :c])
+            @test colnames(merge(cl, ohlc[:High, :Low], method = mode, colnames = [:a, :b, :c])) == [:a, :b, :c]
+            @test colnames(merge(cl, op, method = mode, colnames = [:a, :b])) == [:a, :b]
+            @test_throws ArgumentError merge(cl, op, method = mode, colnames = [:a])
+            @test_throws ArgumentError merge(cl, op, method = mode, colnames = [:a, :b, :c])
         end
+
+        # issue #475
+        @test colnames(merge(cl, cl, cl colnames = [:a, :b, :c])) == [:a, :b, :c]
     end
 
     @testset "returns correct alignment with Dates and values" begin

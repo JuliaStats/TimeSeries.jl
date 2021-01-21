@@ -75,8 +75,9 @@ function merge(ta1::TimeArray{T,N,D}, ta2::TimeArray{T,M,D};
 
 end
 
-merge(x::TimeArray{T}, y::TimeArray{T}, z::TimeArray{T}, a::TimeArray{T}...; kw...) where {T} =
-    merge(merge(x, y; kw...), z, a...; kw...)
+merge(x::TimeArray{T}, y::TimeArray{T}, z::TimeArray{T}, a::TimeArray{T}...;
+      colnames::Vector = Symbol[], kw...) where {T} =
+    rename!(merge(merge(x, y; kw...), z, a...; kw...), colnames)
 
 
 # hcat ##########################
