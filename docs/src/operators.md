@@ -8,7 +8,7 @@ All of the operations must be treat as dot-call.
 ## Mathematical
 
 Mathematical operators create a `TimeArray` object where values are
-computed on shared timestamps when two T`imeArray` objects are provided.
+computed on shared timestamps when two `TimeArray` objects are provided.
 Operations between a single `TimeArray` and `Int` or `Float` are also
 supported. The number can precede the `TimeArray` object or vice versa
 (e.g. `cl .+ 2` or `2 .+ cl`). Broadcasting single-column arrays over
