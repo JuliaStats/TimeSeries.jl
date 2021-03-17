@@ -21,7 +21,7 @@ using TimeSeries
     end
 
     @testset "findall(f::Function, ta)" begin
-        @test findall(cl .> 100) == findall(>(100), cl)
+        @test findall(cl .> 100) == findall(x -> x > 100, cl)
         @test findall(cl .> 100) == findall(x -> x[4] > 100, ohlc)
     end
 end
