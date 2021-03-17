@@ -86,7 +86,13 @@ ohlc[red]
 
 The following example won't create a temporary `Bool` vector, and gains better
 performance.
-```@repl
+
+```@setup findall
+using TimeSeries
+using MarketData
+```
+
+```@repl findall
 findall(>(100), cl)
 ```
 
