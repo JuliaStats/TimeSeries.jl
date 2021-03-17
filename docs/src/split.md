@@ -84,6 +84,12 @@ typeof(red)
 ohlc[red]
 ```
 
+The following example won't create a temporary `Bool` vector, and gains better
+performance.
+```@repl
+findall(>(100), cl*)
+```
+
 ## Splitting by head and tail
 
 ### `head`

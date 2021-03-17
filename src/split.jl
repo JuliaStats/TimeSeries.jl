@@ -22,6 +22,9 @@ to(ta::TimeArray{T, N, D}, d::D) where {T, N, D} =
 ###### findall ##################
 
 Base.findall(ta::TimeArray{Bool,1}) = findall(values(ta))
+Base.findall(f::Function, ta::TimeArray{T,1}) where {T} = findall(f, values(ta))
+Base.findall(f::Function, ta::TimeArray{T,2}) where {T} =
+    collect(i for (i, x) ∈ enumerate(eachrow(values(ta))) if f(x))
 
 ###### findwhen #################
 
