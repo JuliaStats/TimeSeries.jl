@@ -19,6 +19,11 @@ using TimeSeries
        @test findwhen(cl .> op)[2]      == Date(2000, 1, 5)
        @test length(findwhen(cl .> op)) == 244
     end
+
+    @testset "findall(f::Function, ta)" begin
+        @test findall(cl .> 100) == findall(x -> x > 100, cl)
+        @test findall(cl .> 100) == findall(x -> x[4] > 100, ohlc)
+    end
 end
 
 
