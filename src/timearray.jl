@@ -267,7 +267,8 @@ function print_time_array(io::IO, ta::TimeArray{T}, short=false) where T
     
     if length(pages) > 1
         pndtcols = last(last(pages)) - first(pages[2]) + 1
-        print(io, "\n  ", pndtcols, " columns omitted")
+        println(io)
+        printstyled(io, lpad("$pndtcols columns omitted", dcol), color=:cyan)
     end
 end
 
