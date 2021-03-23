@@ -220,7 +220,7 @@ calculate the paging
     ret
 end
 
-function print_time_array(io::IO, ta::TimeArray{T}, short=false) where T
+function print_time_array(io::IO, ta::TimeArray{T}, short=false, allcols=false) where T
     # summary line
     nrow = size(values(ta), 1)
     ncol = size(values(ta), 2)
@@ -261,14 +261,29 @@ function print_time_array(io::IO, ta::TimeArray{T}, short=false) where T
     spacetime = textwidth(string(ts[1]))
     pages = _showpages(dcol, spacetime, colwidth)
 
-    _print_page(io, pages[1], ta, 
-        spacetime, colwidth, nrow, drow, res_row, tophalf, bothalf, 
-        length(pages))
-    
-    if length(pages) > 1
-        pndtcols = last(last(pages)) - first(pages[2]) + 1
+    # print all columns?
+    if allcols 
+        for p in pages
+            islastpage = p == last(pages)
+            _print_page(io, p, ta, 
+                spacetime, colwidth, nrow, drow, res_row, tophalf, bothalf, 
+                islastpage ? 1 : 2)
+            if length(pages) > 1 && !islastpage
+                print(io,"\n\n")
+            end
+        end
         println(io)
-        printstyled(io, lpad("$pndtcols columns omitted", dcol), color=:cyan)
+    else
+        # print first page and omitted columns message
+        _print_page(io, pages[1], ta, 
+            spacetime, colwidth, nrow, drow, res_row, tophalf, bothalf, 
+            length(pages))
+        
+        if length(pages) > 1
+            pndtcols = last(last(pages)) - first(pages[2]) + 1
+            println(io)
+            printstyled(io, lpad("$pndtcols columns omitted", dcol), color=:cyan)
+        end
     end
 end
 
@@ -345,9 +360,12 @@ function _print_page(io::IO, p::UnitRange{Int}, ta::TimeArray, spacetime,
     end
 end
 
-Base.show(io::IO, ta::TimeArray) = print_time_array(io, ta, true)
-Base.show(io::IO, ::MIME"text/plain", ta::TimeArray) =
-    print_time_array(io, ta, false)
+Base.show(io::IO, ta::TimeArray) = 
+    print_time_array(io, ta, get(io, :limit, false), get(io, :limit, true))
+Base.show(io::IO, ::MIME"text/plain", ta::TimeArray) = 
+    print_time_array(io, ta, false, !get(io, :limit, false))
+Base.show(ta::TimeArray) = 
+    print_time_array(stdout, ta, false, true)
 
 
 ###### getindex #################
