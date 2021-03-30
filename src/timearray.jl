@@ -272,7 +272,6 @@ function print_time_array(io::IO, ta::TimeArray{T}, short=false, allcols=false) 
                 print(io,"\n\n")
             end
         end
-        println(io)
     else
         # print first page and omitted columns message
         _print_page(io, pages[1], ta, 
@@ -366,8 +365,6 @@ Base.show(io::IO, ta::TimeArray) =
     print_time_array(io, ta, false, get(io, :limit, true))
 Base.show(io::IO, ::MIME"text/plain", ta::TimeArray) = 
     print_time_array(io, ta, false, !get(io, :limit, false))
-Base.show(ta::TimeArray) = 
-    print_time_array(stdout, ta, false, true)
 
 
 ###### getindex #################

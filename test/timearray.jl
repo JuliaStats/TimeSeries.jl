@@ -480,7 +480,7 @@ end
 
 @testset "show methods don't throw errors" begin
     io = IOBuffer()
-    let str = sprint(show, cl; context = :limit=>true)
+    let str = sprint(summary, cl)
         out = "500×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31"
         @test str == out
     end
@@ -504,8 +504,7 @@ end
 │ 2001-12-26 │ 21.49  │
 │ 2001-12-27 │ 22.07  │
 │ 2001-12-28 │ 22.43  │
-│ 2001-12-31 │ 21.9   │
-"""
+│ 2001-12-31 │ 21.9   │"""
         @test str == out
     end
 
@@ -534,12 +533,11 @@ end
 │ 2001-12-26 │ 21.35  │ 22.3   │ 21.14  │ 21.49  │
 │ 2001-12-27 │ 21.58  │ 22.25  │ 21.58  │ 22.07  │
 │ 2001-12-28 │ 21.97  │ 23.0   │ 21.96  │ 22.43  │
-│ 2001-12-31 │ 22.51  │ 22.66  │ 21.83  │ 21.9   │
-"""
+│ 2001-12-31 │ 22.51  │ 22.66  │ 21.83  │ 21.9   │"""
         @test str == out
     end
 
-    let str = sprint(show, AAPL; context = :limit => true)
+    let str = sprint(summary, AAPL)
         out = "8336×12 TimeArray{Float64,2,Date,Array{Float64,2}} 1980-12-12 to 2013-12-31"
         @test str == out
     end
@@ -606,12 +604,11 @@ end
 │ 2013-12-26 │ 1.0        │ 564.7392 │ 566.1309 │ 560.0471 │ 560.564  │
 │ 2013-12-27 │ 1.0        │ 560.4845 │ 561.071  │ 556.1901 │ 556.7766 │
 │ 2013-12-30 │ 1.0        │ 554.1621 │ 556.7766 │ 549.0525 │ 551.2395 │
-│ 2013-12-31 │ 1.0        │ 550.8916 │ 557.9595 │ 550.7226 │ 557.7011 │
-"""
+│ 2013-12-31 │ 1.0        │ 550.8916 │ 557.9595 │ 550.7226 │ 557.7011 │"""
         @test str == out
     end
 
-    let str = sprint(show, ohlc[1:4]; context = :limit => true)
+    let str = sprint(summary, ohlc[1:4])
         out = "4×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-06"
         @test str == out
     end
@@ -623,13 +620,15 @@ end
 │ 2000-01-03 │ 104.88 │ 112.5  │ 101.69 │ 111.94 │
 │ 2000-01-04 │ 108.25 │ 110.62 │ 101.19 │ 102.5  │
 │ 2000-01-05 │ 103.75 │ 110.56 │ 103.0  │ 104.0  │
-│ 2000-01-06 │ 106.12 │ 107.0  │ 95.0   │ 95.0   │
-"""
+│ 2000-01-06 │ 106.12 │ 107.0  │ 95.0   │ 95.0   │"""
         @test str == out
     end
 
 
-    let str = sprint(show, ohlc[1:0]; context = :limit => true)
+    let str = sprint(show, ohlc[1:0])
+        @test str == "0×4 TimeArray{Float64,2,Date,Array{Float64,2}}"
+    end
+    let str = sprint(summary, ohlc[1:0])
         @test str == "0×4 TimeArray{Float64,2,Date,Array{Float64,2}}"
     end
     show(io, "text/plain", ohlc[1:0])
@@ -646,7 +645,7 @@ end
         @test str == "0×1 TimeArray{Any,1,Date,Array{Any,1}}"
     end
 
-    let str = sprint(show, lag(cl[1:2], padding=true); context = :limit => true)
+    let str = sprint(summary, lag(cl[1:2], padding=true))
         out = "2×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-04"
         @test str == out
     end
@@ -656,8 +655,7 @@ end
 │            │ Close  │
 ├────────────┼────────┤
 │ 2000-01-03 │ NaN    │
-│ 2000-01-04 │ 111.94 │
-"""
+│ 2000-01-04 │ 111.94 │"""
         @test str == out
     end
 end  # @testset "show methods don't throw errors"
