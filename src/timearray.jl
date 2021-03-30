@@ -360,8 +360,10 @@ function _print_page(io::IO, p::UnitRange{Int}, ta::TimeArray, spacetime,
     end
 end
 
+Base.summary(io::IO, ta::TimeArray) = print_time_array(io, ta, true)
+
 Base.show(io::IO, ta::TimeArray) = 
-    print_time_array(io, ta, get(io, :limit, false), get(io, :limit, true))
+    print_time_array(io, ta, false, get(io, :limit, true))
 Base.show(io::IO, ::MIME"text/plain", ta::TimeArray) = 
     print_time_array(io, ta, false, !get(io, :limit, false))
 Base.show(ta::TimeArray) = 

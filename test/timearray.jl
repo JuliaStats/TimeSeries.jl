@@ -510,7 +510,7 @@ end
     end
 
     # my edits above seem to work -- now need to do for the rest, JJS 2/22/19
-    let str = sprint(show, ohlc; context = :limit=>true)
+    let str = sprint(summary, ohlc)
         out = "500×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2001-12-31"
         @test str == out
     end
