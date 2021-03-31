@@ -478,15 +478,33 @@ end
 end
 
 
+# String shown in TimeArray header depends on Julia version
+function disptype(ta::TimeArray) 
+    datetype, datatype = eltype(ta).types
+    datatype = eltype(datatype)
+    n = ndims(ta)
+    datastr = repr(datatype)
+    datestr = repr(datetype)
+
+    if VERSION < v"1.6"
+        str_repr = "TimeArray{$datastr,$n,$datestr,Array{$datastr,$n}}"
+    else
+        # In Julia 1.6 it shows with spaces and aliases
+        last = n > 1 ? "Matrix{$datastr}" : "Vector{$datastr}"
+        str_repr = "TimeArray{$datastr, $n, $datestr, $last}"
+    end
+    str_repr
+end
+
 @testset "show methods don't throw errors" begin
     io = IOBuffer()
     let str = sprint(summary, cl)
-        out = "500×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31"
+        out = "500×1 $(disptype(cl)) 2000-01-03 to 2001-12-31"
         @test str == out
     end
     show(io, "text/plain", cl)
     let str = String(take!(io))
-        out = """500×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
+        out = """500×1 $(disptype(cl)) 2000-01-03 to 2001-12-31
 │            │ Close  │
 ├────────────┼────────┤
 │ 2000-01-03 │ 111.94 │
@@ -510,12 +528,12 @@ end
 
     # my edits above seem to work -- now need to do for the rest, JJS 2/22/19
     let str = sprint(summary, ohlc)
-        out = "500×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2001-12-31"
+        out = "500×4 $(disptype(ohlc)) 2000-01-03 to 2001-12-31"
         @test str == out
     end
     show(io, "text/plain", ohlc)
     let str = String(take!(io))
-        out = """500×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2001-12-31
+        out = """500×4 $(disptype(ohlc)) 2000-01-03 to 2001-12-31
 │            │ Open   │ High   │ Low    │ Close  │
 ├────────────┼────────┼────────┼────────┼────────┤
 │ 2000-01-03 │ 104.88 │ 112.5  │ 101.69 │ 111.94 │
@@ -538,12 +556,12 @@ end
     end
 
     let str = sprint(summary, AAPL)
-        out = "8336×12 TimeArray{Float64,2,Date,Array{Float64,2}} 1980-12-12 to 2013-12-31"
+        out = "8336×12 $(disptype(AAPL)) 1980-12-12 to 2013-12-31"
         @test str == out
     end
     show(IOContext(io, :limit => false), AAPL)
     let str = String(take!(io))
-        out = """8336×12 TimeArray{Float64,2,Date,Array{Float64,2}} 1980-12-12 to 2013-12-31
+        out = """8336×12 $(disptype(AAPL)) 1980-12-12 to 2013-12-31
 │            │ Open   │ High   │ Low    │ Close  │ Volume    │ ExDividend │⋯
 ├────────────┼────────┼────────┼────────┼────────┼───────────┼────────────┤
 │ 1980-12-12 │ 28.75  │ 28.88  │ 28.75  │ 28.75  │ 2.0939e6  │ 0.0        │
@@ -567,7 +585,7 @@ end
     end
     show(io, "text/plain", AAPL)
     let str = String(take!(io))
-        out = """8336×12 TimeArray{Float64,2,Date,Array{Float64,2}} 1980-12-12 to 2013-12-31
+        out = """8336×12 $(disptype(AAPL)) 1980-12-12 to 2013-12-31
 │            │ Open   │ High   │ Low    │ Close  │ Volume    │ ExDividend │⋯
 ├────────────┼────────┼────────┼────────┼────────┼───────────┼────────────┤
 │ 1980-12-12 │ 28.75  │ 28.88  │ 28.75  │ 28.75  │ 2.0939e6  │ 0.0        │
@@ -609,12 +627,12 @@ end
     end
 
     let str = sprint(summary, ohlc[1:4])
-        out = "4×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-06"
+        out = "4×4 $(disptype(ohlc[1:4])) 2000-01-03 to 2000-01-06"
         @test str == out
     end
     show(io, "text/plain", ohlc[1:4])
     let str = String(take!(io))
-        out = """4×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-06
+        out = """4×4 $(disptype(ohlc[1:4])) 2000-01-03 to 2000-01-06
 │            │ Open   │ High   │ Low    │ Close  │
 ├────────────┼────────┼────────┼────────┼────────┤
 │ 2000-01-03 │ 104.88 │ 112.5  │ 101.69 │ 111.94 │
@@ -626,32 +644,32 @@ end
 
 
     let str = sprint(show, ohlc[1:0])
-        @test str == "0×4 TimeArray{Float64,2,Date,Array{Float64,2}}"
+        @test str == "0×4 $(disptype(ohlc[1:0]))"
     end
     let str = sprint(summary, ohlc[1:0])
-        @test str == "0×4 TimeArray{Float64,2,Date,Array{Float64,2}}"
+        @test str == "0×4 $(disptype(ohlc[1:0]))"
     end
     show(io, "text/plain", ohlc[1:0])
     let str = String(take!(io))
-        @test str == "0×4 TimeArray{Float64,2,Date,Array{Float64,2}}"
+        @test str == "0×4 $(disptype(ohlc[1:0]))"
     end
 
 
     let str = sprint(show, TimeArray(Date[], []))
-        @test str == "0×1 TimeArray{Any,1,Date,Array{Any,1}}"
+        @test str == "0×1 $(disptype(TimeArray(Date[], [])))"
     end
     show(io, "text/plain", TimeArray(Date[], []))
     let str = String(take!(io))
-        @test str == "0×1 TimeArray{Any,1,Date,Array{Any,1}}"
+        @test str == "0×1 $(disptype(TimeArray(Date[], [])))"
     end
 
     let str = sprint(summary, lag(cl[1:2], padding=true))
-        out = "2×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-04"
+        out = "2×1 $(disptype(lag(cl[1:2], padding=true))) 2000-01-03 to 2000-01-04"
         @test str == out
     end
     show(io, "text/plain", lag(cl[1:2], padding=true))
     let str = String(take!(io))
-        out = """2×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-04
+        out = """2×1 $(disptype(lag(cl[1:2], padding=true))) 2000-01-03 to 2000-01-04
 │            │ Close  │
 ├────────────┼────────┤
 │ 2000-01-03 │ NaN    │
