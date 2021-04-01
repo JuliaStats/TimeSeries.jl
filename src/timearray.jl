@@ -202,14 +202,14 @@ calculate the paging
 """
 @inline function _showpages(dcol::Int, timewidth::Int, colwidth::Array{Int})
     ret = UnitRange{Int}[]
-    c = dcol - timewidth - 4
+    c = dcol - timewidth - 5
     last_i = 1
     for i in eachindex(colwidth)
         w = colwidth[i] + 3
         if c - w < 0
             push!(ret, last_i:i-1)
             # next page
-            c = dcol - timewidth - 4 - w
+            c = dcol - timewidth - 5 - w
             last_i = i
         elseif i == length(colwidth)
             push!(ret, last_i:i)
@@ -220,7 +220,7 @@ calculate the paging
     ret
 end
 
-function print_time_array(io::IO, ta::TimeArray{T}, short=false) where T
+function print_time_array(io::IO, ta::TimeArray{T}, short=false, allcols=false) where T
     # summary line
     nrow = size(values(ta), 1)
     ncol = size(values(ta), 2)
@@ -237,7 +237,7 @@ function print_time_array(io::IO, ta::TimeArray{T}, short=false) where T
 
     # calculate column withs
     drow, dcol = displaysize(io)
-    res_row    = 7  # number of reserved rows: summary line, lable line ... etc
+    res_row    = 9  # number of reserved rows: summary line, label line ... etc
     half_row   = floor(Int, (drow - res_row) / 2)
     add_row    = (drow - res_row) % 2
 
@@ -247,6 +247,8 @@ function print_time_array(io::IO, ta::TimeArray{T}, short=false) where T
         strs = _showval.(@view values(ta)[[tophalf; bothalf], :])
         ts   = @view timestamp(ta)[[tophalf; bothalf]]
     else
+        tophalf = 0
+        bothalf = 0
         strs = _showval.(values(ta))
         ts   = timestamp(ta)
     end
@@ -259,63 +261,110 @@ function print_time_array(io::IO, ta::TimeArray{T}, short=false) where T
     spacetime = textwidth(string(ts[1]))
     pages = _showpages(dcol, spacetime, colwidth)
 
-    for p ∈ pages
-        # row label line
-        ## e.g. | Open  | High  | Low   | Close  |
-        print(io, "│", " "^(spacetime + 2))
-        for (name, w) in zip(colnames(ta)[p], colwidth[p])
-            print(io, "│ ", _rpad(name, w + 1))
-        end
-        println(io, "│")
-        ## e.g. ├───────┼───────┼───────┼────────┤
-        print(io, "├", "─"^(spacetime + 2))
-        for w in colwidth[p]
-            print(io, "┼", "─"^(w + 2))
-        end
-        print(io, "┤")
-
-        # timestamp and values line
-        if nrow > (drow - res_row)
-            for i in tophalf
-                println(io)
-                print(io, "│ ", ts[i], " ")
-                for j in p
-                    print(io, "│ ", _rpad(strs[i, j], colwidth[j] + 1))
-                end
-                print(io, "│")
-            end
-
-            print(io, "\n   \u22EE")
-
-            for i in (length(bothalf) - 1):-1:0
-                i = size(strs, 1) - i
-                println(io)
-                print(io, "│ ", ts[i], " ")
-                for j in p
-                    print(io, "│ ", _rpad(strs[i, j], colwidth[j] + 1))
-                end
-                print(io, "│")
-            end
-
-        else
-            for i in 1:nrow
-                println(io)
-                print(io, "│ ", ts[i], " ")
-                for j in p
-                    print(io, "│ ", _rpad(strs[i, j], colwidth[j] + 1))
-                end
-                print(io, "│")
+    # print all columns?
+    if allcols 
+        for p in pages
+            islastpage = p == last(pages)
+            _print_page(io, p, ta, 
+                spacetime, colwidth, nrow, drow, res_row, tophalf, bothalf, 
+                islastpage ? 1 : 2)
+            if length(pages) > 1 && !islastpage
+                print(io,"\n\n")
             end
         end
-
-        if length(pages) > 1 && p != pages[end]
-            print(io, "\n\n")
+    else
+        # print first page and omitted columns message
+        _print_page(io, pages[1], ta, 
+            spacetime, colwidth, nrow, drow, res_row, tophalf, bothalf, 
+            length(pages))
+        
+        if length(pages) > 1
+            pndtcols = last(last(pages)) - first(pages[2]) + 1
+            println(io)
+            printstyled(io, lpad("$pndtcols columns omitted", dcol), color=:cyan)
         end
-    end  # for p ∈ pages
+    end
 end
-Base.show(io::IO, ta::TimeArray) = print_time_array(io, ta, true)
-Base.show(io::IO, ::MIME"text/plain", ta::TimeArray) =
-    print_time_array(io, ta, false)
+
+"""
+    _print_page
+
+Helper function to print a single page of the `TimeArray`
+"""
+function _print_page(io::IO, p::UnitRange{Int}, ta::TimeArray, spacetime, 
+    colwidth, nrow, drow, res_row, tophalf, bothalf, pages) 
+    
+    strs = _showval.(values(ta))
+    ts = timestamp(ta)
+    last = pages > 1 ? "│\u22EF" : "│"
+
+    # row label line
+    ## e.g. | Open  | High  | Low   | Close  |
+    print(io, "│", " "^(spacetime + 2))
+    for (name, w) in zip(colnames(ta)[p], colwidth[p])
+        print(io, "│ ", _rpad(name, w + 1))
+    end
+    println(io, last)
+
+    ## e.g. ├───────┼───────┼───────┼────────┤
+    print(io, "├", "─"^(spacetime + 2))
+    for w in colwidth[p]
+        print(io, "┼", "─"^(w + 2))
+    end
+    print(io, "┤")
+
+    # timestamp and values line
+    if nrow > (drow - res_row)
+        
+        # print bottom part
+        for i in tophalf
+            println(io)
+            print(io, "│ ", ts[i], " ")
+            for j in p
+                print(io, "│ ", _rpad(strs[i, j], colwidth[j] + 1))
+            end
+            print(io, i % 3 == 0 ? last : "│")
+        end
+
+        # print vdots part
+        println(io)
+        print(io, "│ ", _rpad("\u22EE", spacetime + 1))
+        for j in p
+            print(io, "│ ", _rpad("\u22EE", colwidth[j] + 1))
+        end
+        # print(io, pages > 1 ? "│\u22F1" : "│")
+        print(io, "│")
+
+        # print bottom part
+        for i in (length(bothalf) - 1):-1:0
+            i = size(strs, 1) - i
+            println(io)
+            print(io, "│ ", ts[i], " ")
+            for j in p
+                print(io, "│ ", _rpad(strs[i, j], colwidth[j] + 1))
+            end
+            print(io, i % 3 == 0 ? last : "│")
+        end
+
+    else
+        # print all rows
+        for i in 1:nrow
+            println(io)
+            print(io, "│ ", ts[i], " ")
+            for j in p
+                print(io, "│ ", _rpad(strs[i, j], colwidth[j] + 1))
+            end
+            print(io, i % 3 == 0 ? last : "│")
+        end
+    end
+end
+
+Base.summary(io::IO, ta::TimeArray) = print_time_array(io, ta, true)
+
+Base.show(io::IO, ta::TimeArray) = 
+    print_time_array(io, ta, false, get(io, :limit, true))
+Base.show(io::IO, ::MIME"text/plain", ta::TimeArray) = 
+    print_time_array(io, ta, false, !get(io, :limit, false))
 
 
 ###### getindex #################

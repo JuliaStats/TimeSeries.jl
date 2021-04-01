@@ -478,15 +478,33 @@ end
 end
 
 
+# String shown in TimeArray header depends on Julia version
+function disptype(ta::TimeArray) 
+    datetype, datatype = eltype(ta).types
+    datatype = eltype(datatype)
+    n = ndims(ta)
+    datastr = repr(datatype)
+    datestr = repr(datetype)
+
+    if VERSION < v"1.6"
+        str_repr = "TimeArray{$datastr,$n,$datestr,Array{$datastr,$n}}"
+    else
+        # In Julia 1.6 it shows with spaces and aliases
+        last = n > 1 ? "Matrix{$datastr}" : "Vector{$datastr}"
+        str_repr = "TimeArray{$datastr, $n, $datestr, $last}"
+    end
+    str_repr
+end
+
 @testset "show methods don't throw errors" begin
     io = IOBuffer()
-    let str = sprint(show, cl)
-        out = "500×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31"
+    let str = sprint(summary, cl)
+        out = "500×1 $(disptype(cl)) 2000-01-03 to 2001-12-31"
         @test str == out
     end
     show(io, "text/plain", cl)
     let str = String(take!(io))
-        out = """500×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
+        out = """500×1 $(disptype(cl)) 2000-01-03 to 2001-12-31
 │            │ Close  │
 ├────────────┼────────┤
 │ 2000-01-03 │ 111.94 │
@@ -497,9 +515,7 @@ end
 │ 2000-01-10 │ 97.75  │
 │ 2000-01-11 │ 92.75  │
 │ 2000-01-12 │ 87.19  │
-│ 2000-01-13 │ 96.75  │
-   ⋮
-│ 2001-12-19 │ 21.62  │
+│ ⋮          │ ⋮      │
 │ 2001-12-20 │ 20.67  │
 │ 2001-12-21 │ 21.0   │
 │ 2001-12-24 │ 21.36  │
@@ -511,13 +527,13 @@ end
     end
 
     # my edits above seem to work -- now need to do for the rest, JJS 2/22/19
-    let str = sprint(show, ohlc)
-        out = "500×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2001-12-31"
+    let str = sprint(summary, ohlc)
+        out = "500×4 $(disptype(ohlc)) 2000-01-03 to 2001-12-31"
         @test str == out
     end
     show(io, "text/plain", ohlc)
     let str = String(take!(io))
-        out = """500×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2001-12-31
+        out = """500×4 $(disptype(ohlc)) 2000-01-03 to 2001-12-31
 │            │ Open   │ High   │ Low    │ Close  │
 ├────────────┼────────┼────────┼────────┼────────┤
 │ 2000-01-03 │ 104.88 │ 112.5  │ 101.69 │ 111.94 │
@@ -528,9 +544,7 @@ end
 │ 2000-01-10 │ 102.0  │ 102.25 │ 94.75  │ 97.75  │
 │ 2000-01-11 │ 95.94  │ 99.38  │ 90.5   │ 92.75  │
 │ 2000-01-12 │ 95.0   │ 95.5   │ 86.5   │ 87.19  │
-│ 2000-01-13 │ 94.48  │ 98.75  │ 92.5   │ 96.75  │
-   ⋮
-│ 2001-12-19 │ 20.58  │ 21.68  │ 20.47  │ 21.62  │
+│ ⋮          │ ⋮      │ ⋮      │ ⋮      │ ⋮      │
 │ 2001-12-20 │ 21.4   │ 21.47  │ 20.62  │ 20.67  │
 │ 2001-12-21 │ 21.01  │ 21.54  │ 20.8   │ 21.0   │
 │ 2001-12-24 │ 20.9   │ 21.45  │ 20.9   │ 21.36  │
@@ -541,31 +555,53 @@ end
         @test str == out
     end
 
-    let str = sprint(show, AAPL)
-        out = "8336×12 TimeArray{Float64,2,Date,Array{Float64,2}} 1980-12-12 to 2013-12-31"
+    let str = sprint(summary, AAPL)
+        out = "8336×12 $(disptype(AAPL)) 1980-12-12 to 2013-12-31"
+        @test str == out
+    end
+    show(IOContext(io, :limit => false), AAPL)
+    let str = String(take!(io))
+        out = """8336×12 $(disptype(AAPL)) 1980-12-12 to 2013-12-31
+│            │ Open   │ High   │ Low    │ Close  │ Volume    │ ExDividend │⋯
+├────────────┼────────┼────────┼────────┼────────┼───────────┼────────────┤
+│ 1980-12-12 │ 28.75  │ 28.88  │ 28.75  │ 28.75  │ 2.0939e6  │ 0.0        │
+│ 1980-12-15 │ 27.38  │ 27.38  │ 27.25  │ 27.25  │ 785200.0  │ 0.0        │
+│ 1980-12-16 │ 25.38  │ 25.38  │ 25.25  │ 25.25  │ 472000.0  │ 0.0        │⋯
+│ 1980-12-17 │ 25.88  │ 26.0   │ 25.88  │ 25.88  │ 385900.0  │ 0.0        │
+│ 1980-12-18 │ 26.62  │ 26.75  │ 26.62  │ 26.62  │ 327900.0  │ 0.0        │
+│ 1980-12-19 │ 28.25  │ 28.38  │ 28.25  │ 28.25  │ 217100.0  │ 0.0        │⋯
+│ 1980-12-22 │ 29.62  │ 29.75  │ 29.62  │ 29.62  │ 166800.0  │ 0.0        │
+│ 1980-12-23 │ 30.88  │ 31.0   │ 30.88  │ 30.88  │ 209600.0  │ 0.0        │
+│ ⋮          │ ⋮      │ ⋮      │ ⋮      │ ⋮      │ ⋮         │ ⋮          │
+│ 2013-12-20 │ 545.43 │ 551.61 │ 544.82 │ 549.02 │ 1.55862e7 │ 0.0        │
+│ 2013-12-23 │ 568.0  │ 570.72 │ 562.76 │ 570.09 │ 1.79038e7 │ 0.0        │⋯
+│ 2013-12-24 │ 569.89 │ 571.88 │ 566.03 │ 567.67 │ 5.9841e6  │ 0.0        │
+│ 2013-12-26 │ 568.1  │ 569.5  │ 563.38 │ 563.9  │ 7.286e6   │ 0.0        │
+│ 2013-12-27 │ 563.82 │ 564.41 │ 559.5  │ 560.09 │ 8.0673e6  │ 0.0        │⋯
+│ 2013-12-30 │ 557.46 │ 560.09 │ 552.32 │ 554.52 │ 9.0582e6  │ 0.0        │
+│ 2013-12-31 │ 554.17 │ 561.28 │ 554.0  │ 561.02 │ 7.9673e6  │ 0.0        │
+                                                               5 columns omitted"""
         @test str == out
     end
     show(io, "text/plain", AAPL)
     let str = String(take!(io))
-        out = """8336×12 TimeArray{Float64,2,Date,Array{Float64,2}} 1980-12-12 to 2013-12-31
-│            │ Open   │ High   │ Low    │ Close  │ Volume    │ ExDividend │
+        out = """8336×12 $(disptype(AAPL)) 1980-12-12 to 2013-12-31
+│            │ Open   │ High   │ Low    │ Close  │ Volume    │ ExDividend │⋯
 ├────────────┼────────┼────────┼────────┼────────┼───────────┼────────────┤
 │ 1980-12-12 │ 28.75  │ 28.88  │ 28.75  │ 28.75  │ 2.0939e6  │ 0.0        │
 │ 1980-12-15 │ 27.38  │ 27.38  │ 27.25  │ 27.25  │ 785200.0  │ 0.0        │
-│ 1980-12-16 │ 25.38  │ 25.38  │ 25.25  │ 25.25  │ 472000.0  │ 0.0        │
+│ 1980-12-16 │ 25.38  │ 25.38  │ 25.25  │ 25.25  │ 472000.0  │ 0.0        │⋯
 │ 1980-12-17 │ 25.88  │ 26.0   │ 25.88  │ 25.88  │ 385900.0  │ 0.0        │
 │ 1980-12-18 │ 26.62  │ 26.75  │ 26.62  │ 26.62  │ 327900.0  │ 0.0        │
-│ 1980-12-19 │ 28.25  │ 28.38  │ 28.25  │ 28.25  │ 217100.0  │ 0.0        │
+│ 1980-12-19 │ 28.25  │ 28.38  │ 28.25  │ 28.25  │ 217100.0  │ 0.0        │⋯
 │ 1980-12-22 │ 29.62  │ 29.75  │ 29.62  │ 29.62  │ 166800.0  │ 0.0        │
 │ 1980-12-23 │ 30.88  │ 31.0   │ 30.88  │ 30.88  │ 209600.0  │ 0.0        │
-│ 1980-12-24 │ 32.5   │ 32.62  │ 32.5   │ 32.5   │ 214300.0  │ 0.0        │
-   ⋮
-│ 2013-12-19 │ 549.5  │ 550.0  │ 543.73 │ 544.46 │ 1.14396e7 │ 0.0        │
+│ ⋮          │ ⋮      │ ⋮      │ ⋮      │ ⋮      │ ⋮         │ ⋮          │
 │ 2013-12-20 │ 545.43 │ 551.61 │ 544.82 │ 549.02 │ 1.55862e7 │ 0.0        │
-│ 2013-12-23 │ 568.0  │ 570.72 │ 562.76 │ 570.09 │ 1.79038e7 │ 0.0        │
+│ 2013-12-23 │ 568.0  │ 570.72 │ 562.76 │ 570.09 │ 1.79038e7 │ 0.0        │⋯
 │ 2013-12-24 │ 569.89 │ 571.88 │ 566.03 │ 567.67 │ 5.9841e6  │ 0.0        │
 │ 2013-12-26 │ 568.1  │ 569.5  │ 563.38 │ 563.9  │ 7.286e6   │ 0.0        │
-│ 2013-12-27 │ 563.82 │ 564.41 │ 559.5  │ 560.09 │ 8.0673e6  │ 0.0        │
+│ 2013-12-27 │ 563.82 │ 564.41 │ 559.5  │ 560.09 │ 8.0673e6  │ 0.0        │⋯
 │ 2013-12-30 │ 557.46 │ 560.09 │ 552.32 │ 554.52 │ 9.0582e6  │ 0.0        │
 │ 2013-12-31 │ 554.17 │ 561.28 │ 554.0  │ 561.02 │ 7.9673e6  │ 0.0        │
 
@@ -579,9 +615,7 @@ end
 │ 1980-12-19 │ 1.0        │ 3.3179   │ 3.3331   │ 3.3179   │ 3.3179   │
 │ 1980-12-22 │ 1.0        │ 3.4788   │ 3.494    │ 3.4788   │ 3.4788   │
 │ 1980-12-23 │ 1.0        │ 3.6267   │ 3.6408   │ 3.6267   │ 3.6267   │
-│ 1980-12-24 │ 1.0        │ 3.817    │ 3.8311   │ 3.817    │ 3.817    │
-   ⋮
-│ 2013-12-19 │ 1.0        │ 546.2492 │ 546.7463 │ 540.5133 │ 541.239  │
+│ ⋮          │ ⋮          │ ⋮        │ ⋮        │ ⋮        │ ⋮        │
 │ 2013-12-20 │ 1.0        │ 542.2033 │ 548.3467 │ 541.5969 │ 545.7721 │
 │ 2013-12-23 │ 1.0        │ 564.6398 │ 567.3437 │ 559.4308 │ 566.7174 │
 │ 2013-12-24 │ 1.0        │ 566.5186 │ 568.4968 │ 562.6814 │ 564.3117 │
@@ -592,13 +626,13 @@ end
         @test str == out
     end
 
-    let str = sprint(show, ohlc[1:4])
-        out = "4×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-06"
+    let str = sprint(summary, ohlc[1:4])
+        out = "4×4 $(disptype(ohlc[1:4])) 2000-01-03 to 2000-01-06"
         @test str == out
     end
     show(io, "text/plain", ohlc[1:4])
     let str = String(take!(io))
-        out = """4×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-06
+        out = """4×4 $(disptype(ohlc[1:4])) 2000-01-03 to 2000-01-06
 │            │ Open   │ High   │ Low    │ Close  │
 ├────────────┼────────┼────────┼────────┼────────┤
 │ 2000-01-03 │ 104.88 │ 112.5  │ 101.69 │ 111.94 │
@@ -610,29 +644,32 @@ end
 
 
     let str = sprint(show, ohlc[1:0])
-        @test str == "0×4 TimeArray{Float64,2,Date,Array{Float64,2}}"
+        @test str == "0×4 $(disptype(ohlc[1:0]))"
+    end
+    let str = sprint(summary, ohlc[1:0])
+        @test str == "0×4 $(disptype(ohlc[1:0]))"
     end
     show(io, "text/plain", ohlc[1:0])
     let str = String(take!(io))
-        @test str == "0×4 TimeArray{Float64,2,Date,Array{Float64,2}}"
+        @test str == "0×4 $(disptype(ohlc[1:0]))"
     end
 
 
     let str = sprint(show, TimeArray(Date[], []))
-        @test str == "0×1 TimeArray{Any,1,Date,Array{Any,1}}"
+        @test str == "0×1 $(disptype(TimeArray(Date[], [])))"
     end
     show(io, "text/plain", TimeArray(Date[], []))
     let str = String(take!(io))
-        @test str == "0×1 TimeArray{Any,1,Date,Array{Any,1}}"
+        @test str == "0×1 $(disptype(TimeArray(Date[], [])))"
     end
 
-    let str = sprint(show, lag(cl[1:2], padding=true))
-        out = "2×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-04"
+    let str = sprint(summary, lag(cl[1:2], padding=true))
+        out = "2×1 $(disptype(lag(cl[1:2], padding=true))) 2000-01-03 to 2000-01-04"
         @test str == out
     end
     show(io, "text/plain", lag(cl[1:2], padding=true))
     let str = String(take!(io))
-        out = """2×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-04
+        out = """2×1 $(disptype(lag(cl[1:2], padding=true))) 2000-01-03 to 2000-01-04
 │            │ Close  │
 ├────────────┼────────┤
 │ 2000-01-03 │ NaN    │
