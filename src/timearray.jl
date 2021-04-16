@@ -262,11 +262,11 @@ function print_time_array(io::IO, ta::TimeArray{T}, short=false, allcols=false) 
     pages = _showpages(dcol, spacetime, colwidth)
 
     # print all columns?
-    if allcols 
+    if allcols
         for p in pages
             islastpage = p == last(pages)
-            _print_page(io, p, ta, 
-                spacetime, colwidth, nrow, drow, res_row, tophalf, bothalf, 
+            _print_page(io, p, ta,
+                spacetime, colwidth, nrow, drow, res_row, tophalf, bothalf,
                 islastpage ? 1 : 2)
             if length(pages) > 1 && !islastpage
                 print(io,"\n\n")
@@ -274,10 +274,10 @@ function print_time_array(io::IO, ta::TimeArray{T}, short=false, allcols=false) 
         end
     else
         # print first page and omitted columns message
-        _print_page(io, pages[1], ta, 
-            spacetime, colwidth, nrow, drow, res_row, tophalf, bothalf, 
+        _print_page(io, pages[1], ta,
+            spacetime, colwidth, nrow, drow, res_row, tophalf, bothalf,
             length(pages))
-        
+
         if length(pages) > 1
             pndtcols = last(last(pages)) - first(pages[2]) + 1
             println(io)
@@ -291,9 +291,9 @@ end
 
 Helper function to print a single page of the `TimeArray`
 """
-function _print_page(io::IO, p::UnitRange{Int}, ta::TimeArray, spacetime, 
-    colwidth, nrow, drow, res_row, tophalf, bothalf, pages) 
-    
+function _print_page(io::IO, p::UnitRange{Int}, ta::TimeArray, spacetime,
+    colwidth, nrow, drow, res_row, tophalf, bothalf, pages)
+
     strs = _showval.(values(ta))
     ts = timestamp(ta)
     last = pages > 1 ? "│\u22EF" : "│"
@@ -315,7 +315,7 @@ function _print_page(io::IO, p::UnitRange{Int}, ta::TimeArray, spacetime,
 
     # timestamp and values line
     if nrow > (drow - res_row)
-        
+
         # print bottom part
         for i in tophalf
             println(io)
@@ -361,9 +361,9 @@ end
 
 Base.summary(io::IO, ta::TimeArray) = print_time_array(io, ta, true)
 
-Base.show(io::IO, ta::TimeArray) = 
+Base.show(io::IO, ta::TimeArray) =
     print_time_array(io, ta, false, get(io, :limit, true))
-Base.show(io::IO, ::MIME"text/plain", ta::TimeArray) = 
+Base.show(io::IO, ::MIME"text/plain", ta::TimeArray) =
     print_time_array(io, ta, false, !get(io, :limit, false))
 
 
