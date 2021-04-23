@@ -83,7 +83,7 @@ end
         throw(ArgumentError(":seriescolor should be a Vector{Symbol} of two elements."))
     end
 
-    xseg, yseg = Float64[], Float64[]
+    xseg, yseg = Vector{Float64}[], Vector{Float64}[]
     xcenter, ycenter = Float64[], Float64[]
 
     idx  = 1:length(cs.time)
@@ -95,7 +95,7 @@ end
     for (i, o, h, l, c) ∈ zip(idx, cs.open, cs.high, cs.low, cs.close)
         x₁, x₂ = i - tick + margin, i - margin
         x̄ = i - tick / 2
-        append!(xseg, [
+        push!(xseg, [
             x̄,
             x̄,
             x₁,
@@ -106,11 +106,10 @@ end
             x₂,
             x₂,
             x̄,
-            NaN
         ])
 
         y₁, y₂ = min(o, c), max(o, c)
-        append!(yseg, [
+        push!(yseg, [
             l,
             y₁,
             y₁,
@@ -121,7 +120,6 @@ end
             y₂,
             y₁,
             y₁,
-            NaN
         ])
 
         push!(colors, ifelse(o ≤ c, cols[1], cols[2]))
@@ -145,10 +143,12 @@ end
     get!(extract_plot_kwargs, :hovermode, :x)
     get!(extract_plot_kwargs, :hoverdistance, 5)
 
+    colors′ = reshape(colors, 1, :)
+
     @series begin
         seriestype  := :shape
-        seriescolor := colors
-        linecolor  --> colors
+        seriescolor := colors′
+        linecolor  --> colors′
         xseg, yseg
     end
 
