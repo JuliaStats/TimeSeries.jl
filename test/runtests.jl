@@ -14,6 +14,7 @@ tests = [
     "tables",
     "plotrecipes",
     "timeaxis/timegrid",
+    "timetable",
 ]
 
 

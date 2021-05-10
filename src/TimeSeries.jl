@@ -5,7 +5,9 @@ using Dates
 using DelimitedFiles
 using Statistics
 # third-party
+using DataStructures
 using DocStringExtensions: SIGNATURES
+using PaddedViews
 using RecipesBase
 using Reexport
 using Tables
@@ -21,6 +23,9 @@ export TimeArray, AbstractTimeSeries,
 # modify.jl
 export rename, rename!
 
+# timetable.jl
+export TimeTable
+
 ###############################################################################
 #  Submodule
 ###############################################################################
@@ -33,7 +38,9 @@ include("timeaxis/TimeAxis.jl")
 ###############################################################################
 
 include(".timeseriesrc.jl")
+include("ats.jl")
 include("timearray.jl")
+include("timetable.jl")
 include("utilities.jl")
 include("tables.jl")
 include("split.jl")
