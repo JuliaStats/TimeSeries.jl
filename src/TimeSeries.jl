@@ -21,9 +21,16 @@ export TimeArray, AbstractTimeSeries,
 # modify.jl
 export rename, rename!
 
-@reexport using Dates
+###############################################################################
+#  Submodule
+###############################################################################
 
-###### include ##################
+include("timeaxis/TimeAxis.jl")
+@reexport using .TimeAxis
+
+###############################################################################
+#  include
+###############################################################################
 
 include(".timeseriesrc.jl")
 include("timearray.jl")
@@ -38,5 +45,11 @@ include("modify.jl")
 include("basemisc.jl")
 include("deprecated.jl")
 include("plotrecipes.jl")
+
+###############################################################################
+#  reexport
+###############################################################################
+
+@reexport using Dates
 
 end  # module TimeSeries
