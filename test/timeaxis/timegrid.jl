@@ -418,5 +418,89 @@ end
     end
 end
 
+@testset "isempty" begin
+    tg = TimeGrid(DateTime(2021), Hour(1), 1)
+    @test !isempty(tg)
+    tg.n = 0
+    @test isempty(tg)
+    tg = TimeGrid(DateTime(2021), Hour(1), 0)
+    @test isempty(tg)
+    tg = TimeGrid(DateTime(2021), Hour(1))
+    @test !isempty(tg)
+end
+
+@testset "intersect" begin
+    tg_inf1 = TimeGrid(DateTime(2021, 1, 1, 2), Minute(15))
+    tg_inf2 = TimeGrid(DateTime(2021, 1, 1, 3), Minute(15))
+    tg_fin1 = TimeGrid(DateTime(2021, 1, 1, 3), Minute(15), 10)
+    tg_fin2 = TimeGrid(DateTime(2021, 1, 1, 2), Minute(15), 10)
+    tg_fin3 = TimeGrid(DateTime(2000, 1, 1, 3), Minute(15), 10)
+    
+    # infinite with infinite
+    tg = intersect(tg_inf1, tg_inf2)
+    @test tg.o == tg_inf2.o
+    @test !isempty(tg)
+    @test !isfinite(tg)
+
+    # infinite with finite
+    tg = intersect(tg_inf1, tg_fin1)
+    @test tg == tg_fin1
+    @test !isempty(tg)
+    @test isfinite(tg)
+
+    tg = intersect(tg_fin1, tg_inf1)
+    @test tg == tg_fin1
+    @test !isempty(tg)
+    @test isfinite(tg)
+
+    tg = intersect(tg_inf2, tg_fin2)
+    @test tg.o == tg_inf2.o
+    @test tg[end] == tg_fin2[end]
+    @test !isempty(tg)
+    @test isfinite(tg)
+
+    tg = intersect(tg_inf2, tg_fin3)
+    @test isempty(tg)
+    @test isfinite(tg)
+
+    # finite with finite
+    tg = intersect(tg_fin1, tg_fin2)
+    @test tg.o == tg_fin1.o
+    @test tg[end] == tg_fin2[end]
+    @test !isempty(tg)
+    @test isfinite(tg)
+
+    tg = intersect(tg_fin2, tg_fin1)
+    @test tg.o == tg_fin1.o
+    @test tg[end] == tg_fin2[end]
+    @test !isempty(tg)
+    @test isfinite(tg)
+
+    tg = intersect(tg_fin2, tg_fin3)
+    @test isempty(tg)
+    @test isfinite(tg)
+
+    tg = intersect(tg_fin3, tg_fin2)
+    @test isempty(tg)
+    @test isfinite(tg)
+
+    # multiple time grids
+    tg = intersect(tg_fin1, tg_fin2, tg_inf1, tg_inf2)
+    @test tg.o == tg_fin1.o
+    @test tg[end] == tg_fin2[end]
+    @test !isempty(tg)
+    @test isfinite(tg)
+
+    tg = intersect(tg_inf1, tg_fin2, tg_fin1, tg_inf2)
+    @test tg.o == tg_fin1.o
+    @test tg[end] == tg_fin2[end]
+    @test !isempty(tg)
+    @test isfinite(tg)
+
+    tg = intersect(tg_inf1, tg_fin2, tg_fin1, tg_inf2, tg_fin3)
+    @test isempty(tg)
+    @test isfinite(tg)
+end
+
 
 end  # @testset "TimeGrid"

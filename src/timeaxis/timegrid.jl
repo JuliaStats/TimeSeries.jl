@@ -12,7 +12,7 @@ mutable struct TimeGrid{T,P,L} <: AbstractTimeAxis{T}
         n′ = convert(Int, n)
         p′ = convert(P, p)
 
-        (n′ < 1) && throw(DomainError(n′))
+        (n′ < 0) && throw(DomainError(n′))
         new(o′, p′, n′)
     end
 
@@ -58,21 +58,34 @@ Base.eltype(::Type{<:TimeGrid{T}}) where T = T
 Base.length(tg::TimeGrid{T,P,:finite}) where {T,P} = tg.n
 Base.size(tg::TimeGrid{T,P,:finite}) where{T,P}    = tg.n
 
+###############################################################################
+#  Empty TimeGrid
+###############################################################################
+Base.isempty(tg::TimeGrid{T,P,:finite}) where {T,P} = iszero(tg.n)
+Base.isempty(tg::TimeGrid{T,P,:infinite}) where {T,P} = false
+Base.isfinite(tg::TimeGrid{T,P,:finite}) where {T,P} = true
+Base.isfinite(tg::TimeGrid{T,P,:infinite}) where {T,P} = false
 
 ###############################################################################
 #  Printing
 ###############################################################################
 
-Base.show(io::IO, tg::TimeGrid{T,P,:finite}) where {T,P} =
-    print(io, "$(tg.o) … $(tg[end]) / $(tg.p) ")
+function Base.show(io::IO, tg::TimeGrid{T,P,:finite}) where {T,P}
+    summary(io, tg)
+    if !isempty(tg)
+        print(io, "$(tg.o) … $(tg[end]) / $(tg.p) ")
+    end
+end
 
 function Base.show(io::IO, ::MIME{Symbol("text/plain")}, tg::TimeGrid{T,P,:finite}) where {T,P}
     summary(io, tg)
-    println(io, ":")
-    print(io, " $(tg.o)\n",
-              "  ⋮\n",
-              " $(tg[end])\n",
-              " / $(tg.p)")
+    if !isempty(tg)
+        println(io, ":")
+        print(io, " $(tg.o)\n",
+                "  ⋮\n",
+                " $(tg[end])\n",
+                " / $(tg.p)")
+    end
 end
 
 Base.summary(io::IO, tg::TimeGrid{T,P,:infinite}) where {T,P} =
@@ -287,6 +300,45 @@ Base.resize!(tg::TimeGrid{T,P,:infinite}, n::Int) where {T,P} = tg
 
 Base.diff(tg::TimeGrid{T,P,:finite}) where {T,P} = fill(tg.p, tg.n - 1)
 
+###############################################################################
+#  Intersect
+###############################################################################
+function Base.intersect(tg1::TimeGrid, tgs...)
+    for tg in tgs
+        tg1 = intersect(tg1, tg)
+    end
+    return tg1
+end
+# TODO 
+# Consider checking if they are equal
+function intersect(tg_inf::TimeGrid{T,P,:infinite}, 
+                   tg_fin::TimeGrid{T,P,:finite})::TimeGrid{T,P,:finite} where {T,P}
+    @assert tg_fin.p == tg_inf.p
+    if tg_fin[end] < tg_inf.o
+        return TimeGrid(tg_fin.o, tg_fin.p, 0)
+    end
+    new_o = max(tg_fin.o, tg_inf.o)
+    new_n = tg_inf.o > tg_fin.o ? findfirst(isequal(tg_fin[end]), tg_inf) : 
+                                  findfirst(isequal(tg_fin[end]), tg_fin)
+    return TimeGrid(new_o, tg_fin.p, new_n)
+end
+intersect(tg_fin::TimeGrid{T,P,:finite}, tg_inf::TimeGrid{T,P,:infinite}) where {T,P} = intersect(tg_inf, tg_fin)
+function intersect(tg_inf1::TimeGrid{T,P,:infinite}, tg_inf2::TimeGrid{T,P,:infinite}) where {T,P}
+    @assert tg_inf1.p == tg_inf2.p
+    new_o = max(tg_inf1.o, tg_inf2.o)
+    return TimeGrid(new_o, tg_inf1.p)
+end
+function intersect(tg_fin1::TimeGrid{T,P,:finite}, tg_fin2::TimeGrid{T,P,:finite}) where {T,P}
+    @assert tg_fin1.p == tg_fin2.p
+    if (tg_fin2[end] < tg_fin1.o) || (tg_fin1[end] < tg_fin2.o)
+        return TimeGrid(tg_fin1.o, tg_fin1.p, 0)
+    end
+    new_o = max(tg_fin1.o, tg_fin2.o)
+    last_idx = min(tg_fin1[end], tg_fin2[end])
+    new_n = tg_fin1.o > tg_fin2.o ? findfirst(isequal(last_idx), tg_fin1) : 
+                                    findfirst(isequal(last_idx), tg_fin2)
+    return TimeGrid(new_o, tg_fin1.p, new_n)
+end
 
 ###############################################################################
 #  Private utils
