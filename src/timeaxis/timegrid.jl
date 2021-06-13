@@ -198,6 +198,29 @@ end
 Base.findprev(f::GreaterOrGreaterEq, tg::TimeGrid, i) = ifelse(f(tg[i]), i, nothing)
 
 # TODO: find function with NNS
+function Base.findprev(nn::NearestNeighbors{D}, tg::TimeGrid, i) where D
+    t = nn.c
+    r = nn.r
+
+    Δ = periodnano(t - tg[1])
+    p = periodnano(tg)
+    n = Δ ÷ p
+
+    # TODO: benchmark on plain `if` and @generated function
+    if D ≡ :both
+        m = min(n + 1, i)
+        d, x = findmin((tg[m] - t, t - tg[n]))  # note that if the same, `m` will win
+        d > r && return nothing
+        ifelse(isone(x), m, n)
+    elseif D ≡ :forward
+        m = min(n + !iszero(Δ % p), i)
+        ifelse(tg[m] ≤ r, m, nothing)
+    elseif D ≡ :backward
+        m = min(n, i)
+        ifelse(tg[m] ≤ r, m, nothing)
+    end
+end
+
 # TODO: support find*(in(::Interval), tg)
 
 
@@ -256,7 +279,8 @@ Base.foldl(f, tg::TimeGrid{T,P,:infinite}; kw...) where {T,P} =
     throw(BoundsError("foldl", Inf))
 Base.foldr(f, tg::TimeGrid{T,P,:infinite}; kw...) where {T,P} =
     throw(BoundsError("foldr", Inf))
-resample(tg::TimeGrid, i::Real) = TimeGrid(tg, p = Nanosecond(tg.p) * i)
+
+resample(tg::TimeGrid, i::Real)   = TimeGrid(tg, p = Nanosecond(tg.p) * i)
 resample(tg::TimeGrid, p::Period) = TimeGrid(tg, p = p)
 
 
@@ -302,7 +326,8 @@ checkbounds(tg::TimeGrid, i::Real) =
 checkbounds(tg::TimeGrid, i::TimeType) =
     (isinbounds(tg, i) || throw(KeyError(i)); nothing)
 
-periodnano(t::Period)    = Dates.value(Nanosecond(t))
+# FIXME: handle the cases Nanosecond got overflowed?
+periodnano(p::Period)    = Dates.value(Nanosecond(p))
 periodnano(tg::TimeGrid) = periodnano(tg.p)
 
 function time2idx(tg::TimeGrid, t)
