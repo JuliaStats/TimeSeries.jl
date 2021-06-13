@@ -71,21 +71,20 @@ Base.isfinite(tg::TimeGrid{T,P,:infinite}) where {T,P} = false
 ###############################################################################
 
 function Base.show(io::IO, tg::TimeGrid{T,P,:finite}) where {T,P}
-    summary(io, tg)
-    if !isempty(tg)
-        print(io, "$(tg.o) … $(tg[end]) / $(tg.p) ")
-    end
+    isempty(tg) && return
+    print(io, "$(tg.o) … $(tg[end]) / $(tg.p) ")
+    return
 end
 
 function Base.show(io::IO, ::MIME{Symbol("text/plain")}, tg::TimeGrid{T,P,:finite}) where {T,P}
     summary(io, tg)
-    if !isempty(tg)
-        println(io, ":")
-        print(io, " $(tg.o)\n",
-                "  ⋮\n",
-                " $(tg[end])\n",
-                " / $(tg.p)")
-    end
+    isempty(tg) && return
+    println(io, ":")
+    print(io, " $(tg.o)\n",
+            "  ⋮\n",
+            " $(tg[end])\n",
+            " / $(tg.p)")
+    return
 end
 
 Base.summary(io::IO, tg::TimeGrid{T,P,:infinite}) where {T,P} =
@@ -313,7 +312,7 @@ end
 # Consider checking if they are equal
 function intersect(tg_inf::TimeGrid{T,P,:infinite}, 
                    tg_fin::TimeGrid{T,P,:finite})::TimeGrid{T,P,:finite} where {T,P}
-    @assert tg_fin.p == tg_inf.p
+    @assert tg_fin.p % tg_inf.p
     if tg_fin[end] < tg_inf.o
         return TimeGrid(tg_fin.o, tg_fin.p, 0)
     end
