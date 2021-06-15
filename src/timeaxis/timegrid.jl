@@ -70,11 +70,8 @@ Base.isfinite(tg::TimeGrid{T,P,:infinite}) where {T,P} = false
 #  Printing
 ###############################################################################
 
-function Base.show(io::IO, tg::TimeGrid{T,P,:finite}) where {T,P}
-    isempty(tg) && return
-    print(io, "$(tg.o) … $(tg[end]) / $(tg.p) ")
-    return
-end
+Base.show(io::IO, tg::TimeGrid{T,P,:finite}) where {T,P} = 
+    isempty(tg) ? print(io, "(empty)") : print(io, "$(tg.o) … $(tg[end]) / $(tg.p)")
 
 function Base.show(io::IO, ::MIME{Symbol("text/plain")}, tg::TimeGrid{T,P,:finite}) where {T,P}
     summary(io, tg)
