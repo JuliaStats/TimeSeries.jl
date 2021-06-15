@@ -329,7 +329,7 @@ end
 function intersect(tg_fin1::TimeGrid{T,P,:finite}, tg_fin2::TimeGrid{T,P,:finite}) where {T,P}
     @assert tg_fin1.p == tg_fin2.p
     if (tg_fin2[end] < tg_fin1.o) || (tg_fin1[end] < tg_fin2.o)
-        return TimeGrid(tg_fin1.o, tg_fin1.p, 0)
+        return TimeGrid(tg_fin1, n = 0)
     end
     new_o = max(tg_fin1.o, tg_fin2.o)
     last_idx = min(tg_fin1[end], tg_fin2[end])
