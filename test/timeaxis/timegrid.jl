@@ -430,17 +430,27 @@ end
 end
 
 @testset "intersect" begin
+    using TimeSeries
+    using Test
     tg_inf1 = TimeGrid(DateTime(2021, 1, 1, 2), Minute(15))
     tg_inf2 = TimeGrid(DateTime(2021, 1, 1, 3), Minute(15))
+    tg_inf3 = TimeGrid(DateTime(2021, 1, 1, 0), Hour(1))
+    tg_inf4 = TimeGrid(DateTime(2021, 1, 1, 0, 30), Hour(1))
     tg_fin1 = TimeGrid(DateTime(2021, 1, 1, 3), Minute(15), 10)
     tg_fin2 = TimeGrid(DateTime(2021, 1, 1, 2), Minute(15), 10)
     tg_fin3 = TimeGrid(DateTime(2000, 1, 1, 3), Minute(15), 10)
+    tg_fin4 = TimeGrid(DateTime(2021, 1, 1, 0), Hour(1), 24)
+    tg_fin5 = TimeGrid(DateTime(2021, 1, 1, 0, 30), Hour(1), 24)
     
     # infinite with infinite
     tg = intersect(tg_inf1, tg_inf2)
     @test tg.o == tg_inf2.o
     @test !isempty(tg)
     @test !isfinite(tg)
+
+    tg = intersect(tg_inf3, tg_inf4)
+    @test isempty(tg)
+    @test isfinite(tg)
 
     # infinite with finite
     tg = intersect(tg_inf1, tg_fin1)
@@ -460,6 +470,12 @@ end
     @test isfinite(tg)
 
     tg = intersect(tg_inf2, tg_fin3)
+    @test isempty(tg)
+    @test isfinite(tg)
+
+    @test_throws MethodError intersect(tg_inf2, tg_fin5)
+
+    tg = intersect(tg_inf3, tg_fin5)
     @test isempty(tg)
     @test isfinite(tg)
 
@@ -484,6 +500,10 @@ end
     @test isempty(tg)
     @test isfinite(tg)
 
+    tg = intersect(tg_fin4, tg_fin5)
+    @test isempty(tg)
+    @test isfinite(tg)
+
     # multiple time grids
     tg = intersect(tg_fin1, tg_fin2, tg_inf1, tg_inf2)
     @test tg.o == tg_fin1.o
@@ -500,6 +520,8 @@ end
     tg = intersect(tg_inf1, tg_fin2, tg_fin1, tg_inf2, tg_fin3)
     @test isempty(tg)
     @test isfinite(tg)
+
+    @test_throws MethodError intersect(tg_inf1, tg_fin2, tg_fin1, tg_inf2, tg_fin3, tg_fin5)
 end
 
 

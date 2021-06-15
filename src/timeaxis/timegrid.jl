@@ -311,31 +311,48 @@ end
 # Consider checking if they are equal
 function intersect(tg_inf::TimeGrid{T,P,:infinite}, 
                    tg_fin::TimeGrid{T,P,:finite})::TimeGrid{T,P,:finite} where {T,P}
-    @assert tg_fin.p % tg_inf.p
-    if tg_fin[end] < tg_inf.o
-        return TimeGrid(tg_fin.o, tg_fin.p, 0)
+    if !assert_intersection_non_empty(tg_fin, tg_inf) 
+        return TimeGrid(tg_fin; n = 0)
     end
     new_o = max(tg_fin.o, tg_inf.o)
-    new_n = tg_inf.o > tg_fin.o ? findfirst(isequal(tg_fin[end]), tg_inf) : 
-                                  findfirst(isequal(tg_fin[end]), tg_fin)
+    new_n = tg_inf.o > tg_fin.o ? findfirst(isequal(tg_fin[end]), tg_inf) : tg_fin.n
     return TimeGrid(new_o, tg_fin.p, new_n)
 end
 intersect(tg_fin::TimeGrid{T,P,:finite}, tg_inf::TimeGrid{T,P,:infinite}) where {T,P} = intersect(tg_inf, tg_fin)
 function intersect(tg_inf1::TimeGrid{T,P,:infinite}, tg_inf2::TimeGrid{T,P,:infinite}) where {T,P}
-    @assert tg_inf1.p == tg_inf2.p
+    if !assert_intersection_non_empty(tg_inf1, tg_inf2) 
+        return TimeGrid(tg_inf1.o, tg_inf1.p, 0)
+    end
     new_o = max(tg_inf1.o, tg_inf2.o)
     return TimeGrid(new_o, tg_inf1.p)
 end
 function intersect(tg_fin1::TimeGrid{T,P,:finite}, tg_fin2::TimeGrid{T,P,:finite}) where {T,P}
-    @assert tg_fin1.p == tg_fin2.p
-    if (tg_fin2[end] < tg_fin1.o) || (tg_fin1[end] < tg_fin2.o)
-        return TimeGrid(tg_fin1, n = 0)
+    if !assert_intersection_non_empty(tg_fin1, tg_fin2) 
+        return TimeGrid(tg_fin1; n = 0)
     end
     new_o = max(tg_fin1.o, tg_fin2.o)
     last_idx = min(tg_fin1[end], tg_fin2[end])
     new_n = tg_fin1.o > tg_fin2.o ? findfirst(isequal(last_idx), tg_fin1) : 
                                     findfirst(isequal(last_idx), tg_fin2)
     return TimeGrid(new_o, tg_fin1.p, new_n)
+end
+
+function assert_intersection_non_empty(tg1::TimeGrid, tg2::TimeGrid)
+    if (tg1[end] < tg2.o) || (tg2[end] < tg1.o)
+        return false
+    end
+    if tg1.o > tg2.o
+        idx = findfirst(isequal(tg1.o), tg2)
+        if isnothing(idx)
+            return false
+        end
+    else
+        idx = findfirst(isequal(tg2.o), tg1)
+        if isnothing(idx)
+            return false
+        end
+    end
+    return true
 end
 
 ###############################################################################
