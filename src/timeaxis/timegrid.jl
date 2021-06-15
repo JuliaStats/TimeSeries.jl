@@ -61,9 +61,11 @@ Base.size(tg::TimeGrid{T,P,:finite}) where{T,P}    = tg.n
 ###############################################################################
 #  Empty TimeGrid
 ###############################################################################
-Base.isempty(tg::TimeGrid{T,P,:finite}) where {T,P} = iszero(tg.n)
+
+Base.isempty(tg::TimeGrid{T,P,:finite}) where {T,P}   = iszero(tg.n)
 Base.isempty(tg::TimeGrid{T,P,:infinite}) where {T,P} = false
-Base.isfinite(tg::TimeGrid{T,P,:finite}) where {T,P} = true
+
+Base.isfinite(tg::TimeGrid{T,P,:finite}) where {T,P}   = true
 Base.isfinite(tg::TimeGrid{T,P,:infinite}) where {T,P} = false
 
 ###############################################################################
