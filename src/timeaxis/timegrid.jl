@@ -90,8 +90,10 @@ end
 ###############################################################################
 
 # note that Base.size is undefined for this infinite case
+Base.lastindex(tg::TimeGrid{T,<:Period,:infinite}) where T =
+    (typemax(T) - tg.o) ÷ Millisecond(tg.p) + 1
 Base.lastindex(tg::TimeGrid{T,P,:infinite}) where {T,P} =
-    (typemax(DateTime) - tg.o) ÷ Millisecond(tg.p) + 1
+    (typemax(T) - tg.o) ÷ tg.p + 1
 
 @inline function Base.getindex(tg::TimeGrid, i::Real)  # FIXME: is rounding acceptable?
     @boundscheck checkbounds(tg, i)
@@ -204,20 +206,21 @@ function Base.findprev(nn::NearestNeighbors{D}, tg::TimeGrid, i) where D
 
     Δ = periodnano(t - tg[1])
     p = periodnano(tg)
-    n = Δ ÷ p
+    n = min(Δ ÷ p + 1, i)
 
     # TODO: benchmark on plain `if` and @generated function
     if D ≡ :both
         m = min(n + 1, i)
-        d, x = findmin((tg[m] - t, t - tg[n]))  # note that if the same, `m` will win
+        # note that if the same, `m` will win
+        d, x = findmin((abs(tg[m] - t), abs(t - tg[n])))
         d > r && return nothing
         ifelse(isone(x), m, n)
     elseif D ≡ :forward
         m = min(n + !iszero(Δ % p), i)
-        ifelse(tg[m] ≤ r, m, nothing)
+        ifelse(zero(tg.p) ≤ tg[m] - t ≤ r, m, nothing)
     elseif D ≡ :backward
         m = min(n, i)
-        ifelse(tg[m] ≤ r, m, nothing)
+        ifelse(zero(tg.p) ≤ t - tg[m] ≤ r, m, nothing)
     end
 end
 

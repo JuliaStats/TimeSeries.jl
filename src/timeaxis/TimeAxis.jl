@@ -10,6 +10,7 @@ using IntervalSets
 export AbstractTimeAxis
 export TimeGrid
 export resample
+export nns
 
 ###############################################################################
 #  include
