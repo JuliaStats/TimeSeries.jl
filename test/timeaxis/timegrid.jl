@@ -166,6 +166,18 @@ end   # @testset "getindex"
         @test findprev(nn, tg, 3) == 3
         @test findprev(nn, tg, 2) == nothing
 
+        nn = nns(c = DateTime(2020, 12, 31, 23, 48), radius = Minute(15), direction = :both)
+        @test findprev(nn, tg, 10) == 1
+        @test findprev(nn, tg, 1)  == 1
+
+        nn = nns(c = DateTime(2020, 12, 31, 23, 45), radius = Minute(15), direction = :both)
+        @test findprev(nn, tg, 10) == 1
+        @test findprev(nn, tg, 1)  == 1
+
+        nn = nns(c = DateTime(2021, 1, 1, 2, 30), radius = Minute(15), direction = :both)
+        @test findprev(nn, tg, 10) == 10
+        @test findprev(nn, tg, 9)  == nothing
+
         @info "findprev :: $(typeof(tg)) :: f -> nns :: d -> :forward"
 
         nn = nns(c = DateTime(2021, 1, 1, 0, 33), radius = Minute(15), direction = :forward)
@@ -198,6 +210,17 @@ end   # @testset "getindex"
         @test findprev(nn, tg, 3) == 3
         @test findprev(nn, tg, 2) == nothing
 
+        nn = nns(c = DateTime(2020, 12, 31, 23, 48), radius = Minute(15), direction = :forward)
+        @test findprev(nn, tg, 10) == 1
+        @test findprev(nn, tg, 1)  == 1
+
+        nn = nns(c = DateTime(2020, 12, 31, 23, 45), radius = Minute(15), direction = :forward)
+        @test findprev(nn, tg, 10) == 1
+        @test findprev(nn, tg, 1)  == 1
+
+        nn = nns(c = DateTime(2021, 1, 1, 2, 30), radius = Minute(15), direction = :forward)
+        @test findprev(nn, tg, 10) == nothing
+
         @info "findprev :: $(typeof(tg)) :: f -> nns :: d -> :backward"
 
         nn = nns(c = DateTime(2021, 1, 1, 0, 33), radius = Minute(15), direction = :backward)
@@ -228,9 +251,26 @@ end   # @testset "getindex"
 
         nn = nns(c = DateTime(2021, 1, 1, 0, 30), radius = Minute(0), direction = :backward)
         @test findprev(nn, tg, 10) == 3
-        @test findprev(nn, tg, 3) == 3
-        @test findprev(nn, tg, 2) == nothing
-    end
+        @test findprev(nn, tg, 3)  == 3
+        @test findprev(nn, tg, 2)  == nothing
+
+        nn = nns(c = DateTime(2020, 12, 31, 23, 48), radius = Minute(15), direction = :backward)
+        @test findprev(nn, tg, 1)  == nothing
+
+        nn = nns(c = DateTime(2020, 12, 31, 23, 45), radius = Minute(15), direction = :backward)
+        @test findprev(nn, tg, 1)  == nothing
+
+        nn = nns(c = DateTime(2021, 1, 1, 2, 30), radius = Minute(15), direction = :backward)
+        @test findprev(nn, tg, 10) == 10
+        @test findprev(nn, tg, 9)  == nothing
+
+        nn = nns(c = DateTime(2021, 1, 1, 2, 27), radius = Minute(15), direction = :backward)
+        @test findprev(nn, tg, 10) == 10
+        @test findprev(nn, tg, 9)  == nothing
+
+        nn = nns(c = DateTime(2021, 1, 1, 2, 33), radius = Minute(15), direction = :backward)
+        @test findprev(nn, tg, 10) == nothing
+    end  # function test_findprev
 
     @testset "findprev finite" begin
         tg = TimeGrid(DateTime(2021, 1, 1), Minute(15), 10)

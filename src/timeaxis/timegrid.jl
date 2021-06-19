@@ -206,7 +206,7 @@ function Base.findprev(nn::NearestNeighbors{D}, tg::TimeGrid, i) where D
 
     Δ = periodnano(t - tg[1])
     p = periodnano(tg)
-    n = min(Δ ÷ p + 1, i)
+    n = clamp(Δ ÷ p + 1, 1, i)
 
     # TODO: benchmark on plain `if` and @generated function
     if D ≡ :both
@@ -216,7 +216,7 @@ function Base.findprev(nn::NearestNeighbors{D}, tg::TimeGrid, i) where D
         d > r && return nothing
         ifelse(isone(x), m, n)
     elseif D ≡ :forward
-        m = min(n + !iszero(Δ % p), i)
+        m = min(n + (Δ % p > 0), i)
         ifelse(zero(tg.p) ≤ tg[m] - t ≤ r, m, nothing)
     elseif D ≡ :backward
         m = min(n, i)
