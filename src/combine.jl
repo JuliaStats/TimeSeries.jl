@@ -122,8 +122,8 @@ for (F, T, P) ∈ ((:quarter,     :TimeType,               :Quarter),
     @eval let
         global collapse
         wrapper(x::$T) = floor(x, $P(1))
-        collapse(ta::TimeArray, ::typeof($F), timestamp::Function; kw...) =
-            collapse(ta, wrapper, timestamp; kw...)
+        collapse(ta::TimeArray, ::typeof($F), f::Function, g::Function = f; kw...) =
+            collapse(ta, wrapper, f, g; kw...)
     end
 end
 
