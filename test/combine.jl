@@ -32,6 +32,92 @@ end
 
         @test values(collapse(ohlc, month, first))[2, :] == [104.0, 105.0, 100.0, 100.25]
         @test timestamp(collapse(ohlc, month, first))[2] == Date(2000,2,1)
+
+        # https://github.com/JuliaStats/TimeSeries.jl/issues/498
+        let  # quarter
+            ts = [
+                Date(2018, 1, 2),
+                Date(2018, 1, 3),
+                Date(2019, 1, 5),
+                Date(2019, 2, 6),
+            ]
+            ta = TimeArray(ts, 1:length(ts))
+            ta′ = collapse(ta, Dates.quarter, last)
+            @test values(ta′)    == [2, 4]
+            @test timestamp(ta′) == ts[[2, 4]]
+        end
+        let  # week
+            ts = [
+                Date(2018, 1, 2),
+                Date(2018, 1, 3),
+                Date(2019, 1, 5),
+                Date(2019, 2, 6),
+            ]
+            ta = TimeArray(ts, 1:length(ts))
+            ta′ = collapse(ta, week, last)
+            @test values(ta′)    == [2, 3, 4]
+            @test timestamp(ta′) == ts[[2, 3, 4]]
+        end
+        let  # month
+            ts = [
+                Date(2018, 1, 2),
+                Date(2018, 1, 3),
+                Date(2019, 1, 10),
+                Date(2019, 2, 5),
+            ]
+            ta = TimeArray(ts, 1:length(ts))
+            ta′ = collapse(ta, month, last)
+            @test values(ta′)    == [2, 3, 4]
+            @test timestamp(ta′) == ts[[2, 3, 4]]
+        end
+        let  # day
+            ts = [
+                DateTime(2018, 1, 2, 10),
+                DateTime(2018, 1, 2, 12),
+                DateTime(2018, 2, 2, 12),
+                DateTime(2018, 2, 2, 14),
+            ]
+            ta = TimeArray(ts, 1:length(ts))
+            ta′ = collapse(ta, day, last)
+            @test values(ta′)    == [2, 4]
+            @test timestamp(ta′) == ts[[2, 4]]
+        end
+        let  # hour
+            ts = [
+                DateTime(2018, 1, 2, 10, 0),
+                DateTime(2018, 1, 2, 12, 0),
+                DateTime(2018, 2, 2, 12, 0),
+                DateTime(2018, 2, 2, 12, 30),
+            ]
+            ta = TimeArray(ts, 1:length(ts))
+            ta′ = collapse(ta, hour, last)
+            @test values(ta′)    == [1, 2, 4]
+            @test timestamp(ta′) == ts[[1, 2, 4]]
+        end
+        let  # minute
+            ts = [
+                DateTime(2018, 1, 2, 12, 0),
+                DateTime(2018, 1, 2, 12, 0, 30),
+                DateTime(2018, 1, 2, 13, 0),
+                DateTime(2018, 1, 2, 13, 0),
+            ]
+            ta = TimeArray(ts, 1:length(ts))
+            ta′ = collapse(ta, minute, last)
+            @test values(ta′)    == [2, 4]
+            @test timestamp(ta′) == ts[[2, 4]]
+        end
+        let  # second
+            ts = [
+                DateTime(2018, 1, 2, 12, 0, 0),
+                DateTime(2018, 1, 2, 12, 0, 0, 30),
+                DateTime(2018, 1, 2, 13, 0, 0),
+                DateTime(2018, 1, 2, 13, 0, 0, 30),
+            ]
+            ta = TimeArray(ts, 1:length(ts))
+            ta′ = collapse(ta, second, last)
+            @test values(ta′)    == [2, 4]
+            @test timestamp(ta′) == ts[[2, 4]]
+        end
     end
 
     # https://github.com/JuliaStats/TimeSeries.jl/pull/397
