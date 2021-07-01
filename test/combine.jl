@@ -34,17 +34,19 @@ end
         @test timestamp(collapse(ohlc, month, first))[2] == Date(2000,2,1)
 
         # https://github.com/JuliaStats/TimeSeries.jl/issues/498
-        let  # quarter
-            ts = [
-                Date(2018, 1, 2),
-                Date(2018, 1, 3),
-                Date(2019, 1, 5),
-                Date(2019, 2, 6),
-            ]
-            ta = TimeArray(ts, 1:length(ts))
-            ta′ = collapse(ta, Dates.quarter, last)
-            @test values(ta′)    == [2, 4]
-            @test timestamp(ta′) == ts[[2, 4]]
+        if VERSION ≥ v"1.6"
+            let  # quarter
+                ts = [
+                    Date(2018, 1, 2),
+                    Date(2018, 1, 3),
+                    Date(2019, 1, 5),
+                    Date(2019, 2, 6),
+                ]
+                ta = TimeArray(ts, 1:length(ts))
+                ta′ = collapse(ta, Dates.quarter, last)
+                @test values(ta′)    == [2, 4]
+                @test timestamp(ta′) == ts[[2, 4]]
+            end
         end
         let  # week
             ts = [

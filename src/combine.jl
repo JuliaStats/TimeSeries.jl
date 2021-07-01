@@ -115,6 +115,10 @@ for (F, T, P) ∈ ((:quarter,     :TimeType,               :Quarter),
                  (:millisecond, :(Union{DateTime,Time}), :Millisecond),
                  (:microsecond, :Time,                   :Microsecond),
                  (:nanosecond,  :Time,                   :Nanosecond))
+    if F === :quarter
+        (VERSION < v"1.6") && continue
+        F = :(Dates.quarter)
+    end
     @eval let
         global collapse
         wrapper(x::$T) = floor(x, $P(1))

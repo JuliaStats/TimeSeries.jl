@@ -10,8 +10,6 @@ using RecipesBase
 using Reexport
 using Tables
 
-import Dates: quarter
-
 export TimeArray, AbstractTimeSeries,
        when, from, to, findwhen, timestamp, values, colnames, meta, head, tail,
        lag, lead, diff, percentchange, moving, upto,
