@@ -101,6 +101,32 @@ hcat(x::TimeArray, y::TimeArray, zs::Vararg{TimeArray}) =
 
 # collapse ######################
 
+# accessors functions
+# https://github.com/JuliaLang/julia/blob/b617e8d3a77e49cd5625ca663af88e40f7796f15/stdlib/Dates/src/accessors.jl#L50
+
+# `year` doesn't need this wrapper
+for (F, T, P) ∈ ((:quarter,     :TimeType,               :Quarter),
+                 (:month,       :TimeType,               :Month),
+                 (:week,        :TimeType,               :Week),
+                 (:day,         :TimeType,               :Day),
+                 (:hour,        :(Union{DateTime,Time}), :Hour),
+                 (:minute,      :(Union{DateTime,Time}), :Minute),
+                 (:second,      :(Union{DateTime,Time}), :Second),
+                 (:millisecond, :(Union{DateTime,Time}), :Millisecond),
+                 (:microsecond, :Time,                   :Microsecond),
+                 (:nanosecond,  :Time,                   :Nanosecond))
+    if F === :quarter
+        (VERSION < v"1.6") && continue
+        F = :(Dates.quarter)
+    end
+    @eval let
+        global collapse
+        wrapper(x::$T) = floor(x, $P(1))
+        collapse(ta::TimeArray, ::typeof($F), f::Function, g::Function = f; kw...) =
+            collapse(ta, wrapper, f, g; kw...)
+    end
+end
+
 function collapse(ta::TimeArray{T,N,D}, period::Function, timestamp::Function,
                   value::Function = timestamp) where {T,N,D}
 

@@ -24,7 +24,7 @@ merge should then be 8,335 rows:
 ```@repl merge
 using TimeSeries
 using MarketData
-AppleCat = merge(AAPL,CAT);
+AppleCat = merge(AAPL, CAT);
 length(AppleCat)
 ```
 
@@ -70,19 +70,22 @@ the `last` value known and have that represented with the corresponding
 timestamp. A non-exhaustive list of valid time methods is presented
 below.
 
-| Dates method | Time length |
-|--------------|-------------|
-| `day`        | daily       |
-| `week`       | weekly      |
-| `month`      | monthly     |
-| `year`       | yearly      |
+| `Dates` method | Time length                   |
+|----------------|-------------------------------|
+| `day`          | daily                         |
+| `week`         | weekly, starting from Monday. |
+| `month`        | monthly                       |
+| `year`         | yearly                        |
+| `hour`         | hourly                        |
+| `minute`       | minutely                      |
+| `second`       | secondly                      |
 
 Showing this code in REPL:
 
 ```@repl collapse
 using TimeSeries
 using MarketData
-collapse(cl,month,last)
+collapse(cl, month, last)
 ```
 
 We can also supply the function that chooses the timestamp and the
