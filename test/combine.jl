@@ -135,6 +135,26 @@ end
             @test timestamp(ta)[2] == ts[6]
         end
     end
+
+    @testset "type promotion" begin
+        ts = [
+            DateTime(2018, 1, 2),
+            DateTime(2018, 1, 3),
+            DateTime(2019, 1, 5),
+            DateTime(2019, 2, 6),
+        ]
+        ta = TimeArray(ts, 1:length(ts))
+        ta′ = collapse(ta, month, x -> Date(last(x)), last)
+
+        @test ta  isa TimeArray{Int,1,DateTime,A} where A
+        @test ta′ isa TimeArray{Int,1,Date,A} where A
+
+        ta = TimeArray(ts, zeros(4, 10))
+        ta′ = collapse(ta, month, x -> Date(last(x)), x -> Int(last(x)))
+
+        @test ta  isa TimeArray{Float64,2,DateTime,A} where A
+        @test ta′ isa TimeArray{Int,2,Date,A} where A
+    end
 end
 
 
