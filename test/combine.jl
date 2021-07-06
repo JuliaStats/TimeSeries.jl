@@ -46,6 +46,7 @@ end
                 ta′ = collapse(ta, Dates.quarter, last)
                 @test values(ta′)    == [2, 4]
                 @test timestamp(ta′) == ts[[2, 4]]
+                @test ta′            == collapse(ta, Quarter(1), last)
             end
         end
         let  # week
@@ -59,6 +60,7 @@ end
             ta′ = collapse(ta, week, last)
             @test values(ta′)    == [2, 3, 4]
             @test timestamp(ta′) == ts[[2, 3, 4]]
+            @test ta′            == collapse(ta, Week(1), last)
         end
         let  # month
             ts = [
@@ -71,6 +73,7 @@ end
             ta′ = collapse(ta, month, last)
             @test values(ta′)    == [2, 3, 4]
             @test timestamp(ta′) == ts[[2, 3, 4]]
+            @test ta′            == collapse(ta, Month(1), last)
         end
         let  # day
             ts = [
@@ -83,6 +86,7 @@ end
             ta′ = collapse(ta, day, last)
             @test values(ta′)    == [2, 4]
             @test timestamp(ta′) == ts[[2, 4]]
+            @test ta′            == collapse(ta, Day(1), last)
         end
         let  # hour
             ts = [
@@ -95,6 +99,7 @@ end
             ta′ = collapse(ta, hour, last)
             @test values(ta′)    == [1, 2, 4]
             @test timestamp(ta′) == ts[[1, 2, 4]]
+            @test ta′            == collapse(ta, Hour(1), last)
         end
         let  # minute
             ts = [
@@ -107,6 +112,7 @@ end
             ta′ = collapse(ta, minute, last)
             @test values(ta′)    == [2, 4]
             @test timestamp(ta′) == ts[[2, 4]]
+            @test ta′            == collapse(ta, Minute(1), last)
         end
         let  # second
             ts = [
@@ -119,6 +125,7 @@ end
             ta′ = collapse(ta, second, last)
             @test values(ta′)    == [2, 4]
             @test timestamp(ta′) == ts[[2, 4]]
+            @test ta′            == collapse(ta, Second(1), last)
         end
     end
 
@@ -154,6 +161,20 @@ end
 
         @test ta  isa TimeArray{Float64,2,DateTime,A} where A
         @test ta′ isa TimeArray{Int,2,Date,A} where A
+    end
+
+    @testset "Period supports" begin
+        ts = [
+            Date(2018, 1, 2),
+            Date(2018, 1, 3),
+            Date(2019, 1, 5),
+            Date(2019, 2, 6),
+        ]
+        ta = TimeArray(ts, 1:length(ts))
+        ta′ = collapse(ta, Month(2), last)
+
+        @test timestamp(ta′) == [Date(2018, 1, 3), Date(2019, 2, 6)]
+        @test values(ta′)    == [2, 4]
     end
 end
 
