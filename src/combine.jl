@@ -127,42 +127,40 @@ for (F, T, P) ∈ ((:quarter,     :TimeType,               :Quarter),
     end
 end
 
-function collapse(ta::TimeArray{T,N,D}, period::Function, timestamp::Function,
-                  value::Function = timestamp) where {T,N,D}
+function collapse(ta::TimeArray, period::Function, timestamp::Function,
+                  value::Function = timestamp)
 
-    length(ta) == 0 && return ta
+    isempty(ta) && return ta
 
-    ncols = length(colnames(ta))
-    collapsed_tstamps = D[]
-    collapsed_values = values(ta)[1:0, :]
+    m, n = length(ta), length(colnames(ta))
+    ts   = _timestamp(ta)
+    val  = _values(ta)
+    idx  = UnitRange{Int}[]
+    sizehint!(idx, m)
 
-    tstamp = _timestamp(ta)[1]
-    mapped_tstamp = period(tstamp)
-    cluster_startrow = 1
+    t₀ = period(ts[1])
+    j  = 1
+    for i in 1:m-1
+        t₁ = period(ts[i+1])
+        t₀ == t₁ && continue
+        push!(idx, j:i)
+        j = i + 1
+        t₀ = t₁
+    end
+    push!(idx, j:m)
 
-    for i in 1:length(ta)-1
+    ts′  = [timestamp(@view(ts[i])) for i ∈ idx]
+    val′ = if n == 1
+        [value(@view(val[i])) for i ∈ idx]
+    else
+        [value(@view(val[i, k])) for i ∈ idx, k ∈ 1:n]
+    end
 
-        next_tstamp = _timestamp(ta)[i+1]
-        next_mapped_tstamp = period(next_tstamp)
-
-        if mapped_tstamp != next_mapped_tstamp
-          push!(collapsed_tstamps, timestamp(_timestamp(ta)[cluster_startrow:i]))
-          collapsed_values = [collapsed_values; T[value(values(ta)[cluster_startrow:i, j]) for j in 1:ncols] |> permutedims]
-          cluster_startrow = i+1
-        end #if
-
-        tstamp = next_tstamp
-        mapped_tstamp = next_mapped_tstamp
-
-    end #for
-
-    push!(collapsed_tstamps, timestamp(_timestamp(ta)[cluster_startrow:end]))
-    collapsed_values = [collapsed_values; T[value(values(ta)[cluster_startrow:end, j]) for j in 1:ncols] |> permutedims]
-
-    N == 1 && (collapsed_values = vec(collapsed_values))
-    return TimeArray(collapsed_tstamps, collapsed_values, colnames(ta), meta(ta))
-
+    TimeArray(ts′, val′, colnames(ta), meta(ta))
 end
+
+collapse(ta::TimeArray, p::Period, t::Function, v::Function = t; kw...) =
+    collapse(ta, x -> floor(x, p), t, v; kw...)
 
 # vcat ######################
 
