@@ -199,28 +199,39 @@ end
 
 Base.findprev(f::GreaterOrGreaterEq, tg::TimeGrid, i) = ifelse(f(tg[i]), i, nothing)
 
-# TODO: find function with NNS
-function Base.findprev(nn::NearestNeighbors{D}, tg::TimeGrid, i) where D
+Base.findnext(nn::NearestNeighbors, tg::TimeGrid, i::Int) = findnn(nn, tg, i, lastindex(tg), false)
+Base.findfirst(nn::NearestNeighbors, tg::TimeGrid)        = findnn(nn, tg, 1, lastindex(tg), false)
+
+Base.findprev(nn::NearestNeighbors, tg::TimeGrid, i::Int) = findnn(nn, tg, 1, i, true)
+Base.findlast(nn::NearestNeighbors, tg::TimeGrid)         = findnn(nn, tg, 1, lastindex(tg), true)
+
+function findnn(nn::NearestNeighbors{D}, tg::TimeGrid, i::Int, j::Int, prev::Bool) where D
     t = nn.c
     r = nn.r
 
-    Δ = periodnano(t - tg[1])
+    Δ = periodnano(t - tg.o)
     p = periodnano(tg)
-    n = clamp(Δ ÷ p + 1, 1, i)
+    q = Δ ÷ p + 1
 
     # TODO: benchmark on plain `if` and @generated function
     if D ≡ :both
-        m = min(n + 1, i)
-        # note that if the same, `m` will win
-        d, x = findmin((abs(tg[m] - t), abs(t - tg[n])))
-        d > r && return nothing
-        ifelse(isone(x), m, n)
+        n = clamp(q, i, j)
+        m = min(n + 1, j)
+        if prev  # note that if the same, `m` will win
+            d, x = findmin((abs(tg[m] - t), abs(t - tg[n])))
+            d > r && return nothing
+            ifelse(isone(x), m, n)
+        else
+            d, x = findmin((abs(t - tg[n]), abs(tg[m] - t)))
+            d > r && return nothing
+            ifelse(isone(x), n, m)
+        end
     elseif D ≡ :forward
-        m = min(n + (Δ % p > 0), i)
-        ifelse(zero(tg.p) ≤ tg[m] - t ≤ r, m, nothing)
+        n = clamp(q + (Δ % p > 0), i, j)
+        ifelse(zero(tg.p) ≤ tg[n] - t ≤ r, n, nothing)
     elseif D ≡ :backward
-        m = min(n, i)
-        ifelse(zero(tg.p) ≤ t - tg[m] ≤ r, m, nothing)
+        n = clamp(q, i, j)
+        ifelse(zero(tg.p) ≤ t - tg[n] ≤ r, n, nothing)
     end
 end
 
