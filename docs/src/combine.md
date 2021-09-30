@@ -70,15 +70,16 @@ the `last` value known and have that represented with the corresponding
 timestamp. A non-exhaustive list of valid time methods is presented
 below.
 
-| `Dates` method | Time length                   |
-|----------------|-------------------------------|
-| `day`          | daily                         |
-| `week`         | weekly, starting from Monday. |
-| `month`        | monthly                       |
-| `year`         | yearly                        |
-| `hour`         | hourly                        |
-| `minute`       | minutely                      |
-| `second`       | secondly                      |
+| `Dates` method  | Time length                   |
+|-----------------|-------------------------------|
+| `Dates.quarter` | quarterly                     |
+| `day`           | daily                         |
+| `week`          | weekly, starting from Monday. |
+| `month`         | monthly                       |
+| `year`          | yearly                        |
+| `hour`          | hourly                        |
+| `minute`        | minutely                      |
+| `second`        | secondly                      |
 
 Showing this code in REPL:
 
