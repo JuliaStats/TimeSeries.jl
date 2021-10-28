@@ -142,7 +142,7 @@ end   # @testset "getindex"
         @test findprev(nn, tg, 2)  == nothing
 
         nn = nns(c = DateTime(2021, 1, 1, 0, 33), radius = Minute(2), direction = :both)
-        @test findprev(nn, tg, 10)  == nothing
+        @test findprev(nn, tg, 10) == nothing
 
         nn = nns(c = DateTime(2021, 1, 1, 0, 33), radius = Minute(3), direction = :both)
         @test findprev(nn, tg, 10) == 3
@@ -163,8 +163,8 @@ end   # @testset "getindex"
 
         nn = nns(c = DateTime(2021, 1, 1, 0, 30), radius = Minute(0), direction = :both)
         @test findprev(nn, tg, 10) == 3
-        @test findprev(nn, tg, 3) == 3
-        @test findprev(nn, tg, 2) == nothing
+        @test findprev(nn, tg, 3)  == 3
+        @test findprev(nn, tg, 2)  == nothing
 
         nn = nns(c = DateTime(2020, 12, 31, 23, 48), radius = Minute(15), direction = :both)
         @test findprev(nn, tg, 10) == 1
@@ -207,8 +207,8 @@ end   # @testset "getindex"
 
         nn = nns(c = DateTime(2021, 1, 1, 0, 30), radius = Minute(0), direction = :forward)
         @test findprev(nn, tg, 10) == 3
-        @test findprev(nn, tg, 3) == 3
-        @test findprev(nn, tg, 2) == nothing
+        @test findprev(nn, tg, 3)  == 3
+        @test findprev(nn, tg, 2)  == nothing
 
         nn = nns(c = DateTime(2020, 12, 31, 23, 48), radius = Minute(15), direction = :forward)
         @test findprev(nn, tg, 10) == 1
@@ -230,9 +230,9 @@ end   # @testset "getindex"
         @test findprev(nn, tg, 2)  == nothing
 
         nn = nns(c = DateTime(2021, 1, 1, 0, 33), radius = Minute(3), direction = :backward)
-        @test findprev(nn, tg, 10)  == 3
-        @test findprev(nn, tg, 3)   == 3
-        @test findprev(nn, tg, 2)   == nothing
+        @test findprev(nn, tg, 10) == 3
+        @test findprev(nn, tg, 3)  == 3
+        @test findprev(nn, tg, 2)  == nothing
 
         nn = nns(c = DateTime(2021, 1, 1, 0, 27), radius = Minute(3), direction = :backward)
         @test findprev(nn, tg, 10) == nothing
@@ -255,10 +255,10 @@ end   # @testset "getindex"
         @test findprev(nn, tg, 2)  == nothing
 
         nn = nns(c = DateTime(2020, 12, 31, 23, 48), radius = Minute(15), direction = :backward)
-        @test findprev(nn, tg, 1)  == nothing
+        @test findprev(nn, tg, 1) == nothing
 
         nn = nns(c = DateTime(2020, 12, 31, 23, 45), radius = Minute(15), direction = :backward)
-        @test findprev(nn, tg, 1)  == nothing
+        @test findprev(nn, tg, 1) == nothing
 
         nn = nns(c = DateTime(2021, 1, 1, 2, 30), radius = Minute(15), direction = :backward)
         @test findprev(nn, tg, 10) == 10
@@ -326,6 +326,152 @@ end   # @testset "getindex"
                 @test findnext(f(DateTime(2021, 1, 1, 0, 33)), tg, 42) |> isnothing
             end
         end
+
+        # NearestNeighbors
+        @info "findnext :: $(typeof(tg)) :: f -> nns :: d -> :both"
+
+        nn = nns(c = DateTime(2021, 1, 1, 0, 27), radius = Minute(15), direction = :both)
+        @test findnext(nn, tg, 1) == 3
+        @test findnext(nn, tg, 3) == 3
+        @test findnext(nn, tg, 4) == nothing
+
+        nn = nns(c = DateTime(2021, 1, 1, 0, 27), radius = Minute(2), direction = :both)
+        @test findnext(nn, tg, 1) == nothing
+
+        nn = nns(c = DateTime(2021, 1, 1, 0, 27), radius = Minute(3), direction = :both)
+        @test findnext(nn, tg, 1) == 3
+        @test findnext(nn, tg, 3) == 3
+        @test findnext(nn, tg, 4) == nothing
+
+        nn = nns(c = DateTime(2021, 1, 1, 0, 42), radius = Minute(33), direction = :both)
+        @test findnext(nn, tg, 1) == 4
+        @test findnext(nn, tg, 5) == 5
+        @test findnext(nn, tg, 6) == 6
+        @test findnext(nn, tg, 7) == nothing
+
+        nn = nns(c = DateTime(2021, 1, 1, 0, 22, 30), radius = Minute(15), direction = :both)
+        @test findnext(nn, tg, 1)  == 2
+        @test findnext(nn, tg, 2)  == 2
+        @test findnext(nn, tg, 3)  == 3
+        @test findnext(nn, tg, 10) == nothing
+
+        nn = nns(c = DateTime(2021, 1, 1, 0, 30), radius = Minute(0), direction = :both)
+        @test findnext(nn, tg, 1) == 3
+        @test findnext(nn, tg, 3) == 3
+        @test findnext(nn, tg, 4) == nothing
+
+        nn = nns(c = DateTime(2020, 12, 31, 23, 45), radius = Minute(15), direction = :both)
+        @test findnext(nn, tg, 1) == 1
+        @test findnext(nn, tg, 2) == nothing
+
+        nn = nns(c = DateTime(2020, 12, 31, 23, 48), radius = Minute(15), direction = :both)
+        @test findnext(nn, tg, 1) == 1
+        @test findnext(nn, tg, 2) == nothing
+
+        if Base.haslength(tg)
+            nn = nns(c = DateTime(2021, 1, 1, 2, 27), radius = Minute(15), direction = :both)
+            @test findnext(nn, tg, 1)  == 10
+            @test findnext(nn, tg, 10) == 10
+
+            nn = nns(c = DateTime(2021, 1, 1, 2, 30), radius = Minute(15), direction = :both)
+            @test findnext(nn, tg, 1)  == 10
+            @test findnext(nn, tg, 10) == 10
+        end
+
+        @info "findnext :: $(typeof(tg)) :: f -> nns :: d -> :forward"
+
+        nn = nns(c = DateTime(2021, 1, 1, 0, 33), radius = Minute(15), direction = :forward)
+        @test findnext(nn, tg, 1)  == 4
+        @test findnext(nn, tg, 4)  == 4
+        @test findnext(nn, tg, 5)  == nothing
+        @test findnext(nn, tg, 10) == nothing
+
+        nn = nns(c = DateTime(2021, 1, 1, 0, 27), radius = Minute(3), direction = :forward)
+        @test findnext(nn, tg, 1) == 3
+        @test findnext(nn, tg, 3) == 3
+        @test findnext(nn, tg, 4) == nothing
+
+        nn = nns(c = DateTime(2021, 1, 1, 0, 42), radius = Minute(33), direction = :forward)
+        @test findnext(nn, tg, 1) == 4
+        @test findnext(nn, tg, 5) == 5
+        @test findnext(nn, tg, 6) == 6
+        @test findnext(nn, tg, 7) == nothing
+
+        nn = nns(c = DateTime(2021, 1, 1, 0, 22, 30), radius = Minute(15), direction = :forward)
+        @test findnext(nn, tg, 1) == 3
+        @test findnext(nn, tg, 3) == 3
+        @test findnext(nn, tg, 4) == nothing
+        @test findnext(nn, tg, 5) == nothing
+
+        nn = nns(c = DateTime(2021, 1, 1, 0, 30), radius = Minute(0), direction = :forward)
+        @test findnext(nn, tg, 1) == 3
+        @test findnext(nn, tg, 3) == 3
+        @test findnext(nn, tg, 4) == nothing
+
+        nn = nns(c = DateTime(2020, 12, 31, 23, 48), radius = Minute(15), direction = :forward)
+        @test findnext(nn, tg, 1) == 1
+        @test findnext(nn, tg, 2) == nothing
+
+        nn = nns(c = DateTime(2020, 12, 31, 23, 45), radius = Minute(15), direction = :forward)
+        @test findnext(nn, tg, 1) == 1
+        @test findnext(nn, tg, 2) == nothing
+
+        nn = nns(c = DateTime(2021, 1, 1, 2, 12), radius = Minute(15), direction = :forward)
+        @test findnext(nn, tg, 1) == 10
+
+        if Base.haslength(tg)
+            nn = nns(c = DateTime(2021, 1, 1, 2, 30), radius = Minute(15), direction = :forward)
+            @test findnext(nn, tg, 1) == nothing
+        end
+
+        @info "findnext :: $(typeof(tg)) :: f -> nns :: d -> :backward"
+
+        nn = nns(c = DateTime(2021, 1, 1, 0, 33), radius = Minute(15), direction = :backward)
+        @test findnext(nn, tg, 1) == 3
+        @test findnext(nn, tg, 2) == 3
+        @test findnext(nn, tg, 3) == 3
+        @test findnext(nn, tg, 4) == nothing
+
+        nn = nns(c = DateTime(2021, 1, 1, 0, 33), radius = Minute(3), direction = :backward)
+        @test findnext(nn, tg, 1)  == 3
+        @test findnext(nn, tg, 3)  == 3
+        @test findnext(nn, tg, 4)  == nothing
+
+        nn = nns(c = DateTime(2021, 1, 1, 0, 27), radius = Minute(3), direction = :backward)
+        @test findnext(nn, tg, 3)  == nothing
+        @test findnext(nn, tg, 10) == nothing
+
+        nn = nns(c = DateTime(2021, 1, 1, 0, 48), radius = Minute(33), direction = :backward)
+        @test findnext(nn, tg, 1) == 4
+        @test findnext(nn, tg, 4) == 4
+        @test findnext(nn, tg, 5) == nothing
+        @test findnext(nn, tg, 6) == nothing
+
+        nn = nns(c = DateTime(2021, 1, 1, 0, 30), radius = Minute(0), direction = :backward)
+        @test findnext(nn, tg, 2)  == 3
+        @test findnext(nn, tg, 3)  == 3
+        @test findnext(nn, tg, 4)  == nothing
+        @test findnext(nn, tg, 10) == nothing
+
+        nn = nns(c = DateTime(2020, 12, 31, 23, 48), radius = Minute(15), direction = :backward)
+        @test findnext(nn, tg, 1)  == nothing
+        @test findnext(nn, tg, 10) == nothing
+
+        nn = nns(c = DateTime(2020, 12, 31, 23, 45), radius = Minute(15), direction = :backward)
+        @test findnext(nn, tg, 1)  == nothing
+        @test findnext(nn, tg, 10) == nothing
+
+        nn = nns(c = DateTime(2021, 1, 1, 2, 30), radius = Minute(15), direction = :backward)
+        @test findnext(nn, tg, 1)  == 10 + 1 * !Base.haslength(tg)
+        @test findnext(nn, tg, 10) == 10 + 1 * !Base.haslength(tg)
+
+        nn = nns(c = DateTime(2021, 1, 1, 2, 27), radius = Minute(15), direction = :backward)
+        @test findnext(nn, tg, 1)  == 10
+        @test findnext(nn, tg, 10) == 10
+
+        nn = nns(c = DateTime(2021, 1, 1, 2, 33), radius = Minute(15), direction = :backward)
+        @test findnext(nn, tg, 1)  == ifelse(Base.haslength(tg), nothing, 11)
+        @test findnext(nn, tg, 10) == ifelse(Base.haslength(tg), nothing, 11)
     end
 
     @testset "findnext finite" begin
