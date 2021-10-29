@@ -90,8 +90,10 @@ end
 ###############################################################################
 
 # note that Base.size is undefined for this infinite case
+Base.lastindex(tg::TimeGrid{T,<:Period,:infinite}) where T =
+    (typemax(T) - tg.o) ÷ Millisecond(tg.p) + 1
 Base.lastindex(tg::TimeGrid{T,P,:infinite}) where {T,P} =
-    (typemax(DateTime) - tg.o) ÷ Millisecond(tg.p) + 1
+    (typemax(T) - tg.o) ÷ tg.p + 1
 
 @inline function Base.getindex(tg::TimeGrid, i::Real)  # FIXME: is rounding acceptable?
     @boundscheck checkbounds(tg, i)
@@ -197,7 +199,42 @@ end
 
 Base.findprev(f::GreaterOrGreaterEq, tg::TimeGrid, i) = ifelse(f(tg[i]), i, nothing)
 
-# TODO: find function with NNS
+Base.findnext(nn::NearestNeighbors, tg::TimeGrid, i::Int) = findnn(nn, tg, i, lastindex(tg), false)
+Base.findfirst(nn::NearestNeighbors, tg::TimeGrid)        = findnn(nn, tg, 1, lastindex(tg), false)
+
+Base.findprev(nn::NearestNeighbors, tg::TimeGrid, i::Int) = findnn(nn, tg, 1, i, true)
+Base.findlast(nn::NearestNeighbors, tg::TimeGrid)         = findnn(nn, tg, 1, lastindex(tg), true)
+
+function findnn(nn::NearestNeighbors{D}, tg::TimeGrid, i::Int, j::Int, prev::Bool) where D
+    t = nn.c
+    r = nn.r
+
+    Δ = periodnano(t - tg.o)
+    p = periodnano(tg)
+    q = Δ ÷ p + 1
+
+    # TODO: benchmark on plain `if` and @generated function
+    if D ≡ :both
+        n = clamp(q, i, j)
+        m = min(n + 1, j)
+        if prev  # note that if the same, `m` will win
+            d, x = findmin((abs(tg[m] - t), abs(t - tg[n])))
+            d > r && return nothing
+            ifelse(isone(x), m, n)
+        else
+            d, x = findmin((abs(t - tg[n]), abs(tg[m] - t)))
+            d > r && return nothing
+            ifelse(isone(x), n, m)
+        end
+    elseif D ≡ :forward
+        n = clamp(q + (Δ % p > 0), i, j)
+        ifelse(zero(tg.p) ≤ tg[n] - t ≤ r, n, nothing)
+    elseif D ≡ :backward
+        n = clamp(q, i, j)
+        ifelse(zero(tg.p) ≤ t - tg[n] ≤ r, n, nothing)
+    end
+end
+
 # TODO: support find*(in(::Interval), tg)
 
 
@@ -256,7 +293,8 @@ Base.foldl(f, tg::TimeGrid{T,P,:infinite}; kw...) where {T,P} =
     throw(BoundsError("foldl", Inf))
 Base.foldr(f, tg::TimeGrid{T,P,:infinite}; kw...) where {T,P} =
     throw(BoundsError("foldr", Inf))
-resample(tg::TimeGrid, i::Real) = TimeGrid(tg, p = Nanosecond(tg.p) * i)
+
+resample(tg::TimeGrid, i::Real)   = TimeGrid(tg, p = Nanosecond(tg.p) * i)
 resample(tg::TimeGrid, p::Period) = TimeGrid(tg, p = p)
 
 
@@ -302,7 +340,8 @@ checkbounds(tg::TimeGrid, i::Real) =
 checkbounds(tg::TimeGrid, i::TimeType) =
     (isinbounds(tg, i) || throw(KeyError(i)); nothing)
 
-periodnano(t::Period)    = Dates.value(Nanosecond(t))
+# FIXME: handle the cases Nanosecond got overflowed?
+periodnano(p::Period)    = Dates.value(Nanosecond(p))
 periodnano(tg::TimeGrid) = periodnano(tg.p)
 
 function time2idx(tg::TimeGrid, t)

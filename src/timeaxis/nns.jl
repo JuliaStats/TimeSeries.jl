@@ -4,8 +4,8 @@
 
 struct NearestNeighbors{D,C,R}
     k::Int
-    c::C       # centroid
-    r::R       # radius
+    c::C  # centroid
+    r::R  # radius
 end
 
 function NearestNeighbors(k::Integer, c::C, r::R, d::Symbol) where {C,R}
