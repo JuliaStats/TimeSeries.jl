@@ -12,7 +12,7 @@ mutable struct TimeGrid{T,P,L} <: AbstractTimeAxis{T}
         n′ = convert(Int, n)
         p′ = convert(P, p)
 
-        (n′ < 1) && throw(DomainError(n′))
+        (n′ < 0) && throw(DomainError(n′))
         new(o′, p′, n′)
     end
 
@@ -58,21 +58,32 @@ Base.eltype(::Type{<:TimeGrid{T}}) where T = T
 Base.length(tg::TimeGrid{T,P,:finite}) where {T,P} = tg.n
 Base.size(tg::TimeGrid{T,P,:finite}) where{T,P}    = tg.n
 
+###############################################################################
+#  Empty TimeGrid
+###############################################################################
+
+Base.isempty(tg::TimeGrid{T,P,:finite}) where {T,P}   = iszero(tg.n)
+Base.isempty(tg::TimeGrid{T,P,:infinite}) where {T,P} = false
+
+Base.isfinite(tg::TimeGrid{T,P,:finite}) where {T,P}   = true
+Base.isfinite(tg::TimeGrid{T,P,:infinite}) where {T,P} = false
 
 ###############################################################################
 #  Printing
 ###############################################################################
 
-Base.show(io::IO, tg::TimeGrid{T,P,:finite}) where {T,P} =
-    print(io, "$(tg.o) … $(tg[end]) / $(tg.p) ")
+Base.show(io::IO, tg::TimeGrid{T,P,:finite}) where {T,P} = 
+    isempty(tg) ? print(io, "(empty)") : print(io, "$(tg.o) … $(tg[end]) / $(tg.p)")
 
 function Base.show(io::IO, ::MIME{Symbol("text/plain")}, tg::TimeGrid{T,P,:finite}) where {T,P}
     summary(io, tg)
+    isempty(tg) && return
     println(io, ":")
     print(io, " $(tg.o)\n",
-              "  ⋮\n",
-              " $(tg[end])\n",
-              " / $(tg.p)")
+            "  ⋮\n",
+            " $(tg[end])\n",
+            " / $(tg.p)")
+    return
 end
 
 Base.summary(io::IO, tg::TimeGrid{T,P,:infinite}) where {T,P} =
@@ -325,6 +336,62 @@ Base.resize!(tg::TimeGrid{T,P,:infinite}, n::Int) where {T,P} = tg
 
 Base.diff(tg::TimeGrid{T,P,:finite}) where {T,P} = fill(tg.p, tg.n - 1)
 
+###############################################################################
+#  Intersect
+###############################################################################
+function Base.intersect(tg1::TimeGrid, tgs...)
+    for tg in tgs
+        tg1 = intersect(tg1, tg)
+    end
+    return tg1
+end
+# TODO 
+# Consider checking if they are equal
+function intersect(tg_inf::TimeGrid{T,P,:infinite}, 
+                   tg_fin::TimeGrid{T,P,:finite})::TimeGrid{T,P,:finite} where {T,P}
+    if !assert_intersection_non_empty(tg_fin, tg_inf) 
+        return TimeGrid(tg_fin; n = 0)
+    end
+    new_o = max(tg_fin.o, tg_inf.o)
+    new_n = tg_inf.o > tg_fin.o ? findfirst(isequal(tg_fin[end]), tg_inf) : tg_fin.n
+    return TimeGrid(new_o, tg_fin.p, new_n)
+end
+intersect(tg_fin::TimeGrid{T,P,:finite}, tg_inf::TimeGrid{T,P,:infinite}) where {T,P} = intersect(tg_inf, tg_fin)
+function intersect(tg_inf1::TimeGrid{T,P,:infinite}, tg_inf2::TimeGrid{T,P,:infinite}) where {T,P}
+    if !assert_intersection_non_empty(tg_inf1, tg_inf2) 
+        return TimeGrid(tg_inf1.o, tg_inf1.p, 0)
+    end
+    new_o = max(tg_inf1.o, tg_inf2.o)
+    return TimeGrid(new_o, tg_inf1.p)
+end
+function intersect(tg_fin1::TimeGrid{T,P,:finite}, tg_fin2::TimeGrid{T,P,:finite}) where {T,P}
+    if !assert_intersection_non_empty(tg_fin1, tg_fin2) 
+        return TimeGrid(tg_fin1; n = 0)
+    end
+    new_o = max(tg_fin1.o, tg_fin2.o)
+    last_idx = min(tg_fin1[end], tg_fin2[end])
+    new_n = tg_fin1.o > tg_fin2.o ? findfirst(isequal(last_idx), tg_fin1) : 
+                                    findfirst(isequal(last_idx), tg_fin2)
+    return TimeGrid(new_o, tg_fin1.p, new_n)
+end
+
+function assert_intersection_non_empty(tg1::TimeGrid, tg2::TimeGrid)
+    if (tg1[end] < tg2.o) || (tg2[end] < tg1.o)
+        return false
+    end
+    if tg1.o > tg2.o
+        idx = findfirst(isequal(tg1.o), tg2)
+        if isnothing(idx)
+            return false
+        end
+    else
+        idx = findfirst(isequal(tg2.o), tg1)
+        if isnothing(idx)
+            return false
+        end
+    end
+    return true
+end
 
 ###############################################################################
 #  Private utils
