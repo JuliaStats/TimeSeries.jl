@@ -47,7 +47,6 @@ function Base.iterate(x::TableIter, i::Integer = 1)
     x[i], i + 1
 end
 
-Tables.istable(::Type{<:AbstractTimeSeries}) = true
 Tables.rowaccess(::Type{<:TimeArray}) = true
 Tables.rows(ta::TimeArray) = Tables.rows(Tables.columntable(ta))
 Tables.columnaccess(::Type{<:TimeArray}) = true
@@ -58,10 +57,10 @@ Tables.getcolumn(ta::TimeArray, i::Int) = Tables.getcolumn(TableIter(ta), i)
 Tables.getcolumn(ta::TimeArray, nm::Symbol) = Tables.getcolumn(TableIter(ta), nm)
 Tables.getcolumn(i::TableIter, n::Int) = i[n]
 Tables.getcolumn(i::TableIter, nm::Symbol) = getproperty(i, nm)
-Tables.schema(ta::AbstractTimeSeries{T,N,D}) where {T,N,D} = Tables.schema(TableIter(ta))
+Tables.schema(ta::TimeArray) = Tables.schema(TableIter(ta))
 Tables.schema(i::TableIter{T,S}) where {T,S} = Tables.Schema(S, coltypes(data(i)))
 
-coltypes(x::AbstractTimeSeries{T,N,D}) where {T,N,D} = (D, (T for _ ∈ 1:size(x, 2))...)
+coltypes(x::TimeArray{T,N,D}) where {T,N,D} = (D, (T for _ ∈ 1:size(x, 2))...)
 
 
 ###############################################################################

@@ -6,8 +6,6 @@ import Base: convert, copy, length, show, getindex, iterate,
              lastindex, size, eachindex, ==, isequal, hash, ndims,
              getproperty, propertynames, values
 
-abstract type AbstractTimeSeries{T,N,D} end
-
 """
     TimeArray{T,N,D<:TimeType,A<:AbstractArray{T,N}} <: AbstractTimeSeries{T,N,D}
 
@@ -51,7 +49,7 @@ The third constructor builds a `TimeArray` from a `NamedTuple`.
     ta = TimeArray(data; timestamp = :datetime, meta = "Example")
 
 """
-struct TimeArray{T,N,D<:TimeType,A<:AbstractArray{T,N}} <: AbstractTimeSeries{T,N,D}
+struct TimeArray{T,N,D<:TimeType,A<:AbstractArray{T,N}} <: AbstractTimeSeries{T}
 
     timestamp::Vector{D}
     values::A
@@ -81,6 +79,8 @@ struct TimeArray{T,N,D<:TimeType,A<:AbstractArray{T,N}} <: AbstractTimeSeries{T,
             timestamp_r, reverse(values, dims = 1), replace_dupes!(colnames), meta)
 
         throw(ArgumentError("timestamps must be monotonic"))
+
+        # TODO: padded array design?
     end
 end
 
@@ -131,11 +131,13 @@ size(ta::TimeArray, dim) = size(values(ta), dim)
 
 ###### ndims #####################
 
-ndims(ta::AbstractTimeSeries{T,N}) where {T,N} = N
+# ndims(ta::AbstractTimeSeries{T,N}) where {T,N} = N
+ndims(::AbstractTimeSeries) = 2
+ndims(::TimeArray{T,N}) where {T,N} = N
 
 ###### iteration protocol ########
 
-@generated function iterate(ta::AbstractTimeSeries{T,N}, i = 1) where {T,N}
+@generated function iterate(ta::TimeArray{T,N}, i = 1) where {T,N}
     val = (N == 1) ? :(values(ta)[i]) : :(values(ta)[i, :])
 
     quote
@@ -182,8 +184,8 @@ hash(x::TimeArray, h::UInt) =
 
 ###### eltype #####################
 
-Base.eltype(::AbstractTimeSeries{T,1,D}) where {T,D} = Tuple{D,T}
-Base.eltype(::AbstractTimeSeries{T,2,D}) where {T,D} = Tuple{D,Vector{T}}
+Base.eltype(::TimeArray{T,1,D}) where {T,D} = Tuple{D,T}
+Base.eltype(::TimeArray{T,2,D}) where {T,D} = Tuple{D,Vector{T}}
 
 ###### show #####################
 
