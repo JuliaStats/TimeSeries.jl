@@ -15,7 +15,7 @@ abstract type AbstractTimeSeries{T,N,D} end
 
     TimeArray(timestamp, values[, colnames, meta = nothing])
     TimeArray(ta::TimeArray; timestamp, values, colnames, meta)
-    TimeArray(data::NamedTuple, timestamp = :datetime, meta)
+    TimeArray(data::NamedTuple; timestamp::Symbol, meta = nothing)
     TimeArray(table; timestamp::Symbol, timeparser::Callable = identity)
 
 The second constructor yields a new `TimeArray` with the new given fields.
