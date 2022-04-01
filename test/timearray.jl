@@ -391,11 +391,11 @@ end
 
 
 @testset "Base.eltype" begin
-    @test eltype(cl)   == Tuple{Date,Float64}
-    @test eltype(ohlc) == Tuple{Date,Vector{Float64}}
+    @test eltype(cl)   == NamedTuple{(:timestamp, :Close),Tuple{Date,Float64}}
+    @test eltype(ohlc) == NamedTuple{(:timestamp, :Open, :High, :Low, :Close),Vector{Float64}}
 
-    @test eltype(cl .> 1)   == Tuple{Date,Bool}
-    @test eltype(ohlc .> 1) == Tuple{Date,Vector{Bool}}
+    @test eltype(cl .> 1)   == NamedTuple{(:timestamp, :Close),Bool}
+    @test eltype(ohlc .> 1) == NamedTuple{(:timestamp, :Open, :High, :Low, :Close),Vector{Bool}}
 end
 
 
