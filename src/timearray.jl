@@ -182,8 +182,8 @@ hash(x::TimeArray, h::UInt) =
 
 ###### eltype #####################
 
-Base.eltype(::AbstractTimeSeries{T,1,D}) where {T,D} = Tuple{D,T}
-Base.eltype(::AbstractTimeSeries{T,2,D}) where {T,D} = Tuple{D,Vector{T}}
+Base.eltype(ts::AbstractTimeSeries{T,1,D}) where {T,D} = NamedTuple{tuple(:timestamp,colnames(ts)...),Tuple{D,T}}
+Base.eltype(ts::AbstractTimeSeries{T,2,D}) where {T,D} = NamedTuple{tuple(:timestamp,colnames(ts)...),Tuple{D,Vector{T}}}
 
 ###### show #####################
 
