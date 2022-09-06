@@ -1,7 +1,7 @@
 name = "TimeSeries"
 uuid = "9e3dc215-6440-5c97-bce1-76c03772f85e"
 authors = ["JuliaStats <https://github.com/JuliaStats>"]
-version = "0.23.0"
+version = "0.23.1"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
