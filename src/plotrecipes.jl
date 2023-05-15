@@ -149,6 +149,7 @@ end
         seriestype  := :shape
         seriescolor := colors′
         linecolor  --> colors′
+        label --> ""
         xseg, yseg
     end
 
@@ -157,6 +158,7 @@ end
         seriescolor       := colors
         markersize        := 1
         markerstrokewidth := 0
+        label --> ""
         hover             --> hovers
         xcenter, ycenter
     end
