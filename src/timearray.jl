@@ -235,7 +235,7 @@ function print_time_array(io::IO, ta::TimeArray{T}, short=false, allcols=false) 
     short && return
     println(io)
 
-    # calculate column withs
+    # calculate column widths
     drow, dcol = displaysize(io)
     res_row    = 9  # number of reserved rows: summary line, label line ... etc
     half_row   = floor(Int, (drow - res_row) / 2)
@@ -468,7 +468,7 @@ getproperty(ta::AbstractTimeSeries, c::Symbol) = ta[c]
 
 propertynames(ta::TimeArray) = colnames(ta)
 
-###### element wrapers ###########
+###### element wrappers ###########
 
 """
     timestamp(ta::TimeArray)
