@@ -17,7 +17,7 @@ resulting `TimeArray` to have 8,336 rows of data, corresponding to the
 length of `AAPL`. This assumes that every day that Apple Computer, Inc.
 traded, Caterpillar, Inc likewise traded. It turns out that this isn't
 true. `CAT` did not trade on Sep 27, 1985 because Hurricane Glorio shut
-down the New York Stock Exchage. Apple Computer trades on the electronic
+down the New York Stock Exchange. Apple Computer trades on the electronic
 NASDAQ and its trading was not halted on that day. The result of the
 merge should then be 8,335 rows:
 
