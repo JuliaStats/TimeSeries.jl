@@ -18,6 +18,7 @@ DocStringExtensions = "0.8, 0.9"
 MarketData = "0.13"
 RecipesBase = "0.5, 0.7, 0.8, 1.0"
 Reexport = "1"
+Statistics = "1"
 Tables = "1"
 julia = "1"
 
