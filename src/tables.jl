@@ -5,6 +5,8 @@ module TablesIntegration
 using ..TimeSeries
 
 using Tables
+using TableTraits
+using IteratorInterfaceExtensions
 
 
 # S: the column names, including the extra column name for time index
@@ -63,6 +65,10 @@ Tables.schema(i::TableIter{T,S}) where {T,S} = Tables.Schema(S, coltypes(data(i)
 
 coltypes(x::AbstractTimeSeries{T,N,D}) where {T,N,D} = (D, (T for _ ∈ 1:size(x, 2))...)
 
+TableTraits.isiterabletable(x::TimeArray) = true
+IteratorInterfaceExtensions.getiterator(ta::TimeArray) =
+    Tables.datavaluerows(Tables.columntable(ta))
+IteratorInterfaceExtensions.isiterable(ta::TimeArray) = true
 
 ###############################################################################
 #  Constructors
