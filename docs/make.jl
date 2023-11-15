@@ -6,6 +6,7 @@ makedocs(
     format=Documenter.HTML(; prettyurls=(get(ENV, "CI", nothing) == "true")),
     sitename="TimeSeries.jl",
     modules=[TimeSeries],
+    warnonly=true, # some docstrings are not in the manual
     pages=[
         "index.md",
         "getting_started.md",
