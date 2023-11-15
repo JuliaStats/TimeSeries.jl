@@ -186,186 +186,49 @@ Base.eltype(::AbstractTimeSeries{T,1,D}) where {T,D} = Tuple{D,T}
 Base.eltype(::AbstractTimeSeries{T,2,D}) where {T,D} = Tuple{D,Vector{T}}
 
 ###### show #####################
+Base.summary(io::IO, ta::TimeArray) = show(io, ta)
 
-@inline _showval(v::Any) = repr(v)
-@inline _showval(v::Number) = string(v)
-@inline _showval(v::AbstractFloat) =
-    ifelse(isnan(v), MISSING, string(round(v, digits=DECIMALS)))
-
-"""
-calculate the paging
-
-```
-> using MarketData
-> AAPL  # this function will return `UnitRange{Int64}[1:9, 10:12]`
-```
-"""
-@inline function _showpages(dcol::Int, timewidth::Int, colwidth::Array{Int})
-    ret = UnitRange{Int}[]
-    c = dcol - timewidth - 5
-    last_i = 1
-    for i in eachindex(colwidth)
-        w = colwidth[i] + 3
-        if c - w < 0
-            push!(ret, last_i:i-1)
-            # next page
-            c = dcol - timewidth - 5 - w
-            last_i = i
-        elseif i == length(colwidth)
-            push!(ret, last_i:i)
-        else
-            c -= w
-        end
-    end
-    ret
-end
-
-function print_time_array(io::IO, ta::TimeArray{T}, short=false, allcols=false) where T
-    # summary line
+function Base.show(io::IO, ta::TimeArray) 
     nrow = size(values(ta), 1)
     ncol = size(values(ta), 2)
-
     print(io, "$(nrow)×$(ncol) $(typeof(ta))")
     if nrow != 0
         print(io, " $(timestamp(ta)[1]) to $(timestamp(ta)[end])")
     else  # e.g. TimeArray(Date[], [])
         return
     end
+end
+function Base.show(io::IO, ::MIME"text/plain", ta::TimeArray;  allrows = !get(io, :limit, false), allcols = !get(io, :limit, false))
+    nrow = size(values(ta), 1)
+    ncol = size(values(ta), 2)
 
-    short && return
+    show(io, ta) # summary line
+
+    nrow == 0 && return
+
     println(io)
 
-    # calculate column widths
-    drow, dcol = displaysize(io)
-    res_row    = 9  # number of reserved rows: summary line, label line ... etc
-    half_row   = floor(Int, (drow - res_row) / 2)
-    add_row    = (drow - res_row) % 2
-
-    if nrow > (drow - res_row)
-        tophalf = 1:(half_row + add_row)
-        bothalf = (nrow - half_row + 1):nrow
-        strs = _showval.(@view values(ta)[[tophalf; bothalf], :])
-        ts   = @view timestamp(ta)[[tophalf; bothalf]]
+    if allcols && allrows
+        crop = :none
+    elseif allcols
+        crop = :vertical
+    elseif allrows
+        crop = :horizontal
     else
-        tophalf = 0
-        bothalf = 0
-        strs = _showval.(values(ta))
-        ts   = timestamp(ta)
+        crop = :both
     end
 
-    colwidth = maximum(
-        [textwidth.(string.(colnames(ta)))'; textwidth.(strs); fill(5, ncol)'],
-        dims = 1)
-
-    # paging
-    spacetime = textwidth(string(ts[1]))
-    pages = _showpages(dcol, spacetime, colwidth)
-
-    # print all columns?
-    if allcols
-        for p in pages
-            islastpage = p == last(pages)
-            _print_page(io, p, ta,
-                spacetime, colwidth, nrow, drow, res_row, tophalf, bothalf,
-                islastpage ? 1 : 2)
-            if length(pages) > 1 && !islastpage
-                print(io,"\n\n")
-            end
-        end
-    else
-        # print first page and omitted columns message
-        _print_page(io, pages[1], ta,
-            spacetime, colwidth, nrow, drow, res_row, tophalf, bothalf,
-            length(pages))
-
-        if length(pages) > 1
-            pndtcols = last(last(pages)) - first(pages[2]) + 1
-            println(io)
-            printstyled(io, lpad("$pndtcols columns omitted", dcol), color=:cyan)
-        end
-    end
+    data = hcat(timestamp(ta), values(ta))
+    header = vcat("", string.(colnames(ta)))
+    PrettyTables.pretty_table(io, data; 
+        header=header, 
+        newline_at_end = false, 
+        reserved_display_lines = 2,
+        row_label_alignment = :r,
+        header_alignment = :l,
+        crop,
+    )
 end
-
-"""
-    _print_page
-
-Helper function to print a single page of the `TimeArray`
-"""
-function _print_page(io::IO, p::UnitRange{Int}, ta::TimeArray, spacetime,
-    colwidth, nrow, drow, res_row, tophalf, bothalf, pages)
-
-    strs = _showval.(values(ta))
-    ts = timestamp(ta)
-    last = pages > 1 ? "│\u22EF" : "│"
-
-    # row label line
-    ## e.g. | Open  | High  | Low   | Close  |
-    print(io, "│", " "^(spacetime + 2))
-    for (name, w) in zip(colnames(ta)[p], colwidth[p])
-        print(io, "│ ", _rpad(name, w + 1))
-    end
-    println(io, last)
-
-    ## e.g. ├───────┼───────┼───────┼────────┤
-    print(io, "├", "─"^(spacetime + 2))
-    for w in colwidth[p]
-        print(io, "┼", "─"^(w + 2))
-    end
-    print(io, "┤")
-
-    # timestamp and values line
-    if nrow > (drow - res_row)
-
-        # print bottom part
-        for i in tophalf
-            println(io)
-            print(io, "│ ", ts[i], " ")
-            for j in p
-                print(io, "│ ", _rpad(strs[i, j], colwidth[j] + 1))
-            end
-            print(io, i % 3 == 0 ? last : "│")
-        end
-
-        # print vdots part
-        println(io)
-        print(io, "│ ", _rpad("\u22EE", spacetime + 1))
-        for j in p
-            print(io, "│ ", _rpad("\u22EE", colwidth[j] + 1))
-        end
-        # print(io, pages > 1 ? "│\u22F1" : "│")
-        print(io, "│")
-
-        # print bottom part
-        for i in (length(bothalf) - 1):-1:0
-            i = size(strs, 1) - i
-            println(io)
-            print(io, "│ ", ts[i], " ")
-            for j in p
-                print(io, "│ ", _rpad(strs[i, j], colwidth[j] + 1))
-            end
-            print(io, i % 3 == 0 ? last : "│")
-        end
-
-    else
-        # print all rows
-        for i in 1:nrow
-            println(io)
-            print(io, "│ ", ts[i], " ")
-            for j in p
-                print(io, "│ ", _rpad(strs[i, j], colwidth[j] + 1))
-            end
-            print(io, i % 3 == 0 ? last : "│")
-        end
-    end
-end
-
-Base.summary(io::IO, ta::TimeArray) = print_time_array(io, ta, true)
-
-Base.show(io::IO, ta::TimeArray) =
-    print_time_array(io, ta, false, get(io, :limit, true))
-Base.show(io::IO, ::MIME"text/plain", ta::TimeArray) =
-    print_time_array(io, ta, false, !get(io, :limit, false))
-
 
 ###### getindex #################
 
