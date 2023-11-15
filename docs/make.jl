@@ -3,10 +3,10 @@ using TimeSeries
 
 
 makedocs(
-    format = Documenter.HTML(),
-    sitename = "TimeSeries.jl",
-    modules = [TimeSeries],
-    pages = [
+    format=Documenter.HTML(; prettyurls=(get(ENV, "CI", nothing) == "true")),
+    sitename="TimeSeries.jl",
+    modules=[TimeSeries],
+    pages=[
         "index.md",
         "getting_started.md",
         "timearray.md",
@@ -24,7 +24,7 @@ makedocs(
 )
 
 deploydocs(
-    repo         = "github.com/JuliaStats/TimeSeries.jl.git",
-    devbranch    = "master",
-    push_preview = true,
+    repo="github.com/JuliaStats/TimeSeries.jl.git",
+    devbranch="master",
+    push_preview=true,
 )
