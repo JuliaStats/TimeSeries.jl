@@ -220,7 +220,7 @@ function Base.show(io::IO, ::MIME"text/plain", ta::TimeArray;  allrows = !get(io
 
     data = hcat(timestamp(ta), values(ta))
     header = vcat("", string.(colnames(ta)))
-    PrettyTables.pretty_table(io, data; 
+    pretty_table(io, data; 
         header=header, 
         newline_at_end = false, 
         reserved_display_lines = 2,

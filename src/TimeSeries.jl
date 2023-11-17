@@ -9,7 +9,7 @@ using DocStringExtensions: SIGNATURES
 using RecipesBase
 using Reexport
 using Tables
-import PrettyTables
+using PrettyTables: pretty_table
 
 export TimeArray, AbstractTimeSeries,
        when, from, to, findwhen, timestamp, values, colnames, meta, head, tail,
