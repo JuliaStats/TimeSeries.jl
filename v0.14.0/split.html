@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Splitting by conditions · TimeSeries.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>TimeSeries.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search.html"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="index.html">TimeSeries Overview</a></li><li><a class="toctext" href="getting_started.html">Getting Started</a></li><li><a class="toctext" href="timearray.html">The <code>TimeArray</code> time series type</a></li><li><a class="toctext" href="indexing.html">Array indexing</a></li><li class="current"><a class="toctext" href="split.html">Splitting by conditions</a><ul class="internal"><li><a class="toctext" href="#when-1"><code>when</code></a></li><li><a class="toctext" href="#from-1"><code>from</code></a></li><li><a class="toctext" href="#to-1"><code>to</code></a></li><li><a class="toctext" href="#findwhen-1"><code>findwhen</code></a></li><li><a class="toctext" href="#findall-1"><code>findall</code></a></li><li><a class="toctext" href="#Splitting-by-head-and-tail-1">Splitting by head and tail</a></li></ul></li><li><a class="toctext" href="modify.html">Modify existing <code>TimeArray</code>s</a></li><li><a class="toctext" href="operators.html">Mathematical, comparison, and logical operators</a></li><li><a class="toctext" href="apply.html">Apply methods</a></li><li><a class="toctext" href="combine.html">Combine methods</a></li><li><a class="toctext" href="readwrite.html">I/O</a></li><li><a class="toctext" href="dotfile.html">Customize <code>TimeArray</code> printting</a></li><li><a class="toctext" href="plotting.html">Plotting</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href="split.html">Splitting by conditions</a></li></ul><a class="edit-page" href="https://github.com/JuliaStats/TimeSeries.jl/blob/master/docs/src/split.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Splitting by conditions</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Splitting-by-conditions-1" href="#Splitting-by-conditions-1">Splitting by conditions</a></h1><p>Specific methods for segmenting on time ranges or if condition is met is supported with the following methods.</p><h2><a class="nav-anchor" id="when-1" href="#when-1"><code>when</code></a></h2><p>The <code>when</code> methods allows aggregating elements from a <code>TimeArray</code> into specific time periods, such as Mondays or the month of October:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+ERROR: ArgumentError: Package MarketData not found in current path:
+- Run `import Pkg; Pkg.add(&quot;MarketData&quot;)` to install the MarketData package.
+
+julia&gt; when(cl, dayofweek, 1)
+ERROR: UndefVarError: cl not defined
+
+julia&gt; when(cl, dayname, &quot;Monday&quot;)
+ERROR: UndefVarError: cl not defined</code></pre><p>The period argument holds a valid <code>Date</code> method. Below are currently available alternatives.</p><table><tr><th>Dates method</th><th>Example</th></tr><tr><td><code>day</code></td><td>Jan 3, 2000 = 3</td></tr><tr><td><code>dayname</code></td><td>Jan 3, 2000 = &quot;Monday&quot;</td></tr><tr><td><code>week</code></td><td>Jan 3, 2000 = 1</td></tr><tr><td><code>month</code></td><td>Jan 3, 2000 = 1</td></tr><tr><td><code>monthname</code></td><td>Jan 3, 2000 = &quot;January&quot;</td></tr><tr><td><code>year</code></td><td>Jan 3, 2000 = 2000</td></tr><tr><td><code>dayofweek</code></td><td>Monday = 1</td></tr><tr><td><code>dayofweekofmonth</code></td><td>Fourth Monday in Jan = 4</td></tr><tr><td><code>dayofyear</code></td><td>Dec 31, 2000 = 366</td></tr><tr><td><code>quarterofyear</code></td><td>Dec 31, 2000 = 4</td></tr><tr><td><code>dayofquarter</code></td><td>Dec 31, 2000 = 93</td></tr></table><h2><a class="nav-anchor" id="from-1" href="#from-1"><code>from</code></a></h2><p>The <code>from</code> method truncates a <code>TimeArray</code> starting with the date passed to the method:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+ERROR: ArgumentError: Package MarketData not found in current path:
+- Run `import Pkg; Pkg.add(&quot;MarketData&quot;)` to install the MarketData package.
+
+
+julia&gt; from(cl, Date(2001, 12, 27))
+ERROR: UndefVarError: cl not defined</code></pre><h2><a class="nav-anchor" id="to-1" href="#to-1"><code>to</code></a></h2><p>The <code>to</code> method truncates a <code>TimeArray</code> after the date passed to the method:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+ERROR: ArgumentError: Package MarketData not found in current path:
+- Run `import Pkg; Pkg.add(&quot;MarketData&quot;)` to install the MarketData package.
+
+
+julia&gt; to(cl, Date(2000, 1, 5))
+ERROR: UndefVarError: cl not defined</code></pre><h2><a class="nav-anchor" id="findwhen-1" href="#findwhen-1"><code>findwhen</code></a></h2><p>The <code>findwhen</code> method test a condition and returns a vector of <code>Date</code> or <code>DateTime</code> where the condition is <code>true</code>:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+ERROR: ArgumentError: Package MarketData not found in current path:
+- Run `import Pkg; Pkg.add(&quot;MarketData&quot;)` to install the MarketData package.
+
+
+julia&gt; green = findwhen(ohlc[:Close] .&gt; ohlc[:Open]);
+ERROR: UndefVarError: ohlc not defined
+
+julia&gt; typeof(green)
+ERROR: UndefVarError: green not defined
+
+julia&gt; ohlc[green]
+ERROR: UndefVarError: ohlc not defined</code></pre><h2><a class="nav-anchor" id="findall-1" href="#findall-1"><code>findall</code></a></h2><p>The <code>findall</code> method tests a condition and returns a vector of <code>Int</code> representing the row in the array where the condition is <code>true</code>:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+ERROR: ArgumentError: Package MarketData not found in current path:
+- Run `import Pkg; Pkg.add(&quot;MarketData&quot;)` to install the MarketData package.
+
+
+julia&gt; red = findall(ohlc[:Close] .&lt; ohlc[:Open]);
+ERROR: UndefVarError: ohlc not defined
+
+julia&gt; typeof(red)
+ERROR: UndefVarError: red not defined
+
+julia&gt; ohlc[red]
+ERROR: UndefVarError: ohlc not defined</code></pre><h2><a class="nav-anchor" id="Splitting-by-head-and-tail-1" href="#Splitting-by-head-and-tail-1">Splitting by head and tail</a></h2><h3><a class="nav-anchor" id="head-1" href="#head-1"><code>head</code></a></h3><p>The <code>head</code> method defaults to returning only the first value in a <code>TimeArray</code>. By selecting the second positional argument to a different value, the user can modify how many from the top are selected:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+ERROR: ArgumentError: Package MarketData not found in current path:
+- Run `import Pkg; Pkg.add(&quot;MarketData&quot;)` to install the MarketData package.
+
+
+julia&gt; head(cl)
+ERROR: UndefVarError: cl not defined</code></pre><h3><a class="nav-anchor" id="tail-1" href="#tail-1"><code>tail</code></a></h3><p>The <code>tail</code> method defaults to returning only the last value in a <code>TimeArray</code>. By selecting the second positional argument to a different value, the user can modify how many from the bottom are selected:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+ERROR: ArgumentError: Package MarketData not found in current path:
+- Run `import Pkg; Pkg.add(&quot;MarketData&quot;)` to install the MarketData package.
+
+
+julia&gt; tail(cl)
+ERROR: UndefVarError: cl not defined
+
+julia&gt; tail(cl, 3)
+ERROR: UndefVarError: cl not defined</code></pre><footer><hr/><a class="previous" href="indexing.html"><span class="direction">Previous</span><span class="title">Array indexing</span></a><a class="next" href="modify.html"><span class="direction">Next</span><span class="title">Modify existing <code>TimeArray</code>s</span></a></footer></article></body></html>

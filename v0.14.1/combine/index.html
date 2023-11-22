@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Combine methods · TimeSeries.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>TimeSeries.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">TimeSeries Overview</a></li><li><a class="toctext" href="../getting_started/">Getting Started</a></li><li><a class="toctext" href="../timearray/">The <code>TimeArray</code> time series type</a></li><li><a class="toctext" href="../indexing/">Array indexing</a></li><li><a class="toctext" href="../split/">Splitting by conditions</a></li><li><a class="toctext" href="../modify/">Modify existing <code>TimeArray</code>s</a></li><li><a class="toctext" href="../operators/">Mathematical, comparison, and logical operators</a></li><li><a class="toctext" href="../apply/">Apply methods</a></li><li class="current"><a class="toctext" href>Combine methods</a><ul class="internal"><li><a class="toctext" href="#merge-1"><code>merge</code></a></li><li><a class="toctext" href="#collapse-1"><code>collapse</code></a></li><li><a class="toctext" href="#vcat-1"><code>vcat</code></a></li><li><a class="toctext" href="#map-1"><code>map</code></a></li></ul></li><li><a class="toctext" href="../readwrite/">I/O</a></li><li><a class="toctext" href="../dotfile/">Customize <code>TimeArray</code> printing</a></li><li><a class="toctext" href="../plotting/">Plotting</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Combine methods</a></li></ul><a class="edit-page" href="https://github.com/JuliaStats/TimeSeries.jl/blob/master/docs/src/combine.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Combine methods</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Combine-methods-1" href="#Combine-methods-1">Combine methods</a></h1><p><code>TimeSeries</code> supports merging two <code>TimeArray</code>s, and squishing the timestamp to a longer-term interval while representing values that make sense.</p><h2><a class="nav-anchor" id="merge-1" href="#merge-1"><code>merge</code></a></h2><p>The <code>merge</code> method performs joins between two <code>TimeArray</code>s. The default behaviour is to perform an inner join, such that the resulting <code>TimeArray</code> contains only timestamps that both <code>TimeArray</code>s share, and values that correspond to that timestamp.</p><p>The <code>AAPL</code> object from <code>MarketData</code> has 8,336 rows of data from Dec 12, 1980 to Dec 31, 2013. If we merge it with the <code>CAT</code> object, which contains 13,090 rows of data from Jan 2, 1962 to Dec 31, 2013 we might expect the resulting <code>TimeArray</code> to have 8,336 rows of data, corresponding to the length of <code>AAPL</code>. This assumes that every day that Apple Computer, Inc. traded, Caterpillar, Inc likewise traded. It turns out that this isn&#39;t true. <code>CAT</code> did not trade on Sep 27, 1985 because Hurricane Glorio shut down the New York Stock Exchage. Apple Computer trades on the electronic NASDAQ and its trading was not halted on that day. The result of the merge should then be 8,335 rows:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+
+julia&gt; AppleCat = merge(AAPL,CAT);
+
+julia&gt; length(AppleCat)
+8335</code></pre><p>Left, right, and outer joins can also be performed by passing the corresponding symbol. These joins introduce <code>NaN</code> values when data for a particular timestamp only exists in one of the series to be merged. For example:</p><pre><code class="language-julia-repl">julia&gt; merge(op[1:3], cl[2:4], :left)
+3×2 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-05
+│            │ Open   │ Close │
+├────────────┼────────┼───────┤
+│ 2000-01-03 │ 104.88 │ NaN   │
+│ 2000-01-04 │ 108.25 │ 102.5 │
+│ 2000-01-05 │ 103.75 │ 104.0 │
+
+julia&gt; merge(op[1:3], cl[2:4], :right)
+3×2 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-04 to 2000-01-06
+│            │ Open   │ Close │
+├────────────┼────────┼───────┤
+│ 2000-01-04 │ 108.25 │ 102.5 │
+│ 2000-01-05 │ 103.75 │ 104.0 │
+│ 2000-01-06 │ NaN    │ 95.0  │
+
+julia&gt; merge(op[1:3], cl[2:4], :outer)
+4×2 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-06
+│            │ Open   │ Close │
+├────────────┼────────┼───────┤
+│ 2000-01-03 │ 104.88 │ NaN   │
+│ 2000-01-04 │ 108.25 │ 102.5 │
+│ 2000-01-05 │ 103.75 │ 104.0 │
+│ 2000-01-06 │ NaN    │ 95.0  │</code></pre><p>The <code>merge</code> method allows users to specify the value for the <code>meta</code> field of the merged object. When that value is not explicitly provided, <code>merge</code> will concatenate the <code>meta</code> field values, assuming these values to be strings. This covers the vast majority of use cases. In edge cases when users do not provide a <code>meta</code> value and both field values are not strings, the merged object will take on <code>Void</code> as its <code>meta</code> field value:</p><pre><code class="language-julia-repl">julia&gt; meta(AppleCat)
+&quot;AAPL_CAT&quot;
+
+julia&gt; CatApple = merge(CAT, AAPL, meta=47);
+
+julia&gt; meta(CatApple)
+47
+
+julia&gt; meta(merge(AppleCat, CatApple))</code></pre><h2><a class="nav-anchor" id="collapse-1" href="#collapse-1"><code>collapse</code></a></h2><p>The <code>collapse</code> method allows for compressing data into a larger time frame. For example, converting daily data into monthly data. When compressing dates, something rational has to be done with the values that lived in the more granular time frame. To define what happens, a function call is made. In our example, we want to compress the daily <code>cl</code> closing prices from daily to monthly. It makes sense for us to take the <code>last</code> value known and have that represented with the corresponding timestamp. A non-exhaustive list of valid time methods is presented below.</p><table><tr><th>Dates method</th><th>Time length</th></tr><tr><td><code>day</code></td><td>daily</td></tr><tr><td><code>week</code></td><td>weekly</td></tr><tr><td><code>month</code></td><td>monthly</td></tr><tr><td><code>year</code></td><td>yearly</td></tr></table><p>Showing this code in REPL:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+
+julia&gt; collapse(cl,month,last)
+24×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-31 to 2001-12-31
+│            │ Close  │
+├────────────┼────────┤
+│ 2000-01-31 │ 103.75 │
+│ 2000-02-29 │ 114.62 │
+│ 2000-03-31 │ 135.81 │
+│ 2000-04-28 │ 124.06 │
+│ 2000-05-31 │ 84.0   │
+│ 2000-06-30 │ 52.38  │
+│ 2000-07-31 │ 50.81  │
+│ 2000-08-31 │ 60.94  │
+│ 2000-09-29 │ 25.75  │
+   ⋮
+│ 2001-05-31 │ 19.95  │
+│ 2001-06-29 │ 23.25  │
+│ 2001-07-31 │ 18.79  │
+│ 2001-08-31 │ 18.55  │
+│ 2001-09-28 │ 15.51  │
+│ 2001-10-31 │ 17.56  │
+│ 2001-11-30 │ 21.3   │
+│ 2001-12-31 │ 21.9   │</code></pre><p>We can also supply the function that chooses the timestamp and the function that determines the corresponding value independently:</p><pre><code class="language-julia-repl">julia&gt; using Statistics
+
+julia&gt; collapse(cl, month, last, mean)
+24×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-31 to 2001-12-31
+│            │ Close    │
+├────────────┼──────────┤
+│ 2000-01-31 │ 103.3595 │
+│ 2000-02-29 │ 111.6375 │
+│ 2000-03-31 │ 128.5026 │
+│ 2000-04-28 │ 123.1058 │
+│ 2000-05-31 │ 100.8105 │
+│ 2000-06-30 │ 78.8891  │
+│ 2000-07-31 │ 53.7585  │
+│ 2000-08-31 │ 51.3122  │
+│ 2000-09-29 │ 55.757   │
+   ⋮
+│ 2001-05-31 │ 23.5314  │
+│ 2001-06-29 │ 21.531   │
+│ 2001-07-31 │ 21.4624  │
+│ 2001-08-31 │ 18.6465  │
+│ 2001-09-28 │ 16.602   │
+│ 2001-10-31 │ 17.3222  │
+│ 2001-11-30 │ 19.649   │
+│ 2001-12-31 │ 21.695   │</code></pre><h2><a class="nav-anchor" id="vcat-1" href="#vcat-1"><code>vcat</code></a></h2><p>The <code>vcat</code> method is used to concatenate time series: if you have two time series with the same columns, but two distinct periods of time, this function can merge them into a single object. Notably, it can be used to merge data that is split into multiple files. Its behaviour is quite different from <code>merge</code>, which does not consider that its arguments are actually the <em>same</em> time series.</p><p>This concatenation is <em>vertical</em> (<code>vcat</code>) because it does not create columns, it extends existing ones (which are represented vertically).</p><p>For example:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; a = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16])
+2×1 TimeArray{Int64,1,Date,Array{Int64,1}} 2015-10-01 to 2015-11-01
+│            │ A     │
+├────────────┼───────┤
+│ 2015-10-01 │ 15    │
+│ 2015-11-01 │ 16    │
+
+julia&gt; b = TimeArray([Date(2015, 12, 01)], [17])
+1×1 TimeArray{Int64,1,Date,Array{Int64,1}} 2015-12-01 to 2015-12-01
+│            │ A     │
+├────────────┼───────┤
+│ 2015-12-01 │ 17    │
+
+julia&gt; [a; b]
+3×1 TimeArray{Int64,1,Date,Array{Int64,1}} 2015-10-01 to 2015-12-01
+│            │ A     │
+├────────────┼───────┤
+│ 2015-10-01 │ 15    │
+│ 2015-11-01 │ 16    │
+│ 2015-12-01 │ 17    │</code></pre><h2><a class="nav-anchor" id="map-1" href="#map-1"><code>map</code></a></h2><p>This function allows complete transformation of the data within the time series, with alteration on both the time stamps and the associated values. It works exactly like <code>Base.map</code>: the first argument is a binary function (the time stamp and the values) that returns two values, respectively the new time stamp and the new vector of values. It does not perform any kind of compression like <code>collapse</code>, but rather transformations.</p><p>The simplest example is to postpone all time stamps in the given time series, here by one year:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using Dates
+
+julia&gt; ta = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16])
+2×1 TimeArray{Int64,1,Date,Array{Int64,1}} 2015-10-01 to 2015-11-01
+│            │ A     │
+├────────────┼───────┤
+│ 2015-10-01 │ 15    │
+│ 2015-11-01 │ 16    │
+
+julia&gt; map((timestamp, values) -&gt; (timestamp + Year(1), values), ta)
+2×1 TimeArray{Int64,1,Date,Array{Int64,1}} 2016-10-01 to 2016-11-01
+│            │ A     │
+├────────────┼───────┤
+│ 2016-10-01 │ 15    │
+│ 2016-11-01 │ 16    │</code></pre><footer><hr/><a class="previous" href="../apply/"><span class="direction">Previous</span><span class="title">Apply methods</span></a><a class="next" href="../readwrite/"><span class="direction">Next</span><span class="title">I/O</span></a></footer></article></body></html>

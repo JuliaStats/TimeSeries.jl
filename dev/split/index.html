@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Splitting by conditions · TimeSeries.jl</title><meta name="title" content="Splitting by conditions · TimeSeries.jl"/><meta property="og:title" content="Splitting by conditions · TimeSeries.jl"/><meta property="twitter:title" content="Splitting by conditions · TimeSeries.jl"/><meta name="description" content="Documentation for TimeSeries.jl."/><meta property="og:description" content="Documentation for TimeSeries.jl."/><meta property="twitter:description" content="Documentation for TimeSeries.jl."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">TimeSeries.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">TimeSeries Overview</a></li><li><a class="tocitem" href="../getting_started/">Getting Started</a></li><li><a class="tocitem" href="../timearray/">The <code>TimeArray</code> time series type</a></li><li><a class="tocitem" href="../indexing/">Array indexing</a></li><li class="is-active"><a class="tocitem" href>Splitting by conditions</a><ul class="internal"><li><a class="tocitem" href="#when"><span><code>when</code></span></a></li><li><a class="tocitem" href="#from"><span><code>from</code></span></a></li><li><a class="tocitem" href="#to"><span><code>to</code></span></a></li><li><a class="tocitem" href="#findwhen"><span><code>findwhen</code></span></a></li><li><a class="tocitem" href="#findall"><span><code>findall</code></span></a></li><li><a class="tocitem" href="#Splitting-by-head-and-tail"><span>Splitting by head and tail</span></a></li></ul></li><li><a class="tocitem" href="../modify/">Modify existing <code>TimeArray</code>s</a></li><li><a class="tocitem" href="../operators/">Mathematical, comparison, and logical operators</a></li><li><a class="tocitem" href="../apply/">Apply methods</a></li><li><a class="tocitem" href="../combine/">Combine methods</a></li><li><a class="tocitem" href="../readwrite/">I/O</a></li><li><a class="tocitem" href="../tables/">Tables.jl Interface Integration</a></li><li><a class="tocitem" href="../dotfile/">Customize <code>TimeArray</code> printing</a></li><li><a class="tocitem" href="../plotting/">Plotting</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Splitting by conditions</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Splitting by conditions</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/JuliaStats/TimeSeries.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/JuliaStats/TimeSeries.jl/blob/master/docs/src/split.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Splitting-by-conditions"><a class="docs-heading-anchor" href="#Splitting-by-conditions">Splitting by conditions</a><a id="Splitting-by-conditions-1"></a><a class="docs-heading-anchor-permalink" href="#Splitting-by-conditions" title="Permalink"></a></h1><p>Specific methods for segmenting on time ranges or if condition is met is supported with the following methods.</p><h2 id="when"><a class="docs-heading-anchor" href="#when"><code>when</code></a><a id="when-1"></a><a class="docs-heading-anchor-permalink" href="#when" title="Permalink"></a></h2><p>The <code>when</code> methods allows aggregating elements from a <code>TimeArray</code> into specific time periods, such as Mondays or the month of October:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using TimeSeries</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MarketData</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; when(cl, dayofweek, 1)</code><code class="nohighlight hljs ansi" style="display:block;">95×1 TimeArray{Float64, 1, Date, Vector{Float64}} 2000-01-03 to 2001-12-31
+┌────────────┬────────┐
+│<span class="sgr1">            │ Close  │
+├────────────┼────────┤
+│ 2000-01-03 │ 111.94 │
+│ 2000-01-10 │  97.75 │
+│ 2000-01-24 │ 106.25 │
+│ 2000-01-31 │ 103.75 │
+│ 2000-02-07 │ 114.06 │
+│ 2000-02-14 │ 115.81 │
+│ 2000-02-28 │ 113.25 │
+│ 2000-03-06 │ 125.69 │
+│ 2000-03-13 │ 121.31 │
+│ 2000-03-20 │  123.0 │
+│ 2000-03-27 │ 139.56 │
+│ 2000-04-03 │ 133.31 │
+│ 2000-04-10 │  125.0 │
+│ 2000-04-17 │ 123.88 │
+│ 2000-04-24 │  120.5 │
+│     ⋮      │   ⋮    │
+└────────────┴────────┘
+<span class="sgr36">        80 rows omitted</span></span></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; when(cl, dayname, &quot;Monday&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">95×1 TimeArray{Float64, 1, Date, Vector{Float64}} 2000-01-03 to 2001-12-31
+┌────────────┬────────┐
+│<span class="sgr1">            │ Close  │
+├────────────┼────────┤
+│ 2000-01-03 │ 111.94 │
+│ 2000-01-10 │  97.75 │
+│ 2000-01-24 │ 106.25 │
+│ 2000-01-31 │ 103.75 │
+│ 2000-02-07 │ 114.06 │
+│ 2000-02-14 │ 115.81 │
+│ 2000-02-28 │ 113.25 │
+│ 2000-03-06 │ 125.69 │
+│ 2000-03-13 │ 121.31 │
+│ 2000-03-20 │  123.0 │
+│ 2000-03-27 │ 139.56 │
+│ 2000-04-03 │ 133.31 │
+│ 2000-04-10 │  125.0 │
+│ 2000-04-17 │ 123.88 │
+│ 2000-04-24 │  120.5 │
+│     ⋮      │   ⋮    │
+└────────────┴────────┘
+<span class="sgr36">        80 rows omitted</span></span></code></pre><p>The period argument holds a valid <code>Date</code> method. Below are currently available alternatives.</p><table><tr><th style="text-align: right">Dates method</th><th style="text-align: right">Example</th></tr><tr><td style="text-align: right"><code>day</code></td><td style="text-align: right">Jan 3, 2000 = 3</td></tr><tr><td style="text-align: right"><code>dayname</code></td><td style="text-align: right">Jan 3, 2000 = &quot;Monday&quot;</td></tr><tr><td style="text-align: right"><code>week</code></td><td style="text-align: right">Jan 3, 2000 = 1</td></tr><tr><td style="text-align: right"><code>month</code></td><td style="text-align: right">Jan 3, 2000 = 1</td></tr><tr><td style="text-align: right"><code>monthname</code></td><td style="text-align: right">Jan 3, 2000 = &quot;January&quot;</td></tr><tr><td style="text-align: right"><code>year</code></td><td style="text-align: right">Jan 3, 2000 = 2000</td></tr><tr><td style="text-align: right"><code>dayofweek</code></td><td style="text-align: right">Monday = 1</td></tr><tr><td style="text-align: right"><code>dayofweekofmonth</code></td><td style="text-align: right">Fourth Monday in Jan = 4</td></tr><tr><td style="text-align: right"><code>dayofyear</code></td><td style="text-align: right">Dec 31, 2000 = 366</td></tr><tr><td style="text-align: right"><code>quarterofyear</code></td><td style="text-align: right">Dec 31, 2000 = 4</td></tr><tr><td style="text-align: right"><code>dayofquarter</code></td><td style="text-align: right">Dec 31, 2000 = 93</td></tr></table><h2 id="from"><a class="docs-heading-anchor" href="#from"><code>from</code></a><a id="from-1"></a><a class="docs-heading-anchor-permalink" href="#from" title="Permalink"></a></h2><p>The <code>from</code> method truncates a <code>TimeArray</code> starting with the date passed to the method:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using TimeSeries</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MarketData</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; from(cl, Date(2001, 12, 27))</code><code class="nohighlight hljs ansi" style="display:block;">3×1 TimeArray{Float64, 1, Date, Vector{Float64}} 2001-12-27 to 2001-12-31
+┌────────────┬───────┐
+│<span class="sgr1">            │ Close │
+├────────────┼───────┤
+│ 2001-12-27 │ 22.07 │
+│ 2001-12-28 │ 22.43 │
+│ 2001-12-31 │  21.9 │
+└────────────┴───────┘</span></code></pre><h2 id="to"><a class="docs-heading-anchor" href="#to"><code>to</code></a><a id="to-1"></a><a class="docs-heading-anchor-permalink" href="#to" title="Permalink"></a></h2><p>The <code>to</code> method truncates a <code>TimeArray</code> after the date passed to the method:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using TimeSeries</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MarketData</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; to(cl, Date(2000, 1, 5))</code><code class="nohighlight hljs ansi" style="display:block;">3×1 TimeArray{Float64, 1, Date, Vector{Float64}} 2000-01-03 to 2000-01-05
+┌────────────┬────────┐
+│<span class="sgr1">            │ Close  │
+├────────────┼────────┤
+│ 2000-01-03 │ 111.94 │
+│ 2000-01-04 │  102.5 │
+│ 2000-01-05 │  104.0 │
+└────────────┴────────┘</span></code></pre><h2 id="findwhen"><a class="docs-heading-anchor" href="#findwhen"><code>findwhen</code></a><a id="findwhen-1"></a><a class="docs-heading-anchor-permalink" href="#findwhen" title="Permalink"></a></h2><p>The <code>findwhen</code> method test a condition and returns a vector of <code>Date</code> or <code>DateTime</code> where the condition is <code>true</code>:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using TimeSeries</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MarketData</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; green = findwhen(ohlc[:Close] .&gt; ohlc[:Open]);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; typeof(green)</code><code class="nohighlight hljs ansi" style="display:block;">Vector{Date}<span class="sgr90"> (alias for Array{Date, 1})</span></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; ohlc[green]</code><code class="nohighlight hljs ansi" style="display:block;">244×4 TimeArray{Float64, 2, Date, Matrix{Float64}} 2000-01-03 to 2001-12-28
+┌────────────┬────────┬────────┬────────┬────────┐
+│<span class="sgr1">            │ Open   │ High   │ Low    │ Close  │
+├────────────┼────────┼────────┼────────┼────────┤
+│ 2000-01-03 │ 104.88 │  112.5 │ 101.69 │ 111.94 │
+│ 2000-01-05 │ 103.75 │ 110.56 │  103.0 │  104.0 │
+│ 2000-01-07 │   96.5 │  101.0 │   95.5 │   99.5 │
+│ 2000-01-13 │  94.48 │  98.75 │   92.5 │  96.75 │
+│ 2000-01-14 │  100.0 │ 102.25 │  99.38 │ 100.44 │
+│ 2000-01-18 │  101.0 │  106.0 │ 100.44 │ 103.94 │
+│ 2000-01-19 │ 105.62 │ 108.75 │ 103.38 │ 106.56 │
+│ 2000-01-25 │  105.0 │ 113.12 │ 102.38 │ 112.25 │
+│ 2000-01-26 │  110.0 │ 114.19 │ 109.75 │ 110.19 │
+│ 2000-01-27 │ 108.81 │  113.0 │  107.0 │  110.0 │
+│ 2000-01-31 │  101.0 │ 103.88 │   94.5 │ 103.75 │
+│ 2000-02-03 │ 100.31 │ 104.25 │ 100.25 │ 103.31 │
+│ 2000-02-04 │ 103.94 │  110.0 │ 103.62 │  108.0 │
+│ 2000-02-07 │  108.0 │ 114.25 │ 105.94 │ 114.06 │
+│ 2000-02-08 │  114.0 │ 116.12 │ 111.25 │ 114.88 │
+│     ⋮      │   ⋮    │   ⋮    │   ⋮    │   ⋮    │
+└────────────┴────────┴────────┴────────┴────────┘
+<span class="sgr36">                                  229 rows omitted</span></span></code></pre><h2 id="findall"><a class="docs-heading-anchor" href="#findall"><code>findall</code></a><a id="findall-1"></a><a class="docs-heading-anchor-permalink" href="#findall" title="Permalink"></a></h2><p>The <code>findall</code> method tests a condition and returns a vector of <code>Int</code> representing the row in the array where the condition is <code>true</code>:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using TimeSeries</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MarketData</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; red = findall(ohlc[:Close] .&lt; ohlc[:Open]);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; typeof(red)</code><code class="nohighlight hljs ansi" style="display:block;">Vector{Int64}<span class="sgr90"> (alias for Array{Int64, 1})</span></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; ohlc[red]</code><code class="nohighlight hljs ansi" style="display:block;">252×4 TimeArray{Float64, 2, Date, Matrix{Float64}} 2000-01-04 to 2001-12-31
+┌────────────┬────────┬────────┬────────┬────────┐
+│<span class="sgr1">            │ Open   │ High   │ Low    │ Close  │
+├────────────┼────────┼────────┼────────┼────────┤
+│ 2000-01-04 │ 108.25 │ 110.62 │ 101.19 │  102.5 │
+│ 2000-01-06 │ 106.12 │  107.0 │   95.0 │   95.0 │
+│ 2000-01-10 │  102.0 │ 102.25 │  94.75 │  97.75 │
+│ 2000-01-11 │  95.94 │  99.38 │   90.5 │  92.75 │
+│ 2000-01-12 │   95.0 │   95.5 │   86.5 │  87.19 │
+│ 2000-01-20 │  115.5 │  121.5 │  113.5 │  113.5 │
+│ 2000-01-21 │ 114.25 │ 114.25 │ 110.19 │ 111.31 │
+│ 2000-01-24 │ 108.44 │ 112.75 │ 105.12 │ 106.25 │
+│ 2000-01-28 │ 108.19 │ 110.88 │ 100.62 │ 101.62 │
+│ 2000-02-01 │  104.0 │  105.0 │  100.0 │ 100.25 │
+│ 2000-02-02 │ 100.75 │ 102.12 │   97.0 │  98.81 │
+│ 2000-02-09 │ 114.12 │ 117.12 │ 112.44 │ 112.62 │
+│ 2000-02-11 │ 113.62 │ 114.12 │ 108.25 │ 108.75 │
+│ 2000-02-16 │ 117.75 │ 118.12 │ 112.12 │ 114.12 │
+│ 2000-02-17 │ 115.19 │  115.5 │ 113.12 │ 114.88 │
+│     ⋮      │   ⋮    │   ⋮    │   ⋮    │   ⋮    │
+└────────────┴────────┴────────┴────────┴────────┘
+<span class="sgr36">                                  237 rows omitted</span></span></code></pre><p>The following example won&#39;t create a temporary <code>Bool</code> vector, and gains better performance.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; findall(&gt;(100), cl)</code><code class="nohighlight hljs ansi" style="display:block;">89-element Vector{Int64}:
+   1
+   2
+   3
+  10
+  11
+  12
+  13
+  14
+  15
+  16
+   ⋮
+  88
+  89
+  91
+  92
+  93
+  94
+  95
+  96
+ 118</code></pre><h2 id="Splitting-by-head-and-tail"><a class="docs-heading-anchor" href="#Splitting-by-head-and-tail">Splitting by head and tail</a><a id="Splitting-by-head-and-tail-1"></a><a class="docs-heading-anchor-permalink" href="#Splitting-by-head-and-tail" title="Permalink"></a></h2><h3 id="head"><a class="docs-heading-anchor" href="#head"><code>head</code></a><a id="head-1"></a><a class="docs-heading-anchor-permalink" href="#head" title="Permalink"></a></h3><p>The <code>head</code> method defaults to returning only the first value in a <code>TimeArray</code>. By selecting the second positional argument to a different value, the user can modify how many from the top are selected:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using TimeSeries</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MarketData</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; head(cl)</code><code class="nohighlight hljs ansi" style="display:block;">6×1 TimeArray{Float64, 1, Date, Vector{Float64}} 2000-01-03 to 2000-01-10
+┌────────────┬────────┐
+│<span class="sgr1">            │ Close  │
+├────────────┼────────┤
+│ 2000-01-03 │ 111.94 │
+│ 2000-01-04 │  102.5 │
+│ 2000-01-05 │  104.0 │
+│ 2000-01-06 │   95.0 │
+│ 2000-01-07 │   99.5 │
+│ 2000-01-10 │  97.75 │
+└────────────┴────────┘</span></code></pre><h3 id="tail"><a class="docs-heading-anchor" href="#tail"><code>tail</code></a><a id="tail-1"></a><a class="docs-heading-anchor-permalink" href="#tail" title="Permalink"></a></h3><p>The <code>tail</code> method defaults to returning only the last value in a <code>TimeArray</code>. By selecting the second positional argument to a different value, the user can modify how many from the bottom are selected:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using TimeSeries</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MarketData</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; tail(cl)</code><code class="nohighlight hljs ansi" style="display:block;">6×1 TimeArray{Float64, 1, Date, Vector{Float64}} 2001-12-21 to 2001-12-31
+┌────────────┬───────┐
+│<span class="sgr1">            │ Close │
+├────────────┼───────┤
+│ 2001-12-21 │  21.0 │
+│ 2001-12-24 │ 21.36 │
+│ 2001-12-26 │ 21.49 │
+│ 2001-12-27 │ 22.07 │
+│ 2001-12-28 │ 22.43 │
+│ 2001-12-31 │  21.9 │
+└────────────┴───────┘</span></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; tail(cl, 3)</code><code class="nohighlight hljs ansi" style="display:block;">3×1 TimeArray{Float64, 1, Date, Vector{Float64}} 2001-12-27 to 2001-12-31
+┌────────────┬───────┐
+│<span class="sgr1">            │ Close │
+├────────────┼───────┤
+│ 2001-12-27 │ 22.07 │
+│ 2001-12-28 │ 22.43 │
+│ 2001-12-31 │  21.9 │
+└────────────┴───────┘</span></code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../indexing/">« Array indexing</a><a class="docs-footer-nextpage" href="../modify/">Modify existing <code>TimeArray</code>s »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.1.2 on <span class="colophon-date" title="Tuesday 21 November 2023 00:44">Tuesday 21 November 2023</span>. Using Julia version 1.9.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

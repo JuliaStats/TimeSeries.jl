@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Apply methods · TimeSeries.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>TimeSeries.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search.html"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="index.html">TimeSeries Overview</a></li><li><a class="toctext" href="getting_started.html">Getting Started</a></li><li><a class="toctext" href="timearray.html">The <code>TimeArray</code> time series type</a></li><li><a class="toctext" href="indexing.html">Array indexing</a></li><li><a class="toctext" href="split.html">Splitting by conditions</a></li><li><a class="toctext" href="modify.html">Modify existing <code>TimeArray</code>s</a></li><li><a class="toctext" href="operators.html">Mathematical, comparison, and logical operators</a></li><li class="current"><a class="toctext" href="apply.html">Apply methods</a><ul class="internal"><li><a class="toctext" href="#lag-1"><code>lag</code></a></li><li><a class="toctext" href="#lead-1"><code>lead</code></a></li><li><a class="toctext" href="#diff-1"><code>diff</code></a></li><li><a class="toctext" href="#percentchange-1"><code>percentchange</code></a></li><li><a class="toctext" href="#moving-1"><code>moving</code></a></li><li><a class="toctext" href="#upto-1"><code>upto</code></a></li><li><a class="toctext" href="#basecall-1"><code>basecall</code></a></li></ul></li><li><a class="toctext" href="combine.html">Combine methods</a></li><li><a class="toctext" href="readwrite.html">I/O</a></li><li><a class="toctext" href="dotfile.html">Customize <code>TimeArray</code> printting</a></li><li><a class="toctext" href="plotting.html">Plotting</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href="apply.html">Apply methods</a></li></ul><a class="edit-page" href="https://github.com/JuliaStats/TimeSeries.jl/blob/master/docs/src/apply.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Apply methods</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Apply-methods-1" href="#Apply-methods-1">Apply methods</a></h1><p>Common transformation of time series data involves lagging, leading, calculating change, windowing operations and aggregation operations. Each of these methods include keyword arguments that include defaults.</p><h2><a class="nav-anchor" id="lag-1" href="#lag-1"><code>lag</code></a></h2><p>The <code>lag</code> method simply described is putting yesterday&#39;s value in today&#39;s timestamp. This is the most common use case, though there are many times the distance between timestamps is not 1 time unit. An arbitrary integer distance for lagging is supported, with the default equal to 1.</p><p>The value of the <code>cl</code> object on Jan 3, 2000 is 111.94. On Jan 4, 2000 it is 102.50 and on Jan 5, 2000 it&#39;s 104.0:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+ERROR: ArgumentError: Package MarketData not found in current path:
+- Run `import Pkg; Pkg.add(&quot;MarketData&quot;)` to install the MarketData package.
+
+julia&gt; cl[1:3]
+ERROR: UndefVarError: cl not defined</code></pre><p>The <code>lag</code> method <strong>moves</strong> values up one day:</p><pre><code class="language-julia-repl">julia&gt; lag(cl[1:3])
+ERROR: UndefVarError: cl not defined</code></pre><p>You will notice that since there is no known value for lagging the first day, the observation on that timestamp is omitted. This behavior is common in time series. When observations are consumed in a transformation, the artifact dates are not preserved with a missingness value. To pad the returned <code>TimeArray</code> with <code>NaN</code> values instead, you can pass <code>padding=true</code> as a keyword argument:</p><pre><code class="language-julia-repl">julia&gt; lag(cl[1:3], padding=true)
+ERROR: UndefVarError: cl not defined</code></pre><h2><a class="nav-anchor" id="lead-1" href="#lead-1"><code>lead</code></a></h2><p>Leading values operates similarly to lagging values, but moves things in the other direction. Arbitrary time distances is also supported:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+ERROR: ArgumentError: Package MarketData not found in current path:
+- Run `import Pkg; Pkg.add(&quot;MarketData&quot;)` to install the MarketData package.
+
+julia&gt; lead(cl[1:3])
+ERROR: UndefVarError: cl not defined</code></pre><p>Since we are leading an object of length 3, only two values will be transformed because we have lost a day to the transformation.</p><p>The <code>cl</code> object is 500 rows long so if we lead by 499 days, we should put the last observation in the object (which happens to be on Dec 31,</p><ol><li>into the first date&#39;s value slot:</li></ol><pre><code class="language-julia-repl">julia&gt; lead(cl, 499)
+ERROR: UndefVarError: cl not defined</code></pre><h2><a class="nav-anchor" id="diff-1" href="#diff-1"><code>diff</code></a></h2><p>Differentiating a time series calculates the finite difference between two consecutive points in the time series. The resulting time series will have less points than the original. Those points are filled with <code>NaN</code> values if <code>padding=true</code>.</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+ERROR: ArgumentError: Package MarketData not found in current path:
+- Run `import Pkg; Pkg.add(&quot;MarketData&quot;)` to install the MarketData package.
+
+julia&gt; diff(cl)
+ERROR: UndefVarError: cl not defined</code></pre><p>You can calculate higher order differences by using the keyword parameter <code>differences</code>, accepting a positive integer. The default value is <code>differences=1</code>. For instance, passing <code>differences=2</code> is equivalent to doing <code>diff(diff(cl))</code>.</p><h2><a class="nav-anchor" id="percentchange-1" href="#percentchange-1"><code>percentchange</code></a></h2><p>Calculating change between timestamps is a very common time series operation. We use the terms percent change, returns and rate of change interchangably. Depending on which domain you&#39;re using time series, you may prefer one name over the other.</p><p>This package names the function that performs this transformation <code>percentchange</code>. You&#39;re welcome to change this of course if that represents too many letters for you to type:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; roc = percentchange
+percentchange (generic function with 2 methods)</code></pre><p>The <code>percentchange</code> method includes the option to return a simple return or a log return. The default is set to <code>simple</code>:</p><pre><code class="language-julia-repl">julia&gt; using MarketData
+ERROR: ArgumentError: Package MarketData not found in current path:
+- Run `import Pkg; Pkg.add(&quot;MarketData&quot;)` to install the MarketData package.
+
+julia&gt; percentchange(cl)
+ERROR: UndefVarError: cl not defined</code></pre><p>Log returns are popular for downstream calculations since adding returns is simpler than multiplying them. To create log returns, pass the symbol <code>:log</code> to the method:</p><pre><code class="language-julia-repl">julia&gt; percentchange(cl, :log)
+ERROR: UndefVarError: cl not defined</code></pre><h2><a class="nav-anchor" id="moving-1" href="#moving-1"><code>moving</code></a></h2><p>Function signature:</p><pre><code class="language-julia">moving(f, ta::TimeArray, window; padding=false)
+moving(ta, window; padding=false) do x
+  ...
+end</code></pre><p>Often when working with time series, you want to take a sliding window view of the data and perform a calculation on it. The simplest example of this is the moving average. For a 10-period moving average, you take the first ten values, sum then and divide by 10 to get their average. Then you slide the window down one and to the same thing. This operation involves two important arguments: the function that you want to use on your window and the size of the window you want to apply that function over.</p><p>In our moving average example, we would pass arguments this way:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+ERROR: ArgumentError: Package MarketData not found in current path:
+- Run `import Pkg; Pkg.add(&quot;MarketData&quot;)` to install the MarketData package.
+
+julia&gt; using Statistics
+
+julia&gt; moving(mean, cl, 10)
+ERROR: UndefVarError: cl not defined</code></pre><p>As mentioned previously, we lose the first nine observations to the consuming nature of this operation. They are not <strong>missing</strong> per se, they simply do not exist.</p><h2><a class="nav-anchor" id="upto-1" href="#upto-1"><code>upto</code></a></h2><p>Another operation common in time series analysis is an aggregation function. <code>TimeSeries</code> supports this with the <code>upto</code> method. Suppose you want to keep track of the sum of all the values from the beginning to the present timestamp. You would use the <code>upto</code> method like this:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+ERROR: ArgumentError: Package MarketData not found in current path:
+- Run `import Pkg; Pkg.add(&quot;MarketData&quot;)` to install the MarketData package.
+
+julia&gt; upto(sum, cl)
+ERROR: UndefVarError: cl not defined</code></pre><h2><a class="nav-anchor" id="basecall-1" href="#basecall-1"><code>basecall</code></a></h2><p>Because the algorithm for the <code>upto</code> method needs to be optimized further, it might be better to use a base method in its place when one is available. Taking our summation example above, we could instead use the <code>basecall</code> method and realize substantial performance improvements:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+ERROR: ArgumentError: Package MarketData not found in current path:
+- Run `import Pkg; Pkg.add(&quot;MarketData&quot;)` to install the MarketData package.
+
+julia&gt; basecall(cl, cumsum)
+ERROR: UndefVarError: cl not defined</code></pre><footer><hr/><a class="previous" href="operators.html"><span class="direction">Previous</span><span class="title">Mathematical, comparison, and logical operators</span></a><a class="next" href="combine.html"><span class="direction">Next</span><span class="title">Combine methods</span></a></footer></article></body></html>

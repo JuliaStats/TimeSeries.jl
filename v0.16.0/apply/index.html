@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Apply methods · TimeSeries.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>TimeSeries.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">TimeSeries Overview</a></li><li><a class="toctext" href="../getting_started/">Getting Started</a></li><li><a class="toctext" href="../timearray/">The <code>TimeArray</code> time series type</a></li><li><a class="toctext" href="../indexing/">Array indexing</a></li><li><a class="toctext" href="../split/">Splitting by conditions</a></li><li><a class="toctext" href="../modify/">Modify existing <code>TimeArray</code>s</a></li><li><a class="toctext" href="../operators/">Mathematical, comparison, and logical operators</a></li><li class="current"><a class="toctext" href>Apply methods</a><ul class="internal"><li><a class="toctext" href="#lag-1"><code>lag</code></a></li><li><a class="toctext" href="#lead-1"><code>lead</code></a></li><li><a class="toctext" href="#diff-1"><code>diff</code></a></li><li><a class="toctext" href="#percentchange-1"><code>percentchange</code></a></li><li><a class="toctext" href="#moving-1"><code>moving</code></a></li><li><a class="toctext" href="#upto-1"><code>upto</code></a></li><li><a class="toctext" href="#basecall-1"><code>basecall</code></a></li></ul></li><li><a class="toctext" href="../combine/">Combine methods</a></li><li><a class="toctext" href="../readwrite/">I/O</a></li><li><a class="toctext" href="../tables/">Tables.jl Interface Integration</a></li><li><a class="toctext" href="../dotfile/">Customize <code>TimeArray</code> printing</a></li><li><a class="toctext" href="../plotting/">Plotting</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Apply methods</a></li></ul><a class="edit-page" href="https://github.com/JuliaStats/TimeSeries.jl/blob/master/docs/src/apply.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Apply methods</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Apply-methods-1" href="#Apply-methods-1">Apply methods</a></h1><p>Common transformation of time series data involves lagging, leading, calculating change, windowing operations and aggregation operations. Each of these methods include keyword arguments that include defaults.</p><h2><a class="nav-anchor" id="lag-1" href="#lag-1"><code>lag</code></a></h2><p>The <code>lag</code> method simply described is putting yesterday&#39;s value in today&#39;s timestamp. This is the most common use case, though there are many times the distance between timestamps is not 1 time unit. An arbitrary integer distance for lagging is supported, with the default equal to 1.</p><p>The value of the <code>cl</code> object on Jan 3, 2000 is 111.94. On Jan 4, 2000 it is 102.50 and on Jan 5, 2000 it&#39;s 104.0:</p><pre><code class="language-julia-repl">julia&gt; using MarketData
+
+julia&gt; cl[1:3]
+3×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-05
+│            │ Close  │
+├────────────┼────────┤
+│ 2000-01-03 │ 111.94 │
+│ 2000-01-04 │ 102.5  │
+│ 2000-01-05 │ 104.0  │</code></pre><p>The <code>lag</code> method <strong>moves</strong> values up one day:</p><pre><code class="language-julia-repl">julia&gt; lag(cl[1:3])
+2×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-04 to 2000-01-05
+│            │ Close  │
+├────────────┼────────┤
+│ 2000-01-04 │ 111.94 │
+│ 2000-01-05 │ 102.5  │</code></pre><p>You will notice that since there is no known value for lagging the first day, the observation on that timestamp is omitted. This behavior is common in time series. When observations are consumed in a transformation, the artifact dates are not preserved with a missingness value. To pad the returned <code>TimeArray</code> with <code>NaN</code> values instead, you can pass <code>padding=true</code> as a keyword argument:</p><pre><code class="language-julia-repl">julia&gt; lag(cl[1:3], padding=true)
+3×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-05
+│            │ Close  │
+├────────────┼────────┤
+│ 2000-01-03 │ NaN    │
+│ 2000-01-04 │ 111.94 │
+│ 2000-01-05 │ 102.5  │</code></pre><h2><a class="nav-anchor" id="lead-1" href="#lead-1"><code>lead</code></a></h2><p>Leading values operates similarly to lagging values, but moves things in the other direction. Arbitrary time distances is also supported:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+
+julia&gt; lead(cl[1:3])
+2×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-04
+│            │ Close │
+├────────────┼───────┤
+│ 2000-01-03 │ 102.5 │
+│ 2000-01-04 │ 104.0 │</code></pre><p>Since we are leading an object of length 3, only two values will be transformed because we have lost a day to the transformation.</p><p>The <code>cl</code> object is 500 rows long so if we lead by 499 days, we should put the last observation in the object (which happens to be on Dec 31, 2001) into the first date&#39;s value slot:</p><pre><code class="language-julia-repl">julia&gt; lead(cl, 499)
+1×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-03
+│            │ Close │
+├────────────┼───────┤
+│ 2000-01-03 │ 21.9  │</code></pre><h2><a class="nav-anchor" id="diff-1" href="#diff-1"><code>diff</code></a></h2><p>Differentiating a time series calculates the finite difference between two consecutive points in the time series. The resulting time series will have less points than the original. Those points are filled with <code>NaN</code> values if <code>padding=true</code>.</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+
+julia&gt; diff(cl)
+499×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-04 to 2001-12-31
+│            │ Close │
+├────────────┼───────┤
+│ 2000-01-04 │ -9.44 │
+│ 2000-01-05 │ 1.5   │
+│ 2000-01-06 │ -9.0  │
+│ 2000-01-07 │ 4.5   │
+│ 2000-01-10 │ -1.75 │
+│ 2000-01-11 │ -5.0  │
+│ 2000-01-12 │ -5.56 │
+│ 2000-01-13 │ 9.56  │
+│ 2000-01-14 │ 3.69  │
+   ⋮
+│ 2001-12-19 │ 0.61  │
+│ 2001-12-20 │ -0.95 │
+│ 2001-12-21 │ 0.33  │
+│ 2001-12-24 │ 0.36  │
+│ 2001-12-26 │ 0.13  │
+│ 2001-12-27 │ 0.58  │
+│ 2001-12-28 │ 0.36  │
+│ 2001-12-31 │ -0.53 │</code></pre><p>You can calculate higher order differences by using the keyword parameter <code>differences</code>, accepting a positive integer. The default value is <code>differences=1</code>. For instance, passing <code>differences=2</code> is equivalent to doing <code>diff(diff(cl))</code>.</p><h2><a class="nav-anchor" id="percentchange-1" href="#percentchange-1"><code>percentchange</code></a></h2><p>Calculating change between timestamps is a very common time series operation. We use the terms percent change, returns and rate of change interchangably. Depending on which domain you&#39;re using time series, you may prefer one name over the other.</p><p>This package names the function that performs this transformation <code>percentchange</code>. You&#39;re welcome to change this of course if that represents too many letters for you to type:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; roc = percentchange
+percentchange (generic function with 2 methods)</code></pre><p>The <code>percentchange</code> method includes the option to return a simple return or a log return. The default is set to <code>simple</code>:</p><pre><code class="language-julia-repl">julia&gt; using MarketData
+
+julia&gt; percentchange(cl)
+499×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-04 to 2001-12-31
+│            │ Close   │
+├────────────┼─────────┤
+│ 2000-01-04 │ -0.0843 │
+│ 2000-01-05 │ 0.0146  │
+│ 2000-01-06 │ -0.0865 │
+│ 2000-01-07 │ 0.0474  │
+│ 2000-01-10 │ -0.0176 │
+│ 2000-01-11 │ -0.0512 │
+│ 2000-01-12 │ -0.0599 │
+│ 2000-01-13 │ 0.1096  │
+│ 2000-01-14 │ 0.0381  │
+   ⋮
+│ 2001-12-19 │ 0.029   │
+│ 2001-12-20 │ -0.0439 │
+│ 2001-12-21 │ 0.016   │
+│ 2001-12-24 │ 0.0171  │
+│ 2001-12-26 │ 0.0061  │
+│ 2001-12-27 │ 0.027   │
+│ 2001-12-28 │ 0.0163  │
+│ 2001-12-31 │ -0.0236 │</code></pre><p>Log returns are popular for downstream calculations since adding returns is simpler than multiplying them. To create log returns, pass the symbol <code>:log</code> to the method:</p><pre><code class="language-julia-repl">julia&gt; percentchange(cl, :log)
+499×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-04 to 2001-12-31
+│            │ Close   │
+├────────────┼─────────┤
+│ 2000-01-04 │ -0.0881 │
+│ 2000-01-05 │ 0.0145  │
+│ 2000-01-06 │ -0.0905 │
+│ 2000-01-07 │ 0.0463  │
+│ 2000-01-10 │ -0.0177 │
+│ 2000-01-11 │ -0.0525 │
+│ 2000-01-12 │ -0.0618 │
+│ 2000-01-13 │ 0.104   │
+│ 2000-01-14 │ 0.0374  │
+   ⋮
+│ 2001-12-19 │ 0.0286  │
+│ 2001-12-20 │ -0.0449 │
+│ 2001-12-21 │ 0.0158  │
+│ 2001-12-24 │ 0.017   │
+│ 2001-12-26 │ 0.0061  │
+│ 2001-12-27 │ 0.0266  │
+│ 2001-12-28 │ 0.0162  │
+│ 2001-12-31 │ -0.0239 │</code></pre><h2><a class="nav-anchor" id="moving-1" href="#moving-1"><code>moving</code></a></h2><p>Often when working with time series, you want to take a sliding window view of the data and perform a calculation on it. The simplest example of this is the moving average. For a 10-period moving average, you take the first ten values, sum then and divide by 10 to get their average. Then you slide the window down one and to the same thing. This operation involves two important arguments: the function that you want to use on your window and the size of the window you want to apply that function over.</p><p>In our moving average example, we would pass arguments this way:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+
+julia&gt; using Statistics
+
+julia&gt; moving(mean, cl, 10)
+491×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-14 to 2001-12-31
+│            │ Close   │
+├────────────┼─────────┤
+│ 2000-01-14 │ 98.782  │
+│ 2000-01-18 │ 97.982  │
+│ 2000-01-19 │ 98.388  │
+│ 2000-01-20 │ 99.338  │
+│ 2000-01-21 │ 100.969 │
+│ 2000-01-24 │ 101.644 │
+│ 2000-01-25 │ 103.094 │
+│ 2000-01-26 │ 104.838 │
+│ 2000-01-27 │ 107.119 │
+   ⋮
+│ 2001-12-19 │ 21.577  │
+│ 2001-12-20 │ 21.366  │
+│ 2001-12-21 │ 21.212  │
+│ 2001-12-24 │ 21.094  │
+│ 2001-12-26 │ 21.065  │
+│ 2001-12-27 │ 21.123  │
+│ 2001-12-28 │ 21.266  │
+│ 2001-12-31 │ 21.417  │</code></pre><p>As mentioned previously, we lose the first nine observations to the consuming nature of this operation. They are not <strong>missing</strong> per se, they simply do not exist.</p><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="TimeSeries.moving" href="#TimeSeries.moving"><code>TimeSeries.moving</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-none">moving(f, ta::TimeArray{T,1}, w::Integer; padding = false)</code></pre><p>Apply user-defined function <code>f</code> to a 1D <code>TimeArray</code> with window size <code>w</code>.</p><p><strong>Example</strong></p><p>To calculate the simple moving average of a time series:</p><pre><code class="language-julia">moving(mean, ta, 10)</code></pre></div></div><a class="source-link" target="_blank" href="https://github.com/JuliaStats/TimeSeries.jl/blob/7447c93b4dc4dc8104d428495e3c629233453c34/src/apply.jl#L84-L95">source</a><div><div><pre><code class="language-none">moving(f, ta::TimeArray{T,2}, w::Integer; padding = false, dims = 1, colnames = [...])</code></pre><p><strong>Example</strong></p><p>In case of <code>dims = 2</code>, the user-defined function <code>f</code> will get a 2D <code>Array</code> as input.</p><pre><code class="language-julia">moving(ohlc, 10, dims = 2, colnames = [:A, ...]) do
+    # given that `ohlc` is a 500x4 `TimeArray`,
+    # size(A) is (10, 4)
+    ...
+end</code></pre></div></div><a class="source-link" target="_blank" href="https://github.com/JuliaStats/TimeSeries.jl/blob/7447c93b4dc4dc8104d428495e3c629233453c34/src/apply.jl#L106-L119">source</a></section><h2><a class="nav-anchor" id="upto-1" href="#upto-1"><code>upto</code></a></h2><p>Another operation common in time series analysis is an aggregation function. <code>TimeSeries</code> supports this with the <code>upto</code> method. Suppose you want to keep track of the sum of all the values from the beginning to the present timestamp. You would use the <code>upto</code> method like this:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+
+julia&gt; upto(sum, cl)
+500×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
+│            │ Close    │
+├────────────┼──────────┤
+│ 2000-01-03 │ 111.94   │
+│ 2000-01-04 │ 214.44   │
+│ 2000-01-05 │ 318.44   │
+│ 2000-01-06 │ 413.44   │
+│ 2000-01-07 │ 512.94   │
+│ 2000-01-10 │ 610.69   │
+│ 2000-01-11 │ 703.44   │
+│ 2000-01-12 │ 790.63   │
+│ 2000-01-13 │ 887.38   │
+   ⋮
+│ 2001-12-19 │ 22944.32 │
+│ 2001-12-20 │ 22964.99 │
+│ 2001-12-21 │ 22985.99 │
+│ 2001-12-24 │ 23007.35 │
+│ 2001-12-26 │ 23028.84 │
+│ 2001-12-27 │ 23050.91 │
+│ 2001-12-28 │ 23073.34 │
+│ 2001-12-31 │ 23095.24 │</code></pre><h2><a class="nav-anchor" id="basecall-1" href="#basecall-1"><code>basecall</code></a></h2><p>Because the algorithm for the <code>upto</code> method needs to be optimized further, it might be better to use a base method in its place when one is available. Taking our summation example above, we could instead use the <code>basecall</code> method and realize substantial performance improvements:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+
+julia&gt; basecall(cl, cumsum)
+500×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
+│            │ Close    │
+├────────────┼──────────┤
+│ 2000-01-03 │ 111.94   │
+│ 2000-01-04 │ 214.44   │
+│ 2000-01-05 │ 318.44   │
+│ 2000-01-06 │ 413.44   │
+│ 2000-01-07 │ 512.94   │
+│ 2000-01-10 │ 610.69   │
+│ 2000-01-11 │ 703.44   │
+│ 2000-01-12 │ 790.63   │
+│ 2000-01-13 │ 887.38   │
+   ⋮
+│ 2001-12-19 │ 22944.32 │
+│ 2001-12-20 │ 22964.99 │
+│ 2001-12-21 │ 22985.99 │
+│ 2001-12-24 │ 23007.35 │
+│ 2001-12-26 │ 23028.84 │
+│ 2001-12-27 │ 23050.91 │
+│ 2001-12-28 │ 23073.34 │
+│ 2001-12-31 │ 23095.24 │</code></pre><footer><hr/><a class="previous" href="../operators/"><span class="direction">Previous</span><span class="title">Mathematical, comparison, and logical operators</span></a><a class="next" href="../combine/"><span class="direction">Next</span><span class="title">Combine methods</span></a></footer></article></body></html>
