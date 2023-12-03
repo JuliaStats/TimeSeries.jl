@@ -227,6 +227,7 @@ function Base.show(io::IO, ::MIME"text/plain", ta::TimeArray;  allrows = !get(io
         row_label_alignment = :r,
         header_alignment = :l,
         crop=crop,
+        vcrop_mode = :middle,
     )
 end
 
