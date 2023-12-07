@@ -42,58 +42,58 @@
 │ 2000-01-11 │  -5.0 │
 │ 2000-01-12 │ -5.56 │
 │ 2000-01-13 │  9.56 │
-│ 2000-01-14 │  3.69 │
-│ 2000-01-18 │   3.5 │
-│ 2000-01-19 │  2.62 │
-│ 2000-01-20 │  6.94 │
-│ 2000-01-21 │ -2.19 │
-│ 2000-01-24 │ -5.06 │
-│ 2000-01-25 │   6.0 │
 │     ⋮      │   ⋮   │
+│ 2001-12-20 │ -0.95 │
+│ 2001-12-21 │  0.33 │
+│ 2001-12-24 │  0.36 │
+│ 2001-12-26 │  0.13 │
+│ 2001-12-27 │  0.58 │
+│ 2001-12-28 │  0.36 │
+│ 2001-12-31 │ -0.53 │
 └────────────┴───────┘
 <span class="sgr36">      484 rows omitted</span></span></code></pre><p>You can calculate higher order differences by using the keyword parameter <code>differences</code>, accepting a positive integer. The default value is <code>differences=1</code>. For instance, passing <code>differences=2</code> is equivalent to doing <code>diff(diff(cl))</code>.</p><h2 id="percentchange"><a class="docs-heading-anchor" href="#percentchange"><code>percentchange</code></a><a id="percentchange-1"></a><a class="docs-heading-anchor-permalink" href="#percentchange" title="Permalink"></a></h2><p>Calculating change between timestamps is a very common time series operation. We use the terms percent change, returns and rate of change interchangably. Depending on which domain you&#39;re using time series, you may prefer one name over the other.</p><p>This package names the function that performs this transformation <code>percentchange</code>. You&#39;re welcome to change this of course if that represents too many letters for you to type:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using TimeSeries</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; roc = percentchange</code><code class="nohighlight hljs ansi" style="display:block;">percentchange (generic function with 2 methods)</code></pre><p>The <code>percentchange</code> method includes the option to return a simple return or a log return. The default is set to <code>simple</code>:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MarketData</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; percentchange(cl)</code><code class="nohighlight hljs ansi" style="display:block;">499×1 TimeArray{Float64, 1, Date, Vector{Float64}} 2000-01-04 to 2001-12-31
-┌────────────┬─────────────┐
-│<span class="sgr1">            │ Close       │
-├────────────┼─────────────┤
-│ 2000-01-04 │  -0.0843309 │
-│ 2000-01-05 │   0.0146341 │
-│ 2000-01-06 │  -0.0865385 │
-│ 2000-01-07 │   0.0473684 │
-│ 2000-01-10 │  -0.0175879 │
-│ 2000-01-11 │  -0.0511509 │
-│ 2000-01-12 │  -0.0599461 │
-│ 2000-01-13 │    0.109646 │
-│ 2000-01-14 │   0.0381395 │
-│ 2000-01-18 │   0.0348467 │
-│ 2000-01-19 │   0.0252069 │
-│ 2000-01-20 │   0.0651276 │
-│ 2000-01-21 │  -0.0192952 │
-│ 2000-01-24 │  -0.0454586 │
-│ 2000-01-25 │   0.0564706 │
-│     ⋮      │      ⋮      │
-└────────────┴─────────────┘
-<span class="sgr36">            484 rows omitted</span></span></code></pre><p>Log returns are popular for downstream calculations since adding returns is simpler than multiplying them. To create log returns, pass the symbol <code>:log</code> to the method:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; percentchange(cl, :log)</code><code class="nohighlight hljs ansi" style="display:block;">499×1 TimeArray{Float64, 1, Date, Vector{Float64}} 2000-01-04 to 2001-12-31
-┌────────────┬─────────────┐
-│<span class="sgr1">            │ Close       │
-├────────────┼─────────────┤
-│ 2000-01-04 │  -0.0881002 │
-│ 2000-01-05 │   0.0145281 │
-│ 2000-01-06 │   -0.090514 │
-│ 2000-01-07 │   0.0462808 │
-│ 2000-01-10 │  -0.0177444 │
-│ 2000-01-11 │  -0.0525055 │
-│ 2000-01-12 │  -0.0618181 │
-│ 2000-01-13 │    0.104041 │
-│ 2000-01-14 │   0.0374302 │
-│ 2000-01-18 │   0.0342533 │
-│ 2000-01-19 │   0.0248944 │
-│ 2000-01-20 │   0.0630946 │
-│ 2000-01-21 │  -0.0194837 │
-│ 2000-01-24 │  -0.0465243 │
-│ 2000-01-25 │   0.0549337 │
-│     ⋮      │      ⋮      │
-└────────────┴─────────────┘
-<span class="sgr36">            484 rows omitted</span></span></code></pre><h2 id="moving"><a class="docs-heading-anchor" href="#moving"><code>moving</code></a><a id="moving-1"></a><a class="docs-heading-anchor-permalink" href="#moving" title="Permalink"></a></h2><p>Often when working with time series, you want to take a sliding window view of the data and perform a calculation on it. The simplest example of this is the moving average. For a 10-period moving average, you take the first ten values, sum then and divide by 10 to get their average. Then you slide the window down one and to the same thing. This operation involves two important arguments: the function that you want to use on your window and the size of the window you want to apply that function over.</p><p>In our moving average example, we would pass arguments this way:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using TimeSeries</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MarketData</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; using Statistics</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; moving(mean, cl, 10)</code><code class="nohighlight hljs ansi" style="display:block;">491×1 TimeArray{Float64, 1, Date, Vector{Float64}} 2000-01-14 to 2001-12-31
+┌────────────┬────────────┐
+│<span class="sgr1">            │ Close      │
+├────────────┼────────────┤
+│ 2000-01-04 │ -0.0843309 │
+│ 2000-01-05 │  0.0146341 │
+│ 2000-01-06 │ -0.0865385 │
+│ 2000-01-07 │  0.0473684 │
+│ 2000-01-10 │ -0.0175879 │
+│ 2000-01-11 │ -0.0511509 │
+│ 2000-01-12 │ -0.0599461 │
+│ 2000-01-13 │   0.109646 │
+│     ⋮      │     ⋮      │
+│ 2001-12-20 │ -0.0439408 │
+│ 2001-12-21 │  0.0159652 │
+│ 2001-12-24 │  0.0171429 │
+│ 2001-12-26 │ 0.00608614 │
+│ 2001-12-27 │  0.0269893 │
+│ 2001-12-28 │  0.0163117 │
+│ 2001-12-31 │ -0.0236291 │
+└────────────┴────────────┘
+<span class="sgr36">           484 rows omitted</span></span></code></pre><p>Log returns are popular for downstream calculations since adding returns is simpler than multiplying them. To create log returns, pass the symbol <code>:log</code> to the method:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; percentchange(cl, :log)</code><code class="nohighlight hljs ansi" style="display:block;">499×1 TimeArray{Float64, 1, Date, Vector{Float64}} 2000-01-04 to 2001-12-31
+┌────────────┬────────────┐
+│<span class="sgr1">            │ Close      │
+├────────────┼────────────┤
+│ 2000-01-04 │ -0.0881002 │
+│ 2000-01-05 │  0.0145281 │
+│ 2000-01-06 │  -0.090514 │
+│ 2000-01-07 │  0.0462808 │
+│ 2000-01-10 │ -0.0177444 │
+│ 2000-01-11 │ -0.0525055 │
+│ 2000-01-12 │ -0.0618181 │
+│ 2000-01-13 │   0.104041 │
+│     ⋮      │     ⋮      │
+│ 2001-12-20 │ -0.0449354 │
+│ 2001-12-21 │  0.0158391 │
+│ 2001-12-24 │  0.0169976 │
+│ 2001-12-26 │  0.0060677 │
+│ 2001-12-27 │  0.0266315 │
+│ 2001-12-28 │  0.0161801 │
+│ 2001-12-31 │ -0.0239127 │
+└────────────┴────────────┘
+<span class="sgr36">           484 rows omitted</span></span></code></pre><h2 id="moving"><a class="docs-heading-anchor" href="#moving"><code>moving</code></a><a id="moving-1"></a><a class="docs-heading-anchor-permalink" href="#moving" title="Permalink"></a></h2><p>Often when working with time series, you want to take a sliding window view of the data and perform a calculation on it. The simplest example of this is the moving average. For a 10-period moving average, you take the first ten values, sum then and divide by 10 to get their average. Then you slide the window down one and to the same thing. This operation involves two important arguments: the function that you want to use on your window and the size of the window you want to apply that function over.</p><p>In our moving average example, we would pass arguments this way:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using TimeSeries</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MarketData</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; using Statistics</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; moving(mean, cl, 10)</code><code class="nohighlight hljs ansi" style="display:block;">491×1 TimeArray{Float64, 1, Date, Vector{Float64}} 2000-01-14 to 2001-12-31
 ┌────────────┬─────────┐
 │<span class="sgr1">            │ Close   │
 ├────────────┼─────────┤
@@ -105,20 +105,20 @@
 │ 2000-01-24 │ 101.644 │
 │ 2000-01-25 │ 103.094 │
 │ 2000-01-26 │ 104.838 │
-│ 2000-01-27 │ 107.119 │
-│ 2000-01-28 │ 107.606 │
-│ 2000-01-31 │ 107.937 │
-│ 2000-02-01 │ 107.568 │
-│ 2000-02-02 │ 106.793 │
-│ 2000-02-03 │ 105.774 │
-│ 2000-02-04 │ 105.443 │
 │     ⋮      │    ⋮    │
+│ 2001-12-20 │  21.366 │
+│ 2001-12-21 │  21.212 │
+│ 2001-12-24 │  21.094 │
+│ 2001-12-26 │  21.065 │
+│ 2001-12-27 │  21.123 │
+│ 2001-12-28 │  21.266 │
+│ 2001-12-31 │  21.417 │
 └────────────┴─────────┘
-<span class="sgr36">        476 rows omitted</span></span></code></pre><p>As mentioned previously, we lose the first nine observations to the consuming nature of this operation. They are not <strong>missing</strong> per se, they simply do not exist.</p><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="TimeSeries.moving" href="#TimeSeries.moving"><code>TimeSeries.moving</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">moving(f, ta::TimeArray{T,1}, w::Integer; padding = false)</code></pre><p>Apply user-defined function <code>f</code> to a 1D <code>TimeArray</code> with window size <code>w</code>.</p><p><strong>Example</strong></p><p>To calculate the simple moving average of a time series:</p><pre><code class="language-julia hljs">moving(mean, ta, 10)</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaStats/TimeSeries.jl/blob/576b2bfef32cd7ef3359ea624bafc8ffad3d4e6b/src/apply.jl#L84-L95">source</a></section><section><div><pre><code class="language-julia hljs">moving(f, ta::TimeArray{T,2}, w::Integer; padding = false, dims = 1, colnames = [...])</code></pre><p><strong>Example</strong></p><p>In case of <code>dims = 2</code>, the user-defined function <code>f</code> will get a 2D <code>Array</code> as input.</p><pre><code class="language-julia hljs">moving(ohlc, 10, dims = 2, colnames = [:A, ...]) do
+<span class="sgr36">        476 rows omitted</span></span></code></pre><p>As mentioned previously, we lose the first nine observations to the consuming nature of this operation. They are not <strong>missing</strong> per se, they simply do not exist.</p><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="TimeSeries.moving" href="#TimeSeries.moving"><code>TimeSeries.moving</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">moving(f, ta::TimeArray{T,1}, w::Integer; padding = false)</code></pre><p>Apply user-defined function <code>f</code> to a 1D <code>TimeArray</code> with window size <code>w</code>.</p><p><strong>Example</strong></p><p>To calculate the simple moving average of a time series:</p><pre><code class="language-julia hljs">moving(mean, ta, 10)</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaStats/TimeSeries.jl/blob/dec63f4bb92bb6fe12f724f498a3a785349cc3be/src/apply.jl#L84-L95">source</a></section><section><div><pre><code class="language-julia hljs">moving(f, ta::TimeArray{T,2}, w::Integer; padding = false, dims = 1, colnames = [...])</code></pre><p><strong>Example</strong></p><p>In case of <code>dims = 2</code>, the user-defined function <code>f</code> will get a 2D <code>Array</code> as input.</p><pre><code class="language-julia hljs">moving(ohlc, 10, dims = 2, colnames = [:A, ...]) do
     # given that `ohlc` is a 500x4 `TimeArray`,
     # size(A) is (10, 4)
     ...
-end</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaStats/TimeSeries.jl/blob/576b2bfef32cd7ef3359ea624bafc8ffad3d4e6b/src/apply.jl#L106-L119">source</a></section></article><h2 id="upto"><a class="docs-heading-anchor" href="#upto"><code>upto</code></a><a id="upto-1"></a><a class="docs-heading-anchor-permalink" href="#upto" title="Permalink"></a></h2><p>Another operation common in time series analysis is an aggregation function. <code>TimeSeries</code> supports this with the <code>upto</code> method. Suppose you want to keep track of the sum of all the values from the beginning to the present timestamp. You would use the <code>upto</code> method like this:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using TimeSeries</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MarketData</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; upto(sum, cl)</code><code class="nohighlight hljs ansi" style="display:block;">500×1 TimeArray{Float64, 1, Date, Vector{Float64}} 2000-01-03 to 2001-12-31
+end</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaStats/TimeSeries.jl/blob/dec63f4bb92bb6fe12f724f498a3a785349cc3be/src/apply.jl#L106-L119">source</a></section></article><h2 id="upto"><a class="docs-heading-anchor" href="#upto"><code>upto</code></a><a id="upto-1"></a><a class="docs-heading-anchor-permalink" href="#upto" title="Permalink"></a></h2><p>Another operation common in time series analysis is an aggregation function. <code>TimeSeries</code> supports this with the <code>upto</code> method. Suppose you want to keep track of the sum of all the values from the beginning to the present timestamp. You would use the <code>upto</code> method like this:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using TimeSeries</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MarketData</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; upto(sum, cl)</code><code class="nohighlight hljs ansi" style="display:block;">500×1 TimeArray{Float64, 1, Date, Vector{Float64}} 2000-01-03 to 2001-12-31
 ┌────────────┬─────────┐
 │<span class="sgr1">            │ Close   │
 ├────────────┼─────────┤
@@ -130,14 +130,14 @@ end</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://g
 │ 2000-01-10 │  610.69 │
 │ 2000-01-11 │  703.44 │
 │ 2000-01-12 │  790.63 │
-│ 2000-01-13 │  887.38 │
-│ 2000-01-14 │  987.82 │
-│ 2000-01-18 │ 1091.76 │
-│ 2000-01-19 │ 1198.32 │
-│ 2000-01-20 │ 1311.82 │
-│ 2000-01-21 │ 1423.13 │
-│ 2000-01-24 │ 1529.38 │
 │     ⋮      │    ⋮    │
+│ 2001-12-20 │ 22965.0 │
+│ 2001-12-21 │ 22986.0 │
+│ 2001-12-24 │ 23007.3 │
+│ 2001-12-26 │ 23028.8 │
+│ 2001-12-27 │ 23050.9 │
+│ 2001-12-28 │ 23073.3 │
+│ 2001-12-31 │ 23095.2 │
 └────────────┴─────────┘
 <span class="sgr36">        485 rows omitted</span></span></code></pre><h2 id="basecall"><a class="docs-heading-anchor" href="#basecall"><code>basecall</code></a><a id="basecall-1"></a><a class="docs-heading-anchor-permalink" href="#basecall" title="Permalink"></a></h2><p>Because the algorithm for the <code>upto</code> method needs to be optimized further, it might be better to use a base method in its place when one is available. Taking our summation example above, we could instead use the <code>basecall</code> method and realize substantial performance improvements:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using TimeSeries</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MarketData</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; basecall(cl, cumsum)</code><code class="nohighlight hljs ansi" style="display:block;">500×1 TimeArray{Float64, 1, Date, Vector{Float64}} 2000-01-03 to 2001-12-31
 ┌────────────┬─────────┐
@@ -151,13 +151,13 @@ end</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://g
 │ 2000-01-10 │  610.69 │
 │ 2000-01-11 │  703.44 │
 │ 2000-01-12 │  790.63 │
-│ 2000-01-13 │  887.38 │
-│ 2000-01-14 │  987.82 │
-│ 2000-01-18 │ 1091.76 │
-│ 2000-01-19 │ 1198.32 │
-│ 2000-01-20 │ 1311.82 │
-│ 2000-01-21 │ 1423.13 │
-│ 2000-01-24 │ 1529.38 │
 │     ⋮      │    ⋮    │
+│ 2001-12-20 │ 22965.0 │
+│ 2001-12-21 │ 22986.0 │
+│ 2001-12-24 │ 23007.3 │
+│ 2001-12-26 │ 23028.8 │
+│ 2001-12-27 │ 23050.9 │
+│ 2001-12-28 │ 23073.3 │
+│ 2001-12-31 │ 23095.2 │
 └────────────┴─────────┘
-<span class="sgr36">        485 rows omitted</span></span></code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../operators/">« Mathematical, comparison, and logical operators</a><a class="docs-footer-nextpage" href="../combine/">Combine methods »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.1.2 on <span class="colophon-date" title="Wednesday 22 November 2023 01:34">Wednesday 22 November 2023</span>. Using Julia version 1.9.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+<span class="sgr36">        485 rows omitted</span></span></code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../operators/">« Mathematical, comparison, and logical operators</a><a class="docs-footer-nextpage" href="../combine/">Combine methods »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Thursday 7 December 2023 00:34">Thursday 7 December 2023</span>. Using Julia version 1.9.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

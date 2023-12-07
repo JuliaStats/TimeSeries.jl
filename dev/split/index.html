@@ -11,14 +11,14 @@
 │ 2000-02-14 │ 115.81 │
 │ 2000-02-28 │ 113.25 │
 │ 2000-03-06 │ 125.69 │
-│ 2000-03-13 │ 121.31 │
-│ 2000-03-20 │  123.0 │
-│ 2000-03-27 │ 139.56 │
-│ 2000-04-03 │ 133.31 │
-│ 2000-04-10 │  125.0 │
-│ 2000-04-17 │ 123.88 │
-│ 2000-04-24 │  120.5 │
 │     ⋮      │   ⋮    │
+│ 2001-11-19 │   20.0 │
+│ 2001-11-26 │  21.37 │
+│ 2001-12-03 │  21.05 │
+│ 2001-12-10 │  22.54 │
+│ 2001-12-17 │  20.62 │
+│ 2001-12-24 │  21.36 │
+│ 2001-12-31 │   21.9 │
 └────────────┴────────┘
 <span class="sgr36">        80 rows omitted</span></span></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; when(cl, dayname, &quot;Monday&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">95×1 TimeArray{Float64, 1, Date, Vector{Float64}} 2000-01-03 to 2001-12-31
 ┌────────────┬────────┐
@@ -32,14 +32,14 @@
 │ 2000-02-14 │ 115.81 │
 │ 2000-02-28 │ 113.25 │
 │ 2000-03-06 │ 125.69 │
-│ 2000-03-13 │ 121.31 │
-│ 2000-03-20 │  123.0 │
-│ 2000-03-27 │ 139.56 │
-│ 2000-04-03 │ 133.31 │
-│ 2000-04-10 │  125.0 │
-│ 2000-04-17 │ 123.88 │
-│ 2000-04-24 │  120.5 │
 │     ⋮      │   ⋮    │
+│ 2001-11-19 │   20.0 │
+│ 2001-11-26 │  21.37 │
+│ 2001-12-03 │  21.05 │
+│ 2001-12-10 │  22.54 │
+│ 2001-12-17 │  20.62 │
+│ 2001-12-24 │  21.36 │
+│ 2001-12-31 │   21.9 │
 └────────────┴────────┘
 <span class="sgr36">        80 rows omitted</span></span></code></pre><p>The period argument holds a valid <code>Date</code> method. Below are currently available alternatives.</p><table><tr><th style="text-align: right">Dates method</th><th style="text-align: right">Example</th></tr><tr><td style="text-align: right"><code>day</code></td><td style="text-align: right">Jan 3, 2000 = 3</td></tr><tr><td style="text-align: right"><code>dayname</code></td><td style="text-align: right">Jan 3, 2000 = &quot;Monday&quot;</td></tr><tr><td style="text-align: right"><code>week</code></td><td style="text-align: right">Jan 3, 2000 = 1</td></tr><tr><td style="text-align: right"><code>month</code></td><td style="text-align: right">Jan 3, 2000 = 1</td></tr><tr><td style="text-align: right"><code>monthname</code></td><td style="text-align: right">Jan 3, 2000 = &quot;January&quot;</td></tr><tr><td style="text-align: right"><code>year</code></td><td style="text-align: right">Jan 3, 2000 = 2000</td></tr><tr><td style="text-align: right"><code>dayofweek</code></td><td style="text-align: right">Monday = 1</td></tr><tr><td style="text-align: right"><code>dayofweekofmonth</code></td><td style="text-align: right">Fourth Monday in Jan = 4</td></tr><tr><td style="text-align: right"><code>dayofyear</code></td><td style="text-align: right">Dec 31, 2000 = 366</td></tr><tr><td style="text-align: right"><code>quarterofyear</code></td><td style="text-align: right">Dec 31, 2000 = 4</td></tr><tr><td style="text-align: right"><code>dayofquarter</code></td><td style="text-align: right">Dec 31, 2000 = 93</td></tr></table><h2 id="from"><a class="docs-heading-anchor" href="#from"><code>from</code></a><a id="from-1"></a><a class="docs-heading-anchor-permalink" href="#from" title="Permalink"></a></h2><p>The <code>from</code> method truncates a <code>TimeArray</code> starting with the date passed to the method:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using TimeSeries</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MarketData</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; from(cl, Date(2001, 12, 27))</code><code class="nohighlight hljs ansi" style="display:block;">3×1 TimeArray{Float64, 1, Date, Vector{Float64}} 2001-12-27 to 2001-12-31
 ┌────────────┬───────┐
@@ -67,14 +67,14 @@
 │ 2000-01-18 │  101.0 │  106.0 │ 100.44 │ 103.94 │
 │ 2000-01-19 │ 105.62 │ 108.75 │ 103.38 │ 106.56 │
 │ 2000-01-25 │  105.0 │ 113.12 │ 102.38 │ 112.25 │
-│ 2000-01-26 │  110.0 │ 114.19 │ 109.75 │ 110.19 │
-│ 2000-01-27 │ 108.81 │  113.0 │  107.0 │  110.0 │
-│ 2000-01-31 │  101.0 │ 103.88 │   94.5 │ 103.75 │
-│ 2000-02-03 │ 100.31 │ 104.25 │ 100.25 │ 103.31 │
-│ 2000-02-04 │ 103.94 │  110.0 │ 103.62 │  108.0 │
-│ 2000-02-07 │  108.0 │ 114.25 │ 105.94 │ 114.06 │
-│ 2000-02-08 │  114.0 │ 116.12 │ 111.25 │ 114.88 │
 │     ⋮      │   ⋮    │   ⋮    │   ⋮    │   ⋮    │
+│ 2001-12-17 │   20.4 │   21.0 │  20.19 │  20.62 │
+│ 2001-12-18 │  20.89 │  21.33 │  20.22 │  21.01 │
+│ 2001-12-19 │  20.58 │  21.68 │  20.47 │  21.62 │
+│ 2001-12-24 │   20.9 │  21.45 │   20.9 │  21.36 │
+│ 2001-12-26 │  21.35 │   22.3 │  21.14 │  21.49 │
+│ 2001-12-27 │  21.58 │  22.25 │  21.58 │  22.07 │
+│ 2001-12-28 │  21.97 │   23.0 │  21.96 │  22.43 │
 └────────────┴────────┴────────┴────────┴────────┘
 <span class="sgr36">                                  229 rows omitted</span></span></code></pre><h2 id="findall"><a class="docs-heading-anchor" href="#findall"><code>findall</code></a><a id="findall-1"></a><a class="docs-heading-anchor-permalink" href="#findall" title="Permalink"></a></h2><p>The <code>findall</code> method tests a condition and returns a vector of <code>Int</code> representing the row in the array where the condition is <code>true</code>:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using TimeSeries</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; using MarketData</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; red = findall(ohlc[:Close] .&lt; ohlc[:Open]);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; typeof(red)</code><code class="nohighlight hljs ansi" style="display:block;">Vector{Int64}<span class="sgr90"> (alias for Array{Int64, 1})</span></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; ohlc[red]</code><code class="nohighlight hljs ansi" style="display:block;">252×4 TimeArray{Float64, 2, Date, Matrix{Float64}} 2000-01-04 to 2001-12-31
 ┌────────────┬────────┬────────┬────────┬────────┐
@@ -88,14 +88,14 @@
 │ 2000-01-20 │  115.5 │  121.5 │  113.5 │  113.5 │
 │ 2000-01-21 │ 114.25 │ 114.25 │ 110.19 │ 111.31 │
 │ 2000-01-24 │ 108.44 │ 112.75 │ 105.12 │ 106.25 │
-│ 2000-01-28 │ 108.19 │ 110.88 │ 100.62 │ 101.62 │
-│ 2000-02-01 │  104.0 │  105.0 │  100.0 │ 100.25 │
-│ 2000-02-02 │ 100.75 │ 102.12 │   97.0 │  98.81 │
-│ 2000-02-09 │ 114.12 │ 117.12 │ 112.44 │ 112.62 │
-│ 2000-02-11 │ 113.62 │ 114.12 │ 108.25 │ 108.75 │
-│ 2000-02-16 │ 117.75 │ 118.12 │ 112.12 │ 114.12 │
-│ 2000-02-17 │ 115.19 │  115.5 │ 113.12 │ 114.88 │
 │     ⋮      │   ⋮    │   ⋮    │   ⋮    │   ⋮    │
+│ 2001-12-11 │  22.67 │  22.85 │  21.65 │  21.78 │
+│ 2001-12-12 │  21.87 │  21.92 │  21.25 │  21.49 │
+│ 2001-12-13 │  21.49 │  21.55 │   20.5 │   21.0 │
+│ 2001-12-14 │  20.73 │  20.83 │  20.09 │  20.39 │
+│ 2001-12-20 │   21.4 │  21.47 │  20.62 │  20.67 │
+│ 2001-12-21 │  21.01 │  21.54 │   20.8 │   21.0 │
+│ 2001-12-31 │  22.51 │  22.66 │  21.83 │   21.9 │
 └────────────┴────────┴────────┴────────┴────────┘
 <span class="sgr36">                                  237 rows omitted</span></span></code></pre><p>The following example won&#39;t create a temporary <code>Bool</code> vector, and gains better performance.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; findall(&gt;(100), cl)</code><code class="nohighlight hljs ansi" style="display:block;">89-element Vector{Int64}:
    1
@@ -144,4 +144,4 @@
 │ 2001-12-27 │ 22.07 │
 │ 2001-12-28 │ 22.43 │
 │ 2001-12-31 │  21.9 │
-└────────────┴───────┘</span></code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../indexing/">« Array indexing</a><a class="docs-footer-nextpage" href="../modify/">Modify existing <code>TimeArray</code>s »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.1.2 on <span class="colophon-date" title="Wednesday 22 November 2023 01:34">Wednesday 22 November 2023</span>. Using Julia version 1.9.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+└────────────┴───────┘</span></code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../indexing/">« Array indexing</a><a class="docs-footer-nextpage" href="../modify/">Modify existing <code>TimeArray</code>s »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Thursday 7 December 2023 00:34">Thursday 7 December 2023</span>. Using Julia version 1.9.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

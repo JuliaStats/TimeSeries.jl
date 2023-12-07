@@ -50,14 +50,14 @@
 │ 2000-01-10 │  102.0 │ 102.25 │  94.75 │  97.75 │
 │ 2000-01-11 │  95.94 │  99.38 │   90.5 │  92.75 │
 │ 2000-01-12 │   95.0 │   95.5 │   86.5 │  87.19 │
-│ 2000-01-13 │  94.48 │  98.75 │   92.5 │  96.75 │
-│ 2000-01-14 │  100.0 │ 102.25 │  99.38 │ 100.44 │
-│ 2000-01-18 │  101.0 │  106.0 │ 100.44 │ 103.94 │
-│ 2000-01-19 │ 105.62 │ 108.75 │ 103.38 │ 106.56 │
-│ 2000-01-20 │  115.5 │  121.5 │  113.5 │  113.5 │
-│ 2000-01-21 │ 114.25 │ 114.25 │ 110.19 │ 111.31 │
-│ 2000-01-24 │ 108.44 │ 112.75 │ 105.12 │ 106.25 │
 │     ⋮      │   ⋮    │   ⋮    │   ⋮    │   ⋮    │
+│ 2000-01-27 │ 108.81 │  113.0 │  107.0 │  110.0 │
+│ 2000-01-28 │ 108.19 │ 110.88 │ 100.62 │ 101.62 │
+│ 2000-01-31 │  101.0 │ 103.88 │   94.5 │ 103.75 │
+│ 2000-02-01 │  104.0 │  105.0 │  100.0 │ 100.25 │
+│ 2000-02-02 │ 100.75 │ 102.12 │   97.0 │  98.81 │
+│ 2000-02-03 │ 100.31 │ 104.25 │ 100.25 │ 103.31 │
+│ 2000-02-04 │ 103.94 │  110.0 │ 103.62 │  108.0 │
 └────────────┴────────┴────────┴────────┴────────┘
 <span class="sgr36">                                    9 rows omitted</span></span></code></pre><h2 id="Column-indexing"><a class="docs-heading-anchor" href="#Column-indexing">Column indexing</a><a id="Column-indexing-1"></a><a class="docs-heading-anchor-permalink" href="#Column-indexing" title="Permalink"></a></h2><h3 id="Symbol"><a class="docs-heading-anchor" href="#Symbol">Symbol</a><a id="Symbol-1"></a><a class="docs-heading-anchor-permalink" href="#Symbol" title="Permalink"></a></h3><table><tr><th style="text-align: right">Example</th><th style="text-align: right">Description</th><th style="text-align: right">Indexing value</th></tr><tr><td style="text-align: right"><code>[:Open]</code></td><td style="text-align: right">The column named <code>:Open</code></td><td style="text-align: right">single symbol</td></tr><tr><td style="text-align: right"><code>[:Open, :Close]</code></td><td style="text-align: right">The columns named <code>:Open</code> and <code>:Close</code></td><td style="text-align: right">multiple symbols</td></tr><tr><td style="text-align: right"><code>[[:Open, :Close]]</code></td><td style="text-align: right">The columns named <code>:Open</code> and <code>:Close</code></td><td style="text-align: right">multiple symbols</td></tr></table><p>Examples in REPL:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; ohlc[:Open]</code><code class="nohighlight hljs ansi" style="display:block;">500×1 TimeArray{Float64, 1, Date, Vector{Float64}} 2000-01-03 to 2001-12-31
 ┌────────────┬────────┐
@@ -71,14 +71,14 @@
 │ 2000-01-10 │  102.0 │
 │ 2000-01-11 │  95.94 │
 │ 2000-01-12 │   95.0 │
-│ 2000-01-13 │  94.48 │
-│ 2000-01-14 │  100.0 │
-│ 2000-01-18 │  101.0 │
-│ 2000-01-19 │ 105.62 │
-│ 2000-01-20 │  115.5 │
-│ 2000-01-21 │ 114.25 │
-│ 2000-01-24 │ 108.44 │
 │     ⋮      │   ⋮    │
+│ 2001-12-20 │   21.4 │
+│ 2001-12-21 │  21.01 │
+│ 2001-12-24 │   20.9 │
+│ 2001-12-26 │  21.35 │
+│ 2001-12-27 │  21.58 │
+│ 2001-12-28 │  21.97 │
+│ 2001-12-31 │  22.51 │
 └────────────┴────────┘
 <span class="sgr36">       485 rows omitted</span></span></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; ohlc[:Open, :Close]</code><code class="nohighlight hljs ansi" style="display:block;">500×2 TimeArray{Float64, 2, Date, Matrix{Float64}} 2000-01-03 to 2001-12-31
 ┌────────────┬────────┬────────┐
@@ -92,14 +92,14 @@
 │ 2000-01-10 │  102.0 │  97.75 │
 │ 2000-01-11 │  95.94 │  92.75 │
 │ 2000-01-12 │   95.0 │  87.19 │
-│ 2000-01-13 │  94.48 │  96.75 │
-│ 2000-01-14 │  100.0 │ 100.44 │
-│ 2000-01-18 │  101.0 │ 103.94 │
-│ 2000-01-19 │ 105.62 │ 106.56 │
-│ 2000-01-20 │  115.5 │  113.5 │
-│ 2000-01-21 │ 114.25 │ 111.31 │
-│ 2000-01-24 │ 108.44 │ 106.25 │
 │     ⋮      │   ⋮    │   ⋮    │
+│ 2001-12-20 │   21.4 │  20.67 │
+│ 2001-12-21 │  21.01 │   21.0 │
+│ 2001-12-24 │   20.9 │  21.36 │
+│ 2001-12-26 │  21.35 │  21.49 │
+│ 2001-12-27 │  21.58 │  22.07 │
+│ 2001-12-28 │  21.97 │  22.43 │
+│ 2001-12-31 │  22.51 │   21.9 │
 └────────────┴────────┴────────┘
 <span class="sgr36">                485 rows omitted</span></span></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; cols = [:Open, :Close]</code><code class="nohighlight hljs ansi" style="display:block;">2-element Vector{Symbol}:
  :Open
@@ -115,14 +115,14 @@
 │ 2000-01-10 │  102.0 │  97.75 │
 │ 2000-01-11 │  95.94 │  92.75 │
 │ 2000-01-12 │   95.0 │  87.19 │
-│ 2000-01-13 │  94.48 │  96.75 │
-│ 2000-01-14 │  100.0 │ 100.44 │
-│ 2000-01-18 │  101.0 │ 103.94 │
-│ 2000-01-19 │ 105.62 │ 106.56 │
-│ 2000-01-20 │  115.5 │  113.5 │
-│ 2000-01-21 │ 114.25 │ 111.31 │
-│ 2000-01-24 │ 108.44 │ 106.25 │
 │     ⋮      │   ⋮    │   ⋮    │
+│ 2001-12-20 │   21.4 │  20.67 │
+│ 2001-12-21 │  21.01 │   21.0 │
+│ 2001-12-24 │   20.9 │  21.36 │
+│ 2001-12-26 │  21.35 │  21.49 │
+│ 2001-12-27 │  21.58 │  22.07 │
+│ 2001-12-28 │  21.97 │  22.43 │
+│ 2001-12-31 │  22.51 │   21.9 │
 └────────────┴────────┴────────┘
 <span class="sgr36">                485 rows omitted</span></span></code></pre><h2 id="Mixed-approach"><a class="docs-heading-anchor" href="#Mixed-approach">Mixed approach</a><a id="Mixed-approach-1"></a><a class="docs-heading-anchor-permalink" href="#Mixed-approach" title="Permalink"></a></h2><table><tr><th style="text-align: right">Example</th><th style="text-align: right">Description</th><th style="text-align: right">Indexing value</th></tr><tr><td style="text-align: right"><code>[1:3, :Open]</code></td><td style="text-align: right"><code>:Open</code> column &amp; first 3 rows</td><td style="text-align: right">single symbol &amp; integer range</td></tr><tr><td style="text-align: right"><code>[:Open][Date(2000, 1, 3)]</code></td><td style="text-align: right"><code>:Open</code> column and Jan 3, 2000</td><td style="text-align: right">single symbol &amp; Date</td></tr></table><p>Examples in REPL:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; ohlc[1:3, :Open]</code><code class="nohighlight hljs ansi" style="display:block;">3×1 TimeArray{Float64, 2, Date, Matrix{Float64}} 2000-01-03 to 2000-01-05
 ┌────────────┬────────┐
@@ -136,4 +136,4 @@
 │<span class="sgr1">            │ Open   │
 ├────────────┼────────┤
 │ 2000-01-03 │ 104.88 │
-└────────────┴────────┘</span></code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../timearray/">« The <code>TimeArray</code> time series type</a><a class="docs-footer-nextpage" href="../split/">Splitting by conditions »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.1.2 on <span class="colophon-date" title="Wednesday 22 November 2023 01:34">Wednesday 22 November 2023</span>. Using Julia version 1.9.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+└────────────┴────────┘</span></code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../timearray/">« The <code>TimeArray</code> time series type</a><a class="docs-footer-nextpage" href="../split/">Splitting by conditions »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Thursday 7 December 2023 00:34">Thursday 7 December 2023</span>. Using Julia version 1.9.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
