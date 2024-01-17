@@ -48,17 +48,11 @@ function Base.iterate(x::TableIter, i::Integer = 1)
 end
 
 Tables.istable(::Type{<:AbstractTimeSeries}) = true
-Tables.rowaccess(::Type{<:TimeArray}) = true
-Tables.rows(ta::TimeArray) = Tables.rows(Tables.columntable(ta))
 Tables.columnaccess(::Type{<:TimeArray}) = true
 Tables.columns(ta::TimeArray) = TableIter(ta)
-Tables.columnnames(ta::TimeArray) = Tables.columnnames(TableIter(ta))
 Tables.columnnames(i::TableIter{T, S}) where {T,S} = collect(Symbol, S)
-Tables.getcolumn(ta::TimeArray, i::Int) = Tables.getcolumn(TableIter(ta), i)
-Tables.getcolumn(ta::TimeArray, nm::Symbol) = Tables.getcolumn(TableIter(ta), nm)
 Tables.getcolumn(i::TableIter, n::Int) = i[n]
 Tables.getcolumn(i::TableIter, nm::Symbol) = getproperty(i, nm)
-Tables.schema(ta::AbstractTimeSeries{T,N,D}) where {T,N,D} = Tables.schema(TableIter(ta))
 Tables.schema(i::TableIter{T,S}) where {T,S} = Tables.Schema(S, coltypes(data(i)))
 
 coltypes(x::AbstractTimeSeries{T,N,D}) where {T,N,D} = (D, (T for _ ∈ 1:size(x, 2))...)
@@ -72,12 +66,12 @@ function TimeSeries.TimeArray(x; timestamp::Symbol, timeparser::Base.Callable = 
                               unchecked = false)
     Tables.istable(x) || throw(ArgumentError("TimeArray requires a table as input"))
 
-    sch = Tables.schema(x)
+    cols = Tables.columns(x)
+    sch = Tables.schema(cols)
     names = sch.names
     (timestamp ∉ names) && throw(ArgumentError("time index `$timestamp` not found"))
     names′ = filter(!isequal(timestamp), collect(sch.names))
 
-    cols = Tables.columns(x)
     val = mapreduce(n -> collect(Tables.getcolumn(cols, n)), hcat, names′)
     TimeArray(map(timeparser, Tables.getcolumn(cols, timestamp)), val, names′, x;
               unchecked = unchecked)
