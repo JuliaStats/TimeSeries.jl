@@ -392,7 +392,7 @@
 ### 0.6.3
 
 * precompile support added
-* test/combine.jl and test/split.jl now imports Base.Dates explicity
+* test/combine.jl and test/split.jl now imports Base.Dates explicitly
 
 ### 0.6.2
 
