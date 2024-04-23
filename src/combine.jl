@@ -159,8 +159,27 @@ function collapse(ta::TimeArray, period::Function, timestamp::Function,
     TimeArray(ts′, val′, colnames(ta), meta(ta))
 end
 
-collapse(ta::TimeArray, p::Period, t::Function, v::Function = t; kw...) =
-    collapse(ta, x -> floor(x, p), t, v; kw...)
+"""
+    $(SIGNATURES)
+
+The `collapse` method allows for compressing data into a larger time frame. 
+
+For example, converting daily data into monthly data. When compressing dates, something rational has to be done with the values
+that lived in the more granular time frame. To define what happens, a function call is made.
+
+## Arguments:
+- `ta::TimeArray`: Original data
+- `period::Union{Function,Dates.Period}`: Period or method for determining the period
+- `timestamp::Function`: Method that determines which timestamp represents the whole period, e.g. `last`
+- `value::Function = timestamp`: Method that should be applied to the data within the period, e.g. `mean`
+
+```julia
+collapse(ta, month, last)
+collapse(ta, month, last, mean)
+```
+"""
+collapse(ta::TimeArray, period::Period, timestamp::Function, value::Function = timestamp; kw...) =
+    collapse(ta, x -> floor(x, period), timestamp, value; kw...)
 
 # vcat ######################
 
