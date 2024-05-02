@@ -97,6 +97,10 @@ using Statistics
 collapse(cl, month, last, mean)
 ```
 
+```@docs
+collapse
+```
+
 ## `vcat`
 
 The `vcat` method is used to concatenate time series: if you have two
