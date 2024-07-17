@@ -124,3 +124,14 @@ using MarketData
 tail(cl)
 tail(cl, 3)
 ```
+
+## Splitting by period
+
+Splitting data by a given function, e.g. `Dates.day` into periods.
+
+```@repl
+using TimeSeries
+using MarketData
+
+split(cl, week)
+```
