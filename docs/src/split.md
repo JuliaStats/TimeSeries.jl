@@ -133,5 +133,5 @@ Splitting data by a given function, e.g. `Dates.day` into periods.
 using TimeSeries
 using MarketData
 
-split(cl, week)
+split(cl, Dates.day)
 ```
