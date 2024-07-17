@@ -1,8 +1,6 @@
 using Dates
 using Test
-
 using MarketData
-
 using TimeSeries
 
 @testset "split" begin
@@ -122,5 +120,20 @@ using TimeSeries
             @test length(first(ohlc)) == 1
             @test length(last(ohlc)) == 1
         end
+    end
+
+    @testset "split period" begin
+        for period in [day, week, month, year]
+            for cl_ in split(cl, period)
+                @test allequal(period.(timestamp(cl_)))
+            end
+        end
+        @test length(split(cl, day)) == 500
+        @test length(split(cl, week)) == 105
+        @test length(split(cl, month)) == 24
+        @test length(split(cl, year)) == 2
+
+        # test empty timearray
+        @test length(split(to(cl, Date(2000)), week)) == 0
     end
 end  # @testset "split"
