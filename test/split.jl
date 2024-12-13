@@ -121,6 +121,9 @@ using TimeSeries
         @test length(split(cl, week)) == 105
         @test length(split(cl, month)) == 24
         @test length(split(cl, year)) == 2
+
+        # test empty timearray
+        @test length(split(to(cl, Date(2000)), week)) == 0
     end
 
 end  # @testset "split"
