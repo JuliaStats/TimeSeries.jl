@@ -75,19 +75,18 @@ Base.split(data::TimeSeries.TimeArray, period::Function) = Iterators.map(i -> da
 function _split(ts::AbstractVector{D}, period::Function) where {D<:TimeType}
     m = length(ts)
     idx = UnitRange{Int}[]
-    isempty(ts) && return idx
-
-    sizehint!(idx, m)
-    t0 = period(ts[1])
-    j = 1
-    for i in 1:(m-1)
-        t1 = period(ts[i+1])
-        t0 == t1 && continue
-        push!(idx, j:i)
-        j = i + 1
-        t0 = t1
+    if !isempty(ts)
+        sizehint!(idx, m)
+        t0 = period(ts[1])
+        j = 1
+        for i in 1:(m-1)
+            t1 = period(ts[i+1])
+            t0 == t1 && continue
+            push!(idx, j:i)
+            j = i + 1
+            t0 = t1
+        end
+        push!(idx, j:m)
     end
-    push!(idx, j:m)
-
     return Iterators.map(i -> ts[i], idx)
 end
