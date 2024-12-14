@@ -89,5 +89,5 @@ function _split(ts::AbstractVector{D}, period::Function) where {D<:TimeType}
     end
     push!(idx, j:m)
 
-    return idx
+    return Iterators.map(i -> ts[i], idx)
 end
