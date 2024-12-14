@@ -19,5 +19,6 @@ Pages = [
   "tables.md",
   "dotfile.md",
   "plotting.md",
+  "retime.md",
 ]
 ```
