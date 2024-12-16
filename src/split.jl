@@ -7,17 +7,17 @@ when(ta::TimeArray, period::Function, t::String) =
 
 # from, to ######################
 
-from(ta::TimeArray{T, N, D}, d::D) where {T, N, D} =
+from(ta::TimeArray{T,N,D}, d::D) where {T,N,D} =
     length(ta) == 0 ? ta :
-        d < timestamp(ta)[1] ? ta :
-        d > timestamp(ta)[end] ? ta[1:0] :
-        ta[searchsortedfirst(timestamp(ta), d):end]
+    d < timestamp(ta)[1] ? ta :
+    d > timestamp(ta)[end] ? ta[1:0] :
+    ta[searchsortedfirst(timestamp(ta), d):end]
 
-to(ta::TimeArray{T, N, D}, d::D) where {T, N, D} =
+to(ta::TimeArray{T,N,D}, d::D) where {T,N,D} =
     length(ta) == 0 ? ta :
-        d < timestamp(ta)[1] ? ta[1:0] :
-        d > timestamp(ta)[end] ? ta :
-        ta[1:searchsortedlast(timestamp(ta), d)]
+    d < timestamp(ta)[1] ? ta[1:0] :
+    d > timestamp(ta)[end] ? ta :
+    ta[1:searchsortedlast(timestamp(ta), d)]
 
 ###### findall ##################
 
@@ -43,7 +43,7 @@ findwhen(ta::TimeArray{Bool,1}) = timestamp(ta)[findall(values(ta))]
     end
 end
 
- @generated function tail(ta::TimeArray{T,N}, n::Int=6) where {T,N}
+@generated function tail(ta::TimeArray{T,N}, n::Int=6) where {T,N}
     new_values = (N == 1) ? :(values(ta)[start:end]) : :(values(ta)[start:end, :])
 
     quote
@@ -58,3 +58,35 @@ end
 Base.first(ta::TimeArray) = head(ta, 1)
 
 Base.last(ta::TimeArray) = tail(ta, 1)
+
+
+"""
+    split(data::TimeSeries.TimeArray, period::Function)
+
+Split `data` by `period` function, returns a vector of `TimeSeries.TimeArray`.
+
+## Arguments
+
+- `data::TimeSeries.TimeArray`: Data to split
+- `period::Function`: Function, e.g. `Dates.day` that is used to split the `data`.
+"""
+Base.split(data::TimeSeries.TimeArray, period::Function) = Iterators.map(i -> data[i], _split(TimeSeries.timestamp(data), period))
+
+function _split(ts::AbstractVector{D}, period::Function) where {D<:TimeType}
+    m = length(ts)
+    idx = UnitRange{Int}[]
+    if !isempty(ts)
+        sizehint!(idx, m)
+        t0 = period(ts[1])
+        j = 1
+        for i in 1:(m-1)
+            t1 = period(ts[i+1])
+            t0 == t1 && continue
+            push!(idx, j:i)
+            j = i + 1
+            t0 = t1
+        end
+        push!(idx, j:m)
+    end
+    return Iterators.map(i -> ts[i], idx)
+end
