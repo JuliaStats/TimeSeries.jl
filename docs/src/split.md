@@ -19,7 +19,7 @@ The period argument holds a valid `Date` method. Below are currently
 available alternatives.
 
 | Dates method       | Example                  |
-|--------------------|--------------------------|
+|:------------------ |:------------------------ |
 | `day`              | Jan 3, 2000 = 3          |
 | `dayname`          | Jan 3, 2000 = "Monday"   |
 | `week`             | Jan 3, 2000 = 1          |

@@ -65,10 +65,10 @@ TimeArray
 There are four field getter functions exported.
 They are named as same as the field names.
 
-- [`timestamp`](@ref)
-- [`values`](@ref)
-- [`colnames`](@ref)
-- [`meta`](@ref)
+  - [`timestamp`](@ref)
+  - [`values`](@ref)
+  - [`colnames`](@ref)
+  - [`meta`](@ref)
 
 ```@docs
 timestamp

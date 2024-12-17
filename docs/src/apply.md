@@ -34,7 +34,7 @@ value. To pad the returned `TimeArray` with `NaN` values instead, you can
 pass `padding=true` as a keyword argument:
 
 ```@repl lag
-lag(cl[1:3], padding=true)
+lag(cl[1:3]; padding=true)
 ```
 
 ## `lead`

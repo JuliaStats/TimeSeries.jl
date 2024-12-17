@@ -1,6 +1,6 @@
-overlap(ts::Vararg{Vector, 1}) = (Base.OneTo(length(ts[1])),)
+overlap(ts::Vararg{Vector,1}) = (Base.OneTo(length(ts[1])),)
 
-function overlap(ts::Vararg{Vector, N}) where {N}
+function overlap(ts::Vararg{Vector,N}) where {N}
     ret = ntuple(_ -> Int[], N)
     t1 = ts[1]
 
@@ -21,7 +21,7 @@ function overlap(ts::Vararg{Vector, N}) where {N}
             end
         end
     end
-    ret
+    return ret
 end
 
 """
@@ -75,14 +75,16 @@ end
 
 For each column in src, insert elements from src[i, column] to dst[dstidx[i], column + coloffset].
 """
-function insertbyidx!(dst::AbstractArray, src::AbstractArray, dstidx::Vector, coloffset::Int = 0)
+function insertbyidx!(
+    dst::AbstractArray, src::AbstractArray, dstidx::Vector, coloffset::Int=0
+)
     for c in 1:size(src, 2)
         cc = c + coloffset
         for i in 1:length(dstidx)
             @inbounds dst[dstidx[i], cc] = src[i, c]
         end
     end
-    nothing
+    return nothing
 end
 
 """
@@ -90,24 +92,26 @@ end
 
 For each column in src, insert elements from src[srcidx[i], column] to dst[dstidx[i], column].
 """
-function insertbyidx!(dst::AbstractArray, src::AbstractArray, dstidx::Vector, srcidx::Vector)
+function insertbyidx!(
+    dst::AbstractArray, src::AbstractArray, dstidx::Vector, srcidx::Vector
+)
     for c in 1:size(src, 2)
         for i in 1:length(srcidx)
             @inbounds dst[dstidx[i], c] = src[srcidx[i], c]
         end
     end
-    nothing
+    return nothing
 end
 
 @inline function allequal(x)
     length(x) < 2 && return true
     e1 = x[1]
 
-    @inbounds for i ∈ 2:length(x)
+    @inbounds for i in 2:length(x)
         x[i] == e1 || return false
     end
 
-    true
+    return true
 end
 
 # helper method for inner constructor
@@ -120,17 +124,18 @@ function replace_dupes!(cnames::Vector{Symbol})
                 cnames[d] = Symbol(cnames[d], "_$n")
             else
                 s = string(cnames[d])
-                cnames[d] = Symbol(s[1:length(s)-length(string(n))-1], "_$n")
+                cnames[d] = Symbol(s[1:(length(s) - length(string(n)) - 1)], "_$n")
             end
         end
         n += 1
     end
-    cnames
+    return cnames
 end
 
 # helper method for inner constructor
-find_dupes_index(A::Vector{Symbol}) =
-    @inbounds [i for i in eachindex(A) if A[i] ∈ A[1:i-1]]
+function find_dupes_index(A::Vector{Symbol})
+    @inbounds [i for i in eachindex(A) if A[i] ∈ A[1:(i - 1)]]
+end
 
 gen_colnames(n::Integer) = gen_colnames(Val{n}())
 
@@ -138,17 +143,17 @@ gen_colnames(n::Integer) = gen_colnames(Val{n}())
     ret = Vector{Symbol}(undef, N)
 
     s = ""
-    for i ∈ 1:N
+    for i in 1:N
         s = carry_char(s)
         ret[i] = Symbol(s)
     end
 
-    ret
+    return ret
 end
 
 const carry_char_cache = Dict{String,String}("" => "A")
 
-function carry_char(s::String = "")
+function carry_char(s::String="")
     ret = get(carry_char_cache, s, "")
     (ret != "") && return ret
 
@@ -158,12 +163,12 @@ function carry_char(s::String = "")
 
     ret = if c > 'Z'
         c = 'A'
-        carry_char(s[1:n-1]) * c
+        carry_char(s[1:(n - 1)]) * c
     else
-        s[1:n-1] * c
+        s[1:(n - 1)] * c
     end
 
-    carry_char_cache[s] = ret
+    return carry_char_cache[s] = ret
 end
 
 # helper method for `getindex`
@@ -176,16 +181,16 @@ findcol(ta::AbstractTimeSeries, s::Symbol) = findcol(colnames(ta), s)
 @inline function findcol(cols::Vector{Symbol}, s::Symbol)
     i = findfirst(isequal(s), cols)
     (i === nothing) && throw(KeyError(s))
-    i
+    return i
 end
 
 """
 Unicode friendly rpad
 """
 function _rpad(s::AbstractString, n::Integer)
-  x = n - textwidth(s)
-  (x ≤ 0) && return s
-  s * (" "^x)
+    x = n - textwidth(s)
+    (x ≤ 0) && return s
+    return s * (" "^x)
 end
 
 _rpad(s::Symbol, n::Integer) = _rpad(string(s), n::Integer)

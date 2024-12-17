@@ -10,6 +10,7 @@ Here is an handy way to edit it:
 julia> using TimeSeries
 
 julia> edit(joinpath(dirname(pathof(TimeSeries)), ".timeseriesrc.jl"))
+
 ```
 
 ## `DECIMALS`
@@ -58,11 +59,11 @@ This output is controlled with `const` values to accommodate difficult to
 remember unicode numbers:
 
 ```julia
-const NAN       = "NaN"
-const NA        = "NA"
+const NAN = "NaN"
+const NA = "NA"
 const BLACKHOLE = "\u2B24"
 const DOTCIRCLE = "\u25CC"
-const QUESTION  = "\u003F"
+const QUESTION = "\u003F"
 
 MISSING = NAN
 ```
@@ -76,7 +77,7 @@ at it!
 Here is an example in REPL with the default:
 
 ```julia
-julia> lag(cl, padding=true)
+julia> lag(cl; padding=true)
 500x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
 │            │ Close  │
 ├────────────┼────────┤
@@ -103,7 +104,7 @@ julia> lag(cl, padding=true)
 Here is an example in REPL with `NA` selected:
 
 ```julia
-julia> lag(cl, padding=true)
+julia> lag(cl; padding=true)
 500x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
 │            │ Close  │
 ├────────────┼────────┤
@@ -130,7 +131,7 @@ julia> lag(cl, padding=true)
 Here is an example in REPL with `BLACKHOLE` selected:
 
 ```julia
-julia> lag(cl, padding=true)
+julia> lag(cl; padding=true)
 500x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
 │            │ Close  │
 ├────────────┼────────┤

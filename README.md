@@ -1,5 +1,4 @@
-TimeSeries.jl
-============
+# TimeSeries.jl
 
 [![Latest Documentation](https://img.shields.io/badge/docs-dev-blue.svg)](https://JuliaStats.github.io/TimeSeries.jl/dev)
 [![Stable Documentation](https://img.shields.io/badge/docs-stable-blue.svg)](https://JuliaStats.github.io/TimeSeries.jl/stable)
@@ -13,6 +12,7 @@ TimeSeries aims to provide a lightweight framework for working with time series 
 Documentation is provided [here](http://juliastats.github.io/TimeSeries.jl/latest/).
 
 ## Installation
+
 Assuming that you already have Julia correctly installed, it suffices to import TimeSeries.jl in the standard way:
 
 ```julia

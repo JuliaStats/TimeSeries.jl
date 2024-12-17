@@ -24,7 +24,7 @@ provided where users can pass the format of their data.
 For example:
 
 ```julia
-ta = readtimearray("close.csv", format="dd/mm/yyyy HH:MM", delim=';')
+ta = readtimearray("close.csv"; format="dd/mm/yyyy HH:MM", delim=';')
 ```
 
 A more robust regex parsing engine is planned so users will not need to

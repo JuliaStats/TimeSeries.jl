@@ -1,8 +1,7 @@
 using Documenter
 using TimeSeries
 
-
-makedocs(
+makedocs(;
     format=Documenter.HTML(; prettyurls=(get(ENV, "CI", nothing) == "true")),
     sitename="TimeSeries.jl",
     modules=[TimeSeries],
@@ -21,11 +20,9 @@ makedocs(
         "tables.md",
         "dotfile.md",
         "plotting.md",
-    ]
+    ],
 )
 
-deploydocs(
-    repo="github.com/JuliaStats/TimeSeries.jl.git",
-    devbranch="master",
-    push_preview=true,
+deploydocs(;
+    repo="github.com/JuliaStats/TimeSeries.jl.git", devbranch="master", push_preview=true
 )

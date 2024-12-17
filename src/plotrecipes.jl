@@ -18,8 +18,8 @@ end
 
 # Argument
 
-- There are four required columns from `ta::TimeArray`: `open`, `high`, `low` and
-  `close`. The column names is case-insensitive.
+  - There are four required columns from `ta::TimeArray`: `open`, `high`, `low` and
+    `close`. The column names is case-insensitive.
 
 # Examples
 
@@ -27,9 +27,10 @@ end
 julia> using MarketData
 
 julia> TimeSeries.Candlestick(ohlcv)
+
 ```
 """
-mutable struct Candlestick{D <: TimeType}
+mutable struct Candlestick{D<:TimeType}
     time::Vector{D}
     open::AbstractVector
     high::AbstractVector
@@ -40,15 +41,15 @@ end
 Candlestick(ta::TimeArray) = Candlestick(extract_ohlc(ta)...)
 
 function extract_ohlc(ta::TimeArray)
-    C     = ["open", "high", "low", "close"]
-    cols  = colnames(ta)
+    C = ["open", "high", "low", "close"]
+    cols = colnames(ta)
     cols′ = lowercase.(string.(colnames(ta)))
-    V     = map(C) do x
+    V = map(C) do x
         i = findfirst(isequal(x), cols′)
         i ≡ nothing && throw(ArgumentError("the TimeArray did not have column `$x`"))
         values(ta[cols[i]])
     end
-    (timestamp(ta), V...)
+    return (timestamp(ta), V...)
 end
 
 function HeikinAshi!(cs::Candlestick) # some values here are made too high!
@@ -59,20 +60,19 @@ function HeikinAshi!(cs::Candlestick) # some values here are made too high!
 
     for i in 2:length(cs.open)
         cs.close[i] = (cs.open[i] + cs.low[i] + cs.close[i] + cs.high[i]) / 4
-        cs.open[i] = (cs.open[i-1] + cs.close[i-1]) / 2
+        cs.open[i] = (cs.open[i - 1] + cs.close[i - 1]) / 2
         cs.high[i] = maximum([cs.high[i], cs.open[i], cs.close[i]])
         cs.low[i] = minimum([cs.low[i], cs.open[i], cs.close[i]])
     end
 end
 
-
 @recipe function f(cs::Candlestick)
     st = get(plotattributes, :seriestype, :candlestick)
     st == :heikinashi && HeikinAshi!(cs)
 
-    legend    --> false
+    legend --> false
     linewidth --> 0.5
-    grid      --> true
+    grid --> true
     xrotation --> 90
 
     bw = get(plotattributes, :bar_width, 0.9)
@@ -86,41 +86,19 @@ end
     xseg, yseg = Vector{Float64}[], Vector{Float64}[]
     xcenter, ycenter = Float64[], Float64[]
 
-    idx  = 1:length(cs.time)
+    idx = 1:length(cs.time)
     tick = 1
 
     colors = Symbol[]
     hovers = String[]
     margin = (1 - bw) / 2 * tick
-    for (i, o, h, l, c) ∈ zip(idx, cs.open, cs.high, cs.low, cs.close)
+    for (i, o, h, l, c) in zip(idx, cs.open, cs.high, cs.low, cs.close)
         x₁, x₂ = i - tick + margin, i - margin
         x̄ = i - tick / 2
-        push!(xseg, [
-            x̄,
-            x̄,
-            x₁,
-            x₁,
-            x̄,
-            x̄,
-            x̄,
-            x₂,
-            x₂,
-            x̄,
-        ])
+        push!(xseg, [x̄, x̄, x₁, x₁, x̄, x̄, x̄, x₂, x₂, x̄])
 
         y₁, y₂ = min(o, c), max(o, c)
-        push!(yseg, [
-            l,
-            y₁,
-            y₁,
-            y₂,
-            y₂,
-            h,
-            y₂,
-            y₂,
-            y₁,
-            y₁,
-        ])
+        push!(yseg, [l, y₁, y₁, y₂, y₂, h, y₂, y₂, y₁, y₁])
 
         push!(colors, ifelse(o ≤ c, cols[1], cols[2]))
 
@@ -132,7 +110,9 @@ end
     xticks = get(plotattributes, :xticks, 1)
     if xticks isa Integer
         if xticks != 1
-            xticks := (idx .- 0.5, map(x -> (x % xticks) != 1 ? "" : string(cs.time[x]) ,idx))
+            xticks := (
+                idx .- 0.5, map(x -> (x % xticks) != 1 ? "" : string(cs.time[x]), idx)
+            )
         else
             xticks := (idx .- 0.5, string.(cs.time))
         end
@@ -146,20 +126,20 @@ end
     colors′ = reshape(colors, 1, :)
 
     @series begin
-        seriestype  := :shape
+        seriestype := :shape
         seriescolor := colors′
-        linecolor  --> colors′
+        linecolor --> colors′
         label --> ""
         xseg, yseg
     end
 
     @series begin
-        seriestype        := :scatter
-        seriescolor       := colors
-        markersize        := 1
+        seriestype := :scatter
+        seriescolor := colors
+        markersize := 1
         markerstrokewidth := 0
         label --> ""
-        hover             --> hovers
+        hover --> hovers
         xcenter, ycenter
     end
 end
