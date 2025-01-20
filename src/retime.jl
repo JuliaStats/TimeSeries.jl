@@ -74,7 +74,9 @@ function retime(
     downsample = _toAggregationMethod(downsample)
     extrapolate = _toExtrapolationMethod(extrapolate)
 
-    new_values = __get_new_values(T, length(new_timestamps), size(values(ta), 2), extrapolate, skip_missing)
+    new_values = __get_new_values(
+        T, length(new_timestamps), size(values(ta), 2), extrapolate, skip_missing
+    )
     old_timestamps = convert(Vector{DN}, timestamp(ta))
     old_values = values(ta)
     @views begin
@@ -124,10 +126,10 @@ function _retime!(
                 new_values[i] = _extrapolate(extrapolate, x_new[i], x, old_values)
             else
                 idx = if i < N
-                    _get_idx(x, x_new[i], x_new[i+1])
+                    _get_idx(x, x_new[i], x_new[i + 1])
                 else
                     # assume that the last interval is the same length as the second to last one
-                    _get_idx(x, x_new[i], x_new[i] + (x_new[i] - x_new[i-1]))
+                    _get_idx(x, x_new[i], x_new[i] + (x_new[i] - x_new[i - 1]))
                 end
 
                 if isempty(idx)
@@ -189,7 +191,8 @@ function _upsample(::Linear, x_old, old_values, x)
         old_values[idx_prev]
     else
         old_values[idx_prev] +
-        (x - x_old[idx_prev]) * (old_values[idx_next] - old_values[idx_prev]) / (x_old[idx_next] - x_old[idx_prev])
+        (x - x_old[idx_prev]) * (old_values[idx_next] - old_values[idx_prev]) /
+        (x_old[idx_next] - x_old[idx_prev])
     end
 end
 

@@ -5,7 +5,6 @@ using Dates
 using Statistics
 
 @testset "retime" begin
-
     @testset "interpolation" begin
         @test TimeSeries._toInterpolationMethod(:linear) == TimeSeries.Linear()
         @test TimeSeries._toInterpolationMethod(:nearest) == TimeSeries.Nearest()
@@ -29,7 +28,8 @@ using Statistics
     end
 
     @testset "extrapolation" begin
-        @test TimeSeries._toExtrapolationMethod(:fillconstant) == TimeSeries.FillConstant(0.0)
+        @test TimeSeries._toExtrapolationMethod(:fillconstant) ==
+            TimeSeries.FillConstant(0.0)
         @test TimeSeries._toExtrapolationMethod(:nearest) == TimeSeries.NearestExtrapolate()
         @test TimeSeries._toExtrapolationMethod(:missing) == TimeSeries.MissingExtrapolate()
         @test TimeSeries._toExtrapolationMethod(:nan) == TimeSeries.NaNExtrapolate()
@@ -41,7 +41,13 @@ using Statistics
         new_timestamps = collect(Dates.Date(2000):Dates.Week(1):Dates.Date(2001))
 
         funcs = [mean, sum, minimum, maximum, last]
-        downsamples = [TimeSeries.Mean(), TimeSeries.Sum(), TimeSeries.Min(), TimeSeries.Max(), TimeSeries.Last()]
+        downsamples = [
+            TimeSeries.Mean(),
+            TimeSeries.Sum(),
+            TimeSeries.Min(),
+            TimeSeries.Max(),
+            TimeSeries.Last(),
+        ]
         @testset for (func, downsample) in zip(funcs, downsamples)
             cl_new = retime(cl, new_timestamps; upsample=TimeSeries.Linear(), downsample)
 
@@ -74,7 +80,12 @@ using Statistics
     @testset "single column interpolation" begin
         new_timestamps = collect(Dates.DateTime(2000):Dates.Hour(1):Dates.DateTime(2001))
 
-        upsamples = [TimeSeries.Linear(), TimeSeries.Previous(), TimeSeries.Next(), TimeSeries.Nearest()]
+        upsamples = [
+            TimeSeries.Linear(),
+            TimeSeries.Previous(),
+            TimeSeries.Next(),
+            TimeSeries.Nearest(),
+        ]
         @testset for upsample in upsamples
             cl_new = retime(cl, new_timestamps; upsample)
 
@@ -118,10 +129,20 @@ using Statistics
         new_timestamps = collect(Dates.Date(2000):Dates.Week(1):Dates.Date(2001))
 
         funcs = [mean, sum, minimum, maximum, last]
-        downsamples = [TimeSeries.Mean(), TimeSeries.Sum(), TimeSeries.Min(), TimeSeries.Max(), TimeSeries.Last()]
+        downsamples = [
+            TimeSeries.Mean(),
+            TimeSeries.Sum(),
+            TimeSeries.Min(),
+            TimeSeries.Max(),
+            TimeSeries.Last(),
+        ]
         @testset for (func, downsample) in zip(funcs, downsamples)
-
-            ohlc_new = retime(ohlc, new_timestamps; upsample=TimeSeries.Linear(), downsample=TimeSeries.Mean())
+            ohlc_new = retime(
+                ohlc,
+                new_timestamps;
+                upsample=TimeSeries.Linear(),
+                downsample=TimeSeries.Mean(),
+            )
 
             @test timestamp(ohlc_new) == new_timestamps
 
@@ -136,7 +157,12 @@ using Statistics
     @testset "multi column interpolation" begin
         new_timestamps = collect(Dates.DateTime(2000):Dates.Hour(1):Dates.DateTime(2001))
 
-        upsamples = [TimeSeries.Linear(), TimeSeries.Previous(), TimeSeries.Next(), TimeSeries.Nearest()]
+        upsamples = [
+            TimeSeries.Linear(),
+            TimeSeries.Previous(),
+            TimeSeries.Next(),
+            TimeSeries.Nearest(),
+        ]
         @testset for upsample in upsamples
             ohlc_new = retime(ohlc, new_timestamps; upsample)
 
@@ -178,9 +204,21 @@ using Statistics
             colnames(cl),
         )
 
-        cl_new = retime(cl_missing, new_timestamps; upsample=:linear, downsample=:mean, skip_missing=false)
+        cl_new = retime(
+            cl_missing,
+            new_timestamps;
+            upsample=:linear,
+            downsample=:mean,
+            skip_missing=false,
+        )
 
-        cl_new = retime(cl_missing, new_timestamps; upsample=:linear, downsample=:mean, skip_missing=true)
+        cl_new = retime(
+            cl_missing,
+            new_timestamps;
+            upsample=:linear,
+            downsample=:mean,
+            skip_missing=true,
+        )
         @test !any(ismissing.(values(cl_new)))
     end
 
@@ -196,10 +234,21 @@ using Statistics
             colnames(cl),
         )
 
-        cl_new = retime(cl_missing, new_timestamps; upsample=:linear, downsample=:mean, skip_missing=false)
+        cl_new = retime(
+            cl_missing,
+            new_timestamps;
+            upsample=:linear,
+            downsample=:mean,
+            skip_missing=false,
+        )
 
-        cl_new = retime(cl_missing, new_timestamps; upsample=:linear, downsample=:mean, skip_missing=true)
+        cl_new = retime(
+            cl_missing,
+            new_timestamps;
+            upsample=:linear,
+            downsample=:mean,
+            skip_missing=true,
+        )
         @test !any(isnan.(values(cl_new)))
     end
-
 end
