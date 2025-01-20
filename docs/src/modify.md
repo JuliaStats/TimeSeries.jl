@@ -11,14 +11,14 @@ The `rename` method allows the column name(s) to be changed.
 The `rename!` is used for in-place update.
 
 ```@repl base
-rename(cl, :Close′) |> first
-rename(cl, [:Close′]) |> first
-rename(ohlc, [:Open′, :High′, :Low′, :Close′]) |> first
-rename(ohlc, :Open => :Open′) |> first
-rename(ohlc, :Open => :Open′, :Close => :Close′) |> first
-rename(ohlc, Dict(:Open => :Open′, :Close => :Close′)...) |> first
-rename(Symbol ∘ uppercase ∘ string, ohlc) |> first
-rename(uppercase, ohlc, String) |> first
+first(rename(cl, :Close′))
+first(rename(cl, [:Close′]))
+first(rename(ohlc, [:Open′, :High′, :Low′, :Close′]))
+first(rename(ohlc, :Open => :Open′))
+first(rename(ohlc, :Open => :Open′, :Close => :Close′))
+first(rename(ohlc, Dict(:Open => :Open′, :Close => :Close′)...))
+first(rename(Symbol ∘ uppercase ∘ string, ohlc))
+first(rename(uppercase, ohlc, String))
 ```
 
 ```@docs

@@ -7,7 +7,7 @@ Indexing out a time series is done with common bracketing semantics.
 ### Integer
 
 | Example      | Description                           | Indexing value                 |
-|--------------|---------------------------------------|--------------------------------|
+|:------------ |:------------------------------------- |:------------------------------ |
 | `[1]`        | First row of data only                | single integer                 |
 | `[1:3]`      | First through third row only          | integer range                  |
 | `[1:2:10]`   | Odd row between first to tenth row    | integer range with step        |
@@ -24,14 +24,14 @@ using MarketData
 ohlc[1]
 ohlc[1:3]
 ohlc[1:2:10]
-ohlc[[1:3;8]]
+ohlc[[1:3; 8]]
 ohlc[end]
 ```
 
 ### Date and DateTime
 
 | Example                                      | Description                                | Indexing value |
-|----------------------------------------------|--------------------------------------------|----------------|
+|:-------------------------------------------- |:------------------------------------------ |:-------------- |
 | `[Date(2000, 1, 3)]`                         | The row containing Jan 3, 2000 timestamp   | single Date    |
 | `[[Date(2000, 1, 3), Date(2000, 2, 4)]]`     | The rows containing Jan 3 & Feb 4, 2000    | multiple Dates |
 | `[Date(2000, 1, 3):Day(1):Date(2000, 2, 4)]` | The rows between Jan 3, 2000 & Feb 4, 2000 | range of Date  |
@@ -53,7 +53,7 @@ ohlc[Date(2000, 1, 3):Day(1):Date(2000, 2, 4)]
 ### Symbol
 
 | Example             | Description                            | Indexing value   |
-|---------------------|----------------------------------------|------------------|
+|:------------------- |:-------------------------------------- |:---------------- |
 | `[:Open]`           | The column named `:Open`               | single symbol    |
 | `[:Open, :Close]`   | The columns named `:Open` and `:Close` | multiple symbols |
 | `[[:Open, :Close]]` | The columns named `:Open` and `:Close` | multiple symbols |
@@ -75,7 +75,7 @@ ohlc[cols]
 ## Mixed approach
 
 | Example                     | Description                    | Indexing value                |
-|-----------------------------|--------------------------------|-------------------------------|
+|:--------------------------- |:------------------------------ |:----------------------------- |
 | `[1:3, :Open]`              | `:Open` column & first 3 rows  | single symbol & integer range |
 | `[:Open][Date(2000, 1, 3)]` | `:Open` column and Jan 3, 2000 | single symbol & Date          |
 

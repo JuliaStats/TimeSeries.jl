@@ -21,7 +21,7 @@ likewise excluded here. Base uses `^` to indicate matrix
 self-multiplication, and so it is not implemented in this context.
 
 | Operator | Description                            |
-|----------|----------------------------------------|
+|:-------- |:-------------------------------------- |
 | `.+`     | arithmetic element-wise addition       |
 | `.-`     | arithmetic element-wise subtraction    |
 | `.*`     | arithmetic element-wise multiplication |
@@ -39,7 +39,7 @@ and `Int`, `Float`, or `Bool` values. The semantics of an non-dot
 operators (`>`) is unclear, and such operators are not supported.
 
 | Operator | Description                                   |
-|----------|-----------------------------------------------|
+|:-------- |:--------------------------------------------- |
 | `.>`     | element-wise greater-than comparison          |
 | `.<`     | element-wise less-than comparison             |
 | `.==`    | element-wise equivalent comparison            |
@@ -55,7 +55,7 @@ two `TimeArray` objects are provided. Operations between a single
 `TimeArray` and `Bool` are also supported.
 
 | Operator   | Description              |
-|------------|--------------------------|
+|:---------- |:------------------------ |
 | `.&`       | element-wise logical AND |
 | `.\|`      | element-wise logical OR  |
 | `.!`, `.~` | element-wise logical NOT |

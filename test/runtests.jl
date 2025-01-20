@@ -15,11 +15,10 @@ tests = [
     "plotrecipes",
 ]
 
-
 @testset "TimeSeries" begin
     @info("Running tests:")
 
-    for test ∈ tests
+    for test in tests
         @info("\t* $test ...")
         include("$test.jl")
     end

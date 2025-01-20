@@ -1,8 +1,9 @@
 ###### readtimearray ############
 
-function readtimearray(source; delim::Char = ',', meta = nothing,
-                       format::AbstractString = "", header::Bool = true)
-    cfile = readdlm(source, delim, header = header)
+function readtimearray(
+    source; delim::Char=',', meta=nothing, format::AbstractString="", header::Bool=true
+)
+    cfile = readdlm(source, delim; header=header)
     if header
         cfile, hd = cfile
     end
@@ -17,21 +18,22 @@ function readtimearray(source; delim::Char = ',', meta = nothing,
     time = cfile[1:end, 1]
     if length(time[1]) < 11
         # assuming Date not DateTime
-        tstamps = df === nothing ?
-            Date[Date(t) for t in time] :
-            Date[Date(t, df) for t in time]
+        tstamps =
+            df === nothing ? Date[Date(t) for t in time] : Date[Date(t, df) for t in time]
     else
-        tstamps = df === nothing ?
-            DateTime[DateTime(t) for t in time] :
+        tstamps = if df === nothing
+            DateTime[DateTime(t) for t in time]
+        else
             DateTime[DateTime(t, df) for t in time]
+        end
     end
 
-    vals   = insertNaN(cfile[1:end, 2:end])
+    vals = insertNaN(cfile[1:end, 2:end])
     cnames = header ? Symbol.(hd[2:end]) : gen_colnames(size(cfile, 2) - 1)
-    TimeArray(tstamps, vals, cnames, meta)
+    return TimeArray(tstamps, vals, cnames, meta)
 end  # readtimearray
 
-function insertNaN(aa::Array{Any, N}) where {N}
+function insertNaN(aa::Array{Any,N}) where {N}
     for i in 1:size(aa, 1)
         for j in 1:size(aa, 2)
             if !isa(aa[i, j], Real)
@@ -39,12 +41,16 @@ function insertNaN(aa::Array{Any, N}) where {N}
             end
         end
     end
-    convert(Array{Float64, N}, aa)
+    return convert(Array{Float64,N}, aa)
 end
 
-function writetimearray(ta::TimeArray, fname::AbstractString;
-                        delim::Char = ',', format::AbstractString = "",
-                        header::Bool = true)
+function writetimearray(
+    ta::TimeArray,
+    fname::AbstractString;
+    delim::Char=',',
+    format::AbstractString="",
+    header::Bool=true,
+)
     open(fname, "w") do io
         if header
             strvals = join(colnames(ta), delim)
@@ -53,9 +59,11 @@ function writetimearray(ta::TimeArray, fname::AbstractString;
 
         for i in eachindex(timestamp(ta))
             strvals = replace(join(values(ta)[i, :], delim), "NaN" => "")
-            strtstamp = isempty(format) ?
-                string(timestamp(ta)[i]) :
+            strtstamp = if isempty(format)
+                string(timestamp(ta)[i])
+            else
                 Dates.format(timestamp(ta)[i], format)
+            end
             write(io, string(strtstamp, delim, strvals, "\n"))
         end
     end

@@ -1,6 +1,7 @@
 # Tables.jl Interface Integration
 
 Quoted from the home page of Tables.jl:
+
 > The [Table.jl](https://github.com/JuliaData/Tables.jl) package provides simple,
 > yet powerful interface functions for working with all kinds tabular data through
 > predictable access patterns.
@@ -19,10 +20,10 @@ In Julia v1.1+, these two functions are supported and baked by `Tables.jl`.
 
 ```@repl
 using MarketData
-for row ∈ eachrow(ohlc)
-  time = row.timestamp
-  c = row.Close
-  # ...
+for row in eachrow(ohlc)
+    time = row.timestamp
+    c = row.Close
+    # ...
 end
 ```
 
@@ -40,10 +41,9 @@ In this case, user needs to point out the column of time index via the
 
 ```@repl df-ta
 df′ = DataFrames.rename(df, :timestamp => :A);
-df′ |> first
-TimeArray(df′, timestamp = :A)
+first(df′)
+TimeArray(df′; timestamp=:A)
 ```
-
 
 ## Save a `TimeArray` via `CSV.jl`
 
@@ -52,10 +52,9 @@ using CSV
 CSV.write(filename, ta)
 ```
 
-
 ## Load a `TimeArray` from csv file via `CSV.jl`
 
 ```julia
 using CSV
-TimeArray(CSV.File(filename), timestamp = :timestamp)
+TimeArray(CSV.File(filename); timestamp=:timestamp)
 ```

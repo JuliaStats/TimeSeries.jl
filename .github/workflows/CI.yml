@@ -15,16 +15,16 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - "1.6.7"  # LTS
+          - "1.6.7" # LTS
           - "1.6"
-          - "1"    # Latest Release
+          - "1" # Latest Release
         os:
           - ubuntu-latest
         arch:
           - x64
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@latest
         with:
           version: ${{ matrix.version }}
@@ -53,10 +53,10 @@ jobs:
     name: Documentation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@latest
         with:
-          version: '1'
+          version: "1"
       - run: |
           git config --global user.name name
           git config --global user.email email

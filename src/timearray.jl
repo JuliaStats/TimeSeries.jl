@@ -2,9 +2,23 @@
 
 using Base: @propagate_inbounds
 
-import Base: convert, copy, length, show, getindex, iterate,
-             lastindex, size, eachindex, ==, isequal, hash, ndims,
-             getproperty, propertynames, values
+import Base:
+    convert,
+    copy,
+    length,
+    show,
+    getindex,
+    iterate,
+    lastindex,
+    size,
+    eachindex,
+    ==,
+    isequal,
+    hash,
+    ndims,
+    getproperty,
+    propertynames,
+    values
 
 abstract type AbstractTimeSeries{T,N,D} end
 
@@ -26,21 +40,17 @@ The third constructor builds a `TimeArray` from a `NamedTuple`.
 
 # Arguments
 
-- `timestamp::AbstractVector{<:TimeType}`: a vector of sorted timestamps,
+  - `timestamp::AbstractVector{<:TimeType}`: a vector of sorted timestamps,
 
-- `timestamp::Symbol`: the column name of the time index from the source table.
-  The constructor is used for the Tables.jl package integration.
-
-- `values::AbstractArray`: a data vector or matrix. Its number of rows
-  should match the length of `timestamp`.
-
-- `colnames::Vector{Symbol}`: the column names. Its length should match
-  the column of `values`.
-
-- `meta::Any`: a user-defined metadata.
-
-- `timeparser::Callable`: a mapping function for converting the source time index.
-  For instance, `Dates.unix2datetime` is a common case.
+  - `timestamp::Symbol`: the column name of the time index from the source table.
+    The constructor is used for the Tables.jl package integration.
+  - `values::AbstractArray`: a data vector or matrix. Its number of rows
+    should match the length of `timestamp`.
+  - `colnames::Vector{Symbol}`: the column names. Its length should match
+    the column of `values`.
+  - `meta::Any`: a user-defined metadata.
+  - `timeparser::Callable`: a mapping function for converting the source time index.
+    For instance, `Dates.unix2datetime` is a common case.
 
 # Examples
 
@@ -49,36 +59,36 @@ The third constructor builds a `TimeArray` from a `NamedTuple`.
             col2 = [20.2, 21.2],
             col3 = [30.2, 31.2])
     ta = TimeArray(data; timestamp = :datetime, meta = "Example")
-
 """
 struct TimeArray{T,N,D<:TimeType,A<:AbstractArray{T,N}} <: AbstractTimeSeries{T,N,D}
-
     timestamp::Vector{D}
     values::A
     colnames::Vector{Symbol}
     meta::Any
 
     function TimeArray{T,N,D,A}(
-            timestamp::AbstractVector{D},
-            values::A,
-            colnames::Vector{Symbol},
-            meta::Any;
-            unchecked = false) where {T,N,D<:TimeType,A<:AbstractArray{T,N}}
+        timestamp::AbstractVector{D},
+        values::A,
+        colnames::Vector{Symbol},
+        meta::Any;
+        unchecked=false,
+    ) where {T,N,D<:TimeType,A<:AbstractArray{T,N}}
         nrow = size(values, 1)
         ncol = size(values, 2)
         colnames = copy(colnames)
 
         unchecked && return new(timestamp, values, replace_dupes!(colnames), meta)
 
-        nrow != length(timestamp) && throw(DimensionMismatch("values must match length of timestamp"))
-        ncol != length(colnames) && throw(DimensionMismatch("column names must match width of array"))
+        nrow != length(timestamp) &&
+            throw(DimensionMismatch("values must match length of timestamp"))
+        ncol != length(colnames) &&
+            throw(DimensionMismatch("column names must match width of array"))
 
-        issorted(timestamp) && return new(
-            timestamp, values, replace_dupes!(colnames), meta)
+        issorted(timestamp) && return new(timestamp, values, replace_dupes!(colnames), meta)
 
         timestamp_r = reverse(timestamp)
-        issorted(timestamp_r) && return new(
-            timestamp_r, reverse(values, dims = 1), replace_dupes!(colnames), meta)
+        issorted(timestamp_r) &&
+            return new(timestamp_r, reverse(values; dims=1), replace_dupes!(colnames), meta)
 
         throw(ArgumentError("timestamps must be monotonic"))
     end
@@ -86,39 +96,60 @@ end
 
 ###### outer constructor ########
 
-TimeArray(d::AbstractVector{D}, v::AbstractArray{T,N},
-          c::Vector{Symbol} = gen_colnames(size(v, 2)),
-          m::Any = nothing; args...) where {T,N,D<:TimeType} =
-    TimeArray{T,N,D,typeof(v)}(d, v, c, m; args...)
+function TimeArray(
+    d::AbstractVector{D},
+    v::AbstractArray{T,N},
+    c::Vector{Symbol}=gen_colnames(size(v, 2)),
+    m::Any=nothing;
+    args...,
+) where {T,N,D<:TimeType}
+    return TimeArray{T,N,D,typeof(v)}(d, v, c, m; args...)
+end
 
-TimeArray(d::D, v::AbstractArray{T,N},
-          c::Vector{Symbol} = gen_colnames(size(v, 2)),
-          m::Any = nothing; args...) where {T,N,D<:TimeType} =
-    TimeArray{T,N,D,typeof(v)}([d], v, c, m; args...)
+function TimeArray(
+    d::D,
+    v::AbstractArray{T,N},
+    c::Vector{Symbol}=gen_colnames(size(v, 2)),
+    m::Any=nothing;
+    args...,
+) where {T,N,D<:TimeType}
+    return TimeArray{T,N,D,typeof(v)}([d], v, c, m; args...)
+end
 
-TimeArray(ta::TimeArray;
-          timestamp = _timestamp(ta), values = _values(ta),
-          colnames = _colnames(ta), meta = _meta(ta), args...) =
-    TimeArray(timestamp, values, colnames, meta; args...)
+function TimeArray(
+    ta::TimeArray;
+    timestamp=_timestamp(ta),
+    values=_values(ta),
+    colnames=_colnames(ta),
+    meta=_meta(ta),
+    args...,
+)
+    return TimeArray(timestamp, values, colnames, meta; args...)
+end
 
-function TimeArray(data::NamedTuple; timestamp::Symbol, meta = nothing, args...)
+function TimeArray(data::NamedTuple; timestamp::Symbol, meta=nothing, args...)
     columns = (key for key in keys(data) if key != timestamp)
     dat = hcat((data[key] for key in columns)...)
-    TimeArray(data[timestamp], dat, collect(columns), meta; args...)
+    return TimeArray(data[timestamp], dat, collect(columns), meta; args...)
 end
 
 ###### conversion ###############
 
-convert(::Type{TimeArray{Float64,N}}, x::TimeArray{Bool,N}) where N =
-    TimeArray(timestamp(x), Float64.(values(x)), colnames(x), meta(x); unchecked = true)
+function convert(::Type{TimeArray{Float64,N}}, x::TimeArray{Bool,N}) where {N}
+    return TimeArray(
+        timestamp(x), Float64.(values(x)), colnames(x), meta(x); unchecked=true
+    )
+end
 
-convert(x::TimeArray{Bool,N}) where N =
-    convert(TimeArray{Float64,N}, x::TimeArray{Bool,N})
+function convert(x::TimeArray{Bool,N}) where {N}
+    return convert(TimeArray{Float64,N}, x::TimeArray{Bool,N})
+end
 
 ###### copy ###############
 
-copy(ta::TimeArray) =
-    TimeArray(timestamp(ta), values(ta), colnames(ta), meta(ta); unchecked = true)
+function copy(ta::TimeArray)
+    return TimeArray(timestamp(ta), values(ta), colnames(ta), meta(ta); unchecked=true)
+end
 
 ###### length ###################
 
@@ -135,7 +166,7 @@ ndims(ta::AbstractTimeSeries{T,N}) where {T,N} = N
 
 ###### iteration protocol ########
 
-@generated function iterate(ta::AbstractTimeSeries{T,N}, i = 1) where {T,N}
+@generated function iterate(ta::AbstractTimeSeries{T,N}, i=1) where {T,N}
     val = (N == 1) ? :(values(ta)[i]) : :(values(ta)[i, :])
 
     quote
@@ -157,9 +188,9 @@ Implies
 
 ```julia
 x.timestamp == y.timestamp &&
-x.values    == y.values    &&
-x.colnames  == y.colnames  &&
-x.meta      == y.meta
+    x.values == y.values &&
+    x.colnames == y.colnames &&
+    x.meta == y.meta
 ```
 """
 ==
@@ -169,16 +200,17 @@ x.meta      == y.meta
 #      1.0 == 1
 #      Date(2111, 1, 1) == DateTime(2111, 1, 1)
 ==(x::TimeArray{T,N}, y::TimeArray{S,M}) where {T,S,N,M} = false
-==(x::TimeArray{T,N}, y::TimeArray{S,N}) where {T,S,N} =
-    all(f -> getfield(x, f) == getfield(y, f), fieldnames(TimeArray))
+function ==(x::TimeArray{T,N}, y::TimeArray{S,N}) where {T,S,N}
+    return all(f -> getfield(x, f) == getfield(y, f), fieldnames(TimeArray))
+end
 
 isequal(x::TimeArray{T,N}, y::TimeArray{S,M}) where {T,S,N,M} = false
-isequal(x::TimeArray{T,N}, y::TimeArray{S,N}) where {T,S,N} =
-    all(f -> isequal(getfield(x, f), getfield(y, f)), fieldnames(TimeArray))
+function isequal(x::TimeArray{T,N}, y::TimeArray{S,N}) where {T,S,N}
+    return all(f -> isequal(getfield(x, f), getfield(y, f)), fieldnames(TimeArray))
+end
 
 # support for Dict
-hash(x::TimeArray, h::UInt) =
-    sum(f -> hash(getfield(x, f), h), fieldnames(TimeArray))
+hash(x::TimeArray, h::UInt) = sum(f -> hash(getfield(x, f), h), fieldnames(TimeArray))
 
 ###### eltype #####################
 
@@ -188,23 +220,29 @@ Base.eltype(::AbstractTimeSeries{T,2,D}) where {T,D} = Tuple{D,Vector{T}}
 ###### show #####################
 Base.summary(io::IO, ta::TimeArray) = show(io, ta)
 
-function Base.show(io::IO, ta::TimeArray) 
+function Base.show(io::IO, ta::TimeArray)
     nrow = size(values(ta), 1)
     ncol = size(values(ta), 2)
     print(io, "$(nrow)×$(ncol) $(typeof(ta))")
     if nrow != 0
         print(io, " $(timestamp(ta)[1]) to $(timestamp(ta)[end])")
     else  # e.g. TimeArray(Date[], [])
-        return
+        return nothing
     end
 end
-function Base.show(io::IO, ::MIME"text/plain", ta::TimeArray;  allrows = !get(io, :limit, false), allcols = !get(io, :limit, false))
+function Base.show(
+    io::IO,
+    ::MIME"text/plain",
+    ta::TimeArray;
+    allrows=!get(io, :limit, false),
+    allcols=!get(io, :limit, false),
+)
     nrow = size(values(ta), 1)
     ncol = size(values(ta), 2)
 
     show(io, ta) # summary line
 
-    nrow == 0 && return
+    nrow == 0 && return nothing
 
     println(io)
 
@@ -220,14 +258,16 @@ function Base.show(io::IO, ::MIME"text/plain", ta::TimeArray;  allrows = !get(io
 
     data = hcat(timestamp(ta), values(ta))
     header = vcat("", string.(colnames(ta)))
-    pretty_table(io, data; 
-        header=header, 
-        newline_at_end = false, 
-        reserved_display_lines = 2,
-        row_label_alignment = :r,
-        header_alignment = :l,
+    return pretty_table(
+        io,
+        data;
+        header=header,
+        newline_at_end=false,
+        reserved_display_lines=2,
+        row_label_alignment=:r,
+        header_alignment=:l,
         crop=crop,
-        vcrop_mode = :middle,
+        vcrop_mode=:middle,
     )
 end
 
@@ -240,7 +280,7 @@ getindex(ta::TimeArray) = throw(BoundsError(typeof(ta), []))
 
 # single row
 @propagate_inbounds getindex(ta::TimeArray, n::Integer) =
-    # avoid conversion to column vector
+# avoid conversion to column vector
     TimeArray(timestamp(ta)[n], values(ta)[n:n, :], colnames(ta), meta(ta))
 
 # single row 1d
@@ -252,7 +292,7 @@ getindex(ta::TimeArray) = throw(BoundsError(typeof(ta), []))
     TimeArray(timestamp(ta)[r], values(ta)[r, :], colnames(ta), meta(ta))
 
 # range of 1d rows
-@propagate_inbounds getindex(ta::TimeArray{T,1}, r::UnitRange{<:Integer}) where T =
+@propagate_inbounds getindex(ta::TimeArray{T,1}, r::UnitRange{<:Integer}) where {T} =
     TimeArray(timestamp(ta)[r], values(ta)[r], colnames(ta), meta(ta))
 
 # array of rows
@@ -260,38 +300,38 @@ getindex(ta::TimeArray) = throw(BoundsError(typeof(ta), []))
     TimeArray(timestamp(ta)[a], values(ta)[a, :], colnames(ta), meta(ta))
 
 # array of 1d rows
-@propagate_inbounds getindex(ta::TimeArray{T,1}, a::AbstractVector{<:Integer}) where T =
+@propagate_inbounds getindex(ta::TimeArray{T,1}, a::AbstractVector{<:Integer}) where {T} =
     TimeArray(timestamp(ta)[a], values(ta)[a], colnames(ta), meta(ta))
 
 # single column by name
 @propagate_inbounds function getindex(ta::TimeArray, s::Symbol)
     n = findcol(ta, s)
-    TimeArray(timestamp(ta), values(ta)[:, n], Symbol[s], meta(ta), unchecked = true)
+    return TimeArray(timestamp(ta), values(ta)[:, n], Symbol[s], meta(ta); unchecked=true)
 end
 
 # array of columns by name
 @propagate_inbounds getindex(ta::TimeArray, ss::Symbol...) = getindex(ta, collect(ss))
 @propagate_inbounds getindex(ta::TimeArray, ss::Vector{Symbol}) =
-    TimeArray(ta; values = values(ta)[:, map(s -> findcol(ta, s), ss)], colnames = ss)
+    TimeArray(ta; values=values(ta)[:, map(s -> findcol(ta, s), ss)], colnames=ss)
 
 # ta[rows, cols]
-@propagate_inbounds getindex(ta::TimeArray,
-         rows::Union{AbstractVector{<:Integer},Colon},
-         cols::AbstractVector{Symbol}) =
-    TimeArray(
-        ta;
-        timestamp = timestamp(ta)[rows],
-        values = values(ta)[rows, map(s -> findcol(ta, s), cols)],
-        colnames = cols,
-        unchecked = true)
+@propagate_inbounds getindex(
+    ta::TimeArray,
+    rows::Union{AbstractVector{<:Integer},Colon},
+    cols::AbstractVector{Symbol},
+) = TimeArray(
+    ta;
+    timestamp=timestamp(ta)[rows],
+    values=values(ta)[rows, map(s -> findcol(ta, s), cols)],
+    colnames=cols,
+    unchecked=true,
+)
 
 # ta[n, cols]
-@propagate_inbounds getindex(ta::TimeArray, n::Integer, cols) =
-    getindex(ta, [n], cols)
+@propagate_inbounds getindex(ta::TimeArray, n::Integer, cols) = getindex(ta, [n], cols)
 
 # ta[rows, col]
-@propagate_inbounds getindex(ta::TimeArray, rows, col::Symbol) =
-    getindex(ta, rows, [col])
+@propagate_inbounds getindex(ta::TimeArray, rows, col::Symbol) = getindex(ta, rows, [col])
 
 # ta[n, col]
 @propagate_inbounds getindex(ta::TimeArray, n::Integer, col::Symbol) =
@@ -300,18 +340,19 @@ end
 # single date
 @propagate_inbounds function getindex(ta::TimeArray{T,N,D}, d::D) where {T,N,D}
     idxs = searchsorted(timestamp(ta), d)
-    length(idxs) == 1 ? ta[idxs[1]] : nothing
+    return length(idxs) == 1 ? ta[idxs[1]] : nothing
 end
 
 # multiple dates
 @propagate_inbounds function getindex(ta::TimeArray{T,N,D}, dates::Vector{D}) where {T,N,D}
     dates = sort(dates)
     idxs, _ = overlap(timestamp(ta), dates)
-    ta[idxs]
+    return ta[idxs]
 end
 
 # StepRange{Date,...}
-@propagate_inbounds getindex(ta::TimeArray{T,N,D}, r::StepRange{D}) where {T,N,D} = ta[collect(r)]
+@propagate_inbounds getindex(ta::TimeArray{T,N,D}, r::StepRange{D}) where {T,N,D} =
+    ta[collect(r)]
 
 @propagate_inbounds getindex(ta::TimeArray, k::TimeArray{Bool,1}) = ta[findwhen(k)]
 
@@ -319,10 +360,15 @@ end
 # getindex{T,N}(ta::TimeArray{T,N}, d::DAYOFWEEK) = ta[dayofweek(timestamp(ta)) .== d]
 
 # Define end keyword
-lastindex(ta::TimeArray, d::Integer = 1) =
-    (d == 1) ? length(timestamp(ta)) :
-    (d == 2) ? length(colnames(ta)) :
-    1
+function lastindex(ta::TimeArray, d::Integer=1)
+    return if (d == 1)
+        length(timestamp(ta))
+    elseif (d == 2)
+        length(colnames(ta))
+    else
+        1
+    end
+end
 
 eachindex(ta::TimeArray) = Base.OneTo(length(timestamp(ta)))
 
@@ -375,6 +421,6 @@ meta(ta::TimeArray) = getfield(ta, :meta)
 
 # internal use, to avoid name collision
 _timestamp(ta::TimeArray) = getfield(ta, :timestamp)
-_values(ta::TimeArray)    = getfield(ta, :values)
-_colnames(ta::TimeArray)  = getfield(ta, :colnames)
-_meta(ta::TimeArray)      = getfield(ta, :meta)
+_values(ta::TimeArray) = getfield(ta, :values)
+_colnames(ta::TimeArray) = getfield(ta, :colnames)
+_meta(ta::TimeArray) = getfield(ta, :meta)

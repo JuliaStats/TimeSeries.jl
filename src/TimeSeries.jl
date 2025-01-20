@@ -11,13 +11,32 @@ using Reexport
 using Tables
 using PrettyTables: pretty_table
 
-export TimeArray, AbstractTimeSeries,
-       when, from, to, findwhen, timestamp, values, colnames, meta, head, tail,
-       lag, lead, diff, percentchange, moving, upto,
-       uniformspaced, uniformspace, dropnan,
-       basecall,
-       merge, collapse,
-       readtimearray, writetimearray
+export TimeArray,
+    AbstractTimeSeries,
+    when,
+    from,
+    to,
+    findwhen,
+    timestamp,
+    values,
+    colnames,
+    meta,
+    head,
+    tail,
+    lag,
+    lead,
+    diff,
+    percentchange,
+    moving,
+    upto,
+    uniformspaced,
+    uniformspace,
+    dropnan,
+    basecall,
+    merge,
+    collapse,
+    readtimearray,
+    writetimearray
 
 # modify.jl
 export rename, rename!

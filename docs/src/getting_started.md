@@ -5,6 +5,7 @@ To add it to your Julia packages, simply do the following in REPL:
 
 ```julia
 julia> Pkg.add("TimeSeries")
+
 ```
 
 Throughout this tutorial, we'll be using historical financial data sets,
@@ -13,6 +14,7 @@ registered and can be added:
 
 ```julia
 julia> Pkg.add("MarketData")
+
 ```
 
 To create dummy data without using the `MarketData` package, simply use
