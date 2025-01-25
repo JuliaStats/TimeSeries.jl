@@ -70,3 +70,36 @@ end
 Base.first(ta::TimeArray) = head(ta, 1)
 
 Base.last(ta::TimeArray) = tail(ta, 1)
+
+"""
+    split(data::TimeSeries.TimeArray, period::Function)
+
+Split `data` by `period` function, returns a vector of `TimeSeries.TimeArray`.
+
+## Arguments
+
+- `data::TimeSeries.TimeArray`: Data to split
+- `period::Function`: Function, e.g. `Dates.day` that is used to split the `data`.
+"""
+Base.split(data::TimeSeries.TimeArray, period::Function) =
+    Iterators.map(i -> data[i], _split(TimeSeries.timestamp(data), period))
+
+function _split(ts::AbstractVector{D}, period::Function) where {D<:TimeType}
+    m = length(ts)
+    idx = UnitRange{Int}[]
+    isempty(ts) && return idx
+
+    sizehint!(idx, m)
+    t0 = period(ts[1])
+    j = 1
+    for i in 1:(m - 1)
+        t1 = period(ts[i + 1])
+        t0 == t1 && continue
+        push!(idx, j:i)
+        j = i + 1
+        t0 = t1
+    end
+    push!(idx, j:m)
+
+    return Iterators.map(i -> ts[i], idx)
+end
