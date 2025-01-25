@@ -88,10 +88,10 @@ function retime(
     old_values = values(ta)
     @views begin
         for col_i in 1:size(old_values, 2)
-            if skip_missing
-                idx = findall(x -> !ismissing(x) && !isnan(x), old_values[:, col_i])
+            idx = if skip_missing
+                findall(x -> !ismissing(x) && !isnan(x), old_values[:, col_i])
             else
-                idx = ones(Int, length(old_timestamps))
+                Colon()
             end
 
             _retime!(
