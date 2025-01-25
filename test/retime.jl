@@ -251,4 +251,30 @@ using Statistics
         )
         @test !any(isnan.(values(cl_new)))
     end
+
+    @testset "Aggregate integers with :mean" begin
+        ta = TimeArray(
+            [
+                DateTime(2025, 1, 1, 8, 0),
+                DateTime(2025, 1, 2, 2, 0),
+                DateTime(2025, 1, 3, 9, 0),
+            ],
+            [1, 2, 3],
+        )
+
+        ta_new = retime(ta, Day(1))
+    end
+
+    @testset "Interpolate integers with :linear" begin
+        ta = TimeArray(
+            [
+                DateTime(2025, 1, 1, 8, 0),
+                DateTime(2025, 1, 2, 2, 0),
+                DateTime(2025, 1, 3, 9, 0),
+            ],
+            [1, 2, 3],
+        )
+
+        ta_new = retime(ta, Hour(1); upsample=:linear)
+    end
 end

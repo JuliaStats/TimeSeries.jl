@@ -53,7 +53,8 @@ _toExtrapolationMethod(::Val{:nan}) = NaNExtrapolate()
 _toExtrapolationMethod(x::ExtrapolationMethod) = x
 
 function retime(ta, new_dt::Dates.Period; kwargs...)
-    new_timestamps = timestamp(ta)[1]:new_dt:timestamp(ta)[end]
+    new_timestamps =
+        floor(timestamp(ta)[1], new_dt):new_dt:floor(timestamp(ta)[end], new_dt)
     return retime(ta, new_timestamps; kwargs...)
 end
 
@@ -74,8 +75,14 @@ function retime(
     downsample = _toAggregationMethod(downsample)
     extrapolate = _toExtrapolationMethod(extrapolate)
 
-    new_values = __get_new_values(
-        T, length(new_timestamps), size(values(ta), 2), extrapolate, skip_missing
+    new_values = __allocate_new_values(
+        T,
+        length(new_timestamps),
+        size(ta, 2),
+        upsample,
+        downsample,
+        extrapolate,
+        skip_missing,
     )
     old_timestamps = convert(Vector{DN}, timestamp(ta))
     old_values = values(ta)
@@ -95,7 +102,6 @@ function retime(
                 upsample,
                 downsample,
                 extrapolate,
-                skip_missing,
             )
         end
     end
@@ -110,10 +116,9 @@ function _retime!(
     upsample::InterpolationMethod,
     downsample::AggregationMethod,
     extrapolate::ExtrapolationMethod,
-    skip_missing::Bool,
 ) where {D,AN,A}
     x = Dates.value.(old_timestamps)
-    x_min, x_max = extrema(x)
+    x_min, x_max = x[1], x[end] # assume that the timestamps are sorted
     x_new = Dates.value.(new_timestamps)
 
     N = length(x_new)
@@ -152,12 +157,22 @@ function _retime!(
     return nothing
 end
 
-function __get_new_values(T, N, n, extrapolate, skip_missing)
-    return zeros(skip_missing ? nonmissingtype(T) : T, N, n)
+function __allocate_new_values(T, N, n, upsample, downsample, extrapolate, skip_missing)
+    T = skip_missing ? nonmissingtype(T) : T
+    new_type = promote_type(
+        T, __get_type(T, upsample), __get_type(T, downsample), __get_type(T, extrapolate)
+    )
+    return zeros(new_type, N, n)
 end
-function __get_new_values(T, N, n, extrapolate::MissingExtrapolate, skip_missing)
-    return zeros(Union{Missing,T}, N, n)
-end
+
+__get_type(::Type{T}, ::InterpolationMethod) where {T} = T
+__get_type(::Type{Int}, ::Linear) = Float64 # interpolating integers can result in floats
+
+__get_type(::Type{T}, ::AggregationMethod) where {T} = T
+__get_type(::Type{Int}, ::Mean) = Float64 # aggregating integers can result in floats
+
+__get_type(::Type{T}, ::ExtrapolationMethod) where {T} = T
+__get_type(::Type{T}, ::MissingExtrapolate) where {T} = Union{T,Missing}
 
 function _get_idx(x::AbstractVector{<:Real}, x_left::Real, x_right::Real)
     idx_left = searchsortedfirst(x, x_left) # greater or equal to x_left
@@ -171,7 +186,11 @@ function _extrapolate(m::FillConstant, t_new, x, y)
 end
 
 function _extrapolate(::NearestExtrapolate, t_new, x, y)
-    idx = argmin(abs.(x .- t_new))
+    idx = if t_new < x[1]
+        1
+    else
+        length(x)
+    end
     return y[idx]
 end
 
