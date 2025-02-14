@@ -18,6 +18,9 @@ struct Sum <: AggregationMethod end
 struct Median <: AggregationMethod end
 struct First <: AggregationMethod end
 struct Last <: AggregationMethod end
+struct AggregationFunction{F<:Function} <: AggregationMethod
+    func::F
+end
 
 # Extrapolation methods
 struct FillConstant{V} <: ExtrapolationMethod
@@ -43,6 +46,7 @@ _toAggregationMethod(::Val{:sum}) = Sum()
 _toAggregationMethod(::Val{:median}) = Median()
 _toAggregationMethod(::Val{:first}) = First()
 _toAggregationMethod(::Val{:last}) = Last()
+_toAggregationMethof(f::Function) = AggregationFunction(f)
 _toAggregationMethod(x::AggregationMethod) = x
 
 _toExtrapolationMethod(x::Symbol) = _toExtrapolationMethod(Val(x))
@@ -67,7 +71,7 @@ function retime(
     ta::TimeArray{T,N,D,A},
     new_timestamps::AbstractVector{DN};
     upsample::Union{Symbol,InterpolationMethod}=Previous(),
-    downsample::Union{Symbol,AggregationMethod}=Mean(),
+    downsample::Union{Symbol,Function,AggregationMethod}=Mean(),
     extrapolate::Union{Symbol,ExtrapolationMethod}=NearestExtrapolate(),
     skip_missing::Bool=true,
 ) where {T,N,D,A,DN}
@@ -147,7 +151,8 @@ function _retime!(
                         # Only one sample found in the interval x_new[i] and x_new[i+1] --> use the upsample method
                         # new_values[i] = _upsample(upsample, x, old_values, x_new[i])
                         # Only one sample found in the interval x_new[i] and x_new[i+1] --> still use the downsample method?
-                        new_values[i] = _downsample(downsample, old_values[idx])
+                        # new_values[i] = _downsample(downsample, old_values[idx])
+                        new_values[i] = _old_values[idx]
                     end
                 else
                     # Multiple samples were found in the interval [x_new[i], x_new[i+1]) --> use the downsample method to get the agglomeration
@@ -252,3 +257,4 @@ _downsample(::Sum, values_in_range) = sum(values_in_range)
 _downsample(::Median, values_in_range) = median(values_in_range)
 _downsample(::First, values_in_range) = first(values_in_range)
 _downsample(::Last, values_in_range) = last(values_in_range)
+_downsample(f::AggregationFunction, values_in_range) = f.func(values_in_range)
