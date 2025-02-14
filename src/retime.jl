@@ -152,7 +152,7 @@ function _retime!(
                         # new_values[i] = _upsample(upsample, x, old_values, x_new[i])
                         # Only one sample found in the interval x_new[i] and x_new[i+1] --> still use the downsample method?
                         # new_values[i] = _downsample(downsample, old_values[idx])
-                        new_values[i] = old_values[idx]
+                        new_values[i] = old_values[idx[1]]
                     end
                 else
                     # Multiple samples were found in the interval [x_new[i], x_new[i+1]) --> use the downsample method to get the agglomeration
