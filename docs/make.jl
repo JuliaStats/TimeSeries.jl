@@ -19,6 +19,7 @@ makedocs(;
         "readwrite.md",
         "tables.md",
         "plotting.md",
+        "retime.md",
     ],
 )
 
