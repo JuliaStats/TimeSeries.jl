@@ -145,15 +145,8 @@ function _retime!(
                     # No original samples lie between x_new[i] and x_new[i+1] --> Upsampling
                     new_values[i] = _upsample(upsample, x, old_values, x_new[i])
                 elseif length(idx) == 1
-                    if x_new[i] == x[idx[1]] # directly hit the sample, do not try the upsample method
-                        new_values[i] = old_values[idx[1]]
-                    else
-                        # Only one sample found in the interval x_new[i] and x_new[i+1] --> use the upsample method
-                        # new_values[i] = _upsample(upsample, x, old_values, x_new[i])
-                        # Only one sample found in the interval x_new[i] and x_new[i+1] --> still use the downsample method?
-                        # new_values[i] = _downsample(downsample, old_values[idx])
-                        new_values[i] = old_values[idx[1]]
-                    end
+                    # either we directly hit a sample or there is just one in the interval
+                    new_values[i] = old_values[idx[1]]
                 else
                     # Multiple samples were found in the interval [x_new[i], x_new[i+1]) --> use the downsample method to get the agglomeration
                     new_values[i] = _downsample(downsample, old_values[idx])
