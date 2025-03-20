@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Customize TimeArray printing · TimeSeries.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">TimeSeries.jl</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">TimeSeries Overview</a></li><li><a class="tocitem" href="../getting_started/">Getting Started</a></li><li><a class="tocitem" href="../timearray/">The <code>TimeArray</code> time series type</a></li><li><a class="tocitem" href="../indexing/">Array indexing</a></li><li><a class="tocitem" href="../split/">Splitting by conditions</a></li><li><a class="tocitem" href="../modify/">Modify existing <code>TimeArray</code>s</a></li><li><a class="tocitem" href="../operators/">Mathematical, comparison, and logical operators</a></li><li><a class="tocitem" href="../apply/">Apply methods</a></li><li><a class="tocitem" href="../combine/">Combine methods</a></li><li><a class="tocitem" href="../readwrite/">I/O</a></li><li><a class="tocitem" href="../tables/">Tables.jl Interface Integration</a></li><li class="is-active"><a class="tocitem" href>Customize <code>TimeArray</code> printing</a><ul class="internal"><li><a class="tocitem" href="#DECIMALS-1"><span><code>DECIMALS</code></span></a></li><li><a class="tocitem" href="#MISSING-1"><span><code>MISSING</code></span></a></li></ul></li><li><a class="tocitem" href="../plotting/">Plotting</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Customize <code>TimeArray</code> printing</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Customize <code>TimeArray</code> printing</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/JuliaStats/TimeSeries.jl/blob/master/docs/src/dotfile.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Customize-TimeArray-printing-1"><a class="docs-heading-anchor" href="#Customize-TimeArray-printing-1">Customize <code>TimeArray</code> printing</a><a class="docs-heading-anchor-permalink" href="#Customize-TimeArray-printing-1" title="Permalink"></a></h1><p>A dot file named <code>.timeseriesrc</code> sets three variables that control how <code>TimeArrays</code> are displayed. This doesn&#39;t change the underlying <code>TimeArray</code> and only controls how values are printed to REPL.</p><p>Here is an handy way to edit it:</p><pre><code class="language-julia">julia&gt; using TimeSeries
+
+julia&gt; edit(joinpath(dirname(pathof(TimeSeries)), &quot;.timeseriesrc.jl&quot;))</code></pre><h2 id="DECIMALS-1"><a class="docs-heading-anchor" href="#DECIMALS-1"><code>DECIMALS</code></a><a class="docs-heading-anchor-permalink" href="#DECIMALS-1" title="Permalink"></a></h2><p><code>DECIMALS = 4</code></p><p>The default setting is 4. It shows values out to four decimal places:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+
+julia&gt; percentchange(cl)
+499×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-04 to 2001-12-31
+│            │ Close   │
+├────────────┼─────────┤
+│ 2000-01-04 │ -0.0843 │
+│ 2000-01-05 │ 0.0146  │
+│ 2000-01-06 │ -0.0865 │
+│ 2000-01-07 │ 0.0474  │
+│ 2000-01-10 │ -0.0176 │
+│ 2000-01-11 │ -0.0512 │
+│ 2000-01-12 │ -0.0599 │
+│ 2000-01-13 │ 0.1096  │
+│ ⋮          │ ⋮       │
+│ 2001-12-20 │ -0.0439 │
+│ 2001-12-21 │ 0.016   │
+│ 2001-12-24 │ 0.0171  │
+│ 2001-12-26 │ 0.0061  │
+│ 2001-12-27 │ 0.027   │
+│ 2001-12-28 │ 0.0163  │
+│ 2001-12-31 │ -0.0236 │</code></pre><p>You can change it to whatever value you prefer. If you change it to 6, the same transformation will display like this:</p><pre><code class="language-julia">julia&gt; percentchange(cl)
+499x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-04 to 2001-12-31
+│            │ Close     │
+├────────────┼───────────┤
+│ 2000-01-04 │ -0.084331 │
+│ 2000-01-05 │ 0.014634  │
+│ 2000-01-06 │ -0.086538 │
+│ 2000-01-07 │ 0.047368  │
+│ 2000-01-10 │ -0.017588 │
+│ 2000-01-11 │ -0.051151 │
+│ 2000-01-12 │ -0.059946 │
+│ 2000-01-13 │ 0.109646  │
+│ 2000-01-14 │ 0.03814   │
+   ⋮
+│ 2001-12-19 │ 0.029034  │
+│ 2001-12-20 │ -0.043941 │
+│ 2001-12-21 │ 0.015965  │
+│ 2001-12-24 │ 0.017143  │
+│ 2001-12-26 │ 0.006086  │
+│ 2001-12-27 │ 0.026989  │
+│ 2001-12-28 │ 0.016312  │
+│ 2001-12-31 │ -0.023629 │</code></pre><h2 id="MISSING-1"><a class="docs-heading-anchor" href="#MISSING-1"><code>MISSING</code></a><a class="docs-heading-anchor-permalink" href="#MISSING-1" title="Permalink"></a></h2><p>This output is controlled with <code>const</code> values to accommodate difficult to remember unicode numbers:</p><pre><code class="language-julia">const NAN       = &quot;NaN&quot;
+const NA        = &quot;NA&quot;
+const BLACKHOLE = &quot;\u2B24&quot;
+const DOTCIRCLE = &quot;\u25CC&quot;
+const QUESTION  = &quot;\u003F&quot;
+
+MISSING = NAN</code></pre><p>The default setting displays <code>NaN</code>, which represent the actual value when <code>padding=true</code> is selected for certain transformations. You can change it to show differently with the provided <code>const</code> values or roll your own. Dot files are often used to customize your experience, so have at it!</p><p>Here is an example in REPL with the default:</p><pre><code class="language-julia">julia&gt; lag(cl, padding=true)
+500x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
+│            │ Close  │
+├────────────┼────────┤
+│ 2000-01-03 │ NaN    │
+│ 2000-01-04 │ 111.94 │
+│ 2000-01-05 │ 102.5  │
+│ 2000-01-06 │ 104.0  │
+│ 2000-01-07 │ 95.0   │
+│ 2000-01-10 │ 99.5   │
+│ 2000-01-11 │ 97.75  │
+│ 2000-01-12 │ 92.75  │
+│ 2000-01-13 │ 87.19  │
+   ⋮
+│ 2001-12-19 │ 21.01  │
+│ 2001-12-20 │ 21.62  │
+│ 2001-12-21 │ 20.67  │
+│ 2001-12-24 │ 21.0   │
+│ 2001-12-26 │ 21.36  │
+│ 2001-12-27 │ 21.49  │
+│ 2001-12-28 │ 22.07  │
+│ 2001-12-31 │ 22.43  │</code></pre><p>Here is an example in REPL with <code>NA</code> selected:</p><pre><code class="language-julia">julia&gt; lag(cl, padding=true)
+500x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
+│            │ Close  │
+├────────────┼────────┤
+│ 2000-01-03 │ NA     │
+│ 2000-01-04 │ 111.94 │
+│ 2000-01-05 │ 102.5  │
+│ 2000-01-06 │ 104.0  │
+│ 2000-01-07 │ 95.0   │
+│ 2000-01-10 │ 99.5   │
+│ 2000-01-11 │ 97.75  │
+│ 2000-01-12 │ 92.75  │
+│ 2000-01-13 │ 87.19  │
+   ⋮
+│ 2001-12-19 │ 21.01  │
+│ 2001-12-20 │ 21.62  │
+│ 2001-12-21 │ 20.67  │
+│ 2001-12-24 │ 21.0   │
+│ 2001-12-26 │ 21.36  │
+│ 2001-12-27 │ 21.49  │
+│ 2001-12-28 │ 22.07  │
+│ 2001-12-31 │ 22.43  │</code></pre><p>Here is an example in REPL with <code>BLACKHOLE</code> selected:</p><pre><code class="language-julia">julia&gt; lag(cl, padding=true)
+500x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
+│            │ Close  │
+├────────────┼────────┤
+│ 2000-01-03 │ ⬤     │
+│ 2000-01-04 │ 111.94 │
+│ 2000-01-05 │ 102.5  │
+│ 2000-01-06 │ 104.0  │
+│ 2000-01-07 │ 95.0   │
+│ 2000-01-10 │ 99.5   │
+│ 2000-01-11 │ 97.75  │
+│ 2000-01-12 │ 92.75  │
+│ 2000-01-13 │ 87.19  │
+   ⋮
+│ 2001-12-19 │ 21.01  │
+│ 2001-12-20 │ 21.62  │
+│ 2001-12-21 │ 20.67  │
+│ 2001-12-24 │ 21.0   │
+│ 2001-12-26 │ 21.36  │
+│ 2001-12-27 │ 21.49  │
+│ 2001-12-28 │ 22.07  │
+│ 2001-12-31 │ 22.43  │</code></pre><p>Other <code>const</code> values include <code>DOTCIRCLE</code> and <code>QUESTION</code>. The <code>UNICORN</code> value is a feature request.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../tables/">« Tables.jl Interface Integration</a><a class="docs-footer-nextpage" href="../plotting/">Plotting »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 17 May 2023 00:38">Wednesday 17 May 2023</span>. Using Julia version 1.5.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

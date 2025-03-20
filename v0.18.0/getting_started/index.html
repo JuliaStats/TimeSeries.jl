@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Getting Started · TimeSeries.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>TimeSeries.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">TimeSeries Overview</a></li><li class="current"><a class="toctext" href>Getting Started</a><ul class="internal"></ul></li><li><a class="toctext" href="../timearray/">The <code>TimeArray</code> time series type</a></li><li><a class="toctext" href="../indexing/">Array indexing</a></li><li><a class="toctext" href="../split/">Splitting by conditions</a></li><li><a class="toctext" href="../modify/">Modify existing <code>TimeArray</code>s</a></li><li><a class="toctext" href="../operators/">Mathematical, comparison, and logical operators</a></li><li><a class="toctext" href="../apply/">Apply methods</a></li><li><a class="toctext" href="../combine/">Combine methods</a></li><li><a class="toctext" href="../readwrite/">I/O</a></li><li><a class="toctext" href="../tables/">Tables.jl Interface Integration</a></li><li><a class="toctext" href="../dotfile/">Customize <code>TimeArray</code> printing</a></li><li><a class="toctext" href="../plotting/">Plotting</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Getting Started</a></li></ul><a class="edit-page" href="https://github.com/JuliaStats/TimeSeries.jl/blob/master/docs/src/getting_started.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Getting Started</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Getting-Started-1" href="#Getting-Started-1">Getting Started</a></h1><p><code>TimeSeries</code> is a registered package. To add it to your Julia packages, simply do the following in REPL:</p><pre><code class="language-julia">julia&gt; Pkg.add(&quot;TimeSeries&quot;)</code></pre><p>Throughout this tutorial, we&#39;ll be using historical financial data sets, which are made available in the <code>MarketData</code> package. <code>MarketData</code> is also registered and can be added:</p><pre><code class="language-julia">julia&gt; Pkg.add(&quot;MarketData&quot;)</code></pre><p>To create dummy data without using the <code>MarketData</code> package, simply use the following code block:</p><div></div><pre><code class="language-julia-repl">julia&gt; using Dates
+
+julia&gt; dates = Date(2018, 1, 1):Day(1):Date(2018, 12, 31)
+2018-01-01:1 day:2018-12-31
+
+julia&gt; ta = TimeArray(dates, rand(length(dates)))
+365×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2018-01-01 to 2018-12-31
+│            │ A      │
+├────────────┼────────┤
+│ 2018-01-01 │ 0.6939 │
+│ 2018-01-02 │ 0.0492 │
+│ 2018-01-03 │ 0.6991 │
+│ 2018-01-04 │ 0.9366 │
+│ 2018-01-05 │ 0.5084 │
+│ 2018-01-06 │ 0.7115 │
+│ 2018-01-07 │ 0.1067 │
+│ 2018-01-08 │ 0.4737 │
+│ 2018-01-09 │ 0.8691 │
+   ⋮
+│ 2018-12-24 │ 0.9303 │
+│ 2018-12-25 │ 0.5791 │
+│ 2018-12-26 │ 0.1176 │
+│ 2018-12-27 │ 0.5223 │
+│ 2018-12-28 │ 0.8296 │
+│ 2018-12-29 │ 0.7671 │
+│ 2018-12-30 │ 0.8065 │
+│ 2018-12-31 │ 0.6415 │</code></pre><footer><hr/><a class="previous" href="../"><span class="direction">Previous</span><span class="title">TimeSeries Overview</span></a><a class="next" href="../timearray/"><span class="direction">Next</span><span class="title">The <code>TimeArray</code> time series type</span></a></footer></article></body></html>
