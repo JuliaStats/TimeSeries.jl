@@ -13,6 +13,7 @@ tests = [
     "basemisc",
     "tables",
     "plotrecipes",
+    "retime",
 ]
 
 @testset "TimeSeries" begin
