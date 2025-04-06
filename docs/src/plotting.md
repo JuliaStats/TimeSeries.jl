@@ -17,10 +17,8 @@ ta = yahoo(:GOOG, YahooOpt(; period1=now() - Month(1)))
 
 ## Plotting as multiple series
 
-The recipe allows `TimeArray` objects to be passed as input to `plot`. The
-recipe will plot each variable as an individual line, aligning all
-variables to the same y axis.
-backend).
+The recipe allows `TimeArray` objects to be passed as input to `plot`. 
+The recipe will plot each variable as an individual line, aligning all variables to the same y axis.
 
 ```@example plot
 plot(ta[:Open, :High, :Low, :Close])
