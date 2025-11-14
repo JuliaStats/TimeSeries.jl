@@ -230,37 +230,82 @@ function Base.show(io::IO, ta::TimeArray)
         return nothing
     end
 end
-function Base.show(
-    io::IO,
-    ::MIME"text/plain",
-    ta::TimeArray;
-    allrows=!get(io, :limit, false),
-    allcols=!get(io, :limit, false),
-)
-    nrow = size(values(ta), 1)
-    ncol = size(values(ta), 2)
 
-    show(io, ta) # summary line
-
-    nrow == 0 && return nothing
-
-    println(io)
-
-    data = hcat(timestamp(ta), values(ta))
-    header = vcat("", string.(colnames(ta)))
-    return pretty_table(
-        io,
-        data;
-        column_labels=header,
-        new_line_at_end=false,
-        reserved_display_lines=2,
-        row_label_column_alignment=:r,
-        column_label_alignment=:l,
-        continuation_row_alignment=:c,
-        fit_table_in_display_horizontally=!allcols, # replaced crop keyword for v3 of PrettyTables
-        fit_table_in_display_vertically=!allrows,   # replaced crop keyword for v3 of PrettyTables
-        vertical_crop_mode=:middle,
+@static if pkgversion(PrettyTables).major == 2
+    # TODO: When PrettyTables v2 is more widely spread get rid off this and the compat
+    function Base.show(
+        io::IO,
+        ::MIME"text/plain",
+        ta::TimeArray;
+        allrows=!get(io, :limit, false),
+        allcols=!get(io, :limit, false),
     )
+        nrow = size(values(ta), 1)
+        ncol = size(values(ta), 2)
+
+        show(io, ta) # summary line
+
+        nrow == 0 && return nothing
+
+        println(io)
+
+        if allcols && allrows
+            crop = :none
+        elseif allcols
+            crop = :vertical
+        elseif allrows
+            crop = :horizontal
+        else
+            crop = :both
+        end
+
+        data = hcat(timestamp(ta), values(ta))
+        header = vcat("", string.(colnames(ta)))
+        return pretty_table(
+            io,
+            data;
+            header=header,
+            newline_at_end=false,
+            reserved_display_lines=2,
+            row_label_alignment=:r,
+            header_alignment=:l,
+            crop=crop,
+            vcrop_mode=:middle,
+        )
+    end
+else
+    function Base.show(
+        io::IO,
+        ::MIME"text/plain",
+        ta::TimeArray;
+        allrows=!get(io, :limit, false),
+        allcols=!get(io, :limit, false),
+    )
+        nrow = size(values(ta), 1)
+        ncol = size(values(ta), 2)
+
+        show(io, ta) # summary line
+
+        nrow == 0 && return nothing
+
+        println(io)
+
+        data = hcat(timestamp(ta), values(ta))
+        header = vcat("", string.(colnames(ta)))
+        return pretty_table(
+            io,
+            data;
+            column_labels=header,
+            new_line_at_end=false,
+            reserved_display_lines=2,
+            row_label_column_alignment=:r,
+            column_label_alignment=:l,
+            continuation_row_alignment=:c,
+            fit_table_in_display_horizontally=!allcols, # replaced crop keyword for v3 of PrettyTables
+            fit_table_in_display_vertically=!allrows,   # replaced crop keyword for v3 of PrettyTables
+            vertical_crop_mode=:middle,
+        )
+    end
 end
 
 ###### getindex #################
