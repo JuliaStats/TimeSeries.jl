@@ -21,7 +21,7 @@ jobs:
         with:
           version: ${{ matrix.julia-version }}
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Install JuliaFormatter and format
         shell: julia --color=yes {0}
         run: |
