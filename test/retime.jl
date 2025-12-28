@@ -24,6 +24,12 @@ using Statistics
         @test TimeSeries._toAggregationMethod(:first) == TimeSeries.First()
         @test TimeSeries._toAggregationMethod(:last) == TimeSeries.Last()
 
+        # Test custom function aggregation
+        custom_func = x -> sum(x) / length(x)
+        agg_func = TimeSeries._toAggregationMethod(custom_func)
+        @test agg_func isa TimeSeries.AggregationFunction
+        @test agg_func.func === custom_func
+
         @test_throws MethodError TimeSeries._toAggregationMethod(:foo)
     end
 
@@ -276,5 +282,19 @@ using Statistics
         )
 
         ta_new = retime(ta, Hour(1); upsample=:linear)
+    end
+
+    @testset "Custom aggregation function" begin
+        new_timestamps = collect(Dates.Date(2000):Dates.Week(1):Dates.Date(2001))
+
+        # Test with custom aggregation function
+        custom_agg = x -> sum(x) / length(x)  # equivalent to mean
+        cl_new = retime(cl, new_timestamps; downsample=custom_agg)
+
+        @test timestamp(cl_new) == new_timestamps
+
+        # Verify it produces same result as mean
+        cl_mean = retime(cl, new_timestamps; downsample=:mean)
+        @test values(cl_new) ≈ values(cl_mean)
     end
 end
