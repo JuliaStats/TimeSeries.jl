@@ -391,10 +391,10 @@ getindex(ta::TimeArray) = throw(BoundsError(typeof(ta), []))
 
 # single row
 @propagate_inbounds getindex(ta::TimeArray, n::Integer) =
-    # avoid conversion to column vector
-    TimeArray(
-        timestamp(ta)[n], values(ta)[n:n, :], colnames(ta), meta(ta)
-    )
+# avoid conversion to column vector
+TimeArray(
+    timestamp(ta)[n], values(ta)[n:n, :], colnames(ta), meta(ta)
+)
 
 # single row 1d
 @propagate_inbounds getindex(ta::TimeArray{T,1}, n::Integer) where {T} = TimeArray(
