@@ -1,5 +1,23 @@
 # when ############################
 
+"""
+    when(ta::TimeArray, period::Function, t)
+
+Filter a `TimeArray` to rows where the `period` function applied to timestamps equals `t`.
+
+# Arguments
+
+  - `ta::TimeArray`: The time array to filter
+  - `period::Function`: A function that extracts a period component (e.g., `Dates.hour`, `Dates.dayofweek`)
+  - `t`: The target value to match (Integer or String)
+
+# Examples
+
+```julia
+when(ta, Dates.hour, 12)  # Get all rows at noon
+when(ta, Dates.dayofweek, 1)  # Get all Monday rows
+```
+"""
 function when(ta::TimeArray, period::Function, t::Integer)
     return ta[findall(period.(timestamp(ta)) .== t)]
 end
@@ -7,6 +25,17 @@ when(ta::TimeArray, period::Function, t::String) = ta[findall(period.(timestamp(
 
 # from, to ######################
 
+"""
+    from(ta::TimeArray, d::TimeType)
+
+Select all rows from a `TimeArray` starting from date `d` onwards.
+
+# Examples
+
+```julia
+from(ta, Date(2020, 1, 1))  # All rows from 2020-01-01 onwards
+```
+"""
 function from(ta::TimeArray{T,N,D}, d::D) where {T,N,D}
     return if length(ta) == 0
         ta
@@ -19,6 +48,17 @@ function from(ta::TimeArray{T,N,D}, d::D) where {T,N,D}
     end
 end
 
+"""
+    to(ta::TimeArray, d::TimeType)
+
+Select all rows from a `TimeArray` up to and including date `d`.
+
+# Examples
+
+```julia
+to(ta, Date(2020, 12, 31))  # All rows up to 2020-12-31
+```
+"""
 function to(ta::TimeArray{T,N,D}, d::D) where {T,N,D}
     return if length(ta) == 0
         ta
@@ -42,10 +82,33 @@ end
 
 ###### findwhen #################
 
+"""
+    findwhen(ta::TimeArray{Bool,1})
+
+Return timestamps where the boolean `TimeArray` has `true` values.
+
+# Examples
+
+```julia
+findwhen(ta .> 100)  # Get timestamps where values exceed 100
+```
+"""
 findwhen(ta::TimeArray{Bool,1}) = timestamp(ta)[findall(values(ta))]
 
 ###### head, tail ###########
 
+"""
+    head(ta::TimeArray, n::Int=6)
+
+Return the first `n` rows of a `TimeArray`.
+
+# Examples
+
+```julia
+head(ta)     # First 6 rows
+head(ta, 10) # First 10 rows
+```
+"""
 @generated function head(ta::TimeArray{T,N}, n::Int=6) where {T,N}
     new_values = (N == 1) ? :(values(ta)[1:n]) : :(values(ta)[1:n, :])
 
@@ -55,6 +118,18 @@ findwhen(ta::TimeArray{Bool,1}) = timestamp(ta)[findall(values(ta))]
     end
 end
 
+"""
+    tail(ta::TimeArray, n::Int=6)
+
+Return the last `n` rows of a `TimeArray`.
+
+# Examples
+
+```julia
+tail(ta)     # Last 6 rows
+tail(ta, 10) # Last 10 rows
+```
+"""
 @generated function tail(ta::TimeArray{T,N}, n::Int=6) where {T,N}
     new_values = (N == 1) ? :(values(ta)[start:end]) : :(values(ta)[start:end, :])
 

@@ -1,11 +1,46 @@
 import Base: +, -
 import Base.diff
 
+"""
+    +(ta::TimeArray)
+
+Unary plus operator for `TimeArray`.
+
+Returns a broadcasted copy with the unary plus operator applied elementwise.
+"""
 (+)(ta::TimeArray) = .+ta
+
+"""
+    -(ta::TimeArray)
+
+Unary minus operator for `TimeArray`.
+
+Returns a broadcasted copy with elementwise negation applied to all values.
+"""
 (-)(ta::TimeArray) = .-ta
 
 ###### lag, lead ################
 
+"""
+    lag(ta::TimeArray, n::Int=1; padding::Bool=false)
+
+Shift values backward by `n` periods, removing the first `n` rows.
+
+# Arguments
+
+  - `n::Int`: Number of periods to lag (default: 1)
+  - `padding::Bool`: If `true`, pad with `NaN` to maintain length (default: `false`)
+
+Note: The deprecated `period` keyword argument is also accepted but should not be used.
+
+# Examples
+
+```julia
+lag(ta)           # Lag by 1 period
+lag(ta, 5)        # Lag by 5 periods
+lag(ta, padding=true)  # Lag with NaN padding
+```
+"""
 function lag(ta::TimeArray{T,N}, n::Int=1; padding::Bool=false, period::Int=0) where {T,N}
     if period != 0
         @warn("the period kwarg is deprecated, use lag(ta::TimeArray, period::Int) instead")
@@ -26,6 +61,26 @@ function lag(ta::TimeArray{T,N}, n::Int=1; padding::Bool=false, period::Int=0) w
     return ta
 end  # lag
 
+"""
+    lead(ta::TimeArray, n::Int=1; padding::Bool=false)
+
+Shift values forward by `n` periods, removing the last `n` rows.
+
+# Arguments
+
+  - `n::Int`: Number of periods to lead (default: 1)
+  - `padding::Bool`: If `true`, pad with `NaN` to maintain length (default: `false`)
+
+Note: The deprecated `period` keyword argument is also accepted but should not be used.
+
+# Examples
+
+```julia
+lead(ta)           # Lead by 1 period
+lead(ta, 5)        # Lead by 5 periods
+lead(ta, padding=true)  # Lead with NaN padding
+```
+"""
 function lead(ta::TimeArray{T,N}, n::Int=1; padding::Bool=false, period::Int=0) where {T,N}
     if period != 0
         @warn(
@@ -49,6 +104,27 @@ end  # lead
 
 ###### diff #####################
 
+"""
+    diff(ta::TimeArray, n::Int=1; padding::Bool=false, differences::Int=1)
+
+Calculate the `n`-period difference of a `TimeArray`.
+
+This is a `TimeArray` specialization of `Base.diff`.
+
+# Arguments
+
+  - `n::Int`: Number of periods for differencing (default: 1)
+  - `padding::Bool`: If `true`, pad with `NaN` to maintain length (default: `false`)
+  - `differences::Int`: Number of times to apply differencing (default: 1)
+
+# Examples
+
+```julia
+diff(ta)              # First difference
+diff(ta, 2)           # 2-period difference
+diff(ta, differences=2)  # Second-order difference
+```
+"""
 function diff(ta::TimeArray, n::Int=1; padding::Bool=false, differences::Int=1)
     cols = colnames(ta)
     for d in 1:differences
@@ -60,6 +136,24 @@ end  # diff
 
 ###### percentchange ############
 
+"""
+    percentchange(ta::TimeArray, returns::Symbol=:simple; padding::Bool=false)
+
+Calculate percentage change between consecutive periods.
+
+# Arguments
+
+  - `returns::Symbol`: Type of returns calculation - `:simple` or `:log` (default: `:simple`)
+  - `padding::Bool`: If `true`, pad with `NaN` to maintain length (default: `false`)
+
+# Examples
+
+```julia
+percentchange(ta)           # Simple returns
+percentchange(ta, :log)     # Log returns
+percentchange(ta, padding=true)  # With NaN padding
+```
+"""
 function percentchange(
     ta::TimeArray, returns::Symbol=:simple; padding::Bool=false, method::AbstractString=""
 )
@@ -108,15 +202,26 @@ end
 """
     moving(f, ta::TimeArray{T,2}, w::Integer; padding = false, dims = 1, colnames = [...])
 
-## Example
+Apply user-defined function `f` to a 2D `TimeArray` with window size `w`.
 
-In case of `dims = 2`, the user-defined function `f` will get a 2D `Array` as input.
+# Arguments
+
+  - `f`: Function to apply to each window
+  - `ta::TimeArray{T,2}`: 2D time array
+  - `w::Integer`: Window size
+  - `padding::Bool`: If `true`, pad with `NaN` to maintain length (default: `false`)
+  - `dims::Integer`: Dimension to apply function - `1` for column-wise, `2` for row-wise (default: 1)
+  - `colnames::Vector{Symbol}`: Column names for result (default: original column names)
+
+# Examples
 
 ```julia
-moving(ohlc, 10; dims=2, colnames=[:A, ...]) do
-    # given that `ohlc` is a 500x4 `TimeArray`,
-    # size(A) is (10, 4)
-    ...
+moving(mean, ta, 10)  # 10-period moving average
+
+# For dims=2, function receives a 2D window
+moving(ta, 10; dims=2) do window
+    # window is a 10×ncol matrix
+    sum(window)
 end
 ```
 """
@@ -158,6 +263,18 @@ end
 
 ###### upto #####################
 
+"""
+    upto(f, ta::TimeArray)
+
+Apply function `f` cumulatively from the start up to each row.
+
+# Examples
+
+```julia
+upto(sum, ta)   # Cumulative sum
+upto(mean, ta)  # Expanding mean
+```
+"""
 function upto(f, ta::TimeArray{T,1}) where {T}
     vals = zero(values(ta))
     for i in 1:length(vals)
@@ -176,12 +293,36 @@ end
 
 ###### basecall #################
 
+"""
+    basecall(ta::TimeArray, f::Function; cnames=colnames(ta))
+
+Apply a function `f` to the values array and return a new `TimeArray`.
+
+# Arguments
+
+  - `f::Function`: Function to apply to the values array
+  - `cnames`: Column names for the result (default: original column names)
+
+# Examples
+
+```julia
+basecall(ta, transpose)  # Transpose the values
+basecall(ta, sort; cnames=[:Sorted])  # Sort values
+```
+"""
 function basecall(ta::TimeArray, f::Function; cnames=colnames(ta))
     return TimeArray(timestamp(ta), f(values(ta)), cnames, meta(ta))
 end
 
 ###### uniform observations #####
 
+"""
+    uniformspaced(ta::TimeArray)
+
+Check if timestamps in a `TimeArray` are uniformly spaced.
+
+Returns `true` if all consecutive timestamp differences are equal, `false` otherwise.
+"""
 function uniformspaced(ta::TimeArray)
     gap1 = timestamp(ta)[2] - timestamp(ta)[1]
     i, n, is_uniform = 2, length(ta), true
@@ -192,6 +333,13 @@ function uniformspaced(ta::TimeArray)
     return is_uniform
 end  # uniformspaced
 
+"""
+    uniformspace(ta::TimeArray)
+
+Convert a `TimeArray` to uniform spacing using the minimum gap between timestamps.
+
+Missing timestamps are filled with rows containing zeros.
+"""
 function uniformspace(ta::TimeArray{T,N}) where {T,N}
     min_gap = minimum(timestamp(ta)[2:end] - timestamp(ta)[1:(end - 1)])
     newtimestamp = timestamp(ta)[1]:min_gap:timestamp(ta)[end]
@@ -205,6 +353,22 @@ end  # uniformspace
 
 ###### dropnan ####################
 
+"""
+    dropnan(ta::TimeArray, method::Symbol=:all)
+
+Remove rows containing `NaN` values from a `TimeArray`.
+
+# Arguments
+
+  - `method::Symbol`: Removal strategy - `:all` removes rows where all values are `NaN`, `:any` removes rows with any `NaN` (default: `:all`)
+
+# Examples
+
+```julia
+dropnan(ta)        # Remove rows where all values are NaN
+dropnan(ta, :any)  # Remove rows with any NaN
+```
+"""
 function dropnan(ta::TimeArray, method::Symbol=:all)
     return if method == :all
         ta[findall(reshape(values(any(.!isnan.(ta); dims=2)), :))]
