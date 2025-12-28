@@ -113,7 +113,7 @@ function hcat(x::TimeArray, y::TimeArray)
     tsx = timestamp(x)
     tsy = timestamp(y)
 
-    if length(tsx) != length(tsx) || tsx != tsy
+    if length(tsx) != length(tsy) || tsx != tsy
         throw(DimensionMismatch("timestamps not consistent, please checkout `merge`."))
     end
 
