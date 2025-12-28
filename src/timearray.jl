@@ -296,8 +296,8 @@ end
         io::IO,
         ::MIME"text/plain",
         ta::TimeArray;
-        allrows=!get(io, :limit, false),
-        allcols=!get(io, :limit, false),
+        allrows=(!get(io, :limit, false)),
+        allcols=(!get(io, :limit, false)),
     )
         nrow = size(values(ta), 1)
         ncol = size(values(ta), 2)
@@ -337,8 +337,8 @@ else
         io::IO,
         ::MIME"text/plain",
         ta::TimeArray;
-        allrows=!get(io, :limit, false),
-        allcols=!get(io, :limit, false),
+        allrows=(!get(io, :limit, false)),
+        allcols=(!get(io, :limit, false)),
     )
         nrow = size(values(ta), 1)
         ncol = size(values(ta), 2)
@@ -360,8 +360,8 @@ else
             row_label_column_alignment=:r,
             column_label_alignment=:l,
             continuation_row_alignment=:c,
-            fit_table_in_display_horizontally=!allcols, # replaced crop keyword for v3 of PrettyTables
-            fit_table_in_display_vertically=!allrows,   # replaced crop keyword for v3 of PrettyTables
+            fit_table_in_display_horizontally=(!allcols), # replaced crop keyword for v3 of PrettyTables
+            fit_table_in_display_vertically=(!allrows),   # replaced crop keyword for v3 of PrettyTables
             vertical_crop_mode=:middle,
         )
     end
@@ -392,27 +392,34 @@ getindex(ta::TimeArray) = throw(BoundsError(typeof(ta), []))
 # single row
 @propagate_inbounds getindex(ta::TimeArray, n::Integer) =
 # avoid conversion to column vector
-    TimeArray(timestamp(ta)[n], values(ta)[n:n, :], colnames(ta), meta(ta))
+TimeArray(
+    timestamp(ta)[n], values(ta)[n:n, :], colnames(ta), meta(ta)
+)
 
 # single row 1d
-@propagate_inbounds getindex(ta::TimeArray{T,1}, n::Integer) where {T} =
-    TimeArray(timestamp(ta)[n], values(ta)[[n]], colnames(ta), meta(ta))
+@propagate_inbounds getindex(ta::TimeArray{T,1}, n::Integer) where {T} = TimeArray(
+    timestamp(ta)[n], values(ta)[[n]], colnames(ta), meta(ta)
+)
 
 # range of rows
-@propagate_inbounds getindex(ta::TimeArray, r::UnitRange{<:Integer}) =
-    TimeArray(timestamp(ta)[r], values(ta)[r, :], colnames(ta), meta(ta))
+@propagate_inbounds getindex(ta::TimeArray, r::UnitRange{<:Integer}) = TimeArray(
+    timestamp(ta)[r], values(ta)[r, :], colnames(ta), meta(ta)
+)
 
 # range of 1d rows
-@propagate_inbounds getindex(ta::TimeArray{T,1}, r::UnitRange{<:Integer}) where {T} =
-    TimeArray(timestamp(ta)[r], values(ta)[r], colnames(ta), meta(ta))
+@propagate_inbounds getindex(ta::TimeArray{T,1}, r::UnitRange{<:Integer}) where {T} = TimeArray(
+    timestamp(ta)[r], values(ta)[r], colnames(ta), meta(ta)
+)
 
 # array of rows
-@propagate_inbounds getindex(ta::TimeArray, a::AbstractVector{<:Integer}) =
-    TimeArray(timestamp(ta)[a], values(ta)[a, :], colnames(ta), meta(ta))
+@propagate_inbounds getindex(ta::TimeArray, a::AbstractVector{<:Integer}) = TimeArray(
+    timestamp(ta)[a], values(ta)[a, :], colnames(ta), meta(ta)
+)
 
 # array of 1d rows
-@propagate_inbounds getindex(ta::TimeArray{T,1}, a::AbstractVector{<:Integer}) where {T} =
-    TimeArray(timestamp(ta)[a], values(ta)[a], colnames(ta), meta(ta))
+@propagate_inbounds getindex(ta::TimeArray{T,1}, a::AbstractVector{<:Integer}) where {T} = TimeArray(
+    timestamp(ta)[a], values(ta)[a], colnames(ta), meta(ta)
+)
 
 # single column by name
 @propagate_inbounds function getindex(ta::TimeArray, s::Symbol)
@@ -422,15 +429,12 @@ end
 
 # array of columns by name
 @propagate_inbounds getindex(ta::TimeArray, ss::Symbol...) = getindex(ta, collect(ss))
-@propagate_inbounds getindex(ta::TimeArray, ss::Vector{Symbol}) =
-    TimeArray(ta; values=values(ta)[:, map(s -> findcol(ta, s), ss)], colnames=ss)
+@propagate_inbounds getindex(ta::TimeArray, ss::Vector{Symbol}) = TimeArray(
+    ta; values=values(ta)[:, map(s -> findcol(ta, s), ss)], colnames=ss
+)
 
 # ta[rows, cols]
-@propagate_inbounds getindex(
-    ta::TimeArray,
-    rows::Union{AbstractVector{<:Integer},Colon},
-    cols::AbstractVector{Symbol},
-) = TimeArray(
+@propagate_inbounds getindex(ta::TimeArray, rows::Union{AbstractVector{<:Integer},Colon}, cols::AbstractVector{Symbol}) = TimeArray(
     ta;
     timestamp=timestamp(ta)[rows],
     values=values(ta)[rows, map(s -> findcol(ta, s), cols)],
@@ -445,8 +449,9 @@ end
 @propagate_inbounds getindex(ta::TimeArray, rows, col::Symbol) = getindex(ta, rows, [col])
 
 # ta[n, col]
-@propagate_inbounds getindex(ta::TimeArray, n::Integer, col::Symbol) =
-    getindex(ta, [n], [col])
+@propagate_inbounds getindex(ta::TimeArray, n::Integer, col::Symbol) = getindex(
+    ta, [n], [col]
+)
 
 # single date
 @propagate_inbounds function getindex(ta::TimeArray{T,N,D}, d::D) where {T,N,D}
@@ -462,8 +467,9 @@ end
 end
 
 # StepRange{Date,...}
-@propagate_inbounds getindex(ta::TimeArray{T,N,D}, r::StepRange{D}) where {T,N,D} =
-    ta[collect(r)]
+@propagate_inbounds getindex(ta::TimeArray{T,N,D}, r::StepRange{D}) where {T,N,D} = ta[collect(
+    r
+)]
 
 @propagate_inbounds getindex(ta::TimeArray, k::TimeArray{Bool,1}) = ta[findwhen(k)]
 
