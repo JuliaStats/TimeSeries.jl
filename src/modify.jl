@@ -49,12 +49,15 @@ for f in [:rename, :rename!]
     @eval begin
         $f(ta::TimeArray, colnames::Symbol) = $f(ta, [colnames])
         $f(ta::TimeArray) = throw(MethodError($f, (ta,)))
-        $f(ta::TimeArray, pairs::Pair{Symbol,Symbol}...) =
-            $f(ta, _mapcol(colnames(ta), pairs))
-        $f(f::Base.Callable, ta::TimeArray, colnametyp::Type{Symbol}=Symbol) =
-            $f(ta, map(f, colnames(ta)))
-        $f(f::Base.Callable, ta::TimeArray, colnametyp::Type{String}) =
-            $f(Symbol ∘ f ∘ string, ta)
+        $f(ta::TimeArray, pairs::Pair{Symbol,Symbol}...) = $f(
+            ta, _mapcol(colnames(ta), pairs)
+        )
+        $f(f::Base.Callable, ta::TimeArray, colnametyp::Type{Symbol}=Symbol) = $f(
+            ta, map(f, colnames(ta))
+        )
+        $f(f::Base.Callable, ta::TimeArray, colnametyp::Type{String}) = $f(
+            Symbol ∘ f ∘ string, ta
+        )
     end
 end
 
