@@ -1,5 +1,29 @@
 ###### readtimearray ############
 
+"""
+    readtimearray(source; delim=',', meta=nothing, format="", header=true)
+
+Read a delimited file into a `TimeArray`.
+
+The first column is treated as timestamps. Empty or non-numeric cells in data columns
+are converted to `NaN`. Date vs DateTime is inferred from timestamp length (< 11 characters
+assumes Date, otherwise DateTime).
+
+# Arguments
+
+  - `source`: File path or IO stream
+  - `delim::Char`: Delimiter character (default: `','`)
+  - `meta`: Metadata to attach to the `TimeArray` (default: `nothing`)
+  - `format::AbstractString`: Date format string (default: `""` for automatic detection)
+  - `header::Bool`: Whether the file has a header row (default: `true`)
+
+# Examples
+
+```julia
+readtimearray("data.csv")
+readtimearray("data.csv"; delim='\t', format="yyyy-mm-dd")
+```
+"""
 function readtimearray(
     source; delim::Char=',', meta=nothing, format::AbstractString="", header::Bool=true
 )
@@ -44,6 +68,26 @@ function insertNaN(aa::Array{Any,N}) where {N}
     return convert(Array{Float64,N}, aa)
 end
 
+"""
+    writetimearray(ta::TimeArray, fname::AbstractString; delim=',', format="", header=true)
+
+Write a `TimeArray` to a delimited file.
+
+# Arguments
+
+  - `ta::TimeArray`: Time array to write
+  - `fname::AbstractString`: Output file path
+  - `delim::Char`: Delimiter character (default: `','`)
+  - `format::AbstractString`: Date format string (default: `""` for default formatting)
+  - `header::Bool`: Whether to write a header row (default: `true`)
+
+# Examples
+
+```julia
+writetimearray(ta, "output.csv")
+writetimearray(ta, "output.tsv"; delim='\t', format="yyyy-mm-dd")
+```
+"""
 function writetimearray(
     ta::TimeArray,
     fname::AbstractString;

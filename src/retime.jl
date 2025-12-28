@@ -1,33 +1,188 @@
 # Abstract types for interpolation, aggregation, and extrapolation methods
+"""
+    InterpolationMethod
+
+Abstract supertype for interpolation strategies used by `retime`.
+"""
 abstract type InterpolationMethod end
+
+"""
+    AggregationMethod
+
+Abstract supertype for aggregation strategies used by `retime`.
+"""
 abstract type AggregationMethod end
+
+"""
+    ExtrapolationMethod
+
+Abstract supertype for extrapolation strategies used by `retime`.
+"""
 abstract type ExtrapolationMethod end
 
 # Interpolation methods
+"""
+    Linear <: InterpolationMethod
+
+Linear interpolation method for `retime`.
+
+Interpolates values linearly between known points.
+"""
 struct Linear <: InterpolationMethod end
+
+"""
+    Previous <: InterpolationMethod
+
+Previous value interpolation method for `retime`.
+
+Uses the most recent previous value for interpolation.
+"""
 struct Previous <: InterpolationMethod end
+
+"""
+    Next <: InterpolationMethod
+
+Next value interpolation method for `retime`.
+
+Uses the next available value for interpolation.
+"""
 struct Next <: InterpolationMethod end
+
+"""
+    Nearest <: InterpolationMethod
+
+Nearest value interpolation method for `retime`.
+
+Uses the nearest value in time for interpolation.
+"""
 struct Nearest <: InterpolationMethod end
 
 # Aggregation methods
+"""
+    Mean <: AggregationMethod
+
+Mean aggregation method for `retime`.
+
+Computes the mean of values in each time period.
+"""
 struct Mean <: AggregationMethod end
+
+"""
+    Min <: AggregationMethod
+
+Minimum aggregation method for `retime`.
+
+Computes the minimum of values in each time period.
+"""
 struct Min <: AggregationMethod end
+
+"""
+    Max <: AggregationMethod
+
+Maximum aggregation method for `retime`.
+
+Computes the maximum of values in each time period.
+"""
 struct Max <: AggregationMethod end
+
+"""
+    Count <: AggregationMethod
+
+Count aggregation method for `retime`.
+
+Counts non-missing values in each time period.
+"""
 struct Count <: AggregationMethod end
+
+"""
+    Sum <: AggregationMethod
+
+Sum aggregation method for `retime`.
+
+Computes the sum of values in each time period.
+"""
 struct Sum <: AggregationMethod end
+
+"""
+    Median <: AggregationMethod
+
+Median aggregation method for `retime`.
+
+Computes the median of values in each time period.
+"""
 struct Median <: AggregationMethod end
+
+"""
+    First <: AggregationMethod
+
+First value aggregation method for `retime`.
+
+Uses the first value in each time period.
+"""
 struct First <: AggregationMethod end
+
+"""
+    Last <: AggregationMethod
+
+Last value aggregation method for `retime`.
+
+Uses the last value in each time period.
+"""
 struct Last <: AggregationMethod end
+
+"""
+    AggregationFunction{F<:Function} <: AggregationMethod
+
+Wraps a user-provided function as an `AggregationMethod` for `retime`.
+"""
 struct AggregationFunction{F<:Function} <: AggregationMethod
     func::F
 end
 
 # Extrapolation methods
+"""
+    FillConstant{V} <: ExtrapolationMethod
+
+Constant fill extrapolation method for `retime`.
+
+Fills extrapolated values with a constant value.
+
+# Examples
+
+```julia
+FillConstant(0.0)  # Fill with zeros
+FillConstant(NaN)  # Fill with NaN
+```
+"""
 struct FillConstant{V} <: ExtrapolationMethod
     value::V
 end
+
+"""
+    NearestExtrapolate <: ExtrapolationMethod
+
+Nearest value extrapolation method for `retime`.
+
+Uses the nearest edge value for extrapolation.
+"""
 struct NearestExtrapolate <: ExtrapolationMethod end
+
+"""
+    MissingExtrapolate <: ExtrapolationMethod
+
+Missing value extrapolation method for `retime`.
+
+Fills extrapolated values with `missing`.
+"""
 struct MissingExtrapolate <: ExtrapolationMethod end
+
+"""
+    NaNExtrapolate <: ExtrapolationMethod
+
+NaN extrapolation method for `retime`.
+
+Fills extrapolated values with `NaN`.
+"""
 struct NaNExtrapolate <: ExtrapolationMethod end
 
 _toInterpolationMethod(x::Symbol) = _toInterpolationMethod(Val(x))
@@ -46,7 +201,7 @@ _toAggregationMethod(::Val{:sum}) = Sum()
 _toAggregationMethod(::Val{:median}) = Median()
 _toAggregationMethod(::Val{:first}) = First()
 _toAggregationMethod(::Val{:last}) = Last()
-_toAggregationMethof(f::Function) = AggregationFunction(f)
+_toAggregationMethod(f::Function) = AggregationFunction(f)
 _toAggregationMethod(x::AggregationMethod) = x
 
 _toExtrapolationMethod(x::Symbol) = _toExtrapolationMethod(Val(x))
@@ -56,6 +211,36 @@ _toExtrapolationMethod(::Val{:missing}) = MissingExtrapolate()
 _toExtrapolationMethod(::Val{:nan}) = NaNExtrapolate()
 _toExtrapolationMethod(x::ExtrapolationMethod) = x
 
+"""
+    retime(ta::TimeArray, new_timestamps; upsample=Previous(), downsample=Mean(), extrapolate=NearestExtrapolate(), skip_missing=true)
+    retime(ta::TimeArray, period::Dates.Period; kwargs...)
+    retime(ta::TimeArray, period::Function; kwargs...)
+
+Resample a `TimeArray` to new timestamps with specified interpolation, aggregation, and extrapolation methods.
+
+# Arguments
+
+  - `ta::TimeArray`: Time array to resample
+  - `new_timestamps`: Vector of new timestamps, a `Dates.Period`, or a period function
+  - `upsample`: Interpolation method for upsampling (default: `Previous()`)
+  - `downsample`: Aggregation method for downsampling (default: `Mean()`)
+  - `extrapolate`: Extrapolation method for out-of-range timestamps (default: `NearestExtrapolate()`)
+  - `skip_missing`: Skip missing values in calculations (default: `true`)
+
+# Examples
+
+```julia
+# Resample to hourly using linear interpolation
+retime(ta, Hour(1); upsample=Linear())
+
+# Resample to daily using last value and sum aggregation
+retime(ta, Day(1); upsample=Previous(), downsample=Sum())
+
+# Resample to specific timestamps
+new_times = [DateTime(2020,1,1), DateTime(2020,1,2)]
+retime(ta, new_times)
+```
+"""
 function retime(ta, new_dt::Dates.Period; kwargs...)
     new_timestamps =
         floor(timestamp(ta)[1], new_dt):new_dt:floor(timestamp(ta)[end], new_dt)

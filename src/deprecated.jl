@@ -31,6 +31,14 @@
 #  0.20.0
 ###############################################################################
 
+"""
+    update(ta::TimeArray, tstamp, val)
+
+!!! warning "Deprecated"
+    This function is deprecated. Use `vcat(ta, TimeArray(tstamp, val))` instead.
+"""
+function update end
+
 export update
 
 @deprecate(

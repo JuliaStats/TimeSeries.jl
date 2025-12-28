@@ -20,6 +20,16 @@ import Base:
     propertynames,
     values
 
+"""
+    AbstractTimeSeries{T,N,D}
+
+Abstract supertype for time series types.
+
+Type parameters:
+  - `T`: Element type of the values
+  - `N`: Number of dimensions (1 or 2)
+  - `D`: TimeType subtype for timestamps (Date or DateTime)
+"""
 abstract type AbstractTimeSeries{T,N,D} end
 
 """
@@ -135,6 +145,11 @@ end
 
 ###### conversion ###############
 
+"""
+    convert(::Type{TimeArray{Float64,N}}, x::TimeArray{Bool,N})
+
+Convert a `TimeArray` with `Bool` values to one with `Float64` values.
+"""
 function convert(::Type{TimeArray{Float64,N}}, x::TimeArray{Bool,N}) where {N}
     return TimeArray(
         timestamp(x), Float64.(values(x)), colnames(x), meta(x); unchecked=true
@@ -147,25 +162,52 @@ end
 
 ###### copy ###############
 
+"""
+    copy(ta::TimeArray)
+
+Create a shallow copy of a `TimeArray`. Returns a new `TimeArray` with the same data.
+"""
 function copy(ta::TimeArray)
     return TimeArray(timestamp(ta), values(ta), colnames(ta), meta(ta); unchecked=true)
 end
 
 ###### length ###################
 
+"""
+    length(ta::AbstractTimeSeries)
+
+Return the number of timestamps (rows) in a `TimeArray`.
+"""
 length(ata::AbstractTimeSeries) = length(timestamp(ata))
 
 ###### size #####################
 
+"""
+    size(ta::TimeArray)
+    size(ta::TimeArray, dim)
+
+Return the dimensions of the `TimeArray` values as `(nrows, ncols)`, or the size along dimension `dim`.
+"""
 size(ta::TimeArray) = size(values(ta))
 size(ta::TimeArray, dim) = size(values(ta), dim)
 
 ###### ndims #####################
 
+"""
+    ndims(ta::AbstractTimeSeries)
+
+Return the number of dimensions of the `TimeArray` (1 or 2).
+"""
 ndims(ta::AbstractTimeSeries{T,N}) where {T,N} = N
 
 ###### iteration protocol ########
 
+"""
+    iterate(ta::AbstractTimeSeries[, state])
+
+Iterate over a `TimeArray`, yielding `(timestamp, value)` tuples for each row.
+For 1D arrays, `value` is a scalar; for 2D arrays, `value` is a vector.
+"""
 @generated function iterate(ta::AbstractTimeSeries{T,N}, i=1) where {T,N}
     val = (N == 1) ? :(values(ta)[i]) : :(values(ta)[i, :])
 
@@ -204,11 +246,22 @@ function ==(x::TimeArray{T,N}, y::TimeArray{S,N}) where {T,S,N}
     return all(f -> getfield(x, f) == getfield(y, f), fieldnames(TimeArray))
 end
 
+"""
+    isequal(x::TimeArray, y::TimeArray)
+
+Test whether two `TimeArray`s are equal in all fields, including handling of `missing` values.
+Similar to `==` but uses `isequal` semantics for comparisons.
+"""
 isequal(x::TimeArray{T,N}, y::TimeArray{S,M}) where {T,S,N,M} = false
 function isequal(x::TimeArray{T,N}, y::TimeArray{S,N}) where {T,S,N}
     return all(f -> isequal(getfield(x, f), getfield(y, f)), fieldnames(TimeArray))
 end
 
+"""
+    hash(ta::TimeArray, h::UInt)
+
+Compute a hash value for a `TimeArray` for use in hash-based collections like `Dict` and `Set`.
+"""
 # support for Dict
 hash(x::TimeArray, h::UInt) = sum(f -> hash(getfield(x, f), h), fieldnames(TimeArray))
 
@@ -218,6 +271,12 @@ Base.eltype(::AbstractTimeSeries{T,1,D}) where {T,D} = Tuple{D,T}
 Base.eltype(::AbstractTimeSeries{T,2,D}) where {T,D} = Tuple{D,Vector{T}}
 
 ###### show #####################
+
+"""
+    show(io::IO, ta::TimeArray)
+
+Display a compact summary of a `TimeArray` showing its dimensions, type, and time range.
+"""
 Base.summary(io::IO, ta::TimeArray) = show(io, ta)
 
 function Base.show(io::IO, ta::TimeArray)
@@ -313,6 +372,21 @@ end
 # the getindex function should return a new TimeArray, and copy data from
 # the source, includes `timestamp`, `values` and `colnames`.
 
+"""
+    getindex(ta::TimeArray, ...)
+
+Index into a `TimeArray` by rows, columns, timestamps, or combinations thereof.
+
+Supports indexing by:
+- Integer indices for rows
+- Ranges and vectors of integers for multiple rows
+- Column names (`:colname` or `[:col1, :col2]`)
+- Timestamps (`Date` or `DateTime` values)
+- Boolean `TimeArray` for filtering
+- Combinations like `ta[rows, cols]`
+
+Returns a new `TimeArray` preserving metadata.
+"""
 getindex(ta::TimeArray) = throw(BoundsError(typeof(ta), []))
 
 # single row
@@ -397,6 +471,12 @@ end
 # getindex{T,N}(ta::TimeArray{T,N}, d::DAYOFWEEK) = ta[dayofweek(timestamp(ta)) .== d]
 
 # Define end keyword
+"""
+    lastindex(ta::TimeArray[, dim])
+
+Return the last valid index for a `TimeArray`. For dimension 1 (rows), returns the number of timestamps.
+For dimension 2 (columns), returns the number of columns.
+"""
 function lastindex(ta::TimeArray, d::Integer=1)
     return if (d == 1)
         length(timestamp(ta))
@@ -407,12 +487,28 @@ function lastindex(ta::TimeArray, d::Integer=1)
     end
 end
 
+"""
+    eachindex(ta::TimeArray)
+
+Return an iterator over the valid row indices of a `TimeArray`.
+"""
 eachindex(ta::TimeArray) = Base.OneTo(length(timestamp(ta)))
 
 ###### getproperty/propertynames #################
 
+"""
+    getproperty(ta::AbstractTimeSeries, col::Symbol)
+
+Access a column of a `TimeArray` using dot notation (e.g., `ta.colname`).
+Returns a new `TimeArray` containing only the specified column.
+"""
 getproperty(ta::AbstractTimeSeries, c::Symbol) = ta[c]
 
+"""
+    propertynames(ta::TimeArray)
+
+Return the column names of a `TimeArray` for use with tab completion and dot notation.
+"""
 propertynames(ta::TimeArray) = colnames(ta)
 
 ###### element wrappers ###########
