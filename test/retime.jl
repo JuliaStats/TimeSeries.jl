@@ -75,6 +75,14 @@ using Statistics
             idx = new_timestamps[2] .<= timestamp(cl) .< new_timestamps[3]
             @test func(values(cl[:Close][idx])) == values(cl_new[:Close][2])[1]
         end
+
+            @testset "empty TimeArray coverage" begin
+                ta_empty = TimeArray(Date[], Int[], [:val])
+                new_times = Date[]
+                ta_new = retime(ta_empty, new_times)
+                @test length(ta_new) == 0
+                @test isa(ta_new, TimeArray)
+            end
     end
 
     @testset "single column interpolation" begin

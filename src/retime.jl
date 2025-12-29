@@ -306,6 +306,11 @@ function _retime!(
     downsample::AggregationMethod,
     extrapolate::ExtrapolationMethod,
 ) where {D,AN,A}
+    # Handle empty input arrays gracefully
+    if isempty(old_timestamps) || isempty(old_values)
+        return nothing
+    end
+
     x = Dates.value.(old_timestamps)
     x_min, x_max = x[1], x[end] # assume that the timestamps are sorted
     x_new = Dates.value.(new_timestamps)
