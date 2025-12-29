@@ -90,23 +90,6 @@ end  # diff
     percentchange(ta::TimeArray, returns::Symbol=:simple; padding::Bool=false, method::AbstractString="")
 
 Compute percent change of a `TimeArray`. Use `:simple` or `:log` returns.
-
-# Arguments
-- `padding::Bool=false`: If true, pads the beginning of the result with `NaN` values so the output has the same length as the input. If false, the result is shorter by one (or more, depending on differencing).
-
-# Example
-```julia
-using TimeSeries, Dates
-ta = TimeArray(Date(2020,1,1):Day(1):Date(2020,1,3), [1,2,4], ["A"])
-percentchange(ta, :simple; padding=true)
-# Output:
-# 3×1 TimeArray{Float64,1,Date,Array{Float64,2}}
-# │            │ A      │
-# ├────────────┼────────┤
-# │ 2020-01-01 │   NaN  │
-# │ 2020-01-02 │   1.0  │
-# │ 2020-01-03 │   1.0  │
-```
 """
 function percentchange(
     ta::TimeArray, returns::Symbol=:simple; padding::Bool=false, method::AbstractString=""

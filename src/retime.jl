@@ -56,6 +56,11 @@ _toExtrapolationMethod(::Val{:missing}) = MissingExtrapolate()
 _toExtrapolationMethod(::Val{:nan}) = NaNExtrapolate()
 _toExtrapolationMethod(x::ExtrapolationMethod) = x
 
+"""
+    retime(ta, new_dt::Dates.Period; kwargs...)
+
+Resample or align a `TimeArray` to new timestamps or frequency.
+"""
 function retime(ta, new_dt::Dates.Period; kwargs...)
     new_timestamps =
         floor(timestamp(ta)[1], new_dt):new_dt:floor(timestamp(ta)[end], new_dt)
