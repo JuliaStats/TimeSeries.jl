@@ -1,5 +1,10 @@
 # when ############################
 
+"""
+    when(ta::TimeArray, period::Function, t::Integer)
+
+Return a subset of `TimeArray` where the period function applied to timestamps equals `t`.
+"""
 function when(ta::TimeArray, period::Function, t::Integer)
     return ta[findall(period.(timestamp(ta)) .== t)]
 end
@@ -7,6 +12,11 @@ when(ta::TimeArray, period::Function, t::String) = ta[findall(period.(timestamp(
 
 # from, to ######################
 
+"""
+    from(ta::TimeArray{T,N,D}, d::D)
+
+Return the part of `TimeArray` from the first timestamp >= `d`.
+"""
 function from(ta::TimeArray{T,N,D}, d::D) where {T,N,D}
     return if length(ta) == 0
         ta
@@ -19,6 +29,11 @@ function from(ta::TimeArray{T,N,D}, d::D) where {T,N,D}
     end
 end
 
+"""
+    to(ta::TimeArray{T,N,D}, d::D)
+
+Return the part of `TimeArray` up to the last timestamp <= `d`.
+"""
 function to(ta::TimeArray{T,N,D}, d::D) where {T,N,D}
     return if length(ta) == 0
         ta
@@ -42,10 +57,20 @@ end
 
 ###### findwhen #################
 
+"""
+    findwhen(ta::TimeArray{Bool,1})
+
+Return timestamps where the values of a boolean `TimeArray` are true.
+"""
 findwhen(ta::TimeArray{Bool,1}) = timestamp(ta)[findall(values(ta))]
 
 ###### head, tail ###########
 
+"""
+    head(ta::TimeArray{T,N}, n::Int=6)
+
+Return the first `n` rows of a `TimeArray`.
+"""
 @generated function head(ta::TimeArray{T,N}, n::Int=6) where {T,N}
     new_values = (N == 1) ? :(values(ta)[1:n]) : :(values(ta)[1:n, :])
 
@@ -55,6 +80,11 @@ findwhen(ta::TimeArray{Bool,1}) = timestamp(ta)[findall(values(ta))]
     end
 end
 
+"""
+    tail(ta::TimeArray{T,N}, n::Int=6)
+
+Return the last `n` rows of a `TimeArray`.
+"""
 @generated function tail(ta::TimeArray{T,N}, n::Int=6) where {T,N}
     new_values = (N == 1) ? :(values(ta)[start:end]) : :(values(ta)[start:end, :])
 
@@ -81,8 +111,9 @@ Split `data` by `period` function, returns a vector of `TimeSeries.TimeArray`.
 - `data::TimeSeries.TimeArray`: Data to split
 - `period::Function`: Function, e.g. `Dates.day` that is used to split the `data`.
 """
-Base.split(data::TimeSeries.TimeArray, period::Function) =
+function Base.split(data::TimeSeries.TimeArray, period::Function)
     Iterators.map(i -> data[i], _split(TimeSeries.timestamp(data), period))
+end
 
 function _split(ts::AbstractVector{D}, period::Function) where {D<:TimeType}
     m = length(ts)

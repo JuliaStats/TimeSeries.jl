@@ -37,12 +37,10 @@ macro _mapbase(sig::Expr, imp::Expr)
     doc = "   $sig"
     fdef = Expr(:function, sig, fbody)
 
-    return esc(
-        quote
-            $doc
-            $fdef
-        end,
-    )
+    return esc(quote
+        $doc
+        $fdef
+    end)
 end
 
 # Cumulative functions
