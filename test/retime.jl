@@ -1,4 +1,4 @@
-﻿using Test
+using Test
 using MarketData
 using TimeSeries
 using Dates
