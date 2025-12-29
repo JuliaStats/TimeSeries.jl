@@ -96,6 +96,19 @@ using Statistics
             ta_new2 = retime(ta_empty, [Date(2020, 1, 1)])
             @test length(ta_new2) == 1
             @test isa(ta_new2, TimeArray)
+                end
+
+                @testset "internal _retime! coverage" begin
+                    # Directly test _retime! with empty arrays
+                    new_values = zeros(Int, 0)
+                    old_timestamps = Date[]
+                    old_values = Int[]
+                    new_timestamps = Date[]
+                    upsample = TimeSeries.Previous()
+                    downsample = TimeSeries.Mean()
+                    extrapolate = TimeSeries.NearestExtrapolate()
+                    @test TimeSeries._retime!(new_values, old_timestamps, old_values, new_timestamps, upsample, downsample, extrapolate) === nothing
+                end
         end
     end
 
