@@ -13,7 +13,7 @@ Base.broadcastable(x::AbstractTimeSeries) = x
 
 Base.Broadcast.instantiate(bc::Broadcasted{<:TimeArrayStyle}) =
 # skip the default axes checking
-    Broadcast.flatten(bc)
+Broadcast.flatten(bc)
 
 function Base.copy(bc′::Broadcasted{<:TimeArrayStyle})
     tas = find_ta(bc′)
