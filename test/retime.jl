@@ -86,14 +86,14 @@ using Statistics
 
         @testset "empty input coverage" begin
             # Non-empty TimeArray, empty new_timestamps
-            ta = TimeArray([Date(2020,1,1)], [1], [:val])
+            ta = TimeArray([Date(2020, 1, 1)], [1], [:val])
             ta_new = retime(ta, Date[])
             @test length(ta_new) == 0
             @test isa(ta_new, TimeArray)
 
             # Empty TimeArray, non-empty new_timestamps
             ta_empty = TimeArray(Date[], Int[], [:val])
-            ta_new2 = retime(ta_empty, [Date(2020,1,1)])
+            ta_new2 = retime(ta_empty, [Date(2020, 1, 1)])
             @test length(ta_new2) == 1
             @test isa(ta_new2, TimeArray)
         end
