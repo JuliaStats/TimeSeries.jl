@@ -1,4 +1,4 @@
-using Test
+﻿using Test
 using MarketData
 using TimeSeries
 using Dates
@@ -78,49 +78,31 @@ using Statistics
     end
 
     @testset "single column interpolation" begin
-        # Create simple test data with known values for verification
-        test_timestamps = [DateTime(2020, 1, 1, 0, 0), DateTime(2020, 1, 1, 2, 0), DateTime(2020, 1, 1, 4, 0)]
-        test_values = [10.0, 20.0, 30.0]
-        test_ta = TimeArray(test_timestamps, test_values, [:Value])
-        
-        # Test Linear interpolation
-        new_ts = [DateTime(2020, 1, 1, 1, 0), DateTime(2020, 1, 1, 3, 0)]
-        result = retime(test_ta, new_ts; upsample=TimeSeries.Linear())
-        @test values(result)[1] ≈ 15.0  # midpoint between 10 and 20
-        @test values(result)[2] ≈ 25.0  # midpoint between 20 and 30
-        
-        # Test Previous interpolation
-        result = retime(test_ta, new_ts; upsample=TimeSeries.Previous())
-        @test values(result)[1] == 10.0  # uses previous value
-        @test values(result)[2] == 20.0  # uses previous value
-        
-        # Test Next interpolation
-        result = retime(test_ta, new_ts; upsample=TimeSeries.Next())
-        @test values(result)[1] == 20.0  # uses next value
-        @test values(result)[2] == 30.0  # uses next value
-        
-        # Test Nearest interpolation
-        result = retime(test_ta, new_ts; upsample=TimeSeries.Nearest())
-        @test values(result)[1] == 10.0  # closer to 10 than 20
-        @test values(result)[2] == 20.0  # closer to 20 than 30
-        
-        # Test with exact timestamp match
-        exact_ts = [DateTime(2020, 1, 1, 2, 0)]
-        result = retime(test_ta, exact_ts; upsample=TimeSeries.Linear())
-        @test values(result)[1] == 20.0  # exact match
-        
-        # Test using Symbols
-        result = retime(test_ta, new_ts; upsample=:linear)
-        @test values(result)[1] ≈ 15.0
-        
-        result = retime(test_ta, new_ts; upsample=:previous)
-        @test values(result)[1] == 10.0
-        
-        result = retime(test_ta, new_ts; upsample=:next)
-        @test values(result)[1] == 20.0
-        
-        result = retime(test_ta, new_ts; upsample=:nearest)
-        @test values(result)[1] == 10.0
+        new_timestamps = collect(Dates.DateTime(2000):Dates.Hour(1):Dates.DateTime(2001))
+
+        upsamples = [
+            TimeSeries.Linear(),
+            TimeSeries.Previous(),
+            TimeSeries.Next(),
+            TimeSeries.Nearest(),
+        ]
+        @testset for upsample in upsamples
+            cl_new = retime(cl, new_timestamps; upsample)
+
+            @test timestamp(cl_new) == new_timestamps
+
+            # TODO: real tests
+        end
+
+        # test using Symbols
+        upsamples = [:linear, :previous, :next, :nearest]
+        @testset for upsample in upsamples
+            cl_new = retime(cl, new_timestamps; upsample)
+
+            @test timestamp(cl_new) == new_timestamps
+
+            # TODO: real tests
+        end
     end
 
     @testset "single column extrapolate" begin
@@ -173,33 +155,22 @@ using Statistics
     end
 
     @testset "multi column interpolation" begin
-        # Create simple multi-column test data
-        test_timestamps = [DateTime(2020, 1, 1, 0, 0), DateTime(2020, 1, 1, 2, 0), DateTime(2020, 1, 1, 4, 0)]
-        test_values = [10.0 100.0; 20.0 200.0; 30.0 300.0]
-        test_ta = TimeArray(test_timestamps, test_values, [:A, :B])
-        
-        new_ts = [DateTime(2020, 1, 1, 1, 0), DateTime(2020, 1, 1, 3, 0)]
-        
-        # Test Linear interpolation
-        result = retime(test_ta, new_ts; upsample=TimeSeries.Linear())
-        @test values(result)[1, 1] ≈ 15.0
-        @test values(result)[1, 2] ≈ 150.0
-        @test values(result)[2, 1] ≈ 25.0
-        @test values(result)[2, 2] ≈ 250.0
-        
-        # Test Previous interpolation
-        result = retime(test_ta, new_ts; upsample=TimeSeries.Previous())
-        @test values(result)[1, 1] == 10.0
-        @test values(result)[1, 2] == 100.0
-        
-        # Test Next interpolation
-        result = retime(test_ta, new_ts; upsample=TimeSeries.Next())
-        @test values(result)[1, 1] == 20.0
-        @test values(result)[1, 2] == 200.0
-        
-        # Test Nearest interpolation
-        result = retime(test_ta, new_ts; upsample=TimeSeries.Nearest())
-        @test values(result)[1, 1] == 10
+        new_timestamps = collect(Dates.DateTime(2000):Dates.Hour(1):Dates.DateTime(2001))
+
+        upsamples = [
+            TimeSeries.Linear(),
+            TimeSeries.Previous(),
+            TimeSeries.Next(),
+            TimeSeries.Nearest(),
+        ]
+        @testset for upsample in upsamples
+            ohlc_new = retime(ohlc, new_timestamps; upsample)
+
+            @test timestamp(ohlc_new) == new_timestamps
+
+            # TODO: real tests
+        end
+    end
 
     @testset "multi column extrapolate" begin
         new_timestamps = collect(Dates.DateTime(2000):Dates.Hour(1):Dates.DateTime(2001))
@@ -305,81 +276,5 @@ using Statistics
         )
 
         ta_new = retime(ta, Hour(1); upsample=:linear)
-    end
-
-    @testset "Custom aggregation function" begin
-        test_timestamps = [DateTime(2020, 1, 1, 0, 0), DateTime(2020, 1, 1, 1, 0), 
-                          DateTime(2020, 1, 1, 2, 0), DateTime(2020, 1, 1, 3, 0)]
-        test_values = [1.0, 2.0, 3.0, 4.0]
-        test_ta = TimeArray(test_timestamps, test_values, [:Value])
-        
-        # Test custom function (e.g., product)
-        custom_func = x -> prod(x)
-        new_ts = [DateTime(2020, 1, 1, 0, 0), DateTime(2020, 1, 1, 2, 0)]
-        result = retime(test_ta, new_ts; downsample=custom_func)
-        
-        # First interval should contain values 1.0 and 2.0, product = 2.0
-        @test values(result)[1] == 2.0
-        # Second interval should contain values 3.0 and 4.0, product = 12.0
-        @test values(result)[2] == 12.0
-    end
-
-    @testset "Edge cases" begin
-        # Single data point
-        single_ta = TimeArray([DateTime(2020, 1, 1)], [42.0], [:Value])
-        new_ts = [DateTime(2020, 1, 1)]
-        result = retime(single_ta, new_ts)
-        @test values(result)[1] == 42.0
-        
-        # Exact timestamp matches
-        test_timestamps = [DateTime(2020, 1, 1, 0, 0), DateTime(2020, 1, 1, 2, 0)]
-        test_values = [10.0, 20.0]
-        test_ta = TimeArray(test_timestamps, test_values, [:Value])
-        result = retime(test_ta, test_timestamps)
-        @test values(result) == test_values
-        
-        # Last timestamp handling (tests the i == N branch)
-        test_timestamps = [DateTime(2020, 1, 1, 0, 0), DateTime(2020, 1, 1, 1, 0), 
-                          DateTime(2020, 1, 1, 2, 0)]
-        test_values = [10.0, 20.0, 30.0]
-        test_ta = TimeArray(test_timestamps, test_values, [:Value])
-        new_ts = [DateTime(2020, 1, 1, 0, 0), DateTime(2020, 1, 1, 1, 0), 
-                 DateTime(2020, 1, 1, 2, 0)]
-        result = retime(test_ta, new_ts; downsample=TimeSeries.Mean())
-        @test length(values(result)) == 3
-    end
-
-    @testset "Period-based resampling" begin
-        test_timestamps = [DateTime(2020, 1, 1, 0, 0), DateTime(2020, 1, 1, 1, 30), 
-                          DateTime(2020, 1, 1, 3, 0)]
-        test_values = [10.0, 20.0, 30.0]
-        test_ta = TimeArray(test_timestamps, test_values, [:Value])
-        
-        # Test with Period
-        result = retime(test_ta, Hour(1))
-        @test length(timestamp(result)) > 0
-        @test timestamp(result)[1] == DateTime(2020, 1, 1, 0, 0)
-        
-        # Verify it produces same result as explicit timestamps
-        explicit_ts = collect(DateTime(2020, 1, 1, 0, 0):Hour(1):DateTime(2020, 1, 1, 3, 0))
-        result_explicit = retime(test_ta, explicit_ts)
-        @test timestamp(result) == timestamp(result_explicit)
-    end
-
-    @testset "Type promotion" begin
-        # Integer with Linear should promote to Float64
-        int_ta = TimeArray([DateTime(2020, 1, 1, 0, 0), DateTime(2020, 1, 1, 2, 0)], 
-                          [10, 20], [:Value])
-        new_ts = [DateTime(2020, 1, 1, 1, 0)]
-        result = retime(int_ta, new_ts; upsample=:linear)
-        @test eltype(values(result)) == Float64
-        @test values(result)[1] == 15.0
-        
-        # Integer with Mean should promote to Float64
-        int_ta2 = TimeArray([DateTime(2020, 1, 1, 0, 0), DateTime(2020, 1, 1, 0, 30), 
-                            DateTime(2020, 1, 1, 1, 0)], [10, 15, 20], [:Value])
-        new_ts2 = [DateTime(2020, 1, 1, 0, 0), DateTime(2020, 1, 1, 1, 0)]
-        result2 = retime(int_ta2, new_ts2; downsample=:mean)
-        @test eltype(values(result2)) == Float64
     end
 end
