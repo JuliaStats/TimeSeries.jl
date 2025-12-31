@@ -1,5 +1,10 @@
 ###### readtimearray ############
 
+"""
+    readtimearray(source; delim=',', meta=nothing, format="", header=true)
+
+Read a CSV or delimited file into a `TimeArray`.
+"""
 function readtimearray(
     source; delim::Char=',', meta=nothing, format::AbstractString="", header::Bool=true
 )
@@ -44,6 +49,11 @@ function insertNaN(aa::Array{Any,N}) where {N}
     return convert(Array{Float64,N}, aa)
 end
 
+"""
+    writetimearray(ta::TimeArray, fname::AbstractString; delim=',', format="", header=true)
+
+Write a `TimeArray` to a CSV or delimited file.
+"""
 function writetimearray(
     ta::TimeArray,
     fname::AbstractString;

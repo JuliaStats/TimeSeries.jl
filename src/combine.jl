@@ -109,6 +109,11 @@ end
 
 # hcat ##########################
 
+"""
+    hcat(x::TimeArray, y::TimeArray)
+
+Horizontally concatenate two `TimeArray` objects with matching timestamps and columns.
+"""
 function hcat(x::TimeArray, y::TimeArray)
     tsx = timestamp(x)
     tsy = timestamp(y)
@@ -122,6 +127,11 @@ function hcat(x::TimeArray, y::TimeArray)
     return TimeArray(tsx, [values(x) values(y)], [colnames(x); colnames(y)], m)
 end
 
+"""
+    hcat(x::TimeArray, y::TimeArray, zs::Vararg{TimeArray})
+
+Horizontally concatenate multiple `TimeArray` objects.
+"""
 hcat(x::TimeArray, y::TimeArray, zs::Vararg{TimeArray}) = hcat(hcat(x, y), zs...)
 
 # collapse ######################
@@ -268,6 +278,27 @@ end
 
 # map ######################
 
+"""
+    map(f, ta::TimeArray{T,N})
+
+Apply function `f` to each row of a `TimeArray`, returning a new `TimeArray`.
+
+# Example
+
+```julia
+using TimeSeries, Dates
+ta = TimeArray(Date(2020,1,1):Day(1):Date(2020,1,3), [1,2,3], ["A"])
+# Add 10 to each value, keep timestamp
+map((t, v) -> (t, v .+ 10), ta)
+# Output:
+# 3×1 TimeArray{Int64,1,Date,Array{Int64,2}}  
+# │            │ A   │
+# ├────────────┼─────┤
+# │ 2020-01-01 │ 11  │
+# │ 2020-01-02 │ 12  │
+# │ 2020-01-03 │ 13  │
+```
+"""
 @generated function map(f, ta::TimeArray{T,N}) where {T,N}
     input_val = (N == 1) ? :(values(ta)[i]) : :(vec(values(ta)[i, :]))
     output_val = (N == 1) ? :(vals[i]) : :(vals[i, :])

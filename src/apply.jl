@@ -1,11 +1,27 @@
 import Base: +, -
 import Base.diff
 
+"""
+    +(ta::TimeArray)
+
+Element-wise unary plus for a `TimeArray`.
+"""
 (+)(ta::TimeArray) = .+ta
+
+"""
+    -(ta::TimeArray)
+
+Element-wise unary minus for a `TimeArray`.
+"""
 (-)(ta::TimeArray) = .-ta
 
 ###### lag, lead ################
 
+"""
+    lag(ta::TimeArray{T,N}, n::Int=1; padding::Bool=false, period::Int=0)
+
+Lag a `TimeArray` by `n` periods. Optionally pad with NaN or use the deprecated `period` keyword.
+"""
 function lag(ta::TimeArray{T,N}, n::Int=1; padding::Bool=false, period::Int=0) where {T,N}
     if period != 0
         @warn("the period kwarg is deprecated, use lag(ta::TimeArray, period::Int) instead")
@@ -26,6 +42,11 @@ function lag(ta::TimeArray{T,N}, n::Int=1; padding::Bool=false, period::Int=0) w
     return ta
 end  # lag
 
+"""
+    lead(ta::TimeArray{T,N}, n::Int=1; padding::Bool=false, period::Int=0)
+
+Lead a `TimeArray` by `n` periods. Optionally pad with NaN or use the deprecated `period` keyword.
+"""
 function lead(ta::TimeArray{T,N}, n::Int=1; padding::Bool=false, period::Int=0) where {T,N}
     if period != 0
         @warn(
@@ -49,6 +70,11 @@ end  # lead
 
 ###### diff #####################
 
+"""
+    diff(ta::TimeArray, n::Int=1; padding::Bool=false, differences::Int=1)
+
+Difference a `TimeArray` by `n` periods, optionally multiple times (`differences`).
+"""
 function diff(ta::TimeArray, n::Int=1; padding::Bool=false, differences::Int=1)
     cols = colnames(ta)
     for d in 1:differences
@@ -60,6 +86,28 @@ end  # diff
 
 ###### percentchange ############
 
+"""
+    percentchange(ta::TimeArray, returns::Symbol=:simple; padding::Bool=false, method::AbstractString="")
+
+Compute percent change of a `TimeArray`. Use `:simple` or `:log` returns.
+
+# Arguments
+- `padding::Bool=false`: If true, pads the beginning of the result with `NaN` values so the output has the same length as the input. If false, the result is shorter by one (or more, depending on differencing).
+
+# Example
+```julia
+using TimeSeries, Dates
+ta = TimeArray(Date(2020,1,1):Day(1):Date(2020,1,3), [1,2,4], ["A"])
+percentchange(ta, :simple; padding=true)
+# Output:
+# 3×1 TimeArray{Float64,1,Date,Array{Float64,2}}
+# │            │ A      │
+# ├────────────┼────────┤
+# │ 2020-01-01 │   NaN  │
+# │ 2020-01-02 │   1.0  │
+# │ 2020-01-03 │   1.0  │
+```
+"""
 function percentchange(
     ta::TimeArray, returns::Symbol=:simple; padding::Bool=false, method::AbstractString=""
 )
@@ -158,6 +206,11 @@ end
 
 ###### upto #####################
 
+"""
+    upto(f, ta::TimeArray{T,1})
+
+Apply function `f` cumulatively up to each index of a 1D `TimeArray`.
+"""
 function upto(f, ta::TimeArray{T,1}) where {T}
     vals = zero(values(ta))
     for i in 1:length(vals)
@@ -166,6 +219,11 @@ function upto(f, ta::TimeArray{T,1}) where {T}
     return TimeArray(timestamp(ta), vals, colnames(ta), meta(ta))
 end
 
+"""
+    upto(f, ta::TimeArray{T,2})
+
+Apply function `f` cumulatively up to each index of a 2D `TimeArray` (column-wise).
+"""
 function upto(f, ta::TimeArray{T,2}) where {T}
     vals = zero(values(ta))
     for i in 1:size(vals, 1), j in 1:size(vals, 2)
@@ -176,12 +234,22 @@ end
 
 ###### basecall #################
 
+"""
+    basecall(ta::TimeArray, f::Function; cnames=colnames(ta))
+
+Apply function `f` to the values of a `TimeArray` and return a new `TimeArray`.
+"""
 function basecall(ta::TimeArray, f::Function; cnames=colnames(ta))
     return TimeArray(timestamp(ta), f(values(ta)), cnames, meta(ta))
 end
 
 ###### uniform observations #####
 
+"""
+    uniformspaced(ta::TimeArray)
+
+Check if the timestamps of a `TimeArray` are uniformly spaced.
+"""
 function uniformspaced(ta::TimeArray)
     gap1 = timestamp(ta)[2] - timestamp(ta)[1]
     i, n, is_uniform = 2, length(ta), true
@@ -192,6 +260,11 @@ function uniformspaced(ta::TimeArray)
     return is_uniform
 end  # uniformspaced
 
+"""
+    uniformspace(ta::TimeArray{T,N})
+
+Return a new `TimeArray` with a uniform time grid, filling missing values with NaN.
+"""
 function uniformspace(ta::TimeArray{T,N}) where {T,N}
     min_gap = minimum(timestamp(ta)[2:end] - timestamp(ta)[1:(end - 1)])
     newtimestamp = timestamp(ta)[1]:min_gap:timestamp(ta)[end]
@@ -205,6 +278,11 @@ end  # uniformspace
 
 ###### dropnan ####################
 
+"""
+    dropnan(ta::TimeArray, method::Symbol=:all)
+
+Drop rows from a `TimeArray` where values are NaN. Use `:all` or `:any` for method.
+"""
 function dropnan(ta::TimeArray, method::Symbol=:all)
     return if method == :all
         ta[findall(reshape(values(any(.!isnan.(ta); dims=2)), :))]
