@@ -135,3 +135,13 @@ using Dates
 ta = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16])
 map((timestamp, values) -> (timestamp + Year(1), values), ta)
 ```
+
+```@docs
+map
+```
+
+## `hcat`
+
+```@docs
+hcat
+```

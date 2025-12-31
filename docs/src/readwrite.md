@@ -27,6 +27,10 @@ For example:
 ta = readtimearray("close.csv"; format="dd/mm/yyyy HH:MM", delim=';')
 ```
 
+```@docs
+readtimearray
+```
+
 A more robust regex parsing engine is planned so users will not need to
 pass a time format for anything but the most edge cases.
 
@@ -45,4 +49,8 @@ Timestamp,Close
 2000-01-05,104.0
 2000-01-06,95.0
 2000-01-07,99.5
+```
+
+```@docs
+writetimearray
 ```

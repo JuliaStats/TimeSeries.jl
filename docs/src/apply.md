@@ -37,6 +37,10 @@ pass `padding=true` as a keyword argument:
 lag(cl[1:3]; padding=true)
 ```
 
+```@docs
+lag
+```
+
 ## `lead`
 
 Leading values operates similarly to lagging values, but moves things in
@@ -59,6 +63,10 @@ into the first date's value slot:
 lead(cl, 499)
 ```
 
+```@docs
+lead
+```
+
 ## `diff`
 
 Differentiating a time series calculates the finite difference between
@@ -76,6 +84,10 @@ You can calculate higher order differences by using the keyword
 parameter `differences`, accepting a positive integer. The default
 value is `differences=1`. For instance, passing `differences=2` is
 equivalent to doing `diff(diff(cl))`.
+
+```@docs
+diff
+```
 
 ## `percentchange`
 
@@ -107,6 +119,10 @@ is simpler than multiplying them. To create log returns, pass the symbol
 
 ```@repl percentchange
 percentchange(cl, :log)
+```
+
+```@docs
+percentchange
 ```
 
 ## `moving`
@@ -150,6 +166,10 @@ using MarketData
 upto(sum, cl)
 ```
 
+```@docs
+upto
+```
+
 ## `basecall`
 
 Because the algorithm for the `upto` method needs to be
@@ -162,4 +182,26 @@ improvements:
 using TimeSeries
 using MarketData
 basecall(cl, cumsum)
+```
+
+```@docs
+basecall
+```
+
+## `uniformspaced`
+
+```@docs
+uniformspaced
+```
+
+## `uniformspace`
+
+```@docs
+uniformspace
+```
+
+## `dropnan`
+
+```@docs
+dropnan
 ```
