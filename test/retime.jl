@@ -24,6 +24,12 @@ using Statistics
         @test TimeSeries._toAggregationMethod(:first) == TimeSeries.First()
         @test TimeSeries._toAggregationMethod(:last) == TimeSeries.Last()
 
+        # Test function conversion to AggregationFunction
+        custom_func = x -> sum(x) / length(x)
+        agg_method = TimeSeries._toAggregationMethod(custom_func)
+        @test agg_method isa TimeSeries.AggregationFunction
+        @test agg_method.func === custom_func
+
         @test_throws MethodError TimeSeries._toAggregationMethod(:foo)
     end
 
@@ -33,6 +39,10 @@ using Statistics
         @test TimeSeries._toExtrapolationMethod(:nearest) == TimeSeries.NearestExtrapolate()
         @test TimeSeries._toExtrapolationMethod(:missing) == TimeSeries.MissingExtrapolate()
         @test TimeSeries._toExtrapolationMethod(:nan) == TimeSeries.NaNExtrapolate()
+
+        # Test custom FillConstant values
+        @test TimeSeries.FillConstant(42.0).value == 42.0
+        @test TimeSeries.FillConstant(-1).value == -1
 
         @test_throws MethodError TimeSeries._toExtrapolationMethod(:foo)
     end
@@ -111,6 +121,11 @@ using Statistics
         cl_new = retime(cl, new_timestamps; extrapolate=TimeSeries.FillConstant(0.0))
         @test timestamp(cl_new) == new_timestamps
         @test values(cl_new[:Close][1])[1] == 0.0
+
+        # Test custom fill value
+        cl_new = retime(cl, new_timestamps; extrapolate=TimeSeries.FillConstant(99.9))
+        @test timestamp(cl_new) == new_timestamps
+        @test values(cl_new[:Close][1])[1] == 99.9
 
         cl_new = retime(cl, new_timestamps; extrapolate=TimeSeries.NearestExtrapolate())
         @test timestamp(cl_new) == new_timestamps
@@ -276,5 +291,71 @@ using Statistics
         )
 
         ta_new = retime(ta, Hour(1); upsample=:linear)
+    end
+
+    @testset "AggregationFunction with custom function" begin
+        new_timestamps = collect(Dates.Date(2000):Dates.Week(1):Dates.Date(2001))
+
+        # Test with custom function: weighted average favouring first value
+        custom_agg = x -> 0.7 * first(x) + 0.3 * last(x)
+        cl_new = retime(cl, new_timestamps; downsample=custom_agg)
+
+        @test timestamp(cl_new) == new_timestamps
+
+        # Verify custom function is applied
+        idx = new_timestamps[2] .<= timestamp(cl) .< new_timestamps[3]
+        cl_values = values(cl[:Close][idx])
+        expected = 0.7 * first(cl_values) + 0.3 * last(cl_values)
+        @test expected == values(cl_new[:Close][2])[1]
+
+        # Test with standard deviation function
+        cl_new_std = retime(cl, new_timestamps; downsample=std)
+        @test timestamp(cl_new_std) == new_timestamps
+
+        # Test with custom function on multi-column
+        ohlc_new = retime(ohlc, new_timestamps; downsample=x -> median(x))
+        @test timestamp(ohlc_new) == new_timestamps
+    end
+
+    @testset "Count aggregation" begin
+        new_timestamps = collect(Dates.Date(2000):Dates.Week(1):Dates.Date(2001))
+
+        cl_new = retime(cl, new_timestamps; downsample=TimeSeries.Count())
+        @test timestamp(cl_new) == new_timestamps
+
+        # Verify count is correct
+        idx = new_timestamps[2] .<= timestamp(cl) .< new_timestamps[3]
+        expected_count = count(!ismissing, values(cl[:Close][idx]))
+        @test expected_count == values(cl_new[:Close][2])[1]
+
+        # Test count with symbol
+        cl_new_sym = retime(cl, new_timestamps; downsample=:count)
+        @test values(cl_new) == values(cl_new_sym)
+    end
+
+    @testset "First and Last aggregation" begin
+        new_timestamps = collect(Dates.Date(2000):Dates.Week(1):Dates.Date(2001))
+
+        cl_first = retime(cl, new_timestamps; downsample=TimeSeries.First())
+        cl_last = retime(cl, new_timestamps; downsample=TimeSeries.Last())
+
+        @test timestamp(cl_first) == new_timestamps
+        @test timestamp(cl_last) == new_timestamps
+
+        # Verify first and last are correct
+        idx = new_timestamps[2] .<= timestamp(cl) .< new_timestamps[3]
+        @test first(values(cl[:Close][idx])) == values(cl_first[:Close][2])[1]
+        @test last(values(cl[:Close][idx])) == values(cl_last[:Close][2])[1]
+    end
+
+    @testset "Median aggregation" begin
+        new_timestamps = collect(Dates.Date(2000):Dates.Week(1):Dates.Date(2001))
+
+        cl_new = retime(cl, new_timestamps; downsample=:median)
+        @test timestamp(cl_new) == new_timestamps
+
+        # Verify median is correct
+        idx = new_timestamps[2] .<= timestamp(cl) .< new_timestamps[3]
+        @test median(values(cl[:Close][idx])) == values(cl_new[:Close][2])[1]
     end
 end

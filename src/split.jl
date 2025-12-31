@@ -81,8 +81,9 @@ Split `data` by `period` function, returns a vector of `TimeSeries.TimeArray`.
 - `data::TimeSeries.TimeArray`: Data to split
 - `period::Function`: Function, e.g. `Dates.day` that is used to split the `data`.
 """
-Base.split(data::TimeSeries.TimeArray, period::Function) =
+function Base.split(data::TimeSeries.TimeArray, period::Function)
     Iterators.map(i -> data[i], _split(TimeSeries.timestamp(data), period))
+end
 
 function _split(ts::AbstractVector{D}, period::Function) where {D<:TimeType}
     m = length(ts)

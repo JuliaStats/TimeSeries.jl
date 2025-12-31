@@ -206,9 +206,11 @@ collapse(ta, month, last)
 collapse(ta, month, last, mean)
 ```
 """
-collapse(
+function collapse(
     ta::TimeArray, period::Period, timestamp::Function, value::Function=timestamp; kw...
-) = collapse(ta, x -> floor(x, period), timestamp, value; kw...)
+)
+    collapse(ta, x -> floor(x, period), timestamp, value; kw...)
+end
 
 # vcat ######################
 

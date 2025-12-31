@@ -46,7 +46,7 @@ _toAggregationMethod(::Val{:sum}) = Sum()
 _toAggregationMethod(::Val{:median}) = Median()
 _toAggregationMethod(::Val{:first}) = First()
 _toAggregationMethod(::Val{:last}) = Last()
-_toAggregationMethof(f::Function) = AggregationFunction(f)
+_toAggregationMethod(f::Function) = AggregationFunction(f)
 _toAggregationMethod(x::AggregationMethod) = x
 
 _toExtrapolationMethod(x::Symbol) = _toExtrapolationMethod(Val(x))
