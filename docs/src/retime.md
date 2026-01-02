@@ -89,38 +89,14 @@ new_timestamps = range(DateTime(2019, 12, 31), DateTime(2020, 1, 2), step = Minu
 ta_ = retime(ta, new_timestamps, extrapolate=MissingExtrapolate())
 ```
 
-
-```@docs
-retime
-```
-
 ## Interpolation Methods
 
-```@docs
-Linear
-Previous
-Next
-Nearest
-```
+Available interpolation methods: `Linear`, `Previous`, `Next`, `Nearest`.
 
 ## Aggregation Methods
 
-```@docs
-Mean
-Min
-Max
-Count
-Sum
-Median
-First
-Last
-```
+Available aggregation methods: `Mean`, `Min`, `Max`, `Count`, `Sum`, `Median`, `First`, `Last`.
 
 ## Extrapolation Methods
 
-```@docs
-FillConstant
-NearestExtrapolate
-MissingExtrapolate
-NaNExtrapolate
-```
+Available extrapolation methods: `FillConstant`, `NearestExtrapolate`, `MissingExtrapolate`, `NaNExtrapolate`.

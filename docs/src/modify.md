@@ -21,7 +21,4 @@ first(rename(Symbol ∘ uppercase ∘ string, ohlc))
 first(rename(uppercase, ohlc, String))
 ```
 
-```@docs
-rename
-rename!
-```
+See [`rename`](@ref) and [`rename!`](@ref) in the [Public API Reference](@ref) for detailed documentation.

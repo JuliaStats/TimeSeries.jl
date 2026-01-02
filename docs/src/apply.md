@@ -37,10 +37,6 @@ pass `padding=true` as a keyword argument:
 lag(cl[1:3]; padding=true)
 ```
 
-```@docs
-lag
-```
-
 ## `lead`
 
 Leading values operates similarly to lagging values, but moves things in
@@ -63,10 +59,6 @@ into the first date's value slot:
 lead(cl, 499)
 ```
 
-```@docs
-lead
-```
-
 ## `diff`
 
 Differentiating a time series calculates the finite difference between
@@ -84,10 +76,6 @@ You can calculate higher order differences by using the keyword
 parameter `differences`, accepting a positive integer. The default
 value is `differences=1`. For instance, passing `differences=2` is
 equivalent to doing `diff(diff(cl))`.
-
-```@docs
-diff
-```
 
 ## `percentchange`
 
@@ -121,10 +109,6 @@ is simpler than multiplying them. To create log returns, pass the symbol
 percentchange(cl, :log)
 ```
 
-```@docs
-percentchange
-```
-
 ## `moving`
 
 Often when working with time series, you want to take a sliding window
@@ -149,10 +133,6 @@ As mentioned previously, we lose the first nine observations to the
 consuming nature of this operation. They are not **missing** per se,
 they simply do not exist.
 
-```@docs
-moving
-```
-
 ## `upto`
 
 Another operation common in time series analysis is an aggregation
@@ -164,10 +144,6 @@ the present timestamp. You would use the `upto` method like this:
 using TimeSeries
 using MarketData
 upto(sum, cl)
-```
-
-```@docs
-upto
 ```
 
 ## `basecall`
@@ -184,24 +160,10 @@ using MarketData
 basecall(cl, cumsum)
 ```
 
-```@docs
-basecall
-```
+## `uniformspaced` and `uniformspace`
 
-## `uniformspaced`
-
-```@docs
-uniformspaced
-```
-
-## `uniformspace`
-
-```@docs
-uniformspace
-```
+These methods check or enforce uniform spacing in time series.
 
 ## `dropnan`
 
-```@docs
-dropnan
-```
+Removes rows containing NaN values from a TimeArray.

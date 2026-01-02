@@ -15,10 +15,6 @@ when(cl, dayofweek, 1)
 when(cl, dayname, "Monday")
 ```
 
-```@docs
-when
-```
-
 The period argument holds a valid `Date` method. Below are currently
 available alternatives.
 
@@ -48,10 +44,6 @@ using MarketData
 from(cl, Date(2001, 12, 27))
 ```
 
-```@docs
-from
-```
-
 ## `to`
 
 The `to` method truncates a `TimeArray` after the date passed to the
@@ -62,10 +54,6 @@ using TimeSeries
 using MarketData
 
 to(cl, Date(2000, 1, 5))
-```
-
-```@docs
-to
 ```
 
 ## `findwhen`
@@ -80,10 +68,6 @@ using MarketData
 green = findwhen(ohlc[:Close] .> ohlc[:Open]);
 typeof(green)
 ohlc[green]
-```
-
-```@docs
-findwhen
 ```
 
 ## `findall`
@@ -127,10 +111,6 @@ using MarketData
 head(cl)
 ```
 
-```@docs
-head
-```
-
 ### `tail`
 
 The `tail` method defaults to returning only the last value in a
@@ -145,10 +125,6 @@ tail(cl)
 tail(cl, 3)
 ```
 
-```@docs
-tail
-```
-
 ## Splitting by period
 
 Splitting data by a given function, e.g. `Dates.day` into periods.
@@ -158,9 +134,4 @@ using TimeSeries
 using MarketData
 
 split(cl, Dates.day)
-```
-
-
-```@docs
-split
 ```
