@@ -88,3 +88,15 @@ Available `extrapolate` methods are:
 new_timestamps = range(DateTime(2019, 12, 31), DateTime(2020, 1, 2), step = Minute(15))
 ta_ = retime(ta, new_timestamps, extrapolate=MissingExtrapolate())
 ```
+
+## Interpolation Methods
+
+Available interpolation methods: `Linear`, `Previous`, `Next`, `Nearest`.
+
+## Aggregation Methods
+
+Available aggregation methods: `Mean`, `Min`, `Max`, `Count`, `Sum`, `Median`, `First`, `Last`.
+
+## Extrapolation Methods
+
+Available extrapolation methods: `FillConstant`, `NearestExtrapolate`, `MissingExtrapolate`, `NaNExtrapolate`.

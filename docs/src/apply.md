@@ -133,10 +133,6 @@ As mentioned previously, we lose the first nine observations to the
 consuming nature of this operation. They are not **missing** per se,
 they simply do not exist.
 
-```@docs
-moving
-```
-
 ## `upto`
 
 Another operation common in time series analysis is an aggregation
@@ -163,3 +159,11 @@ using TimeSeries
 using MarketData
 basecall(cl, cumsum)
 ```
+
+## `uniformspaced` and `uniformspace`
+
+These methods check or enforce uniform spacing in time series.
+
+## `dropnan`
+
+Removes rows containing NaN values from a TimeArray.

@@ -54,9 +54,7 @@ meta(CatApple)
 meta(merge(AppleCat, CatApple))
 ```
 
-```@docs
-merge
-```
+See [`merge`](@ref) in the Public API Reference for detailed documentation.
 
 ## `collapse`
 
@@ -97,9 +95,7 @@ using Statistics
 collapse(cl, month, last, mean)
 ```
 
-```@docs
-collapse
-```
+See [`collapse`](@ref) in the Public API Reference for detailed documentation.
 
 ## `vcat`
 
@@ -112,19 +108,16 @@ which does not consider that its arguments are actually the *same* time series.
 This concatenation is *vertical* (`vcat`) because it does not create
 columns, it extends existing ones (which are represented vertically).
 
-```@docs
-vcat(tas::Vararg{TimeArray,N} where N)
-```
+See [`vcat`](@ref) in the Public API Reference for detailed documentation.
 
 ## `map`
 
-This function allows complete transformation of the data within the time
-series, with alteration on both the time stamps and the associated
-values. It works exactly like `Base.map`: the first argument is a binary
-function (the time stamp and the values) that returns two values,
-respectively the new time stamp and the new vector of values. It does
-not perform any kind of compression like `collapse`, but rather
-transformations.
+This is a TimeSeries-specific overload of `map` that allows complete transformation
+of the data within the time series, with alteration on both the time stamps and
+the associated values. The first argument is a binary function that takes the
+time stamp and the values and returns two values: the new time stamp and the
+new vector of values. It does not perform any kind of compression like `collapse`,
+but rather transformations.
 
 The simplest example is to postpone all time stamps in the given time
 series, here by one year:
@@ -135,3 +128,11 @@ using Dates
 ta = TimeArray([Date(2015, 10, 01), Date(2015, 11, 01)], [15, 16])
 map((timestamp, values) -> (timestamp + Year(1), values), ta)
 ```
+
+See [`map`](@ref) in the Public API Reference for detailed documentation.
+
+## `hcat`
+
+Horizontally concatenates TimeArrays, adding columns.
+
+See [`hcat`](@ref) in the Public API Reference for detailed documentation.

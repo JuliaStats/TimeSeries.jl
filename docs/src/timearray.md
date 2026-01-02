@@ -56,23 +56,16 @@ relying on variable bindings outside of the object's type fields.
 
 ## Constructors
 
-```@docs
-TimeArray
-```
+See the [`TimeArray`](@ref TimeSeries.TimeArray) constructor documentation in the Public API Reference.
 
 ## Fields getter functions
 
 There are four field getter functions exported.
-They are named as same as the field names.
+They are named the same as the field names.
 
   - [`timestamp`](@ref)
   - [`values`](@ref)
   - [`colnames`](@ref)
   - [`meta`](@ref)
 
-```@docs
-timestamp
-values
-colnames
-meta
-```
+See the Public API Reference for detailed documentation of these functions.
