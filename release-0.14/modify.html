@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Modify existing TimeArrays · TimeSeries.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>TimeSeries.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search.html"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="index.html">TimeSeries Overview</a></li><li><a class="toctext" href="getting_started.html">Getting Started</a></li><li><a class="toctext" href="timearray.html">The <code>TimeArray</code> time series type</a></li><li><a class="toctext" href="indexing.html">Array indexing</a></li><li><a class="toctext" href="split.html">Splitting by conditions</a></li><li class="current"><a class="toctext" href="modify.html">Modify existing <code>TimeArray</code>s</a><ul class="internal"><li><a class="toctext" href="#update-1"><code>update</code></a></li><li><a class="toctext" href="#rename-1"><code>rename</code></a></li></ul></li><li><a class="toctext" href="operators.html">Mathematical, comparison, and logical operators</a></li><li><a class="toctext" href="apply.html">Apply methods</a></li><li><a class="toctext" href="combine.html">Combine methods</a></li><li><a class="toctext" href="readwrite.html">I/O</a></li><li><a class="toctext" href="dotfile.html">Customize <code>TimeArray</code> printting</a></li><li><a class="toctext" href="plotting.html">Plotting</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href="modify.html">Modify existing <code>TimeArray</code>s</a></li></ul><a class="edit-page" href="https://github.com/JuliaStats/TimeSeries.jl/blob/master/docs/src/modify.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Modify existing TimeArrays</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Modify-existing-TimeArrays-1" href="#Modify-existing-TimeArrays-1">Modify existing <code>TimeArray</code>s</a></h1><p>Since <code>TimeArrays</code> are immutable, they cannot be altered or changed in-place. In practical application, an existing <code>TimeArray</code> might need to be used to create a new one with many of the same values. This might be thought of as <em>changing</em> the fields of an existing <code>TimeArray</code>, but what actually happens is a new <code>TimeArray</code> is created. To allow the use of an existing <code>TimeArray</code> to create a new one, the <code>update</code> and <code>rename</code> methods are provided.</p><h2><a class="nav-anchor" id="update-1" href="#update-1"><code>update</code></a></h2><p>The <code>update</code> method supports adding new observations only. Older and in-between dates are not supported:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+ERROR: ArgumentError: Package MarketData not found in current path:
+- Run `import Pkg; Pkg.add(&quot;MarketData&quot;)` to install the MarketData package.
+
+julia&gt; update(cl, Date(2002,1,1), 111.11)
+ERROR: UndefVarError: cl not defined
+
+julia&gt; update(cl, Date(2002,1,1), [111.11])
+ERROR: UndefVarError: cl not defined
+
+julia&gt; update(ohlc, Date(2002,1,1), [111.11 222.22 333.33 444.44])
+ERROR: UndefVarError: ohlc not defined</code></pre><h2><a class="nav-anchor" id="rename-1" href="#rename-1"><code>rename</code></a></h2><p>The <code>rename</code> method allows the column name(s) to be changed:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+ERROR: ArgumentError: Package MarketData not found in current path:
+- Run `import Pkg; Pkg.add(&quot;MarketData&quot;)` to install the MarketData package.
+
+julia&gt; rename(cl, :Close′)
+ERROR: UndefVarError: cl not defined
+
+julia&gt; rename(cl, [:Close′])
+ERROR: UndefVarError: cl not defined
+
+julia&gt; rename(ohlc, [:Open′, :High′, :Low′, :Close′])
+ERROR: UndefVarError: ohlc not defined</code></pre><footer><hr/><a class="previous" href="split.html"><span class="direction">Previous</span><span class="title">Splitting by conditions</span></a><a class="next" href="operators.html"><span class="direction">Next</span><span class="title">Mathematical, comparison, and logical operators</span></a></footer></article></body></html>

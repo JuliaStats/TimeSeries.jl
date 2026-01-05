@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Array indexing · TimeSeries.jl</title><meta name="title" content="Array indexing · TimeSeries.jl"/><meta property="og:title" content="Array indexing · TimeSeries.jl"/><meta property="twitter:title" content="Array indexing · TimeSeries.jl"/><meta name="description" content="Documentation for TimeSeries.jl."/><meta property="og:description" content="Documentation for TimeSeries.jl."/><meta property="twitter:description" content="Documentation for TimeSeries.jl."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">TimeSeries.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">TimeSeries Overview</a></li><li><a class="tocitem" href="../getting_started/">Getting Started</a></li><li><a class="tocitem" href="../timearray/">The <code>TimeArray</code> time series type</a></li><li class="is-active"><a class="tocitem" href>Array indexing</a><ul class="internal"><li><a class="tocitem" href="#Row-indexing"><span>Row indexing</span></a></li><li><a class="tocitem" href="#Column-indexing"><span>Column indexing</span></a></li><li><a class="tocitem" href="#Mixed-approach"><span>Mixed approach</span></a></li></ul></li><li><a class="tocitem" href="../split/">Splitting by conditions</a></li><li><a class="tocitem" href="../modify/">Modify existing <code>TimeArray</code>s</a></li><li><a class="tocitem" href="../operators/">Mathematical, comparison, and logical operators</a></li><li><a class="tocitem" href="../apply/">Apply methods</a></li><li><a class="tocitem" href="../combine/">Combine methods</a></li><li><a class="tocitem" href="../readwrite/">I/O</a></li><li><a class="tocitem" href="../tables/">Tables.jl Interface Integration</a></li><li><a class="tocitem" href="../plotting/">Plotting</a></li><li><a class="tocitem" href="../retime/">Retime</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Array indexing</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Array indexing</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/JuliaStats/TimeSeries.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/JuliaStats/TimeSeries.jl/blob/master/docs/src/indexing.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Array-indexing"><a class="docs-heading-anchor" href="#Array-indexing">Array indexing</a><a id="Array-indexing-1"></a><a class="docs-heading-anchor-permalink" href="#Array-indexing" title="Permalink"></a></h1><p>Indexing out a time series is done with common bracketing semantics.</p><h2 id="Row-indexing"><a class="docs-heading-anchor" href="#Row-indexing">Row indexing</a><a id="Row-indexing-1"></a><a class="docs-heading-anchor-permalink" href="#Row-indexing" title="Permalink"></a></h2><h3 id="Integer"><a class="docs-heading-anchor" href="#Integer">Integer</a><a id="Integer-1"></a><a class="docs-heading-anchor-permalink" href="#Integer" title="Permalink"></a></h3><table><tr><th style="text-align: left">Example</th><th style="text-align: left">Description</th><th style="text-align: left">Indexing value</th></tr><tr><td style="text-align: left"><code>[1]</code></td><td style="text-align: left">First row of data only</td><td style="text-align: left">single integer</td></tr><tr><td style="text-align: left"><code>[1:3]</code></td><td style="text-align: left">First through third row only</td><td style="text-align: left">integer range</td></tr><tr><td style="text-align: left"><code>[1:2:10]</code></td><td style="text-align: left">Odd row between first to tenth row</td><td style="text-align: left">integer range with step</td></tr><tr><td style="text-align: left"><code>[[1:3; 8]]</code></td><td style="text-align: left">First through third row and eight row</td><td style="text-align: left">integer range &amp; single integer</td></tr><tr><td style="text-align: left"><code>[end]</code></td><td style="text-align: left">Last row</td><td style="text-align: left"></td></tr></table><p>Examples in REPL:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; ohlc[1]</code><code class="nohighlight hljs ansi" style="display:block;">1×4 TimeArray{Float64, 2, Date, Matrix{Float64}} 2000-01-03 to 2000-01-03
+┌────────────┬────────┬───────┬────────┬────────┐
+│            │ Open   │ High  │ Low    │ Close  │
+├────────────┼────────┼───────┼────────┼────────┤
+│ 2000-01-03 │ 104.88 │ 112.5 │ 101.69 │ 111.94 │
+└────────────┴────────┴───────┴────────┴────────┘</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; ohlc[1:3]</code><code class="nohighlight hljs ansi" style="display:block;">3×4 TimeArray{Float64, 2, Date, Matrix{Float64}} 2000-01-03 to 2000-01-05
+┌────────────┬────────┬────────┬────────┬────────┐
+│            │ Open   │ High   │ Low    │ Close  │
+├────────────┼────────┼────────┼────────┼────────┤
+│ 2000-01-03 │ 104.88 │  112.5 │ 101.69 │ 111.94 │
+│ 2000-01-04 │ 108.25 │ 110.62 │ 101.19 │  102.5 │
+│ 2000-01-05 │ 103.75 │ 110.56 │  103.0 │  104.0 │
+└────────────┴────────┴────────┴────────┴────────┘</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; ohlc[1:2:10]</code><code class="nohighlight hljs ansi" style="display:block;">5×4 TimeArray{Float64, 2, Date, Matrix{Float64}} 2000-01-03 to 2000-01-13
+┌────────────┬────────┬────────┬────────┬────────┐
+│            │ Open   │ High   │ Low    │ Close  │
+├────────────┼────────┼────────┼────────┼────────┤
+│ 2000-01-03 │ 104.88 │  112.5 │ 101.69 │ 111.94 │
+│ 2000-01-05 │ 103.75 │ 110.56 │  103.0 │  104.0 │
+│ 2000-01-07 │   96.5 │  101.0 │   95.5 │   99.5 │
+│ 2000-01-11 │  95.94 │  99.38 │   90.5 │  92.75 │
+│ 2000-01-13 │  94.48 │  98.75 │   92.5 │  96.75 │
+└────────────┴────────┴────────┴────────┴────────┘</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; ohlc[[1:3; 8]]</code><code class="nohighlight hljs ansi" style="display:block;">4×4 TimeArray{Float64, 2, Date, Matrix{Float64}} 2000-01-03 to 2000-01-12
+┌────────────┬────────┬────────┬────────┬────────┐
+│            │ Open   │ High   │ Low    │ Close  │
+├────────────┼────────┼────────┼────────┼────────┤
+│ 2000-01-03 │ 104.88 │  112.5 │ 101.69 │ 111.94 │
+│ 2000-01-04 │ 108.25 │ 110.62 │ 101.19 │  102.5 │
+│ 2000-01-05 │ 103.75 │ 110.56 │  103.0 │  104.0 │
+│ 2000-01-12 │   95.0 │   95.5 │   86.5 │  87.19 │
+└────────────┴────────┴────────┴────────┴────────┘</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; ohlc[end]</code><code class="nohighlight hljs ansi" style="display:block;">1×4 TimeArray{Float64, 2, Date, Matrix{Float64}} 2001-12-31 to 2001-12-31
+┌────────────┬───────┬───────┬───────┬───────┐
+│            │ Open  │ High  │ Low   │ Close │
+├────────────┼───────┼───────┼───────┼───────┤
+│ 2001-12-31 │ 22.51 │ 22.66 │ 21.83 │  21.9 │
+└────────────┴───────┴───────┴───────┴───────┘</code></pre><h3 id="Date-and-DateTime"><a class="docs-heading-anchor" href="#Date-and-DateTime">Date and DateTime</a><a id="Date-and-DateTime-1"></a><a class="docs-heading-anchor-permalink" href="#Date-and-DateTime" title="Permalink"></a></h3><table><tr><th style="text-align: left">Example</th><th style="text-align: left">Description</th><th style="text-align: left">Indexing value</th></tr><tr><td style="text-align: left"><code>[Date(2000, 1, 3)]</code></td><td style="text-align: left">The row containing Jan 3, 2000 timestamp</td><td style="text-align: left">single Date</td></tr><tr><td style="text-align: left"><code>[[Date(2000, 1, 3), Date(2000, 2, 4)]]</code></td><td style="text-align: left">The rows containing Jan 3 &amp; Feb 4, 2000</td><td style="text-align: left">multiple Dates</td></tr><tr><td style="text-align: left"><code>[Date(2000, 1, 3):Day(1):Date(2000, 2, 4)]</code></td><td style="text-align: left">The rows between Jan 3, 2000 &amp; Feb 4, 2000</td><td style="text-align: left">range of Date</td></tr></table><p>Examples in REPL:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; ohlc[Date(2000, 1, 3)]</code><code class="nohighlight hljs ansi" style="display:block;">1×4 TimeArray{Float64, 2, Date, Matrix{Float64}} 2000-01-03 to 2000-01-03
+┌────────────┬────────┬───────┬────────┬────────┐
+│            │ Open   │ High  │ Low    │ Close  │
+├────────────┼────────┼───────┼────────┼────────┤
+│ 2000-01-03 │ 104.88 │ 112.5 │ 101.69 │ 111.94 │
+└────────────┴────────┴───────┴────────┴────────┘</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; ohlc[Date(2000, 1, 3):Day(1):Date(2000, 2, 4)]</code><code class="nohighlight hljs ansi" style="display:block;">24×4 TimeArray{Float64, 2, Date, Matrix{Float64}} 2000-01-03 to 2000-02-04
+┌────────────┬────────┬────────┬────────┬────────┐
+│            │ Open   │ High   │ Low    │ Close  │
+├────────────┼────────┼────────┼────────┼────────┤
+│ 2000-01-03 │ 104.88 │  112.5 │ 101.69 │ 111.94 │
+│ 2000-01-04 │ 108.25 │ 110.62 │ 101.19 │  102.5 │
+│ 2000-01-05 │ 103.75 │ 110.56 │  103.0 │  104.0 │
+│ 2000-01-06 │ 106.12 │  107.0 │   95.0 │   95.0 │
+│ 2000-01-07 │   96.5 │  101.0 │   95.5 │   99.5 │
+│ 2000-01-10 │  102.0 │ 102.25 │  94.75 │  97.75 │
+│ 2000-01-11 │  95.94 │  99.38 │   90.5 │  92.75 │
+│ 2000-01-12 │   95.0 │   95.5 │   86.5 │  87.19 │
+│     ⋮      │   ⋮    │   ⋮    │   ⋮    │   ⋮    │
+│ 2000-01-27 │ 108.81 │  113.0 │  107.0 │  110.0 │
+│ 2000-01-28 │ 108.19 │ 110.88 │ 100.62 │ 101.62 │
+│ 2000-01-31 │  101.0 │ 103.88 │   94.5 │ 103.75 │
+│ 2000-02-01 │  104.0 │  105.0 │  100.0 │ 100.25 │
+│ 2000-02-02 │ 100.75 │ 102.12 │   97.0 │  98.81 │
+│ 2000-02-03 │ 100.31 │ 104.25 │ 100.25 │ 103.31 │
+│ 2000-02-04 │ 103.94 │  110.0 │ 103.62 │  108.0 │
+└────────────┴────────┴────────┴────────┴────────┘
+                                    9 rows omitted</code></pre><h2 id="Column-indexing"><a class="docs-heading-anchor" href="#Column-indexing">Column indexing</a><a id="Column-indexing-1"></a><a class="docs-heading-anchor-permalink" href="#Column-indexing" title="Permalink"></a></h2><h3 id="Symbol"><a class="docs-heading-anchor" href="#Symbol">Symbol</a><a id="Symbol-1"></a><a class="docs-heading-anchor-permalink" href="#Symbol" title="Permalink"></a></h3><table><tr><th style="text-align: left">Example</th><th style="text-align: left">Description</th><th style="text-align: left">Indexing value</th></tr><tr><td style="text-align: left"><code>[:Open]</code></td><td style="text-align: left">The column named <code>:Open</code></td><td style="text-align: left">single symbol</td></tr><tr><td style="text-align: left"><code>[:Open, :Close]</code></td><td style="text-align: left">The columns named <code>:Open</code> and <code>:Close</code></td><td style="text-align: left">multiple symbols</td></tr><tr><td style="text-align: left"><code>[[:Open, :Close]]</code></td><td style="text-align: left">The columns named <code>:Open</code> and <code>:Close</code></td><td style="text-align: left">multiple symbols</td></tr></table><p>Examples in REPL:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; ohlc[:Open]</code><code class="nohighlight hljs ansi" style="display:block;">500×1 TimeArray{Float64, 1, Date, Vector{Float64}} 2000-01-03 to 2001-12-31
+┌────────────┬────────┐
+│            │ Open   │
+├────────────┼────────┤
+│ 2000-01-03 │ 104.88 │
+│ 2000-01-04 │ 108.25 │
+│ 2000-01-05 │ 103.75 │
+│ 2000-01-06 │ 106.12 │
+│ 2000-01-07 │   96.5 │
+│ 2000-01-10 │  102.0 │
+│ 2000-01-11 │  95.94 │
+│ 2000-01-12 │   95.0 │
+│     ⋮      │   ⋮    │
+│ 2001-12-20 │   21.4 │
+│ 2001-12-21 │  21.01 │
+│ 2001-12-24 │   20.9 │
+│ 2001-12-26 │  21.35 │
+│ 2001-12-27 │  21.58 │
+│ 2001-12-28 │  21.97 │
+│ 2001-12-31 │  22.51 │
+└────────────┴────────┘
+       485 rows omitted</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; ohlc[:Open, :Close]</code><code class="nohighlight hljs ansi" style="display:block;">500×2 TimeArray{Float64, 2, Date, Matrix{Float64}} 2000-01-03 to 2001-12-31
+┌────────────┬────────┬────────┐
+│            │ Open   │ Close  │
+├────────────┼────────┼────────┤
+│ 2000-01-03 │ 104.88 │ 111.94 │
+│ 2000-01-04 │ 108.25 │  102.5 │
+│ 2000-01-05 │ 103.75 │  104.0 │
+│ 2000-01-06 │ 106.12 │   95.0 │
+│ 2000-01-07 │   96.5 │   99.5 │
+│ 2000-01-10 │  102.0 │  97.75 │
+│ 2000-01-11 │  95.94 │  92.75 │
+│ 2000-01-12 │   95.0 │  87.19 │
+│     ⋮      │   ⋮    │   ⋮    │
+│ 2001-12-20 │   21.4 │  20.67 │
+│ 2001-12-21 │  21.01 │   21.0 │
+│ 2001-12-24 │   20.9 │  21.36 │
+│ 2001-12-26 │  21.35 │  21.49 │
+│ 2001-12-27 │  21.58 │  22.07 │
+│ 2001-12-28 │  21.97 │  22.43 │
+│ 2001-12-31 │  22.51 │   21.9 │
+└────────────┴────────┴────────┘
+                485 rows omitted</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; cols = [:Open, :Close]</code><code class="nohighlight hljs ansi" style="display:block;">2-element Vector{Symbol}:
+ :Open
+ :Close</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; ohlc[cols]</code><code class="nohighlight hljs ansi" style="display:block;">500×2 TimeArray{Float64, 2, Date, Matrix{Float64}} 2000-01-03 to 2001-12-31
+┌────────────┬────────┬────────┐
+│            │ Open   │ Close  │
+├────────────┼────────┼────────┤
+│ 2000-01-03 │ 104.88 │ 111.94 │
+│ 2000-01-04 │ 108.25 │  102.5 │
+│ 2000-01-05 │ 103.75 │  104.0 │
+│ 2000-01-06 │ 106.12 │   95.0 │
+│ 2000-01-07 │   96.5 │   99.5 │
+│ 2000-01-10 │  102.0 │  97.75 │
+│ 2000-01-11 │  95.94 │  92.75 │
+│ 2000-01-12 │   95.0 │  87.19 │
+│     ⋮      │   ⋮    │   ⋮    │
+│ 2001-12-20 │   21.4 │  20.67 │
+│ 2001-12-21 │  21.01 │   21.0 │
+│ 2001-12-24 │   20.9 │  21.36 │
+│ 2001-12-26 │  21.35 │  21.49 │
+│ 2001-12-27 │  21.58 │  22.07 │
+│ 2001-12-28 │  21.97 │  22.43 │
+│ 2001-12-31 │  22.51 │   21.9 │
+└────────────┴────────┴────────┘
+                485 rows omitted</code></pre><h2 id="Mixed-approach"><a class="docs-heading-anchor" href="#Mixed-approach">Mixed approach</a><a id="Mixed-approach-1"></a><a class="docs-heading-anchor-permalink" href="#Mixed-approach" title="Permalink"></a></h2><table><tr><th style="text-align: left">Example</th><th style="text-align: left">Description</th><th style="text-align: left">Indexing value</th></tr><tr><td style="text-align: left"><code>[1:3, :Open]</code></td><td style="text-align: left"><code>:Open</code> column &amp; first 3 rows</td><td style="text-align: left">single symbol &amp; integer range</td></tr><tr><td style="text-align: left"><code>[:Open][Date(2000, 1, 3)]</code></td><td style="text-align: left"><code>:Open</code> column and Jan 3, 2000</td><td style="text-align: left">single symbol &amp; Date</td></tr></table><p>Examples in REPL:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; ohlc[1:3, :Open]</code><code class="nohighlight hljs ansi" style="display:block;">3×1 TimeArray{Float64, 2, Date, Matrix{Float64}} 2000-01-03 to 2000-01-05
+┌────────────┬────────┐
+│            │ Open   │
+├────────────┼────────┤
+│ 2000-01-03 │ 104.88 │
+│ 2000-01-04 │ 108.25 │
+│ 2000-01-05 │ 103.75 │
+└────────────┴────────┘</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; ohlc[:Open][Date(2000, 1, 3)]</code><code class="nohighlight hljs ansi" style="display:block;">1×1 TimeArray{Float64, 1, Date, Vector{Float64}} 2000-01-03 to 2000-01-03
+┌────────────┬────────┐
+│            │ Open   │
+├────────────┼────────┤
+│ 2000-01-03 │ 104.88 │
+└────────────┴────────┘</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../timearray/">« The <code>TimeArray</code> time series type</a><a class="docs-footer-nextpage" href="../split/">Splitting by conditions »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.16.0 on <span class="colophon-date" title="Monday 17 November 2025 09:29">Monday 17 November 2025</span>. Using Julia version 1.12.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

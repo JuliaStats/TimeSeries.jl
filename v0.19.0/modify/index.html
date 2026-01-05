@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Modify existing TimeArrays · TimeSeries.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>TimeSeries.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">TimeSeries Overview</a></li><li><a class="toctext" href="../getting_started/">Getting Started</a></li><li><a class="toctext" href="../timearray/">The <code>TimeArray</code> time series type</a></li><li><a class="toctext" href="../indexing/">Array indexing</a></li><li><a class="toctext" href="../split/">Splitting by conditions</a></li><li class="current"><a class="toctext" href>Modify existing <code>TimeArray</code>s</a><ul class="internal"><li><a class="toctext" href="#update-1"><code>update</code></a></li><li><a class="toctext" href="#rename-and-rename!-1"><code>rename</code> and <code>rename!</code></a></li></ul></li><li><a class="toctext" href="../operators/">Mathematical, comparison, and logical operators</a></li><li><a class="toctext" href="../apply/">Apply methods</a></li><li><a class="toctext" href="../combine/">Combine methods</a></li><li><a class="toctext" href="../readwrite/">I/O</a></li><li><a class="toctext" href="../tables/">Tables.jl Interface Integration</a></li><li><a class="toctext" href="../dotfile/">Customize <code>TimeArray</code> printing</a></li><li><a class="toctext" href="../plotting/">Plotting</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Modify existing <code>TimeArray</code>s</a></li></ul><a class="edit-page" href="https://github.com/JuliaStats/TimeSeries.jl/blob/master/docs/src/modify.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Modify existing TimeArrays</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Modify-existing-TimeArrays-1" href="#Modify-existing-TimeArrays-1">Modify existing <code>TimeArray</code>s</a></h1><p>Since <code>TimeArrays</code> are immutable, they cannot be altered or changed in-place. In practical application, an existing <code>TimeArray</code> might need to be used to create a new one with many of the same values. This might be thought of as <em>changing</em> the fields of an existing <code>TimeArray</code>, but what actually happens is a new <code>TimeArray</code> is created. To allow the use of an existing <code>TimeArray</code> to create a new one, the <code>update</code> and <code>rename</code> methods are provided.</p><h2><a class="nav-anchor" id="update-1" href="#update-1"><code>update</code></a></h2><p>The <code>update</code> method supports adding new observations only. Older and in-between dates are not supported:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+
+julia&gt; update(cl, Date(2002,1,1), 111.11)
+501×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2002-01-01
+│            │ Close  │
+├────────────┼────────┤
+│ 2000-01-03 │ 111.94 │
+│ 2000-01-04 │ 102.5  │
+│ 2000-01-05 │ 104.0  │
+│ 2000-01-06 │ 95.0   │
+│ 2000-01-07 │ 99.5   │
+│ 2000-01-10 │ 97.75  │
+│ 2000-01-11 │ 92.75  │
+│ 2000-01-12 │ 87.19  │
+│ 2000-01-13 │ 96.75  │
+   ⋮
+│ 2001-12-20 │ 20.67  │
+│ 2001-12-21 │ 21.0   │
+│ 2001-12-24 │ 21.36  │
+│ 2001-12-26 │ 21.49  │
+│ 2001-12-27 │ 22.07  │
+│ 2001-12-28 │ 22.43  │
+│ 2001-12-31 │ 21.9   │
+│ 2002-01-01 │ 111.11 │
+
+julia&gt; update(cl, Date(2002,1,1), [111.11])
+501×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2002-01-01
+│            │ Close  │
+├────────────┼────────┤
+│ 2000-01-03 │ 111.94 │
+│ 2000-01-04 │ 102.5  │
+│ 2000-01-05 │ 104.0  │
+│ 2000-01-06 │ 95.0   │
+│ 2000-01-07 │ 99.5   │
+│ 2000-01-10 │ 97.75  │
+│ 2000-01-11 │ 92.75  │
+│ 2000-01-12 │ 87.19  │
+│ 2000-01-13 │ 96.75  │
+   ⋮
+│ 2001-12-20 │ 20.67  │
+│ 2001-12-21 │ 21.0   │
+│ 2001-12-24 │ 21.36  │
+│ 2001-12-26 │ 21.49  │
+│ 2001-12-27 │ 22.07  │
+│ 2001-12-28 │ 22.43  │
+│ 2001-12-31 │ 21.9   │
+│ 2002-01-01 │ 111.11 │
+
+julia&gt; update(ohlc, Date(2002,1,1), [111.11 222.22 333.33 444.44])
+501×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2002-01-01
+│            │ Open   │ High   │ Low    │ Close  │
+├────────────┼────────┼────────┼────────┼────────┤
+│ 2000-01-03 │ 104.88 │ 112.5  │ 101.69 │ 111.94 │
+│ 2000-01-04 │ 108.25 │ 110.62 │ 101.19 │ 102.5  │
+│ 2000-01-05 │ 103.75 │ 110.56 │ 103.0  │ 104.0  │
+│ 2000-01-06 │ 106.12 │ 107.0  │ 95.0   │ 95.0   │
+│ 2000-01-07 │ 96.5   │ 101.0  │ 95.5   │ 99.5   │
+│ 2000-01-10 │ 102.0  │ 102.25 │ 94.75  │ 97.75  │
+│ 2000-01-11 │ 95.94  │ 99.38  │ 90.5   │ 92.75  │
+│ 2000-01-12 │ 95.0   │ 95.5   │ 86.5   │ 87.19  │
+│ 2000-01-13 │ 94.48  │ 98.75  │ 92.5   │ 96.75  │
+   ⋮
+│ 2001-12-20 │ 21.4   │ 21.47  │ 20.62  │ 20.67  │
+│ 2001-12-21 │ 21.01  │ 21.54  │ 20.8   │ 21.0   │
+│ 2001-12-24 │ 20.9   │ 21.45  │ 20.9   │ 21.36  │
+│ 2001-12-26 │ 21.35  │ 22.3   │ 21.14  │ 21.49  │
+│ 2001-12-27 │ 21.58  │ 22.25  │ 21.58  │ 22.07  │
+│ 2001-12-28 │ 21.97  │ 23.0   │ 21.96  │ 22.43  │
+│ 2001-12-31 │ 22.51  │ 22.66  │ 21.83  │ 21.9   │
+│ 2002-01-01 │ 111.11 │ 222.22 │ 333.33 │ 444.44 │</code></pre><h2><a class="nav-anchor" id="rename-and-rename!-1" href="#rename-and-rename!-1"><code>rename</code> and <code>rename!</code></a></h2><p>The <code>rename</code> method allows the column name(s) to be changed. The <code>rename!</code> is used for in-place update.</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+
+julia&gt; rename(cl, :Close′) |&gt; first
+1×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-03
+│            │ Close′ │
+├────────────┼────────┤
+│ 2000-01-03 │ 111.94 │
+
+julia&gt; rename(cl, [:Close′]) |&gt; first
+1×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-03
+│            │ Close′ │
+├────────────┼────────┤
+│ 2000-01-03 │ 111.94 │
+
+julia&gt; rename(ohlc, [:Open′, :High′, :Low′, :Close′]) |&gt; first
+1×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-03
+│            │ Open′  │ High′ │ Low′   │ Close′ │
+├────────────┼────────┼───────┼────────┼────────┤
+│ 2000-01-03 │ 104.88 │ 112.5 │ 101.69 │ 111.94 │
+
+julia&gt; rename(ohlc, :Open =&gt; :Open′) |&gt; first
+1×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-03
+│            │ Open′  │ High  │ Low    │ Close  │
+├────────────┼────────┼───────┼────────┼────────┤
+│ 2000-01-03 │ 104.88 │ 112.5 │ 101.69 │ 111.94 │
+
+julia&gt; rename(ohlc, :Open =&gt; :Open′, :Close =&gt; :Close′) |&gt; first
+1×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-03
+│            │ Open′  │ High  │ Low    │ Close′ │
+├────────────┼────────┼───────┼────────┼────────┤
+│ 2000-01-03 │ 104.88 │ 112.5 │ 101.69 │ 111.94 │
+
+julia&gt; rename(ohlc, Dict(:Open =&gt; :Open′, :Close =&gt; :Close′)...) |&gt; first
+1×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-03
+│            │ Open′  │ High  │ Low    │ Close′ │
+├────────────┼────────┼───────┼────────┼────────┤
+│ 2000-01-03 │ 104.88 │ 112.5 │ 101.69 │ 111.94 │
+
+julia&gt; rename(Symbol ∘ uppercase ∘ string, ohlc) |&gt; first
+1×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-03
+│            │ OPEN   │ HIGH  │ LOW    │ CLOSE  │
+├────────────┼────────┼───────┼────────┼────────┤
+│ 2000-01-03 │ 104.88 │ 112.5 │ 101.69 │ 111.94 │
+
+julia&gt; rename(uppercase, ohlc, String) |&gt; first
+1×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-03
+│            │ OPEN   │ HIGH  │ LOW    │ CLOSE  │
+├────────────┼────────┼───────┼────────┼────────┤
+│ 2000-01-03 │ 104.88 │ 112.5 │ 101.69 │ 111.94 │</code></pre><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="TimeSeries.rename" href="#TimeSeries.rename"><code>TimeSeries.rename</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-none">rename(ta::TimeArray, colnames::Vector{Symbol})
+rename(ta::TimeArray, colname::Symbol)
+rename(ta::TimeArray, orig =&gt; new, ...)
+rename(f::Base.Callable, ta, colnametyp)</code></pre><p>Rename the columns of a <code>TimeArray</code>.</p><p>See also <a href="#TimeSeries.rename!"><code>rename!</code></a>.</p><p><strong>Arguments</strong></p><ul><li><code>colnametyp</code> is the input type for the function <code>f</code>. The valid value is <code>Symbol</code> or <code>String</code>.</li></ul></div></div><a class="source-link" target="_blank" href="https://github.com/JuliaStats/TimeSeries.jl/blob/33417cc804d8e6062a4e6aca205985c6d5b2b771/src/modify.jl#L37-L50">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="TimeSeries.rename!" href="#TimeSeries.rename!"><code>TimeSeries.rename!</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-none">rename!(ta::TimeArray, colnames::Vector{Symbol})
+rename!(ta::TimeArray, colname::Symbol)
+rename!(ta::TimeArray, orig =&gt; new, ...)
+rename!(f::Base.Callable, ta, colnametyp)</code></pre><p>In-place rename the columns of a <code>TimeArray</code>.</p><p>See also <a href="#TimeSeries.rename"><code>rename</code></a>.</p><p><strong>Arguments</strong></p><ul><li><code>colnametyp</code> is the input type for the function <code>f</code>. The valid value is <code>Symbol</code> or <code>String</code>.</li></ul></div></div><a class="source-link" target="_blank" href="https://github.com/JuliaStats/TimeSeries.jl/blob/33417cc804d8e6062a4e6aca205985c6d5b2b771/src/modify.jl#L56-L69">source</a></section><footer><hr/><a class="previous" href="../split/"><span class="direction">Previous</span><span class="title">Splitting by conditions</span></a><a class="next" href="../operators/"><span class="direction">Next</span><span class="title">Mathematical, comparison, and logical operators</span></a></footer></article></body></html>

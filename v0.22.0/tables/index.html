@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Tables.jl Interface Integration · TimeSeries.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">TimeSeries.jl</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">TimeSeries Overview</a></li><li><a class="tocitem" href="../getting_started/">Getting Started</a></li><li><a class="tocitem" href="../timearray/">The <code>TimeArray</code> time series type</a></li><li><a class="tocitem" href="../indexing/">Array indexing</a></li><li><a class="tocitem" href="../split/">Splitting by conditions</a></li><li><a class="tocitem" href="../modify/">Modify existing <code>TimeArray</code>s</a></li><li><a class="tocitem" href="../operators/">Mathematical, comparison, and logical operators</a></li><li><a class="tocitem" href="../apply/">Apply methods</a></li><li><a class="tocitem" href="../combine/">Combine methods</a></li><li><a class="tocitem" href="../readwrite/">I/O</a></li><li class="is-active"><a class="tocitem" href>Tables.jl Interface Integration</a><ul class="internal"><li><a class="tocitem" href="#eachrow-and-eachcol-iterators-1"><span><code>eachrow</code> and <code>eachcol</code> iterators</span></a></li><li><a class="tocitem" href="#TimeArray-to-DataFrame-1"><span><code>TimeArray</code> to <code>DataFrame</code></span></a></li><li><a class="tocitem" href="#DataFrame-to-TimeArray-1"><span><code>DataFrame</code> to <code>TimeArray</code></span></a></li><li><a class="tocitem" href="#Save-a-TimeArray-via-CSV.jl-1"><span>Save a <code>TimeArray</code> via <code>CSV.jl</code></span></a></li><li><a class="tocitem" href="#Load-a-TimeArray-from-csv-file-via-CSV.jl-1"><span>Load a <code>TimeArray</code> from csv file via <code>CSV.jl</code></span></a></li></ul></li><li><a class="tocitem" href="../dotfile/">Customize <code>TimeArray</code> printing</a></li><li><a class="tocitem" href="../plotting/">Plotting</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Tables.jl Interface Integration</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Tables.jl Interface Integration</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/JuliaStats/TimeSeries.jl/blob/master/docs/src/tables.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Tables.jl-Interface-Integration-1"><a class="docs-heading-anchor" href="#Tables.jl-Interface-Integration-1">Tables.jl Interface Integration</a><a class="docs-heading-anchor-permalink" href="#Tables.jl-Interface-Integration-1" title="Permalink"></a></h1><p>Quoted from the home page of Tables.jl:</p><blockquote><p>The <a href="https://github.com/JuliaData/Tables.jl">Table.jl</a> package provides simple, yet powerful interface functions for working with all kinds tabular data through predictable access patterns.</p></blockquote><p>The integration provides handy constructor to convert a table between several types. The time index of a <code>TimeArray</code> is considered as a normal data column named <code>timestamp</code>.</p><p>Here this doc shows some example usages of this integration. Converting table between <code>DataFrame</code>s or <code>CSV</code> are quite common cases.</p><h2 id="eachrow-and-eachcol-iterators-1"><a class="docs-heading-anchor" href="#eachrow-and-eachcol-iterators-1"><code>eachrow</code> and <code>eachcol</code> iterators</a><a class="docs-heading-anchor-permalink" href="#eachrow-and-eachcol-iterators-1" title="Permalink"></a></h2><p>In Julia v1.1+, these two functions are supported and baked by <code>Tables.jl</code>.</p><pre><code class="language-julia-repl">julia&gt; using MarketData
+
+julia&gt; for row ∈ eachrow(ohlc)
+         time = row.timestamp
+         c = row.Close
+         # ...
+       end</code></pre><h2 id="TimeArray-to-DataFrame-1"><a class="docs-heading-anchor" href="#TimeArray-to-DataFrame-1"><code>TimeArray</code> to <code>DataFrame</code></a><a class="docs-heading-anchor-permalink" href="#TimeArray-to-DataFrame-1" title="Permalink"></a></h2><pre><code class="language-julia-repl">julia&gt; using MarketData, DataFrames
+
+julia&gt; df = DataFrame(ohlc)
+500×5 DataFrame
+ Row │ timestamp   Open     High     Low      Close
+     │ Date        Float64  Float64  Float64  Float64
+─────┼────────────────────────────────────────────────
+   1 │ 2000-01-03   104.88   112.5    101.69   111.94
+   2 │ 2000-01-04   108.25   110.62   101.19   102.5
+   3 │ 2000-01-05   103.75   110.56   103.0    104.0
+   4 │ 2000-01-06   106.12   107.0     95.0     95.0
+   5 │ 2000-01-07    96.5    101.0     95.5     99.5
+   6 │ 2000-01-10   102.0    102.25    94.75    97.75
+   7 │ 2000-01-11    95.94    99.38    90.5     92.75
+   8 │ 2000-01-12    95.0     95.5     86.5     87.19
+  ⋮  │     ⋮          ⋮        ⋮        ⋮        ⋮
+ 494 │ 2001-12-20    21.4     21.47    20.62    20.67
+ 495 │ 2001-12-21    21.01    21.54    20.8     21.0
+ 496 │ 2001-12-24    20.9     21.45    20.9     21.36
+ 497 │ 2001-12-26    21.35    22.3     21.14    21.49
+ 498 │ 2001-12-27    21.58    22.25    21.58    22.07
+ 499 │ 2001-12-28    21.97    23.0     21.96    22.43
+ 500 │ 2001-12-31    22.51    22.66    21.83    21.9
+                                      485 rows omitted</code></pre><h2 id="DataFrame-to-TimeArray-1"><a class="docs-heading-anchor" href="#DataFrame-to-TimeArray-1"><code>DataFrame</code> to <code>TimeArray</code></a><a class="docs-heading-anchor-permalink" href="#DataFrame-to-TimeArray-1" title="Permalink"></a></h2><p>In this case, user needs to point out the column of time index via the <code>timestamp</code> keyword argument.</p><pre><code class="language-julia-repl">julia&gt; df′ = DataFrames.rename(df, :timestamp =&gt; :A);
+
+julia&gt; df′ |&gt; first
+DataFrameRow
+ Row │ A           Open     High     Low      Close
+     │ Date        Float64  Float64  Float64  Float64
+─────┼────────────────────────────────────────────────
+   1 │ 2000-01-03   104.88    112.5   101.69   111.94
+
+julia&gt; TimeArray(df′, timestamp = :A)
+500×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2001-12-31
+│            │ Open   │ High   │ Low    │ Close  │
+├────────────┼────────┼────────┼────────┼────────┤
+│ 2000-01-03 │ 104.88 │ 112.5  │ 101.69 │ 111.94 │
+│ 2000-01-04 │ 108.25 │ 110.62 │ 101.19 │ 102.5  │
+│ 2000-01-05 │ 103.75 │ 110.56 │ 103.0  │ 104.0  │
+│ 2000-01-06 │ 106.12 │ 107.0  │ 95.0   │ 95.0   │
+│ 2000-01-07 │ 96.5   │ 101.0  │ 95.5   │ 99.5   │
+│ 2000-01-10 │ 102.0  │ 102.25 │ 94.75  │ 97.75  │
+│ 2000-01-11 │ 95.94  │ 99.38  │ 90.5   │ 92.75  │
+│ 2000-01-12 │ 95.0   │ 95.5   │ 86.5   │ 87.19  │
+│ ⋮          │ ⋮      │ ⋮      │ ⋮      │ ⋮      │
+│ 2001-12-20 │ 21.4   │ 21.47  │ 20.62  │ 20.67  │
+│ 2001-12-21 │ 21.01  │ 21.54  │ 20.8   │ 21.0   │
+│ 2001-12-24 │ 20.9   │ 21.45  │ 20.9   │ 21.36  │
+│ 2001-12-26 │ 21.35  │ 22.3   │ 21.14  │ 21.49  │
+│ 2001-12-27 │ 21.58  │ 22.25  │ 21.58  │ 22.07  │
+│ 2001-12-28 │ 21.97  │ 23.0   │ 21.96  │ 22.43  │
+│ 2001-12-31 │ 22.51  │ 22.66  │ 21.83  │ 21.9   │</code></pre><h2 id="Save-a-TimeArray-via-CSV.jl-1"><a class="docs-heading-anchor" href="#Save-a-TimeArray-via-CSV.jl-1">Save a <code>TimeArray</code> via <code>CSV.jl</code></a><a class="docs-heading-anchor-permalink" href="#Save-a-TimeArray-via-CSV.jl-1" title="Permalink"></a></h2><pre><code class="language-julia">using CSV
+CSV.write(filename, ta)</code></pre><h2 id="Load-a-TimeArray-from-csv-file-via-CSV.jl-1"><a class="docs-heading-anchor" href="#Load-a-TimeArray-from-csv-file-via-CSV.jl-1">Load a <code>TimeArray</code> from csv file via <code>CSV.jl</code></a><a class="docs-heading-anchor-permalink" href="#Load-a-TimeArray-from-csv-file-via-CSV.jl-1" title="Permalink"></a></h2><pre><code class="language-julia">using CSV
+TimeArray(CSV.File(filename), timestamp = :timestamp)</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../readwrite/">« I/O</a><a class="docs-footer-nextpage" href="../dotfile/">Customize <code>TimeArray</code> printing »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Thursday 1 April 2021 19:49">Thursday 1 April 2021</span>. Using Julia version 1.5.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

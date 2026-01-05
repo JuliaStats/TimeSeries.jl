@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Modify existing TimeArrays · TimeSeries.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">TimeSeries.jl</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">TimeSeries Overview</a></li><li><a class="tocitem" href="../getting_started/">Getting Started</a></li><li><a class="tocitem" href="../timearray/">The <code>TimeArray</code> time series type</a></li><li><a class="tocitem" href="../indexing/">Array indexing</a></li><li><a class="tocitem" href="../split/">Splitting by conditions</a></li><li class="is-active"><a class="tocitem" href>Modify existing <code>TimeArray</code>s</a><ul class="internal"><li><a class="tocitem" href="#rename-and-rename!-1"><span><code>rename</code> and <code>rename!</code></span></a></li></ul></li><li><a class="tocitem" href="../operators/">Mathematical, comparison, and logical operators</a></li><li><a class="tocitem" href="../apply/">Apply methods</a></li><li><a class="tocitem" href="../combine/">Combine methods</a></li><li><a class="tocitem" href="../readwrite/">I/O</a></li><li><a class="tocitem" href="../tables/">Tables.jl Interface Integration</a></li><li><a class="tocitem" href="../dotfile/">Customize <code>TimeArray</code> printing</a></li><li><a class="tocitem" href="../plotting/">Plotting</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Modify existing <code>TimeArray</code>s</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Modify existing <code>TimeArray</code>s</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/JuliaStats/TimeSeries.jl/blob/master/docs/src/modify.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Modify-existing-TimeArrays-1"><a class="docs-heading-anchor" href="#Modify-existing-TimeArrays-1">Modify existing <code>TimeArray</code>s</a><a class="docs-heading-anchor-permalink" href="#Modify-existing-TimeArrays-1" title="Permalink"></a></h1><h2 id="rename-and-rename!-1"><a class="docs-heading-anchor" href="#rename-and-rename!-1"><code>rename</code> and <code>rename!</code></a><a class="docs-heading-anchor-permalink" href="#rename-and-rename!-1" title="Permalink"></a></h2><p>The <code>rename</code> method allows the column name(s) to be changed. The <code>rename!</code> is used for in-place update.</p><pre><code class="language-julia-repl">julia&gt; rename(cl, :Close′) |&gt; first
+1×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-03
+│            │ Close′ │
+├────────────┼────────┤
+│ 2000-01-03 │ 111.94 │
+
+julia&gt; rename(cl, [:Close′]) |&gt; first
+1×1 TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2000-01-03
+│            │ Close′ │
+├────────────┼────────┤
+│ 2000-01-03 │ 111.94 │
+
+julia&gt; rename(ohlc, [:Open′, :High′, :Low′, :Close′]) |&gt; first
+1×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-03
+│            │ Open′  │ High′ │ Low′   │ Close′ │
+├────────────┼────────┼───────┼────────┼────────┤
+│ 2000-01-03 │ 104.88 │ 112.5 │ 101.69 │ 111.94 │
+
+julia&gt; rename(ohlc, :Open =&gt; :Open′) |&gt; first
+1×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-03
+│            │ Open′  │ High  │ Low    │ Close  │
+├────────────┼────────┼───────┼────────┼────────┤
+│ 2000-01-03 │ 104.88 │ 112.5 │ 101.69 │ 111.94 │
+
+julia&gt; rename(ohlc, :Open =&gt; :Open′, :Close =&gt; :Close′) |&gt; first
+1×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-03
+│            │ Open′  │ High  │ Low    │ Close′ │
+├────────────┼────────┼───────┼────────┼────────┤
+│ 2000-01-03 │ 104.88 │ 112.5 │ 101.69 │ 111.94 │
+
+julia&gt; rename(ohlc, Dict(:Open =&gt; :Open′, :Close =&gt; :Close′)...) |&gt; first
+1×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-03
+│            │ Open′  │ High  │ Low    │ Close′ │
+├────────────┼────────┼───────┼────────┼────────┤
+│ 2000-01-03 │ 104.88 │ 112.5 │ 101.69 │ 111.94 │
+
+julia&gt; rename(Symbol ∘ uppercase ∘ string, ohlc) |&gt; first
+1×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-03
+│            │ OPEN   │ HIGH  │ LOW    │ CLOSE  │
+├────────────┼────────┼───────┼────────┼────────┤
+│ 2000-01-03 │ 104.88 │ 112.5 │ 101.69 │ 111.94 │
+
+julia&gt; rename(uppercase, ohlc, String) |&gt; first
+1×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2000-01-03
+│            │ OPEN   │ HIGH  │ LOW    │ CLOSE  │
+├────────────┼────────┼───────┼────────┼────────┤
+│ 2000-01-03 │ 104.88 │ 112.5 │ 101.69 │ 111.94 │</code></pre><article class="docstring"><header><a class="docstring-binding" id="TimeSeries.rename" href="#TimeSeries.rename"><code>TimeSeries.rename</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">rename(ta::TimeArray, colnames::Vector{Symbol})
+rename(ta::TimeArray, colname::Symbol)
+rename(ta::TimeArray, orig =&gt; new, ...)
+rename(f::Base.Callable, ta, colnametyp)</code></pre><p>Rename the columns of a <code>TimeArray</code>.</p><p>See also <a href="#TimeSeries.rename!"><code>rename!</code></a>.</p><p><strong>Arguments</strong></p><ul><li><code>colnametyp</code> is the input type for the function <code>f</code>. The valid value is <code>Symbol</code> or <code>String</code>.</li></ul></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaStats/TimeSeries.jl/blob/1a2b8c2a9c3c0c12d0e68acb3c5df76c695fe3eb/src/modify.jl#L3-L16">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="TimeSeries.rename!" href="#TimeSeries.rename!"><code>TimeSeries.rename!</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia">rename!(ta::TimeArray, colnames::Vector{Symbol})
+rename!(ta::TimeArray, colname::Symbol)
+rename!(ta::TimeArray, orig =&gt; new, ...)
+rename!(f::Base.Callable, ta, colnametyp)</code></pre><p>In-place rename the columns of a <code>TimeArray</code>.</p><p>See also <a href="#TimeSeries.rename"><code>rename</code></a>.</p><p><strong>Arguments</strong></p><ul><li><code>colnametyp</code> is the input type for the function <code>f</code>. The valid value is <code>Symbol</code> or <code>String</code>.</li></ul></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaStats/TimeSeries.jl/blob/1a2b8c2a9c3c0c12d0e68acb3c5df76c695fe3eb/src/modify.jl#L22-L35">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../split/">« Splitting by conditions</a><a class="docs-footer-nextpage" href="../operators/">Mathematical, comparison, and logical operators »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Thursday 5 November 2020 15:28">Thursday 5 November 2020</span>. Using Julia version 1.5.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

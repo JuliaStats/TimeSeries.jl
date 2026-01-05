@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Plotting · TimeSeries.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">TimeSeries.jl</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">TimeSeries Overview</a></li><li><a class="tocitem" href="../getting_started/">Getting Started</a></li><li><a class="tocitem" href="../timearray/">The <code>TimeArray</code> time series type</a></li><li><a class="tocitem" href="../indexing/">Array indexing</a></li><li><a class="tocitem" href="../split/">Splitting by conditions</a></li><li><a class="tocitem" href="../modify/">Modify existing <code>TimeArray</code>s</a></li><li><a class="tocitem" href="../operators/">Mathematical, comparison, and logical operators</a></li><li><a class="tocitem" href="../apply/">Apply methods</a></li><li><a class="tocitem" href="../combine/">Combine methods</a></li><li><a class="tocitem" href="../readwrite/">I/O</a></li><li><a class="tocitem" href="../tables/">Tables.jl Interface Integration</a></li><li><a class="tocitem" href="../dotfile/">Customize <code>TimeArray</code> printing</a></li><li class="is-active"><a class="tocitem" href>Plotting</a><ul class="internal"><li><a class="tocitem" href="#Plotting-as-multiple-series-1"><span>Plotting as multiple series</span></a></li><li><a class="tocitem" href="#Plotting-candlestick-1"><span>Plotting candlestick</span></a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Plotting</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Plotting</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/JuliaStats/TimeSeries.jl/blob/master/docs/src/plotting.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Plotting-1"><a class="docs-heading-anchor" href="#Plotting-1">Plotting</a><a class="docs-heading-anchor-permalink" href="#Plotting-1" title="Permalink"></a></h1><p><code>TimeSeries</code> defines a recipe that allows plotting to a number of different plotting packages using the <a href="https://github.com/JuliaPlots/Plots.jl">Plots.jl</a> framework (no plotting packages will be automatically installed by <code>TimeSeries</code>).</p><p>Here we use the data from Yahoo Fiance as a demo.</p><pre><code class="language-julia">using Plots, MarketData, TimeSeries
+gr()
+ta = yahoo(:GOOG, YahooOpt(period1 = now() - Month(1)))</code></pre><pre><code class="language-none">24×6 TimeArray{Float64,2,Date,Array{Float64,2}} 2021-03-01 to 2021-04-01
+│            │ Open      │ High      │ Low       │ Close     │ AdjClose  │
+├────────────┼───────────┼───────────┼───────────┼───────────┼───────────┤
+│ 2021-03-01 │ 2056.52   │ 2086.52   │ 2046.1    │ 2081.51   │ 2081.51   │
+│ 2021-03-02 │ 2076.1899 │ 2104.3701 │ 2071.26   │ 2075.8401 │ 2075.8401 │
+│ 2021-03-03 │ 2067.21   │ 2088.5181 │ 2010.0    │ 2026.71   │ 2026.71   │
+│ 2021-03-04 │ 2023.37   │ 2089.24   │ 2020.27   │ 2049.0901 │ 2049.0901 │
+│ 2021-03-05 │ 2073.1201 │ 2118.1101 │ 2046.415  │ 2108.54   │ 2108.54   │
+│ 2021-03-08 │ 2101.1299 │ 2128.8101 │ 2021.61   │ 2024.17   │ 2024.17   │
+│ 2021-03-09 │ 2070.0    │ 2078.04   │ 2047.83   │ 2052.7    │ 2052.7    │
+│ 2021-03-10 │ 2071.76   │ 2075.0    │ 2033.37   │ 2055.03   │ 2055.03   │
+│ ⋮          │ ⋮         │ ⋮         │ ⋮         │ ⋮         │ ⋮         │
+│ 2021-03-24 │ 2065.3701 │ 2078.21   │ 2041.5551 │ 2045.0601 │ 2045.0601 │
+│ 2021-03-25 │ 2044.8101 │ 2058.8701 │ 2010.73   │ 2044.36   │ 2044.36   │
+│ 2021-03-26 │ 2038.86   │ 2050.99   │ 2014.02   │ 2035.55   │ 2035.55   │
+│ 2021-03-29 │ 2027.88   │ 2058.4299 │ 2015.62   │ 2055.95   │ 2055.95   │
+│ 2021-03-30 │ 2057.6299 │ 2070.78   │ 2044.03   │ 2055.54   │ 2055.54   │
+│ 2021-03-31 │ 2059.1201 │ 2093.3269 │ 2056.7451 │ 2068.6299 │ 2068.6299 │
+│ 2021-04-01 │ 2097.95   │ 2141.4099 │ 2096.8899 │ 2141.3701 │ 2141.3701 │</code></pre><h2 id="Plotting-as-multiple-series-1"><a class="docs-heading-anchor" href="#Plotting-as-multiple-series-1">Plotting as multiple series</a><a class="docs-heading-anchor-permalink" href="#Plotting-as-multiple-series-1" title="Permalink"></a></h2><p>The recipe allows <code>TimeArray</code> objects to be passed as input to <code>plot</code>. The recipe will plot each variable as an individual line, aligning all variables to the same y axis. backend).</p><pre><code class="language-julia">plot(ta[:Open, :High, :Low, :Close])</code></pre><p><img src="../multi-series.svg" alt/></p><h2 id="Plotting-candlestick-1"><a class="docs-heading-anchor" href="#Plotting-candlestick-1">Plotting candlestick</a><a class="docs-heading-anchor-permalink" href="#Plotting-candlestick-1" title="Permalink"></a></h2><p>We have <code>seriestype = :candlestick</code> support that requires four columns exist in the input. They are <code>open</code>, <code>high</code>, <code>low</code> and <code>close</code> (case-insensitive).</p><pre><code class="language-julia">plot(ta, seriestype = :candlestick)</code></pre><pre><code class="language-none">┌ Warning: Indices Base.OneTo(24) of attribute `seriescolor` does not match data indices 1:263.
+└ @ Plots ~/.julia/packages/Plots/SVksJ/src/utils.jl:102
+┌ Info: Data contains NaNs or missing values, and indices of `seriescolor` vector do not match data indices.
+│ If you intend elements of `seriescolor` to apply to individual NaN-separated segements in the data,
+│ pass each segment in a separate vector instead, and use a row vector for `seriescolor`. Legend entries
+│ may be suppressed by passing an empty label.
+│ For example,
+└     plot([1:2,1:3], [[4,5],[3,4,5]], label=[&quot;y&quot; &quot;&quot;], seriescolor=[1 2])
+┌ Warning: Indices Base.OneTo(24) of attribute `linecolor` does not match data indices 1:263.
+└ @ Plots ~/.julia/packages/Plots/SVksJ/src/utils.jl:102
+┌ Info: Data contains NaNs or missing values, and indices of `linecolor` vector do not match data indices.
+│ If you intend elements of `linecolor` to apply to individual NaN-separated segements in the data,
+│ pass each segment in a separate vector instead, and use a row vector for `linecolor`. Legend entries
+│ may be suppressed by passing an empty label.
+│ For example,
+└     plot([1:2,1:3], [[4,5],[3,4,5]], label=[&quot;y&quot; &quot;&quot;], linecolor=[1 2])
+┌ Warning: Indices Base.OneTo(24) of attribute `fillcolor` does not match data indices 1:263.
+└ @ Plots ~/.julia/packages/Plots/SVksJ/src/utils.jl:102
+┌ Info: Data contains NaNs or missing values, and indices of `fillcolor` vector do not match data indices.
+│ If you intend elements of `fillcolor` to apply to individual NaN-separated segements in the data,
+│ pass each segment in a separate vector instead, and use a row vector for `fillcolor`. Legend entries
+│ may be suppressed by passing an empty label.
+│ For example,
+└     plot([1:2,1:3], [[4,5],[3,4,5]], label=[&quot;y&quot; &quot;&quot;], fillcolor=[1 2])
+┌ Warning: Indices Base.OneTo(24) of attribute `markercolor` does not match data indices 1:263.
+└ @ Plots ~/.julia/packages/Plots/SVksJ/src/utils.jl:102
+┌ Info: Data contains NaNs or missing values, and indices of `markercolor` vector do not match data indices.
+│ If you intend elements of `markercolor` to apply to individual NaN-separated segements in the data,
+│ pass each segment in a separate vector instead, and use a row vector for `markercolor`. Legend entries
+│ may be suppressed by passing an empty label.
+│ For example,
+└     plot([1:2,1:3], [[4,5],[3,4,5]], label=[&quot;y&quot; &quot;&quot;], markercolor=[1 2])</code></pre><p><img src="../cs.svg" alt/></p><h3 id="Other-available-attributes-1"><a class="docs-heading-anchor" href="#Other-available-attributes-1">Other available attributes</a><a class="docs-heading-anchor-permalink" href="#Other-available-attributes-1" title="Permalink"></a></h3><ul><li><code>bar_width::Float64</code> the valid value is from <code>0</code> to <code>1</code>.</li></ul><pre><code class="language-julia">plot(ta, seriestype = :candlestick, bar_width = 0.7)</code></pre><pre><code class="language-none">┌ Warning: Indices Base.OneTo(24) of attribute `seriescolor` does not match data indices 1:263.
+└ @ Plots ~/.julia/packages/Plots/SVksJ/src/utils.jl:102
+┌ Info: Data contains NaNs or missing values, and indices of `seriescolor` vector do not match data indices.
+│ If you intend elements of `seriescolor` to apply to individual NaN-separated segements in the data,
+│ pass each segment in a separate vector instead, and use a row vector for `seriescolor`. Legend entries
+│ may be suppressed by passing an empty label.
+│ For example,
+└     plot([1:2,1:3], [[4,5],[3,4,5]], label=[&quot;y&quot; &quot;&quot;], seriescolor=[1 2])
+┌ Warning: Indices Base.OneTo(24) of attribute `linecolor` does not match data indices 1:263.
+└ @ Plots ~/.julia/packages/Plots/SVksJ/src/utils.jl:102
+┌ Info: Data contains NaNs or missing values, and indices of `linecolor` vector do not match data indices.
+│ If you intend elements of `linecolor` to apply to individual NaN-separated segements in the data,
+│ pass each segment in a separate vector instead, and use a row vector for `linecolor`. Legend entries
+│ may be suppressed by passing an empty label.
+│ For example,
+└     plot([1:2,1:3], [[4,5],[3,4,5]], label=[&quot;y&quot; &quot;&quot;], linecolor=[1 2])
+┌ Warning: Indices Base.OneTo(24) of attribute `fillcolor` does not match data indices 1:263.
+└ @ Plots ~/.julia/packages/Plots/SVksJ/src/utils.jl:102
+┌ Info: Data contains NaNs or missing values, and indices of `fillcolor` vector do not match data indices.
+│ If you intend elements of `fillcolor` to apply to individual NaN-separated segements in the data,
+│ pass each segment in a separate vector instead, and use a row vector for `fillcolor`. Legend entries
+│ may be suppressed by passing an empty label.
+│ For example,
+└     plot([1:2,1:3], [[4,5],[3,4,5]], label=[&quot;y&quot; &quot;&quot;], fillcolor=[1 2])
+┌ Warning: Indices Base.OneTo(24) of attribute `markercolor` does not match data indices 1:263.
+└ @ Plots ~/.julia/packages/Plots/SVksJ/src/utils.jl:102
+┌ Info: Data contains NaNs or missing values, and indices of `markercolor` vector do not match data indices.
+│ If you intend elements of `markercolor` to apply to individual NaN-separated segements in the data,
+│ pass each segment in a separate vector instead, and use a row vector for `markercolor`. Legend entries
+│ may be suppressed by passing an empty label.
+│ For example,
+└     plot([1:2,1:3], [[4,5],[3,4,5]], label=[&quot;y&quot; &quot;&quot;], markercolor=[1 2])</code></pre><p><img src="../bw.svg" alt/></p><ul><li><code>xticks::Int</code> for controlling the density of x axis labels.</li></ul><pre><code class="language-julia">plot(ta, seriestype = :candlestick, xticks = 3, xrotation = 60)</code></pre><pre><code class="language-none">┌ Warning: Indices Base.OneTo(24) of attribute `seriescolor` does not match data indices 1:263.
+└ @ Plots ~/.julia/packages/Plots/SVksJ/src/utils.jl:102
+┌ Info: Data contains NaNs or missing values, and indices of `seriescolor` vector do not match data indices.
+│ If you intend elements of `seriescolor` to apply to individual NaN-separated segements in the data,
+│ pass each segment in a separate vector instead, and use a row vector for `seriescolor`. Legend entries
+│ may be suppressed by passing an empty label.
+│ For example,
+└     plot([1:2,1:3], [[4,5],[3,4,5]], label=[&quot;y&quot; &quot;&quot;], seriescolor=[1 2])
+┌ Warning: Indices Base.OneTo(24) of attribute `linecolor` does not match data indices 1:263.
+└ @ Plots ~/.julia/packages/Plots/SVksJ/src/utils.jl:102
+┌ Info: Data contains NaNs or missing values, and indices of `linecolor` vector do not match data indices.
+│ If you intend elements of `linecolor` to apply to individual NaN-separated segements in the data,
+│ pass each segment in a separate vector instead, and use a row vector for `linecolor`. Legend entries
+│ may be suppressed by passing an empty label.
+│ For example,
+└     plot([1:2,1:3], [[4,5],[3,4,5]], label=[&quot;y&quot; &quot;&quot;], linecolor=[1 2])
+┌ Warning: Indices Base.OneTo(24) of attribute `fillcolor` does not match data indices 1:263.
+└ @ Plots ~/.julia/packages/Plots/SVksJ/src/utils.jl:102
+┌ Info: Data contains NaNs or missing values, and indices of `fillcolor` vector do not match data indices.
+│ If you intend elements of `fillcolor` to apply to individual NaN-separated segements in the data,
+│ pass each segment in a separate vector instead, and use a row vector for `fillcolor`. Legend entries
+│ may be suppressed by passing an empty label.
+│ For example,
+└     plot([1:2,1:3], [[4,5],[3,4,5]], label=[&quot;y&quot; &quot;&quot;], fillcolor=[1 2])
+┌ Warning: Indices Base.OneTo(24) of attribute `markercolor` does not match data indices 1:263.
+└ @ Plots ~/.julia/packages/Plots/SVksJ/src/utils.jl:102
+┌ Info: Data contains NaNs or missing values, and indices of `markercolor` vector do not match data indices.
+│ If you intend elements of `markercolor` to apply to individual NaN-separated segements in the data,
+│ pass each segment in a separate vector instead, and use a row vector for `markercolor`. Legend entries
+│ may be suppressed by passing an empty label.
+│ For example,
+└     plot([1:2,1:3], [[4,5],[3,4,5]], label=[&quot;y&quot; &quot;&quot;], markercolor=[1 2])</code></pre><p><img src="../xticks.svg" alt/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../dotfile/">« Customize <code>TimeArray</code> printing</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Thursday 1 April 2021 19:49">Thursday 1 April 2021</span>. Using Julia version 1.5.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

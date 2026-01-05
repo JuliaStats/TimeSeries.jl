@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Customize TimeArray printting · TimeSeries.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>TimeSeries.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search.html"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="index.html">TimeSeries Overview</a></li><li><a class="toctext" href="getting_started.html">Getting Started</a></li><li><a class="toctext" href="timearray.html">The <code>TimeArray</code> time series type</a></li><li><a class="toctext" href="indexing.html">Array indexing</a></li><li><a class="toctext" href="split.html">Splitting by conditions</a></li><li><a class="toctext" href="modify.html">Modify existing <code>TimeArray</code>s</a></li><li><a class="toctext" href="operators.html">Mathematical, comparison, and logical operators</a></li><li><a class="toctext" href="apply.html">Apply methods</a></li><li><a class="toctext" href="combine.html">Combine methods</a></li><li><a class="toctext" href="readwrite.html">I/O</a></li><li class="current"><a class="toctext" href="dotfile.html">Customize <code>TimeArray</code> printting</a><ul class="internal"><li><a class="toctext" href="#DECIMALS-1"><code>DECIMALS</code></a></li><li><a class="toctext" href="#MISSING-1"><code>MISSING</code></a></li></ul></li><li><a class="toctext" href="plotting.html">Plotting</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href="dotfile.html">Customize <code>TimeArray</code> printting</a></li></ul><a class="edit-page" href="https://github.com/JuliaStats/TimeSeries.jl/blob/master/docs/src/dotfile.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Customize TimeArray printting</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Customize-TimeArray-printting-1" href="#Customize-TimeArray-printting-1">Customize <code>TimeArray</code> printting</a></h1><p>A dot file named <code>.timeseriesrc</code> sets three variables that control how <code>TimeArrays</code> are displayed. This doesn&#39;t change the underlying <code>TimeArray</code> and only controls how values are printed to REPL.</p><p>Here is an handy way to edit it:</p><pre><code class="language-julia">julia&gt; using TimeSeries
+
+julia&gt; edit(joinpath(dirname(pathof(TimeSeries)), &quot;.timeseriesrc.jl&quot;))</code></pre><h2><a class="nav-anchor" id="DECIMALS-1" href="#DECIMALS-1"><code>DECIMALS</code></a></h2><p><code>DECIMALS = 4</code></p><p>The default setting is 4. It shows values out to four decimal places:</p><pre><code class="language-julia-repl">julia&gt; using TimeSeries
+
+julia&gt; using MarketData
+ERROR: ArgumentError: Package MarketData not found in current path:
+- Run `import Pkg; Pkg.add(&quot;MarketData&quot;)` to install the MarketData package.
+
+julia&gt; percentchange(cl)
+ERROR: UndefVarError: cl not defined</code></pre><p>You can change it to whatever value you prefer. If you change it to 6, the same transformation will display like this:</p><pre><code class="language-julia">julia&gt; percentchange(cl)
+499x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-04 to 2001-12-31
+│            │ Close     │
+├────────────┼───────────┤
+│ 2000-01-04 │ -0.084331 │
+│ 2000-01-05 │ 0.014634  │
+│ 2000-01-06 │ -0.086538 │
+│ 2000-01-07 │ 0.047368  │
+│ 2000-01-10 │ -0.017588 │
+│ 2000-01-11 │ -0.051151 │
+│ 2000-01-12 │ -0.059946 │
+│ 2000-01-13 │ 0.109646  │
+│ 2000-01-14 │ 0.03814   │
+   ⋮
+│ 2001-12-19 │ 0.029034  │
+│ 2001-12-20 │ -0.043941 │
+│ 2001-12-21 │ 0.015965  │
+│ 2001-12-24 │ 0.017143  │
+│ 2001-12-26 │ 0.006086  │
+│ 2001-12-27 │ 0.026989  │
+│ 2001-12-28 │ 0.016312  │
+│ 2001-12-31 │ -0.023629 │</code></pre><h2><a class="nav-anchor" id="MISSING-1" href="#MISSING-1"><code>MISSING</code></a></h2><p>This output is controlled with <code>const</code> values to accommodate difficult to remember unicode numbers:</p><pre><code class="language-julia">const NAN       = &quot;NaN&quot;
+const NA        = &quot;NA&quot;
+const BLACKHOLE = &quot;\u2B24&quot;
+const DOTCIRCLE = &quot;\u25CC&quot;
+const QUESTION  = &quot;\u003F&quot;
+
+MISSING = NAN</code></pre><p>The default setting displays <code>NaN</code>, which represent the actual value when <code>padding=true</code> is selected for certain transformations. You can change it to show differently with the provided <code>const</code> values or roll your own. Dot files are often used to customize your experience, so have at it!</p><p>Here is an example in REPL with the default:</p><pre><code class="language-julia">julia&gt; lag(cl, padding=true)
+500x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
+│            │ Close  │
+├────────────┼────────┤
+│ 2000-01-03 │ NaN    │
+│ 2000-01-04 │ 111.94 │
+│ 2000-01-05 │ 102.5  │
+│ 2000-01-06 │ 104.0  │
+│ 2000-01-07 │ 95.0   │
+│ 2000-01-10 │ 99.5   │
+│ 2000-01-11 │ 97.75  │
+│ 2000-01-12 │ 92.75  │
+│ 2000-01-13 │ 87.19  │
+   ⋮
+│ 2001-12-19 │ 21.01  │
+│ 2001-12-20 │ 21.62  │
+│ 2001-12-21 │ 20.67  │
+│ 2001-12-24 │ 21.0   │
+│ 2001-12-26 │ 21.36  │
+│ 2001-12-27 │ 21.49  │
+│ 2001-12-28 │ 22.07  │
+│ 2001-12-31 │ 22.43  │</code></pre><p>Here is an example in REPL with <code>NA</code> selected:</p><pre><code class="language-julia">julia&gt; lag(cl, padding=true)
+500x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
+│            │ Close  │
+├────────────┼────────┤
+│ 2000-01-03 │ NA     │
+│ 2000-01-04 │ 111.94 │
+│ 2000-01-05 │ 102.5  │
+│ 2000-01-06 │ 104.0  │
+│ 2000-01-07 │ 95.0   │
+│ 2000-01-10 │ 99.5   │
+│ 2000-01-11 │ 97.75  │
+│ 2000-01-12 │ 92.75  │
+│ 2000-01-13 │ 87.19  │
+   ⋮
+│ 2001-12-19 │ 21.01  │
+│ 2001-12-20 │ 21.62  │
+│ 2001-12-21 │ 20.67  │
+│ 2001-12-24 │ 21.0   │
+│ 2001-12-26 │ 21.36  │
+│ 2001-12-27 │ 21.49  │
+│ 2001-12-28 │ 22.07  │
+│ 2001-12-31 │ 22.43  │</code></pre><p>Here is an example in REPL with <code>BLACKHOLE</code> selected:</p><pre><code class="language-julia">julia&gt; lag(cl, padding=true)
+500x1 TimeSeries.TimeArray{Float64,1,Date,Array{Float64,1}} 2000-01-03 to 2001-12-31
+│            │ Close  │
+├────────────┼────────┤
+│ 2000-01-03 │ ⬤     │
+│ 2000-01-04 │ 111.94 │
+│ 2000-01-05 │ 102.5  │
+│ 2000-01-06 │ 104.0  │
+│ 2000-01-07 │ 95.0   │
+│ 2000-01-10 │ 99.5   │
+│ 2000-01-11 │ 97.75  │
+│ 2000-01-12 │ 92.75  │
+│ 2000-01-13 │ 87.19  │
+   ⋮
+│ 2001-12-19 │ 21.01  │
+│ 2001-12-20 │ 21.62  │
+│ 2001-12-21 │ 20.67  │
+│ 2001-12-24 │ 21.0   │
+│ 2001-12-26 │ 21.36  │
+│ 2001-12-27 │ 21.49  │
+│ 2001-12-28 │ 22.07  │
+│ 2001-12-31 │ 22.43  │</code></pre><p>Other <code>const</code> values include <code>DOTCIRCLE</code> and <code>QUESTION</code>. The <code>UNICORN</code> value is a feature request.</p><footer><hr/><a class="previous" href="readwrite.html"><span class="direction">Previous</span><span class="title">I/O</span></a><a class="next" href="plotting.html"><span class="direction">Next</span><span class="title">Plotting</span></a></footer></article></body></html>

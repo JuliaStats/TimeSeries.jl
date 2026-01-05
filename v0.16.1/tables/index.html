@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Tables.jl Interface Integration · TimeSeries.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>TimeSeries.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">TimeSeries Overview</a></li><li><a class="toctext" href="../getting_started/">Getting Started</a></li><li><a class="toctext" href="../timearray/">The <code>TimeArray</code> time series type</a></li><li><a class="toctext" href="../indexing/">Array indexing</a></li><li><a class="toctext" href="../split/">Splitting by conditions</a></li><li><a class="toctext" href="../modify/">Modify existing <code>TimeArray</code>s</a></li><li><a class="toctext" href="../operators/">Mathematical, comparison, and logical operators</a></li><li><a class="toctext" href="../apply/">Apply methods</a></li><li><a class="toctext" href="../combine/">Combine methods</a></li><li><a class="toctext" href="../readwrite/">I/O</a></li><li class="current"><a class="toctext" href>Tables.jl Interface Integration</a><ul class="internal"><li><a class="toctext" href="#TimeArray-to-DataFrame-1"><code>TimeArray</code> to <code>DataFrame</code></a></li><li><a class="toctext" href="#DataFrame-to-TimeArray-1"><code>DataFrame</code> to <code>TimeArray</code></a></li><li><a class="toctext" href="#Save-a-TimeArray-via-CSV.jl-1">Save a <code>TimeArray</code> via <code>CSV.jl</code></a></li><li><a class="toctext" href="#Load-a-TimeArray-from-csv-file-via-CSV.jl-1">Load a <code>TimeArray</code> from csv file via <code>CSV.jl</code></a></li></ul></li><li><a class="toctext" href="../dotfile/">Customize <code>TimeArray</code> printing</a></li><li><a class="toctext" href="../plotting/">Plotting</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Tables.jl Interface Integration</a></li></ul><a class="edit-page" href="https://github.com/JuliaStats/TimeSeries.jl/blob/master/docs/src/tables.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Tables.jl Interface Integration</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Tables.jl-Interface-Integration-1" href="#Tables.jl-Interface-Integration-1">Tables.jl Interface Integration</a></h1><p>Quoted from the home page of Tables.jl:</p><blockquote><p>The <a href="https://github.com/JuliaData/Tables.jl">Table.jl</a> package provides simple, yet powerful interface functions for working with all kinds tabular data through predictable access patterns.</p></blockquote><p>The integration provides handy constructor to convert a table between several types. The time index of a <code>TimeArray</code> is considered as a normal data column named <code>timestamp</code>.</p><p>Here this doc shows some example usages of this integration. Converting table between <code>DataFrame</code>s or <code>CSV</code> are quite common cases.</p><h2><a class="nav-anchor" id="TimeArray-to-DataFrame-1" href="#TimeArray-to-DataFrame-1"><code>TimeArray</code> to <code>DataFrame</code></a></h2><pre><code class="language-julia-repl">julia&gt; using MarketData, DataFrames
+
+julia&gt; df = DataFrame(ohlc)
+500×5 DataFrames.DataFrame
+│ Row │ timestamp  │ Open    │ High    │ Low     │ Close   │
+│     │ Date       │ Float64 │ Float64 │ Float64 │ Float64 │
+├─────┼────────────┼─────────┼─────────┼─────────┼─────────┤
+│ 1   │ 2000-01-03 │ 104.88  │ 112.5   │ 101.69  │ 111.94  │
+│ 2   │ 2000-01-04 │ 108.25  │ 110.62  │ 101.19  │ 102.5   │
+│ 3   │ 2000-01-05 │ 103.75  │ 110.56  │ 103.0   │ 104.0   │
+│ 4   │ 2000-01-06 │ 106.12  │ 107.0   │ 95.0    │ 95.0    │
+│ 5   │ 2000-01-07 │ 96.5    │ 101.0   │ 95.5    │ 99.5    │
+│ 6   │ 2000-01-10 │ 102.0   │ 102.25  │ 94.75   │ 97.75   │
+│ 7   │ 2000-01-11 │ 95.94   │ 99.38   │ 90.5    │ 92.75   │
+⋮
+│ 493 │ 2001-12-19 │ 20.58   │ 21.68   │ 20.47   │ 21.62   │
+│ 494 │ 2001-12-20 │ 21.4    │ 21.47   │ 20.62   │ 20.67   │
+│ 495 │ 2001-12-21 │ 21.01   │ 21.54   │ 20.8    │ 21.0    │
+│ 496 │ 2001-12-24 │ 20.9    │ 21.45   │ 20.9    │ 21.36   │
+│ 497 │ 2001-12-26 │ 21.35   │ 22.3    │ 21.14   │ 21.49   │
+│ 498 │ 2001-12-27 │ 21.58   │ 22.25   │ 21.58   │ 22.07   │
+│ 499 │ 2001-12-28 │ 21.97   │ 23.0    │ 21.96   │ 22.43   │
+│ 500 │ 2001-12-31 │ 22.51   │ 22.66   │ 21.83   │ 21.9    │</code></pre><h2><a class="nav-anchor" id="DataFrame-to-TimeArray-1" href="#DataFrame-to-TimeArray-1"><code>DataFrame</code> to <code>TimeArray</code></a></h2><p>In this case, user needs to point out the column of time index via the <code>timestamp</code> keyword argument.</p><pre><code class="language-julia-repl">julia&gt; df′ = DataFrames.rename(df, :timestamp =&gt; :A);
+
+julia&gt; df′ |&gt; first
+DataFrameRow
+│ Row │ A          │ Open    │ High    │ Low     │ Close   │
+│     │ Date       │ Float64 │ Float64 │ Float64 │ Float64 │
+├─────┼────────────┼─────────┼─────────┼─────────┼─────────┤
+│ 1   │ 2000-01-03 │ 104.88  │ 112.5   │ 101.69  │ 111.94  │
+
+julia&gt; TimeArray(df′, timestamp = :A)
+500×4 TimeArray{Float64,2,Date,Array{Float64,2}} 2000-01-03 to 2001-12-31
+│            │ Open   │ High   │ Low    │ Close  │
+├────────────┼────────┼────────┼────────┼────────┤
+│ 2000-01-03 │ 104.88 │ 112.5  │ 101.69 │ 111.94 │
+│ 2000-01-04 │ 108.25 │ 110.62 │ 101.19 │ 102.5  │
+│ 2000-01-05 │ 103.75 │ 110.56 │ 103.0  │ 104.0  │
+│ 2000-01-06 │ 106.12 │ 107.0  │ 95.0   │ 95.0   │
+│ 2000-01-07 │ 96.5   │ 101.0  │ 95.5   │ 99.5   │
+│ 2000-01-10 │ 102.0  │ 102.25 │ 94.75  │ 97.75  │
+│ 2000-01-11 │ 95.94  │ 99.38  │ 90.5   │ 92.75  │
+│ 2000-01-12 │ 95.0   │ 95.5   │ 86.5   │ 87.19  │
+│ 2000-01-13 │ 94.48  │ 98.75  │ 92.5   │ 96.75  │
+   ⋮
+│ 2001-12-19 │ 20.58  │ 21.68  │ 20.47  │ 21.62  │
+│ 2001-12-20 │ 21.4   │ 21.47  │ 20.62  │ 20.67  │
+│ 2001-12-21 │ 21.01  │ 21.54  │ 20.8   │ 21.0   │
+│ 2001-12-24 │ 20.9   │ 21.45  │ 20.9   │ 21.36  │
+│ 2001-12-26 │ 21.35  │ 22.3   │ 21.14  │ 21.49  │
+│ 2001-12-27 │ 21.58  │ 22.25  │ 21.58  │ 22.07  │
+│ 2001-12-28 │ 21.97  │ 23.0   │ 21.96  │ 22.43  │
+│ 2001-12-31 │ 22.51  │ 22.66  │ 21.83  │ 21.9   │</code></pre><h2><a class="nav-anchor" id="Save-a-TimeArray-via-CSV.jl-1" href="#Save-a-TimeArray-via-CSV.jl-1">Save a <code>TimeArray</code> via <code>CSV.jl</code></a></h2><pre><code class="language-julia">using CSV
+CSV.write(filename, ta)</code></pre><h2><a class="nav-anchor" id="Load-a-TimeArray-from-csv-file-via-CSV.jl-1" href="#Load-a-TimeArray-from-csv-file-via-CSV.jl-1">Load a <code>TimeArray</code> from csv file via <code>CSV.jl</code></a></h2><pre><code class="language-julia">using CSV
+TimeArray(CSV.File(filename), timestamp = :timestamp)</code></pre><footer><hr/><a class="previous" href="../readwrite/"><span class="direction">Previous</span><span class="title">I/O</span></a><a class="next" href="../dotfile/"><span class="direction">Next</span><span class="title">Customize <code>TimeArray</code> printing</span></a></footer></article></body></html>
