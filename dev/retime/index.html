@@ -6,135 +6,135 @@ ta = TimeArray(timestamps, cumsum(randn(7*24)), [:a])</code></pre><pre class="do
 ┌─────────────────────┬──────────┐
 │                     │ a        │
 ├─────────────────────┼──────────┤
-│ 2020-01-01T00:00:00 │ 0.945461 │
-│ 2020-01-01T01:00:00 │ -0.64693 │
-│ 2020-01-01T02:00:00 │ -3.65944 │
-│ 2020-01-01T03:00:00 │ -4.57012 │
-│ 2020-01-01T04:00:00 │ -5.56053 │
-│ 2020-01-01T05:00:00 │ -6.63431 │
-│ 2020-01-01T06:00:00 │  -6.9126 │
-│ 2020-01-01T07:00:00 │ -8.66276 │
+│ 2020-01-01T00:00:00 │ -2.50129 │
+│ 2020-01-01T01:00:00 │ -3.21346 │
+│ 2020-01-01T02:00:00 │ -3.38029 │
+│ 2020-01-01T03:00:00 │ -4.78287 │
+│ 2020-01-01T04:00:00 │ -5.17299 │
+│ 2020-01-01T05:00:00 │ -5.39028 │
+│ 2020-01-01T06:00:00 │ -4.99481 │
+│ 2020-01-01T07:00:00 │ -5.09049 │
 │          ⋮          │    ⋮     │
-│ 2020-01-07T17:00:00 │ -7.25812 │
-│ 2020-01-07T18:00:00 │ -6.84261 │
-│ 2020-01-07T19:00:00 │ -6.18256 │
-│ 2020-01-07T20:00:00 │ -6.93157 │
-│ 2020-01-07T21:00:00 │ -6.22709 │
-│ 2020-01-07T22:00:00 │ -5.82314 │
-│ 2020-01-07T23:00:00 │ -7.31261 │
+│ 2020-01-07T17:00:00 │ -6.83117 │
+│ 2020-01-07T18:00:00 │ -7.33849 │
+│ 2020-01-07T19:00:00 │ -8.10188 │
+│ 2020-01-07T20:00:00 │ -7.07485 │
+│ 2020-01-07T21:00:00 │ -7.41208 │
+│ 2020-01-07T22:00:00 │  -7.6519 │
+│ 2020-01-07T23:00:00 │ -6.27549 │
 └─────────────────────┴──────────┘
                   153 rows omitted</code></pre><h2 id="Using-a-new-time-step"><a class="docs-heading-anchor" href="#Using-a-new-time-step">Using a new time step</a><a id="Using-a-new-time-step-1"></a><a class="docs-heading-anchor-permalink" href="#Using-a-new-time-step" title="Permalink"></a></h2><pre><code class="language-julia hljs">retime(ta, Minute(15))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">669×1 TimeArray{Float64, 2, DateTime, Matrix{Float64}} 2020-01-01T00:00:00 to 2020-01-07T23:00:00
 ┌─────────────────────┬──────────┐
 │                     │ a        │
 ├─────────────────────┼──────────┤
-│ 2020-01-01T00:00:00 │ 0.945461 │
-│ 2020-01-01T00:15:00 │ 0.945461 │
-│ 2020-01-01T00:30:00 │ 0.945461 │
-│ 2020-01-01T00:45:00 │ 0.945461 │
-│ 2020-01-01T01:00:00 │ -0.64693 │
-│ 2020-01-01T01:15:00 │ -0.64693 │
-│ 2020-01-01T01:30:00 │ -0.64693 │
-│ 2020-01-01T01:45:00 │ -0.64693 │
+│ 2020-01-01T00:00:00 │ -2.50129 │
+│ 2020-01-01T00:15:00 │ -2.50129 │
+│ 2020-01-01T00:30:00 │ -2.50129 │
+│ 2020-01-01T00:45:00 │ -2.50129 │
+│ 2020-01-01T01:00:00 │ -3.21346 │
+│ 2020-01-01T01:15:00 │ -3.21346 │
+│ 2020-01-01T01:30:00 │ -3.21346 │
+│ 2020-01-01T01:45:00 │ -3.21346 │
 │          ⋮          │    ⋮     │
-│ 2020-01-07T21:30:00 │ -6.22709 │
-│ 2020-01-07T21:45:00 │ -6.22709 │
-│ 2020-01-07T22:00:00 │ -5.82314 │
-│ 2020-01-07T22:15:00 │ -5.82314 │
-│ 2020-01-07T22:30:00 │ -5.82314 │
-│ 2020-01-07T22:45:00 │ -5.82314 │
-│ 2020-01-07T23:00:00 │ -7.31261 │
+│ 2020-01-07T21:30:00 │ -7.41208 │
+│ 2020-01-07T21:45:00 │ -7.41208 │
+│ 2020-01-07T22:00:00 │  -7.6519 │
+│ 2020-01-07T22:15:00 │  -7.6519 │
+│ 2020-01-07T22:30:00 │  -7.6519 │
+│ 2020-01-07T22:45:00 │  -7.6519 │
+│ 2020-01-07T23:00:00 │ -6.27549 │
 └─────────────────────┴──────────┘
                   654 rows omitted</code></pre><h2 id="Using-new-timestep-vector"><a class="docs-heading-anchor" href="#Using-new-timestep-vector">Using new timestep vector</a><a id="Using-new-timestep-vector-1"></a><a class="docs-heading-anchor-permalink" href="#Using-new-timestep-vector" title="Permalink"></a></h2><pre><code class="language-julia hljs">new_timestamps = range(DateTime(2020, 1, 1), DateTime(2020, 1, 2), step = Minute(15))
 retime(ta, new_timestamps)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">97×1 TimeArray{Float64, 2, DateTime, Matrix{Float64}} 2020-01-01T00:00:00 to 2020-01-02T00:00:00
 ┌─────────────────────┬──────────┐
 │                     │ a        │
 ├─────────────────────┼──────────┤
-│ 2020-01-01T00:00:00 │ 0.945461 │
-│ 2020-01-01T00:15:00 │ 0.945461 │
-│ 2020-01-01T00:30:00 │ 0.945461 │
-│ 2020-01-01T00:45:00 │ 0.945461 │
-│ 2020-01-01T01:00:00 │ -0.64693 │
-│ 2020-01-01T01:15:00 │ -0.64693 │
-│ 2020-01-01T01:30:00 │ -0.64693 │
-│ 2020-01-01T01:45:00 │ -0.64693 │
+│ 2020-01-01T00:00:00 │ -2.50129 │
+│ 2020-01-01T00:15:00 │ -2.50129 │
+│ 2020-01-01T00:30:00 │ -2.50129 │
+│ 2020-01-01T00:45:00 │ -2.50129 │
+│ 2020-01-01T01:00:00 │ -3.21346 │
+│ 2020-01-01T01:15:00 │ -3.21346 │
+│ 2020-01-01T01:30:00 │ -3.21346 │
+│ 2020-01-01T01:45:00 │ -3.21346 │
 │          ⋮          │    ⋮     │
-│ 2020-01-01T22:30:00 │ -2.54295 │
-│ 2020-01-01T22:45:00 │ -2.54295 │
-│ 2020-01-01T23:00:00 │ -2.72574 │
-│ 2020-01-01T23:15:00 │ -2.72574 │
-│ 2020-01-01T23:30:00 │ -2.72574 │
-│ 2020-01-01T23:45:00 │ -2.72574 │
-│ 2020-01-02T00:00:00 │ -1.71528 │
+│ 2020-01-01T22:30:00 │ -9.84625 │
+│ 2020-01-01T22:45:00 │ -9.84625 │
+│ 2020-01-01T23:00:00 │ -9.51302 │
+│ 2020-01-01T23:15:00 │ -9.51302 │
+│ 2020-01-01T23:30:00 │ -9.51302 │
+│ 2020-01-01T23:45:00 │ -9.51302 │
+│ 2020-01-02T00:00:00 │ -9.57593 │
 └─────────────────────┴──────────┘
                    82 rows omitted</code></pre><h2 id="Irregular-timestamps"><a class="docs-heading-anchor" href="#Irregular-timestamps">Irregular timestamps</a><a id="Irregular-timestamps-1"></a><a class="docs-heading-anchor-permalink" href="#Irregular-timestamps" title="Permalink"></a></h2><p>You can perform retime on irregularly spaced timestamps, both using a <code>TimeArray</code> with irregular timestamps or using a vector of irregular timestamps. Depending on the timestamps <code>upsampling</code> or <code>downsampling</code> is used. </p><pre><code class="language-julia hljs">new_timestamps = vcat(
     range(DateTime(2020, 1, 1), DateTime(2020, 1, 2)-Minute(15), step = Minute(15)),
     range(DateTime(2020, 1, 2), DateTime(2020, 1, 3), step = Hour(1)),
 )
 retime(ta, new_timestamps)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">121×1 TimeArray{Float64, 2, DateTime, Matrix{Float64}} 2020-01-01T00:00:00 to 2020-01-03T00:00:00
-┌─────────────────────┬────────────┐
-│                     │ a          │
-├─────────────────────┼────────────┤
-│ 2020-01-01T00:00:00 │   0.945461 │
-│ 2020-01-01T00:15:00 │   0.945461 │
-│ 2020-01-01T00:30:00 │   0.945461 │
-│ 2020-01-01T00:45:00 │   0.945461 │
-│ 2020-01-01T01:00:00 │   -0.64693 │
-│ 2020-01-01T01:15:00 │   -0.64693 │
-│ 2020-01-01T01:30:00 │   -0.64693 │
-│ 2020-01-01T01:45:00 │   -0.64693 │
-│          ⋮          │     ⋮      │
-│ 2020-01-02T18:00:00 │    1.26957 │
-│ 2020-01-02T19:00:00 │  -0.660237 │
-│ 2020-01-02T20:00:00 │   -1.51387 │
-│ 2020-01-02T21:00:00 │   -1.68267 │
-│ 2020-01-02T22:00:00 │   0.458611 │
-│ 2020-01-02T23:00:00 │ -0.0921172 │
-│ 2020-01-03T00:00:00 │  -0.286219 │
-└─────────────────────┴────────────┘
-                    106 rows omitted</code></pre><h2 id="Upsampling"><a class="docs-heading-anchor" href="#Upsampling">Upsampling</a><a id="Upsampling-1"></a><a class="docs-heading-anchor-permalink" href="#Upsampling" title="Permalink"></a></h2><p>Interpolation is done using the <code>upsample</code> argument. If no data is directly hit, the specified <code>upsample</code> method is used. Available <code>upsample</code> methods are:</p><ul><li><code>Linear()</code> or <code>:linear</code></li><li><code>Nearest()</code> or <code>:nearest</code></li><li><code>Previous()</code> or <code>:previous</code></li><li><code>Next()</code> or <code>:next</code></li></ul><pre><code class="language-julia hljs">ta_ = retime(ta, Minute(15), upsample=Linear())</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">669×1 TimeArray{Float64, 2, DateTime, Matrix{Float64}} 2020-01-01T00:00:00 to 2020-01-07T23:00:00
-┌─────────────────────┬───────────┐
-│                     │ a         │
-├─────────────────────┼───────────┤
-│ 2020-01-01T00:00:00 │  0.945461 │
-│ 2020-01-01T00:15:00 │  0.547363 │
-│ 2020-01-01T00:30:00 │  0.149265 │
-│ 2020-01-01T00:45:00 │ -0.248832 │
-│ 2020-01-01T01:00:00 │  -0.64693 │
-│ 2020-01-01T01:15:00 │  -1.40006 │
-│ 2020-01-01T01:30:00 │  -2.15318 │
-│ 2020-01-01T01:45:00 │  -2.90631 │
-│          ⋮          │     ⋮     │
-│ 2020-01-07T21:30:00 │  -6.02512 │
-│ 2020-01-07T21:45:00 │  -5.92413 │
-│ 2020-01-07T22:00:00 │  -5.82314 │
-│ 2020-01-07T22:15:00 │  -6.19551 │
-│ 2020-01-07T22:30:00 │  -6.56787 │
-│ 2020-01-07T22:45:00 │  -6.94024 │
-│ 2020-01-07T23:00:00 │  -7.31261 │
-└─────────────────────┴───────────┘
-                   654 rows omitted</code></pre><pre><code class="language-julia hljs">plot(ta)
+┌─────────────────────┬──────────┐
+│                     │ a        │
+├─────────────────────┼──────────┤
+│ 2020-01-01T00:00:00 │ -2.50129 │
+│ 2020-01-01T00:15:00 │ -2.50129 │
+│ 2020-01-01T00:30:00 │ -2.50129 │
+│ 2020-01-01T00:45:00 │ -2.50129 │
+│ 2020-01-01T01:00:00 │ -3.21346 │
+│ 2020-01-01T01:15:00 │ -3.21346 │
+│ 2020-01-01T01:30:00 │ -3.21346 │
+│ 2020-01-01T01:45:00 │ -3.21346 │
+│          ⋮          │    ⋮     │
+│ 2020-01-02T18:00:00 │ -8.57448 │
+│ 2020-01-02T19:00:00 │ -7.31647 │
+│ 2020-01-02T20:00:00 │ -8.73729 │
+│ 2020-01-02T21:00:00 │ -8.46124 │
+│ 2020-01-02T22:00:00 │ -7.99706 │
+│ 2020-01-02T23:00:00 │ -8.15694 │
+│ 2020-01-03T00:00:00 │ -7.66989 │
+└─────────────────────┴──────────┘
+                  106 rows omitted</code></pre><h2 id="Upsampling"><a class="docs-heading-anchor" href="#Upsampling">Upsampling</a><a id="Upsampling-1"></a><a class="docs-heading-anchor-permalink" href="#Upsampling" title="Permalink"></a></h2><p>Interpolation is done using the <code>upsample</code> argument. If no data is directly hit, the specified <code>upsample</code> method is used. Available <code>upsample</code> methods are:</p><ul><li><code>Linear()</code> or <code>:linear</code></li><li><code>Nearest()</code> or <code>:nearest</code></li><li><code>Previous()</code> or <code>:previous</code></li><li><code>Next()</code> or <code>:next</code></li></ul><pre><code class="language-julia hljs">ta_ = retime(ta, Minute(15), upsample=Linear())</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">669×1 TimeArray{Float64, 2, DateTime, Matrix{Float64}} 2020-01-01T00:00:00 to 2020-01-07T23:00:00
+┌─────────────────────┬──────────┐
+│                     │ a        │
+├─────────────────────┼──────────┤
+│ 2020-01-01T00:00:00 │ -2.50129 │
+│ 2020-01-01T00:15:00 │ -2.67933 │
+│ 2020-01-01T00:30:00 │ -2.85737 │
+│ 2020-01-01T00:45:00 │ -3.03542 │
+│ 2020-01-01T01:00:00 │ -3.21346 │
+│ 2020-01-01T01:15:00 │ -3.25516 │
+│ 2020-01-01T01:30:00 │ -3.29687 │
+│ 2020-01-01T01:45:00 │ -3.33858 │
+│          ⋮          │    ⋮     │
+│ 2020-01-07T21:30:00 │ -7.53199 │
+│ 2020-01-07T21:45:00 │ -7.59194 │
+│ 2020-01-07T22:00:00 │  -7.6519 │
+│ 2020-01-07T22:15:00 │ -7.30779 │
+│ 2020-01-07T22:30:00 │ -6.96369 │
+│ 2020-01-07T22:45:00 │ -6.61959 │
+│ 2020-01-07T23:00:00 │ -6.27549 │
+└─────────────────────┴──────────┘
+                  654 rows omitted</code></pre><pre><code class="language-julia hljs">plot(ta)
 plot!(ta_)</code></pre><p><img src="../retime-upsampling.svg" alt/></p><h2 id="Downsampling"><a class="docs-heading-anchor" href="#Downsampling">Downsampling</a><a id="Downsampling-1"></a><a class="docs-heading-anchor-permalink" href="#Downsampling" title="Permalink"></a></h2><p>Downsampling or aggregation is done using the <code>downsample</code> argument. This applies a function to each interval not including the right-edge of the interval. If no data is present in the interval the specified <code>upsample</code> method is used. Available <code>downsample</code> methods are:</p><ul><li><code>Mean()</code> or <code>:mean</code></li><li><code>Min()</code> or <code>:min</code></li><li><code>Max()</code> or <code>:max</code></li><li><code>Count()</code> or <code>:count</code></li><li><code>Sum()</code> or <code>:sum</code></li><li><code>Median()</code> or <code>:median</code></li><li><code>First()</code> or <code>:first</code></li><li><code>Last()</code> or <code>:last</code></li></ul><pre><code class="language-julia hljs">ta_ = retime(ta, Hour(6), downsample=Mean())</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">28×1 TimeArray{Float64, 2, DateTime, Matrix{Float64}} 2020-01-01T00:00:00 to 2020-01-07T18:00:00
-┌─────────────────────┬────────────┐
-│                     │ a          │
-├─────────────────────┼────────────┤
-│ 2020-01-01T00:00:00 │   -3.35431 │
-│ 2020-01-01T06:00:00 │   -9.24263 │
-│ 2020-01-01T12:00:00 │   -7.98966 │
-│ 2020-01-01T18:00:00 │   -3.81945 │
-│ 2020-01-02T00:00:00 │  -0.940683 │
-│ 2020-01-02T06:00:00 │  -0.246761 │
-│ 2020-01-02T12:00:00 │    1.76441 │
-│ 2020-01-02T18:00:00 │  -0.370119 │
-│          ⋮          │     ⋮      │
-│ 2020-01-06T06:00:00 │   -4.10185 │
-│ 2020-01-06T12:00:00 │   -4.64036 │
-│ 2020-01-06T18:00:00 │   -3.69262 │
-│ 2020-01-07T00:00:00 │ -0.0570419 │
-│ 2020-01-07T06:00:00 │   -1.35879 │
-│ 2020-01-07T12:00:00 │    -6.0298 │
-│ 2020-01-07T18:00:00 │   -6.55326 │
-└─────────────────────┴────────────┘
-                     13 rows omitted</code></pre><pre><code class="language-julia hljs">plot(ta)
+┌─────────────────────┬──────────┐
+│                     │ a        │
+├─────────────────────┼──────────┤
+│ 2020-01-01T00:00:00 │ -4.07353 │
+│ 2020-01-01T06:00:00 │ -6.73018 │
+│ 2020-01-01T12:00:00 │ -8.96206 │
+│ 2020-01-01T18:00:00 │ -10.1172 │
+│ 2020-01-02T00:00:00 │  -10.655 │
+│ 2020-01-02T06:00:00 │ -11.2209 │
+│ 2020-01-02T12:00:00 │ -10.0854 │
+│ 2020-01-02T18:00:00 │ -8.20725 │
+│          ⋮          │    ⋮     │
+│ 2020-01-06T06:00:00 │ -16.3777 │
+│ 2020-01-06T12:00:00 │ -14.9038 │
+│ 2020-01-06T18:00:00 │  -17.809 │
+│ 2020-01-07T00:00:00 │ -16.2396 │
+│ 2020-01-07T06:00:00 │ -12.3551 │
+│ 2020-01-07T12:00:00 │  -8.0882 │
+│ 2020-01-07T18:00:00 │ -7.30912 │
+└─────────────────────┴──────────┘
+                   13 rows omitted</code></pre><pre><code class="language-julia hljs">plot(ta)
 plot!(ta_)</code></pre><p><img src="../retime-downsample.svg" alt/></p><h2 id="Extrapolation"><a class="docs-heading-anchor" href="#Extrapolation">Extrapolation</a><a id="Extrapolation-1"></a><a class="docs-heading-anchor-permalink" href="#Extrapolation" title="Permalink"></a></h2><p>Extrapolation at the beginning and end of the time series is done using the <code>extrapolate</code> argument.  Available <code>extrapolate</code> methods are:</p><ul><li><code>FillConstant(value)</code> or <code>:fillconstant</code></li><li><code>NearestExtrapolate()</code> or <code>:nearest</code></li><li><code>MissingExtrapolate()</code> or <code>:missing</code></li><li><code>NaNExtrapolate()</code> or <code>:nan</code></li></ul><pre><code class="language-julia hljs">new_timestamps = range(DateTime(2019, 12, 31), DateTime(2020, 1, 2), step = Minute(15))
 ta_ = retime(ta, new_timestamps, extrapolate=MissingExtrapolate())</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">193×1 TimeArray{Union{Missing, Float64}, 2, DateTime, Matrix{Union{Missing, Float64}}} 2019-12-31T00:00:00 to 2020-01-02T00:00:00
 ┌─────────────────────┬──────────┐
@@ -149,12 +149,12 @@ ta_ = retime(ta, new_timestamps, extrapolate=MissingExtrapolate())</code></pre><
 │ 2019-12-31T01:30:00 │  missing │
 │ 2019-12-31T01:45:00 │  missing │
 │          ⋮          │    ⋮     │
-│ 2020-01-01T22:30:00 │ -2.54295 │
-│ 2020-01-01T22:45:00 │ -2.54295 │
-│ 2020-01-01T23:00:00 │ -2.72574 │
-│ 2020-01-01T23:15:00 │ -2.72574 │
-│ 2020-01-01T23:30:00 │ -2.72574 │
-│ 2020-01-01T23:45:00 │ -2.72574 │
-│ 2020-01-02T00:00:00 │ -1.71528 │
+│ 2020-01-01T22:30:00 │ -9.84625 │
+│ 2020-01-01T22:45:00 │ -9.84625 │
+│ 2020-01-01T23:00:00 │ -9.51302 │
+│ 2020-01-01T23:15:00 │ -9.51302 │
+│ 2020-01-01T23:30:00 │ -9.51302 │
+│ 2020-01-01T23:45:00 │ -9.51302 │
+│ 2020-01-02T00:00:00 │ -9.57593 │
 └─────────────────────┴──────────┘
-                  178 rows omitted</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../plotting/">« Plotting</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.16.1 on <span class="colophon-date" title="Wednesday 31 December 2025 02:32">Wednesday 31 December 2025</span>. Using Julia version 1.12.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+                  178 rows omitted</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../plotting/">« Plotting</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.16.1 on <span class="colophon-date" title="Monday 5 January 2026 07:55">Monday 5 January 2026</span>. Using Julia version 1.12.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
