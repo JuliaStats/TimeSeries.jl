@@ -136,4 +136,18 @@ using TimeSeries
         # test empty timearray
         @test length(split(to(cl, Date(2000)), week)) == 0
     end
+
+
+    @testset "time_slots" begin
+        @test length(time_slots(DateTime(2026,1,1), DateTime(2026,1,3), Minute(15); from=Time(8,45), to=Time(13,45))) == 42
+        @test length(time_slots(DateTime(2026,1,1), DateTime(2026,1,1), Minute(15); from=Time(14,0), to=Time(15,0))) == 0
+        @test length(time_slots(DateTime(2026,1,1,8,45), DateTime(2026,1,1,8,45), Minute(15); from=Time(8,45), to=Time(8,45))) == 1
+        @test length(time_slots(DateTime(2026,1,1), DateTime(2026,1,1,23,59), Hour(1); from=Time(9,0), to=Time(17,0))) == 9
+        @test length(time_slots(DateTime(2026,1,1), DateTime(2026,1,1,23,59), Hour(1); from=Time(13,0), to=Time(8,0))) == 0
+        @test length(time_slots(DateTime(2026,1,1):Minute(15):DateTime(2026,1,3); from=Time(8,45), to=Time(13,45))) == 42
+        @test length(when(TimeArray(DateTime(2026,1,1):Minute(15):DateTime(2026,1,3), rand(193)), time_slots(; from=Time(8,45), to=Time(13,45)))) == 42
+
+    end
 end  # @testset "split"
+
+

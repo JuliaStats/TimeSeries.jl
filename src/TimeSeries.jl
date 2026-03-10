@@ -14,6 +14,8 @@ using PrettyTables: PrettyTables, pretty_table
 export TimeArray,
     AbstractTimeSeries,
     when,
+    time_slots,
+    TimeWindow,
     from,
     to,
     findwhen,
