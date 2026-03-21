@@ -69,14 +69,19 @@ window `[from, to]`,
 filtered from the full `start` to `stop` range at the given `interval`
 """
 function time_slots(
-    start::T, stop::T, interval::Period; from::Time=Time(0, 0), to::Time=Time(23, 59)
-) where {T<:TimeType}
+    start::T, stop::T, interval::P; from::Time=Time(0, 0), to::Time=Time(23, 59)
+) where {T<:TimeType,P<:Period}
+    # TODO: Negative intervals are currently unsupported and raise an ArgumentError.
+    # Supporting them is non-trivial due to edge cases where the step crosses a
+    # day boundary in reverse, e.g.:
+    #   DateTime(2023, 1, 2, 0, 3):Minute(-4):DateTime(2023, 1, 1)
+    # In this case it's unclear how the from/to time window should be applied.
     # Check for negative or zero period
     if interval <= zero(interval)
         throw(ArgumentError("interval must be positive, got $interval"))
     end
 
-    return TimeSlot{typeof(start),typeof(interval)}(start, stop, interval, from, to)
+    return TimeSlot{T,P}(start, stop, interval, from, to)
 end
 
 """
@@ -88,14 +93,17 @@ window `[from, to]`,
 filtered from the given `range`
 """
 function time_slots(
-    range::StepRange{T}; from::Time=Time(0, 0), to::Time=Time(23, 59)
-) where {T}
+    range::StepRange{T,P}; from::Time=Time(0, 0), to::Time=Time(23, 59)
+) where {T<:TimeType,P<:Period}
+    # TODO: Negative intervals are currently unsupported and raise an ArgumentError.
+    # Supporting them is non-trivial due to edge cases where the step crosses a
+    # day boundary in reverse, e.g.:
+    #   DateTime(2023, 1, 2, 0, 3):Minute(-4):DateTime(2023, 1, 1)
+    # In this case it's unclear how the from/to time window should be applied.
     if step(range) <= zero(step(range))
         throw(ArgumentError("interval must be positive, got $(step(range))"))
     end
-    return TimeSlot{eltype(range),typeof(step(range))}(
-        range.start, range.stop, step(range), from, to
-    )
+    return TimeSlot{T,P}(range.start, range.stop, step(range), from, to)
 end
 # from, to ######################
 
